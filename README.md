@@ -1,7 +1,7 @@
 # ServiceMeow 🐾
 
 <p align="center">
-  <img src="docs/assets/hero-banner.jpg" alt="ServiceMeow Banner" width="100%" style="border-radius: 12px; border: 1px solid #1e293b;" />
+  <img src="docs/assets/servicemeow-banner.png" alt="ServiceMeow Banner" width="100%" style="border-radius: 12px; border: 1px solid #1e293b;" />
 </p>
 
 <p align="center">
