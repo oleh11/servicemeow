@@ -5,15 +5,15 @@
 </p>
 
 <p align="center">
-  <strong>The Open-Source Enterprise Service Operations (ITIL) Platform</strong><br>
-  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Workflow Agent
+  <strong>The Open-Source Enterprise Service Operations (ITIL) Platform &amp; Hermes Autonomous Agent</strong><br>
+  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Hermes Workflow Agent
 </p>
 
 <p align="center">
   <a href="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml"><img src="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml/badge.svg" alt="ServiceMeow CI" /></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-emerald.svg" alt="Node.js Version" /></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-16-blue.svg" alt="PostgreSQL" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-63%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-83%20passed-8b5cf6.svg" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
 </p>
 
