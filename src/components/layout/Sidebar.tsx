@@ -262,6 +262,7 @@ export function Sidebar() {
       { label: "Import Sets & Transforms", href: "/studio?tab=import_sets", icon: UploadCloud },
       { label: "Update Sets (sys_update_set)", href: "/studio?tab=update_sets", icon: Package },
       { label: "Workflow Agent (Daemon)", href: "/studio?tab=agent", icon: Bot },
+      { label: "Workplace & Reservations Config", href: "/studio?tab=workplace", icon: Building2 },
     ],
   };
 

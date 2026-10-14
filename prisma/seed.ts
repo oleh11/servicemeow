@@ -1068,6 +1068,170 @@ async function main() {
     },
   });
 
+  // Workplace & Facility Catalog Items
+  const catStandingDesk = await prisma.catalogItem.create({
+    data: {
+      name: "Ergonomic Standing Desk & Dual Monitor Allocation",
+      shortDescription: "Motorized sit-stand workstation setup with dual 4K USB-C monitors and cable management.",
+      description: "Enterprise ergonomic workstation provisioning. Includes programmable motorized standing desk, dual 27-inch 4K USB-C daisy-chained displays, heavy-duty monitor arms, and integrated power delivery.",
+      category: "Workplace & Facilities",
+      price: 1250.0,
+      icon: "Armchair",
+      deliveryDays: 3,
+    },
+  });
+
+  await prisma.catalogVariable.createMany({
+    data: [
+      {
+        catalogItemId: catStandingDesk.id,
+        name: "target_location",
+        label: "Office Space or Desk Number",
+        varType: "string",
+        isMandatory: true,
+        order: 1,
+      },
+      {
+        catalogItemId: catStandingDesk.id,
+        name: "desk_width",
+        label: "Worksurface Dimensions",
+        varType: "select",
+        isMandatory: true,
+        optionsJson: JSON.stringify(["60 x 30 inch (Standard Office)", "72 x 30 inch (Executive / Engineering)", "48 x 24 inch (Compact Huddle)"]),
+        order: 2,
+      },
+      {
+        catalogItemId: catStandingDesk.id,
+        name: "monitor_arm_type",
+        label: "Monitor Arm Configuration",
+        varType: "select",
+        isMandatory: true,
+        optionsJson: JSON.stringify(["Dual Screen Horizontal", "Dual Screen Vertical Stack", "Single Ultrawide 49-inch"]),
+        order: 3,
+      },
+    ],
+  });
+
+  const catAVSetup = await prisma.catalogItem.create({
+    data: {
+      name: "Conference Room & Event AV Setup Request",
+      shortDescription: "High-definition telepresence, wireless mics, and multi-camera live streaming for corporate events.",
+      description: "Dedicated on-site AV technician dispatch for critical all-hands presentations, board meetings, or live webinars. Configures Microsoft Teams / Zoom Rooms, digital whiteboards, lavalier mics, and recording relays.",
+      category: "Workplace & Facilities",
+      price: 0.0,
+      icon: "Building2",
+      deliveryDays: 1,
+    },
+  });
+
+  await prisma.catalogVariable.createMany({
+    data: [
+      {
+        catalogItemId: catAVSetup.id,
+        name: "event_space",
+        label: "Selected Space / Room",
+        varType: "select",
+        isMandatory: true,
+        optionsJson: JSON.stringify(["Global Hybrid Arena 420", "Executive Boardroom 402", "Zoom Studio Suite 408", "Microsoft Teams Room 404"]),
+        order: 1,
+      },
+      {
+        catalogItemId: catAVSetup.id,
+        name: "platform",
+        label: "Streaming / Meeting Platform",
+        varType: "select",
+        isMandatory: true,
+        optionsJson: JSON.stringify(["Microsoft Teams Live Event", "Zoom Webinar (500+ attendees)", "Internal Hybrid Broadcast", "In-Room Only Recording"]),
+        order: 2,
+      },
+      {
+        catalogItemId: catAVSetup.id,
+        name: "support_level",
+        label: "Technician Presence",
+        varType: "select",
+        isMandatory: true,
+        optionsJson: JSON.stringify(["Pre-event 15-minute soundcheck only", "Full dedicated technician for duration of event"]),
+        order: 3,
+      },
+    ],
+  });
+
+  const catOfficeMove = await prisma.catalogItem.create({
+    data: {
+      name: "Office Move & Workspace Reconfiguration",
+      shortDescription: "Relocate personal belongings, IT equipment, and assigned desk between floors or buildings.",
+      description: "Coordination request for Facilities & IT logistics to relocate team pods or individual staff. Includes packing crates delivery, computer disconnect/reconnect, and CMDB asset space reassignment.",
+      category: "Workplace & Facilities",
+      price: 0.0,
+      icon: "Box",
+      deliveryDays: 5,
+    },
+  });
+
+  await prisma.catalogVariable.createMany({
+    data: [
+      {
+        catalogItemId: catOfficeMove.id,
+        name: "current_space",
+        label: "Current Desk / Space Number",
+        varType: "string",
+        isMandatory: true,
+        order: 1,
+      },
+      {
+        catalogItemId: catOfficeMove.id,
+        name: "destination_space",
+        label: "Target Floor & Room Number",
+        varType: "string",
+        isMandatory: true,
+        order: 2,
+      },
+      {
+        catalogItemId: catOfficeMove.id,
+        name: "move_date",
+        label: "Target Move Date",
+        varType: "string",
+        isMandatory: true,
+        order: 3,
+      },
+    ],
+  });
+
+  const catBadgeAccess = await prisma.catalogItem.create({
+    data: {
+      name: "Physical Security Badge & Keycard Access",
+      shortDescription: "Request NFC smart badge, mobile credential, or access clearance to restricted labs & server rooms.",
+      description: "Physical security badge issuance and door reader permissions. Manage building turnstile permissions, datacenter MDF/IDF security zones, and parking garage gates.",
+      category: "Workplace & Facilities",
+      price: 0.0,
+      icon: "Key",
+      deliveryDays: 1,
+    },
+  });
+
+  await prisma.catalogVariable.createMany({
+    data: [
+      {
+        catalogItemId: catBadgeAccess.id,
+        name: "badge_type",
+        label: "Credential Type",
+        varType: "select",
+        isMandatory: true,
+        optionsJson: JSON.stringify(["New Physical NFC Smart Badge", "Replacement for Lost / Damaged Badge", "Mobile Apple/Google Wallet Credential", "Temporary Contractor Badge"]),
+        order: 1,
+      },
+      {
+        catalogItemId: catBadgeAccess.id,
+        name: "access_zones",
+        label: "Requested Access Clearance",
+        varType: "select",
+        isMandatory: true,
+        optionsJson: JSON.stringify(["Standard Campus & Building Floors (All Employees)", "Level 4 MDF Server Room & Network Closets", "Biomedical & Engineering Cleanrooms", "Executive Suite & Boardrooms"]),
+        order: 2,
+      },
+    ],
+  });
+
   // 8. Incidents
   console.log("Creating Seed Incidents & Tasks...");
   // INC0001001 (P1 - Critical, In Progress, SLA tracking)

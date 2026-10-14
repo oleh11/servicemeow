@@ -33,6 +33,8 @@ import {
   ToggleRight,
   ArrowUp,
   ArrowDown,
+  Building2,
+  Calendar,
 } from "lucide-react";
 
 const ICON_OPTIONS = [
@@ -47,12 +49,15 @@ const ICON_OPTIONS = [
   { name: "HardDrive", icon: HardDrive },
   { name: "Wifi", icon: Wifi },
   { name: "Key", icon: Key },
+  { name: "Building2", icon: Building2 },
+  { name: "Calendar", icon: Calendar },
   { name: "Box", icon: Box },
 ];
 
 const CATEGORIES = [
   "Hardware",
   "Software",
+  "Workplace & Facilities",
   "Cloud Services",
   "Access & Entitlements",
   "Office Equipment",

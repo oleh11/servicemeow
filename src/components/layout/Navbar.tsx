@@ -21,6 +21,8 @@ import {
   Command,
   Palette,
   Camera,
+  Building2,
+  Calendar,
 } from "lucide-react";
 import { ProfilePictureModal } from "@/components/common/ProfilePictureModal";
 import { UpdateSetPicker } from "./UpdateSetPicker";
@@ -51,6 +53,7 @@ export function Navbar() {
   const navLinks = [
     { label: "Self-Service Portal", href: "/portal", icon: Compass },
     { label: "Agent Workspace", href: "/workspace", icon: LayoutDashboard },
+    { label: "Workplace & Reservations", href: "/workspace/reservations", icon: Building2 },
     { label: "CMDB Topology", href: "/workspace/cmdb", icon: Server },
     ...(isAdmin ? [{ label: "Studio & Admin Center", href: "/studio", icon: FileCode }] : []),
   ];
@@ -160,10 +163,12 @@ export function Navbar() {
                 const isActive =
                   item.href === "/portal"
                     ? pathname.startsWith("/portal")
+                    : item.href === "/workspace/reservations"
+                    ? pathname.startsWith("/workspace/reservations")
                     : item.href === "/workspace/cmdb"
                     ? pathname === "/workspace/cmdb"
                     : item.href === "/workspace"
-                    ? pathname.startsWith("/workspace") && pathname !== "/workspace/cmdb"
+                    ? pathname.startsWith("/workspace") && pathname !== "/workspace/cmdb" && !pathname.startsWith("/workspace/reservations")
                     : pathname.startsWith(item.href);
 
                 return (
@@ -350,6 +355,26 @@ export function Navbar() {
                         </span>
                       </div>
                     </button>
+
+                    {/* Workplace & Reservations Configuration (Admin) */}
+                    {isAdmin && (
+                      <Link
+                        href="/studio?tab=workplace"
+                        onClick={() => setAvatarDropdownOpen(false)}
+                        className="w-full px-4 py-2 text-left text-xs hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2.5 transition-colors cursor-pointer"
+                      >
+                        <Building2 className="w-4 h-4 text-indigo-500" />
+                        <div>
+                          <span className="font-medium">Workplace & Reservations Config...</span>
+                          <span
+                            className="block text-[10px]"
+                            style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
+                          >
+                            Spatial tiers, room capabilities & floorplans
+                          </span>
+                        </div>
+                      </Link>
+                    )}
 
                     {/* Impersonate User Action */}
                     <button

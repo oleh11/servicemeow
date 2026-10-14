@@ -17,16 +17,31 @@ import {
   HardDrive,
   Wifi,
   Key,
+  Building2,
+  Calendar,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function CatalogPortalPage() {
-  const items = await db.catalogItem.findMany({
+export default async function CatalogPortalPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ category?: string }>;
+}) {
+  const resolvedParams = (await searchParams) || {};
+  const activeCategory = resolvedParams.category || "all";
+
+  const allItems = await db.catalogItem.findMany({
     where: { active: true },
     include: { variables: true },
     orderBy: { category: "asc" },
   });
+
+  const categories = Array.from(new Set(allItems.map((i) => i.category)));
+
+  const items = activeCategory === "all"
+    ? allItems
+    : allItems.filter((i) => i.category.toLowerCase() === activeCategory.toLowerCase());
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -54,6 +69,10 @@ export default async function CatalogPortalPage() {
         return Key;
       case "ShoppingBag":
         return ShoppingBag;
+      case "Building2":
+        return Building2;
+      case "Calendar":
+        return Calendar;
       default:
         return Box;
     }
@@ -62,19 +81,50 @@ export default async function CatalogPortalPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Catalog Banner */}
-      <div className="bg-gradient-to-r from-emerald-800 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-emerald-800 via-slate-900 to-indigo-900 rounded-2xl p-6 sm:p-8 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold">
             <ShoppingBag className="w-3.5 h-3.5" />
-            <span>IT Enterprise Procurement</span>
+            <span>Enterprise Procurement & Workplace Services</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Service Catalog & IT Requests
+            Service Catalog & Logistics
           </h1>
           <p className="text-xs text-slate-300 max-w-xl">
-            Order certified enterprise laptops, cloud entitlements, developer licenses, and ergonomic equipment. Pre-approved catalog requests automatically trigger fulfillment workflows.
+            Order certified developer laptops, cloud entitlements, ergonomic standing desks, conference room AV setups, and physical badge access.
           </p>
         </div>
+      </div>
+
+      {/* Category Filter Pills */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+        <Link
+          href="/portal/catalog"
+          className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 ${
+            activeCategory === "all"
+              ? "bg-emerald-600 text-white shadow-xs"
+              : "bg-white text-slate-600 border hover:bg-slate-50"
+          }`}
+        >
+          All Offerings ({allItems.length})
+        </Link>
+        {categories.map((cat) => {
+          const isSelected = activeCategory.toLowerCase() === cat.toLowerCase();
+          const count = allItems.filter((i) => i.category === cat).length;
+          return (
+            <Link
+              key={cat}
+              href={`/portal/catalog?category=${encodeURIComponent(cat)}`}
+              className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 ${
+                isSelected
+                  ? "bg-emerald-600 text-white shadow-xs"
+                  : "bg-white text-slate-600 border hover:bg-slate-50"
+              }`}
+            >
+              {cat} ({count})
+            </Link>
+          );
+        })}
       </div>
 
       {/* Catalog Grid */}

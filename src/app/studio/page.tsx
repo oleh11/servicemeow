@@ -49,6 +49,7 @@ import {
   ChevronRight,
   ShoppingBag,
   Box,
+  Building2,
 } from "lucide-react";
 import { SearchableMultiSelect, MultiSelectOption } from "@/components/common/SearchableMultiSelect";
 import { ClientScriptsTab } from "@/components/studio/ClientScriptsTab";
@@ -63,6 +64,7 @@ import { SchedulesTab } from "@/components/studio/SchedulesTab";
 import { ScriptedApisTab } from "@/components/studio/ScriptedApisTab";
 import { ApplicationsTab } from "@/components/studio/ApplicationsTab";
 import { NavigationTab } from "@/components/studio/NavigationTab";
+import { WorkplaceConfigTab } from "@/components/studio/WorkplaceConfigTab";
 import { ThemePickerModal } from "@/components/theme/ThemePickerModal";
 import { AVATAR_PRESETS, DEFAULT_AVATAR } from "@/lib/avatar-presets";
 
@@ -71,6 +73,7 @@ type StudioTab =
   | "catalog_items"
   | "apps"
   | "navigation"
+  | "workplace"
   | "acls"
   | "users"
   | "business_rules"
@@ -287,6 +290,15 @@ const STUDIO_MODULES: StudioModuleDef[] = [
     icon: Layers,
     accentColor: "indigo",
   },
+  {
+    id: "workplace",
+    title: "Connected Workplace & Reservations",
+    tableCode: "cmn_reservation",
+    category: "platform",
+    description: "6-tier spatial hierarchy, room & desk capabilities, floorplans & booking governance",
+    icon: Building2,
+    accentColor: "indigo",
+  },
 ];
 
 function StudioContent() {
@@ -300,6 +312,7 @@ function StudioContent() {
     "catalog_items",
     "apps",
     "navigation",
+    "workplace",
     "acls",
     "users",
     "business_rules",
@@ -4567,6 +4580,11 @@ function StudioContent() {
         {/* TAB 19: APPLICATION MENUS & MODULES                  */}
         {/* ==================================================== */}
         {activeTab === "navigation" && <NavigationTab />}
+
+        {/* ==================================================== */}
+        {/* TAB 20: CONNECTED WORKPLACE & RESERVATIONS           */}
+        {/* ==================================================== */}
+        {activeTab === "workplace" && <WorkplaceConfigTab />}
       </div>
     </div>
   );
