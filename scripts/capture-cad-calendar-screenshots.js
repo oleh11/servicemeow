@@ -73,9 +73,10 @@ async function main() {
   await new Promise(r => setTimeout(r, 2500));
 
   const calFileAssets = path.join(ASSETS_DIR, 'calendar-view-showcase.png');
-  const calFileArtifact = path.join(ARTIFACT_DIR, 'calendar_view_showcase.png');
   await page.screenshot({ path: calFileAssets, fullPage: false });
-  fs.copyFileSync(calFileAssets, calFileArtifact);
+  if (fs.existsSync(ARTIFACT_DIR)) {
+    fs.copyFileSync(calFileAssets, path.join(ARTIFACT_DIR, 'calendar_view_showcase.png'));
+  }
   console.log(`[capture] Saved Calendar View to ${calFileAssets} (${Math.round(fs.statSync(calFileAssets).size / 1024)} KB)`);
 
   // Also create alias calendar-view.png
@@ -90,9 +91,10 @@ async function main() {
 
   // Scroll slightly if needed or keep default viewport
   const cadFileAssets = path.join(ASSETS_DIR, 'cad-drawing-showcase.png');
-  const cadFileArtifact = path.join(ARTIFACT_DIR, 'cad_drawing_showcase.png');
   await page.screenshot({ path: cadFileAssets, fullPage: false });
-  fs.copyFileSync(cadFileAssets, cadFileArtifact);
+  if (fs.existsSync(ARTIFACT_DIR)) {
+    fs.copyFileSync(cadFileAssets, path.join(ARTIFACT_DIR, 'cad_drawing_showcase.png'));
+  }
   console.log(`[capture] Saved CAD / Drawing View to ${cadFileAssets} (${Math.round(fs.statSync(cadFileAssets).size / 1024)} KB)`);
 
   // Also create alias cad-drawing-view.png
