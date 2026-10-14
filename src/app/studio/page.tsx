@@ -47,6 +47,12 @@ import {
   Globe,
   Search,
   ChevronRight,
+  ChevronDown,
+  ChevronLeft,
+  PanelLeftClose,
+  PanelLeft,
+  Columns3,
+  LayoutGrid,
   ShoppingBag,
   Box,
   Building2,
@@ -102,15 +108,15 @@ interface StudioModuleDef {
 
 const STUDIO_CATEGORIES = [
   { id: "all", label: "All Modules", icon: Layers },
-  { id: "data", label: "Data & Ingestion", icon: Database },
+  { id: "data", label: "Data & Architecture", icon: Database },
   { id: "security", label: "Security & Identity", icon: ShieldCheck },
   { id: "automation", label: "Server Automation", icon: Workflow },
-  { id: "client", label: "Client Experience", icon: Sparkles },
-  { id: "platform", label: "Platform & APIs", icon: Globe },
+  { id: "client", label: "Forms, UI & Catalog", icon: Sparkles },
+  { id: "platform", label: "Platform & Workplace", icon: Globe },
 ] as const;
 
 const STUDIO_MODULES: StudioModuleDef[] = [
-  // 1. Data & Ingestion
+  // 1. Data & Architecture
   {
     id: "schema",
     title: "Schema Dictionary",
@@ -121,22 +127,13 @@ const STUDIO_MODULES: StudioModuleDef[] = [
     accentColor: "emerald",
   },
   {
-    id: "catalog_items",
-    title: "Service Catalog Items",
-    tableCode: "sc_cat_item",
+    id: "apps",
+    title: "Custom Applications",
+    tableCode: "sys_app",
     category: "data",
-    description: "Orderable portal products, delivery SLAs, prices & form variables",
-    icon: ShoppingBag,
+    description: "Scoped application boundaries, scopes, versioning & packages",
+    icon: Box,
     accentColor: "emerald",
-  },
-  {
-    id: "record_producers",
-    title: "Record Producers",
-    tableCode: "sc_cat_item_producer",
-    category: "data",
-    description: "Self-service intake forms with sandboxed script mapping",
-    icon: Sparkles,
-    accentColor: "blue",
   },
   {
     id: "import_sets",
@@ -159,15 +156,6 @@ const STUDIO_MODULES: StudioModuleDef[] = [
 
   // 2. Security & Identity
   {
-    id: "acls",
-    title: "Access Control Lists",
-    tableCode: "sys_security_acl",
-    category: "security",
-    description: "Table-level and field-level CRUD security access gates",
-    icon: Shield,
-    accentColor: "rose",
-  },
-  {
     id: "users",
     title: "Users, Groups & Roles",
     tableCode: "sys_user",
@@ -175,6 +163,15 @@ const STUDIO_MODULES: StudioModuleDef[] = [
     description: "Directory accounts, assignment groups and dynamic RBAC",
     icon: Users,
     accentColor: "amber",
+  },
+  {
+    id: "acls",
+    title: "Access Control Lists",
+    tableCode: "sys_security_acl",
+    category: "security",
+    description: "Table-level and field-level CRUD security access gates",
+    icon: Shield,
+    accentColor: "rose",
   },
 
   // 3. Server Automation
@@ -214,8 +211,35 @@ const STUDIO_MODULES: StudioModuleDef[] = [
     icon: Bot,
     accentColor: "teal",
   },
+  {
+    id: "scheduled_jobs",
+    title: "Scheduled Jobs",
+    tableCode: "sysauto_script",
+    category: "automation",
+    description: "Automated recurring cron tasks with run history logs",
+    icon: Clock,
+    accentColor: "amber",
+  },
 
-  // 4. Client Experience
+  // 4. Forms, UI & Catalog
+  {
+    id: "catalog_items",
+    title: "Service Catalog Items",
+    tableCode: "sc_cat_item",
+    category: "client",
+    description: "Orderable portal products, delivery SLAs, prices & form variables",
+    icon: ShoppingBag,
+    accentColor: "emerald",
+  },
+  {
+    id: "record_producers",
+    title: "Record Producers",
+    tableCode: "sc_cat_item_producer",
+    category: "client",
+    description: "Self-service intake forms with sandboxed script mapping",
+    icon: Sparkles,
+    accentColor: "blue",
+  },
   {
     id: "client_scripts",
     title: "Client Scripts",
@@ -234,8 +258,26 @@ const STUDIO_MODULES: StudioModuleDef[] = [
     icon: Sparkles,
     accentColor: "pink",
   },
+  {
+    id: "navigation",
+    title: "Application Menus & Modules",
+    tableCode: "sys_app_application",
+    category: "client",
+    description: "Sidebar navigator tree, module links, tables and filter queries",
+    icon: Layers,
+    accentColor: "indigo",
+  },
 
-  // 5. Platform & APIs
+  // 5. Platform & Workplace
+  {
+    id: "workplace",
+    title: "Workplace Hub & Reservations",
+    tableCode: "cmn_reservation",
+    category: "platform",
+    description: "6-tier spatial hierarchy, room & desk capabilities, floorplans & booking governance",
+    icon: Building2,
+    accentColor: "indigo",
+  },
   {
     id: "scripted_apis",
     title: "Scripted REST APIs",
@@ -255,15 +297,6 @@ const STUDIO_MODULES: StudioModuleDef[] = [
     accentColor: "rose",
   },
   {
-    id: "scheduled_jobs",
-    title: "Scheduled Jobs",
-    tableCode: "sysauto_script",
-    category: "platform",
-    description: "Automated recurring cron tasks with run history logs",
-    icon: Clock,
-    accentColor: "amber",
-  },
-  {
     id: "schedules",
     title: "SLA Schedules & Calendars",
     tableCode: "cmn_schedule",
@@ -271,33 +304,6 @@ const STUDIO_MODULES: StudioModuleDef[] = [
     description: "8x5 vs 24x7 business hours calculation and holiday windows",
     icon: Calendar,
     accentColor: "emerald",
-  },
-  {
-    id: "apps",
-    title: "Custom Applications",
-    tableCode: "sys_app",
-    category: "platform",
-    description: "Scoped application boundaries, scopes, versioning & packages",
-    icon: Box,
-    accentColor: "amber",
-  },
-  {
-    id: "navigation",
-    title: "Application Menus & Modules",
-    tableCode: "sys_app_application",
-    category: "client",
-    description: "Sidebar navigator tree, module links, tables and filter queries",
-    icon: Layers,
-    accentColor: "indigo",
-  },
-  {
-    id: "workplace",
-    title: "Workplace Hub & Reservations",
-    tableCode: "cmn_reservation",
-    category: "platform",
-    description: "6-tier spatial hierarchy, room & desk capabilities, floorplans & booking governance",
-    icon: Building2,
-    accentColor: "indigo",
   },
 ];
 
@@ -338,6 +344,31 @@ function StudioContent() {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [layoutMode, setLayoutMode] = useState<"workbench" | "grid">("workbench");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [collapsedDomains, setCollapsedDomains] = useState<Record<string, boolean>>({});
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
+
+  const selectModule = (modId: StudioTab) => {
+    setActiveTab(modId);
+    if (layoutMode === "grid") {
+      setLayoutMode("workbench");
+    }
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", `/studio?tab=${modId}`);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     if (tabParam && validTabs.includes(tabParam)) {
@@ -1633,188 +1664,304 @@ function StudioContent() {
   });
   const activeModuleMeta = STUDIO_MODULES.find((m) => m.id === activeTab) || STUDIO_MODULES[0];
 
+  const getModuleBadgeCount = (modId: StudioTab) => {
+    switch (modId) {
+      case "schema":
+        return tables.length;
+      case "acls":
+        return aclsList.length;
+      case "users":
+        return usersList.length;
+      case "business_rules":
+        return rulesList.length;
+      case "ui_policies":
+        return uiPoliciesList.length;
+      case "flows":
+        return flowsList.length;
+      default:
+        return undefined;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col">
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col font-sans">
       <Navbar />
       <ThemePickerModal />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6 flex-1">
-        {/* Top Studio Header & Instant Search */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div>
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-                <Cat className="w-4 h-4" />
-              </div>
-              <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                <span>ServiceMeow Studio & Admin Center</span>
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
-                  16 Enterprise Modules
-                </span>
-              </h1>
-            </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Enterprise Service Management & Platform Administration Suite. Select an enterprise category or search to instantly jump to any configuration module.
-            </p>
-          </div>
-
-          {/* Quick Search Bar */}
-          <div className="relative min-w-[280px] max-w-md w-full">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 16 modules (e.g. script, acl, schedule)..."
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-full pl-9 pr-8 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all shadow-inner"
-            />
-            {searchQuery && (
+      {/* Top Studio Control Bar */}
+      <div className="border-b border-slate-800 bg-slate-900/95 backdrop-blur-md sticky top-14 z-30 px-3 sm:px-6 py-2.5">
+        <div className="max-w-[1720px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+          {/* Left: Branding, Sidebar Toggle & Active Breadcrumbs */}
+          <div className="flex items-center gap-3 min-w-0">
+            {layoutMode === "workbench" && (
               <button
                 type="button"
-                onClick={() => setSearchQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5 rounded-full hover:bg-slate-800"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                title={isSidebarOpen ? "Collapse Studio Explorer" : "Expand Studio Explorer"}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 transition-colors shrink-0 cursor-pointer"
               >
-                <X className="w-3.5 h-3.5" />
+                {isSidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeft className="w-4 h-4" />}
               </button>
             )}
-          </div>
-        </div>
 
-        {/* 1. Categorized Category Segmented Navigation */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-          {STUDIO_CATEGORIES.map((cat) => {
-            const Icon = cat.icon;
-            const isCatActive = selectedCategory === cat.id && !searchQuery.trim();
-            const count = cat.id === "all" ? 16 : STUDIO_MODULES.filter((m) => m.category === cat.id).length;
-            return (
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
+                <Cat className="w-4 h-4" />
+              </div>
+              <div className="flex items-center gap-1.5 text-xs min-w-0 truncate">
+                <span className="font-bold text-slate-200 tracking-tight hidden sm:inline">Studio</span>
+                <span className="text-slate-600 hidden sm:inline">/</span>
+                <span className="text-slate-400 hidden md:inline truncate">
+                  {STUDIO_CATEGORIES.find((c) => c.id === activeModuleMeta.category)?.label}
+                </span>
+                <span className="text-slate-600 hidden md:inline">/</span>
+                <div className="flex items-center gap-1.5 font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/30 truncate">
+                  <activeModuleMeta.icon className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">{activeModuleMeta.title}</span>
+                </div>
+                <code className="text-[10px] font-mono text-slate-400 bg-slate-800/80 border border-slate-700/60 px-1.5 py-0.5 rounded hidden lg:inline shrink-0">
+                  {activeModuleMeta.tableCode}
+                </code>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Quick Search + View Switcher */}
+          <div className="flex items-center gap-2.5 justify-end">
+            {/* Quick Search */}
+            <div className="relative min-w-[200px] sm:min-w-[260px]">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Jump to module... (⌘K)"
+                className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 rounded-lg pl-8 pr-12 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all shadow-inner"
+              />
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                {searchQuery ? (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="text-slate-400 hover:text-white p-0.5 cursor-pointer"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                ) : (
+                  <kbd className="text-[9px] font-mono text-slate-400 bg-slate-800 border border-slate-700 px-1 py-0.2 rounded hidden sm:inline-block">
+                    ⌘K
+                  </kbd>
+                )}
+              </div>
+            </div>
+
+            {/* View Mode Toggle: Workbench vs Grid Launcher */}
+            <div className="flex items-center bg-slate-950 border border-slate-800 p-0.5 rounded-lg shrink-0">
               <button
-                key={cat.id}
                 type="button"
-                onClick={() => {
-                  setSelectedCategory(cat.id);
-                  setSearchQuery("");
-                }}
-                className={`px-3.5 py-1.5 rounded-full flex items-center gap-2 transition-all font-semibold text-xs whitespace-nowrap cursor-pointer border ${
-                  isCatActive
-                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-xs ring-1 ring-emerald-500/30"
-                    : "bg-slate-950/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border-slate-800"
+                onClick={() => setLayoutMode("workbench")}
+                title="Workbench View (IDE side-by-side with Studio Explorer)"
+                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                  layoutMode === "workbench"
+                    ? "bg-slate-800 text-emerald-400 shadow-xs"
+                    : "text-slate-400 hover:text-slate-200"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{cat.label}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                  isCatActive ? "bg-emerald-500/30 text-emerald-200" : "bg-slate-800 text-slate-400"
-                }`}>
-                  {count}
-                </span>
+                <Columns3 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Workbench</span>
               </button>
-            );
-          })}
-        </div>
-
-        {/* 2. Module Grid Selector */}
-        {filteredModules.length === 0 ? (
-          <div className="p-8 text-center bg-slate-950/40 border border-slate-800/60 rounded-xl space-y-2">
-            <p className="text-slate-400 text-xs">No configuration modules match your search &ldquo;{searchQuery}&rdquo;.</p>
-            <button
-              type="button"
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedCategory("all");
-              }}
-              className="px-3 py-1 bg-slate-800 text-emerald-400 text-xs rounded-lg hover:bg-slate-700"
-            >
-              Clear Search Filter
-            </button>
+              <button
+                type="button"
+                onClick={() => setLayoutMode("grid")}
+                title="Launcher Grid (Visual catalog overview of all 20 modules)"
+                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                  layoutMode === "grid"
+                    ? "bg-slate-800 text-emerald-400 shadow-xs"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Launcher</span>
+              </button>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
-            {filteredModules.map((mod) => {
-              const Icon = mod.icon;
-              const isModActive = activeTab === mod.id;
-              const badgeCount =
-                mod.id === "acls" ? aclsList.length :
-                mod.id === "users" ? usersList.length :
-                mod.id === "business_rules" ? rulesList.length :
-                mod.id === "ui_policies" ? uiPoliciesList.length :
-                mod.id === "flows" ? flowsList.length :
-                mod.id === "schema" ? tables.length : undefined;
+        </div>
+      </div>
 
-              return (
+      {layoutMode === "workbench" ? (
+        <div className="max-w-[1720px] mx-auto w-full px-3 sm:px-6 py-4 flex-1 flex gap-4 items-start">
+          {/* Studio Explorer Left Sidebar */}
+          {isSidebarOpen && (
+            <aside className="w-72 shrink-0 bg-slate-900/90 border border-slate-800/80 rounded-xl overflow-hidden shadow-xl sticky top-28 max-h-[calc(100vh-8.5rem)] flex flex-col">
+              {/* Sidebar Header */}
+              <div className="p-3 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/40">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                    Studio Explorer
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-slate-800 text-emerald-400 font-bold border border-slate-700/60">
+                    {STUDIO_MODULES.length}
+                  </span>
+                </div>
                 <button
-                  key={mod.id}
                   type="button"
-                  onClick={() => {
-                    setActiveTab(mod.id);
-                    if (typeof window !== "undefined") {
-                      window.history.pushState(null, "", `/studio?tab=${mod.id}`);
-                    }
-                  }}
-                  className={`text-left p-3 rounded-xl border transition-all flex flex-col justify-between group cursor-pointer ${
-                    isModActive
-                      ? "bg-gradient-to-br from-slate-850 to-slate-800 border-emerald-500 shadow-md shadow-emerald-950/40 ring-1 ring-emerald-500/40"
-                      : "bg-slate-950/70 hover:bg-slate-800/60 border-slate-800/80 hover:border-slate-700"
-                  }`}
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 transition-colors cursor-pointer"
+                  title="Collapse Studio Explorer"
                 >
-                  <div className="flex items-start justify-between gap-1.5 w-full">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className={`w-7 h-7 shrink-0 rounded-lg flex items-center justify-center ${
-                        isModActive
-                          ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/40"
-                          : "bg-slate-800/80 text-slate-400 group-hover:text-slate-200"
-                      }`}>
-                        <Icon className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="truncate">
-                        <div className="text-xs font-bold text-slate-100 flex items-center gap-1.5 truncate">
-                          <span className="truncate">{mod.title}</span>
-                          {isModActive && (
-                            <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-emerald-400 animate-pulse" />
-                          )}
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Categories & Module Tree */}
+              <div className="flex-1 overflow-y-auto p-2 space-y-2.5 custom-scrollbar">
+                {STUDIO_CATEGORIES.filter((c) => c.id !== "all").map((cat) => {
+                  const catModules = STUDIO_MODULES.filter((m) => m.category === cat.id);
+                  const matchingModules = catModules.filter((m) => {
+                    if (!searchQuery.trim()) return true;
+                    const q = searchQuery.toLowerCase();
+                    return (
+                      m.title.toLowerCase().includes(q) ||
+                      m.tableCode.toLowerCase().includes(q) ||
+                      m.description.toLowerCase().includes(q)
+                    );
+                  });
+
+                  if (searchQuery.trim() && matchingModules.length === 0) return null;
+
+                  const isCollapsed = !searchQuery.trim() && !!collapsedDomains[cat.id];
+                  const CatIcon = cat.icon;
+
+                  return (
+                    <div key={cat.id} className="space-y-1">
+                      {/* Domain Header / Accordion Toggle */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setCollapsedDomains((prev) => ({
+                            ...prev,
+                            [cat.id]: !prev[cat.id],
+                          }))
+                        }
+                        className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors group cursor-pointer text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <CatIcon className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-400 transition-colors" />
+                          <span className="text-xs font-semibold tracking-wide text-slate-300">
+                            {cat.label}
+                          </span>
                         </div>
-                        <div className="text-[10px] font-mono text-slate-400 truncate">
-                          {mod.tableCode}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] font-mono text-slate-400 px-1.5 py-0.2 rounded-full bg-slate-800/80">
+                            {matchingModules.length}
+                          </span>
+                          <ChevronDown
+                            className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
+                              isCollapsed ? "-rotate-90" : ""
+                            }`}
+                          />
                         </div>
-                      </div>
+                      </button>
+
+                      {/* Modules in this category */}
+                      {!isCollapsed && (
+                        <div className="space-y-0.5 pl-1.5">
+                          {matchingModules.map((mod) => {
+                            const Icon = mod.icon;
+                            const isActive = activeTab === mod.id;
+                            const badgeCount = getModuleBadgeCount(mod.id);
+
+                            return (
+                              <button
+                                key={mod.id}
+                                type="button"
+                                onClick={() => selectModule(mod.id)}
+                                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-all group cursor-pointer relative ${
+                                  isActive
+                                    ? "bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-500/40 shadow-xs"
+                                    : "text-slate-300 hover:bg-slate-800/60 hover:text-white border border-transparent"
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  {isActive && (
+                                    <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-emerald-400 rounded-r" />
+                                  )}
+                                  <Icon
+                                    className={`w-3.5 h-3.5 shrink-0 transition-colors ${
+                                      isActive ? "text-emerald-400" : "text-slate-400 group-hover:text-slate-200"
+                                    }`}
+                                  />
+                                  <div className="truncate">
+                                    <div className="text-xs truncate">{mod.title}</div>
+                                    <div className="text-[10px] font-mono text-slate-400 truncate">
+                                      {mod.tableCode}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {typeof badgeCount === "number" && badgeCount > 0 && (
+                                  <span
+                                    className={`shrink-0 text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full border ${
+                                      isActive
+                                        ? "bg-emerald-500/30 text-emerald-200 border-emerald-500/40"
+                                        : "bg-slate-800 text-slate-400 border-slate-700/60"
+                                    }`}
+                                  >
+                                    {badgeCount}
+                                  </span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-                    {typeof badgeCount === "number" && badgeCount > 0 && (
-                      <span className="shrink-0 text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                        {badgeCount}
+                  );
+                })}
+              </div>
+            </aside>
+          )}
+
+          {/* Main Workbench Canvas Area */}
+          <main className="flex-1 min-w-0 space-y-4">
+            {/* Active module context mini-bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-900/80 border border-slate-800/80 rounded-xl px-4 py-3 shadow-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
+                  <activeModuleMeta.icon className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className="text-sm font-bold text-white tracking-tight">
+                      {activeModuleMeta.title}
+                    </h2>
+                    <code className="text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 px-1.5 py-0.5 rounded">
+                      {activeModuleMeta.tableCode}
+                    </code>
+                    {typeof getModuleBadgeCount(activeTab) === "number" && (
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                        {getModuleBadgeCount(activeTab)} records
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-slate-400 line-clamp-1 mt-2 group-hover:text-slate-300 transition-colors">
-                    {mod.description}
+                  <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">
+                    {activeModuleMeta.description}
                   </p>
-                </button>
-              );
-            })}
-          </div>
-        )}
+                </div>
+              </div>
 
-        {/* 3. Active Module Breadcrumb & Context Header */}
-        {activeModuleMeta && (
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-950/90 border border-slate-800 rounded-xl px-4 py-3 shadow-xs">
-            <div className="flex items-center gap-2 text-xs flex-wrap">
-              <span className="text-slate-400 font-medium">Studio</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="capitalize text-slate-400">
-                {STUDIO_CATEGORIES.find((c) => c.id === activeModuleMeta.category)?.label}
-              </span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              <span className="font-bold text-emerald-400 flex items-center gap-1.5">
-                <activeModuleMeta.icon className="w-3.5 h-3.5" />
-                <span>{activeModuleMeta.title}</span>
-              </span>
-              <code className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded font-mono border border-slate-700">
-                {activeModuleMeta.tableCode}
-              </code>
+              {!isSidebarOpen && (
+                <button
+                  type="button"
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-slate-700 shrink-0 cursor-pointer"
+                >
+                  <PanelLeft className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Show Studio Explorer</span>
+                </button>
+              )}
             </div>
-            <div className="text-[11px] text-slate-400">
-              {activeModuleMeta.description}
-            </div>
-          </div>
-        )}
 
         {/* ==================================================== */}
         {/* TAB 1: SCHEMA & DATA DICTIONARY                      */}
@@ -4585,7 +4732,145 @@ function StudioContent() {
         {/* TAB 20: WORKPLACE HUB & RESERVATIONS                  */}
         {/* ==================================================== */}
         {activeTab === "workplace" && <WorkplaceConfigTab />}
-      </div>
+          </main>
+        </div>
+      ) : (
+        /* LAUNCHER GRID MODE */
+        <div className="max-w-[1720px] mx-auto w-full px-3 sm:px-6 py-6 flex-1 space-y-6">
+          {/* Header & Category Filter Pills */}
+          <div className="space-y-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <span>Enterprise Configuration Launcher</span>
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    {STUDIO_MODULES.length} Modules
+                  </span>
+                </h2>
+                <p className="text-xs text-slate-400 mt-1">
+                  Browse all enterprise configuration, automation, security and workplace management modules. Click any module to launch its workbench.
+                </p>
+              </div>
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+              {STUDIO_CATEGORIES.map((cat) => {
+                const Icon = cat.icon;
+                const isCatActive = selectedCategory === cat.id;
+                const count =
+                  cat.id === "all"
+                    ? STUDIO_MODULES.length
+                    : STUDIO_MODULES.filter((m) => m.category === cat.id).length;
+
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-3.5 py-1.5 rounded-full flex items-center gap-2 transition-all font-semibold text-xs whitespace-nowrap cursor-pointer border ${
+                      isCatActive
+                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-xs ring-1 ring-emerald-500/30"
+                        : "bg-slate-900/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-slate-800"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{cat.label}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                        isCatActive
+                          ? "bg-emerald-500/30 text-emerald-200"
+                          : "bg-slate-800 text-slate-400"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Categorized Module Sections */}
+          <div className="space-y-8">
+            {STUDIO_CATEGORIES.filter(
+              (c) => c.id !== "all" && (selectedCategory === "all" || selectedCategory === c.id)
+            ).map((cat) => {
+              const catModules = STUDIO_MODULES.filter((m) => m.category === cat.id);
+              const matchingModules = catModules.filter((m) => {
+                if (!searchQuery.trim()) return true;
+                const q = searchQuery.toLowerCase();
+                return (
+                  m.title.toLowerCase().includes(q) ||
+                  m.tableCode.toLowerCase().includes(q) ||
+                  m.description.toLowerCase().includes(q)
+                );
+              });
+
+              if (matchingModules.length === 0) return null;
+              const CatIcon = cat.icon;
+
+              return (
+                <div key={cat.id} className="space-y-3">
+                  <div className="flex items-center gap-2 border-b border-slate-800/80 pb-2">
+                    <CatIcon className="w-4 h-4 text-emerald-400" />
+                    <h3 className="text-sm font-bold text-white tracking-wide">
+                      {cat.label}
+                    </h3>
+                    <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
+                      {matchingModules.length} {matchingModules.length === 1 ? "module" : "modules"}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+                    {matchingModules.map((mod) => {
+                      const Icon = mod.icon;
+                      const badgeCount = getModuleBadgeCount(mod.id);
+
+                      return (
+                        <div
+                          key={mod.id}
+                          onClick={() => selectModule(mod.id)}
+                          className="bg-slate-900/90 hover:bg-slate-850 border border-slate-800/80 hover:border-emerald-500/50 rounded-xl p-4 transition-all duration-200 hover:shadow-lg hover:shadow-emerald-950/20 group cursor-pointer flex flex-col justify-between"
+                        >
+                          <div>
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="w-9 h-9 rounded-xl bg-slate-800 text-slate-300 group-hover:bg-emerald-500/20 group-hover:text-emerald-400 border border-slate-700/60 group-hover:border-emerald-500/40 flex items-center justify-center transition-colors">
+                                <Icon className="w-4 h-4" />
+                              </div>
+                              {typeof badgeCount === "number" && badgeCount > 0 && (
+                                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                                  {badgeCount} records
+                                </span>
+                              )}
+                            </div>
+                            <div className="mt-3">
+                              <h4 className="text-sm font-bold text-slate-100 group-hover:text-emerald-300 transition-colors flex items-center gap-1.5">
+                                <span>{mod.title}</span>
+                              </h4>
+                              <code className="text-[10px] font-mono text-slate-400 block mt-0.5">
+                                {mod.tableCode}
+                              </code>
+                              <p className="text-xs text-slate-400 mt-2 line-clamp-2 leading-relaxed">
+                                {mod.description}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400 group-hover:text-emerald-400 font-medium">
+                            <span>Open Workbench</span>
+                            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
