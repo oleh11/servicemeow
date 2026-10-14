@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/lib/theme-context";
@@ -98,7 +98,54 @@ export function Sidebar() {
   const [customTables, setCustomTables] = useState<any[]>([]);
   const [navApplications, setNavApplications] = useState<any[]>([]);
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [pinnedSection, setPinnedSection] = useState<string | null>(null);
   const [flyoutTop, setFlyoutTop] = useState<number>(0);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const openFlyout = (sectionTitle: string, top: number) => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+    setHoveredSection(sectionTitle);
+    setFlyoutTop(top);
+  };
+
+  const scheduleClose = () => {
+    if (pinnedSection) return; // Keep pinned open if user clicked to pin
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+    closeTimeoutRef.current = setTimeout(() => {
+      setHoveredSection(null);
+    }, 350); // 350ms grace period so users can comfortably move to items without closing
+  };
+
+  const cancelClose = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
+  // Close flyout when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest("[data-sidebar-flyout]") && !target.closest("[data-sidebar-rail-item]")) {
+        setHoveredSection(null);
+        setPinnedSection(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Close flyout on route navigation
+  useEffect(() => {
+    setHoveredSection(null);
+    setPinnedSection(null);
+  }, [pathname]);
 
   useEffect(() => {
     fetch("/api/now/navigation/applications")
@@ -337,49 +384,63 @@ export function Sidebar() {
                 if (cleanItem === "/workspace") return pathname === "/workspace";
                 return pathname === item.href || (cleanItem !== "/" && pathname.startsWith(cleanItem));
               });
-              const isHovered = hoveredSection === section.title;
+              const isMenuVisible = hoveredSection === section.title || pinnedSection === section.title;
 
               return (
                 <div
                   key={section.title}
+                  data-sidebar-rail-item={section.title}
                   className="relative group w-full flex justify-center"
                   onMouseEnter={(e) => {
-                    setHoveredSection(section.title);
                     const rect = e.currentTarget.getBoundingClientRect();
-                    setFlyoutTop(rect.top);
+                    openFlyout(section.title, rect.top);
                   }}
-                  onMouseLeave={() => setHoveredSection(null)}
+                  onMouseLeave={scheduleClose}
                 >
-                  <Link
-                    href={primaryHref}
-                    className={`w-12 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer ${
-                      hasActiveChild
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (pinnedSection === section.title) {
+                        setPinnedSection(null);
+                        setHoveredSection(null);
+                      } else {
+                        setPinnedSection(section.title);
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        openFlyout(section.title, rect.top);
+                      }
+                    }}
+                    className={`w-12 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer relative ${
+                      hasActiveChild || isMenuVisible
                         ? "shadow-sm ring-1 ring-white/10"
                         : "opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10"
                     }`}
                     style={{
-                      backgroundColor: hasActiveChild ? currentThemeDef.colors.sidebarActiveBg : undefined,
-                      color: hasActiveChild ? currentThemeDef.colors.sidebarActiveText : currentThemeDef.colors.sidebarText,
+                      backgroundColor: hasActiveChild || isMenuVisible ? currentThemeDef.colors.sidebarActiveBg : undefined,
+                      color: hasActiveChild || isMenuVisible ? currentThemeDef.colors.sidebarActiveText : currentThemeDef.colors.sidebarText,
                     }}
-                    title={`${section.title} - Click to navigate`}
-                    onClick={() => setHoveredSection(null)}
+                    title={`${section.title} - Click to open/pin menu`}
                   >
                     <Icon className="w-4 h-4 shrink-0" />
-                  </Link>
+                  </button>
 
                   {/* Floating Popout Flyout Menu (Unclipped, Fixed Viewport Position) */}
-                  {isHovered && (
+                  {isMenuVisible && (
                     <div
-                      className="fixed left-20 w-64 rounded-[16px] shadow-2xl border p-2 z-50 animate-in fade-in slide-in-from-left-2 duration-100"
+                      data-sidebar-flyout={section.title}
+                      className="fixed left-[76px] w-64 rounded-[16px] shadow-2xl border p-2 z-50 animate-in fade-in slide-in-from-left-2 duration-150"
                       style={{
-                        top: Math.max(68, Math.min(flyoutTop, typeof window !== "undefined" ? window.innerHeight - 340 : 100)),
+                        top: Math.max(68, Math.min(flyoutTop, typeof window !== "undefined" ? window.innerHeight - 360 : 100)),
                         backgroundColor: "var(--md-sys-color-surface-container-low, #f7f2fa)",
                         borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
                         color: "var(--md-sys-color-on-surface, #1d1b20)",
                       }}
-                      onMouseEnter={() => setHoveredSection(section.title)}
-                      onMouseLeave={() => setHoveredSection(null)}
+                      onMouseEnter={cancelClose}
+                      onMouseLeave={scheduleClose}
                     >
+                      {/* Invisible Hit Bridge to completely eliminate any hover dead-zone */}
+                      <div className="absolute -left-6 top-0 bottom-0 w-6 pointer-events-auto" />
+
                       <div
                         className="px-3 py-1.5 text-[11px] font-bold border-b mb-1.5 flex items-center justify-between"
                         style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
@@ -388,12 +449,24 @@ export function Sidebar() {
                           href={primaryHref}
                           className="flex items-center gap-1.5 hover:underline"
                           style={{ color: currentThemeDef.colors.primary }}
-                          onClick={() => setHoveredSection(null)}
+                          onClick={() => {
+                            setHoveredSection(null);
+                            setPinnedSection(null);
+                          }}
                         >
                           <Icon className="w-3.5 h-3.5" />
                           <span>{section.title}</span>
                         </Link>
-                        <span className="text-[9px] font-mono opacity-50 uppercase">Open &rarr;</span>
+                        <Link
+                          href={primaryHref}
+                          className="text-[9px] font-mono opacity-60 hover:opacity-100 hover:underline uppercase"
+                          onClick={() => {
+                            setHoveredSection(null);
+                            setPinnedSection(null);
+                          }}
+                        >
+                          Open &rarr;
+                        </Link>
                       </div>
 
                       <div className="space-y-0.5 max-h-80 overflow-y-auto">
@@ -405,7 +478,10 @@ export function Sidebar() {
                             <Link
                               key={item.href}
                               href={item.href}
-                              onClick={() => setHoveredSection(null)}
+                              onClick={() => {
+                                setHoveredSection(null);
+                                setPinnedSection(null);
+                              }}
                               className={`flex items-center justify-between px-3 py-1.5 rounded-full text-xs transition-colors ${
                                 isActive
                                   ? "font-semibold shadow-xs"
