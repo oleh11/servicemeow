@@ -15,6 +15,8 @@ import {
   Layers,
   ChevronDown,
   Sparkles,
+  Kanban,
+  Building2,
 } from "lucide-react";
 
 export interface WorkspaceTab {
@@ -76,6 +78,9 @@ export function WorkspaceTabBar() {
       if (pathname === "/workspace") {
         title = "Operations Hub";
         icon = "home";
+      } else if (pathname.includes("/workspace/agile")) {
+        title = "Agile Sprint Board";
+        icon = "agile";
       } else if (pathname.includes("/workspace/incident/")) {
         const id = pathname.split("/").pop();
         title = id === "new" ? "New Incident" : `INC (${id?.slice(0, 8)}...)`;
@@ -90,6 +95,9 @@ export function WorkspaceTabBar() {
       } else if (pathname.includes("/workspace/cmdb")) {
         title = "CMDB Hierarchy";
         icon = "cmdb";
+      } else if (pathname.includes("/workspace/spaces") || pathname.includes("/workspace/reservations")) {
+        title = "Workplace & Spaces";
+        icon = "spaces";
       } else {
         const parts = pathname.split("/").filter(Boolean);
         const lastPart = parts[parts.length - 1];
@@ -129,6 +137,10 @@ export function WorkspaceTabBar() {
     switch (iconName) {
       case "home":
         return <Home className="w-3.5 h-3.5 text-[var(--md-sys-color-primary,#0b57d0)]" />;
+      case "agile":
+        return <Kanban className="w-3.5 h-3.5 text-sky-500" />;
+      case "spaces":
+        return <Building2 className="w-3.5 h-3.5 text-teal-500" />;
       case "incident":
         return <AlertCircle className="w-3.5 h-3.5 text-amber-600" />;
       case "change":
@@ -143,6 +155,7 @@ export function WorkspaceTabBar() {
   };
 
   const quickNavLinks = [
+    { title: "Agile Sprint Board", href: "/workspace/agile", icon: "agile" },
     { title: "Incident List", href: "/workspace/incident", icon: "incident" },
     { title: "New Incident", href: "/workspace/incident/new", icon: "incident" },
     { title: "Change Requests", href: "/workspace/change_request", icon: "change" },

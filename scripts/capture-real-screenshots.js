@@ -1,6 +1,8 @@
 const puppeteer = require('puppeteer-core');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
+const { PrismaClient } = require('@prisma/client');
 
 const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const BASE_URL = 'http://localhost:3000';
@@ -10,6 +12,18 @@ async function main() {
   if (!fs.existsSync(ASSETS_DIR)) {
     fs.mkdirSync(ASSETS_DIR, { recursive: true });
   }
+
+  // Ensure admin user has deterministic password for screenshot capture
+  if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = `file:${path.resolve(__dirname, '../prisma/dev.db')}`;
+  }
+  const prisma = new PrismaClient();
+  const adminHash = await bcrypt.hash('admin123', 10);
+  await prisma.user.updateMany({
+    where: { role: 'admin' },
+    data: { passwordHash: adminHash }
+  });
+  await prisma.$disconnect();
 
   console.log('[capture] Launching Edge headless browser...');
   const browser = await puppeteer.launch({
