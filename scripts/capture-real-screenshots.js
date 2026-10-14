@@ -120,6 +120,19 @@ async function main() {
     // 8. Agent Operations Center Showcase
     await capture('/workspace', 'agent-operations-center.png', { waitMs: 2500 });
 
+    // 9. Employee Data Explorer (Direct Table Directory & CSV Extract)
+    await capture('/portal/data-explorer', 'data-explorer-showcase.png', { waitMs: 2500 });
+
+    // Copy to brain artifacts directory for visual inspection
+    const BRAIN_DIR = 'C:\\Users\\oleha\\.gemini\\antigravity\\brain\\1be697e7-5d02-48d0-ba40-4d6a140f7a0a';
+    if (fs.existsSync(BRAIN_DIR)) {
+      ['portal-showcase.png', 'workplace-showcase.png', 'data-explorer-showcase.png', 'table-editor-showcase.png'].forEach(file => {
+        try {
+          fs.copyFileSync(path.join(ASSETS_DIR, file), path.join(BRAIN_DIR, file));
+        } catch {}
+      });
+    }
+
     console.log('[capture] ALL REAL SCREENSHOTS CAPTURED SUCCESSFULLY!');
   } finally {
     await browser.close();

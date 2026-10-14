@@ -69,6 +69,7 @@ export function Navbar() {
         { label: "Book Space", href: "/portal/reservations", icon: Building2 },
         { label: "Track Requests", href: "/portal/my-tickets", icon: Ticket },
         { label: "Knowledge", href: "/portal/knowledge", icon: BookOpen },
+        { label: "Data Explorer", href: "/portal/data-explorer", icon: Database },
         { label: "Status", href: "/portal/status", icon: ShieldCheck },
       ]
     : isStudioSurface

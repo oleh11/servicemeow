@@ -235,6 +235,20 @@ A high-productivity, spreadsheet-grade administrative data grid providing platfo
 
 ---
 
+### 11. Employee Table & Spatial Location Explorer with End-of-Day Data Extraction (`/portal/data-explorer`)
+<p align="center">
+  <img src="docs/assets/data-explorer-showcase.png" alt="Employee Table & Spatial Data Explorer with End-of-Day CSV Extract" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+A dedicated, theme-harmonized open data explorer giving employees and staff instant visibility and extraction capabilities across 25+ system and spatial tables:
+- **Dedicated Explorers for All Spatial Tiers**: Direct exploration across the full spatial hierarchy—`cmn_region`, `cmn_state`, `cmn_campus`, `cmn_building`, `cmn_floor`, `cmn_space`, `cmn_location`, and `cmn_reservation`.
+- **Collapsible Table Directory Sidebar**: Browse tables organized intuitively into Workplace & Spatial, Agile Project Management, ITIL Operations, CMDB, Knowledge, and User Directory categories.
+- **Direct Bookmarkable URLs**: Synchronized URL parameters (`/portal/data-explorer?table=cmn_space`) enabling direct links to any specific table explorer.
+- **End-of-Day CSV Extraction**: One-click instant **Export CSV** download with automated timestamped filenames (`cmn_location_export_2026-10-14.csv`) for daily auditing, compliance reporting, and external data warehousing.
+- **Harmonious Single-Theme Aesthetic**: 100% theme-harmonized UI eliminating jarring half-dark/half-light contrast patches, rendering crisp white cards and borders in light mode with seamless dark mode transitions.
+
+---
+
 ## 🚀 Quick Start with Docker Compose
 
 Run ServiceMeow with PostgreSQL and the background scheduler daemon using Docker Compose:
