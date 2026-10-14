@@ -98,7 +98,7 @@ export default async function EmployeePortal() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 -mt-10">
           {/* Action 1: Book Room or Desk */}
           <Link
-            href="/workspace/reservations"
+            href="/portal/reservations"
             className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-md hover:shadow-lg hover:border-indigo-500/50 transition-all group flex flex-col justify-between"
           >
             <div className="space-y-3">
@@ -120,7 +120,7 @@ export default async function EmployeePortal() {
 
           {/* Action 2: Campus Maps & Spaces */}
           <Link
-            href="/workspace/spaces"
+            href="/portal/spaces"
             className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-md hover:shadow-lg hover:border-cyan-500/50 transition-all group flex flex-col justify-between"
           >
             <div className="space-y-3">
@@ -254,7 +254,7 @@ export default async function EmployeePortal() {
                 <span className="text-indigo-300">Rooms & Desks Ready</span>
               </div>
               <Link
-                href="/workspace/reservations"
+                href="/portal/reservations"
                 className="px-4 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-bold shadow-md transition-colors flex items-center gap-1.5"
               >
                 <Calendar className="w-3.5 h-3.5" />
@@ -279,7 +279,7 @@ export default async function EmployeePortal() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Link
-                  href="/workspace/reservations?capabilities=standing_desk"
+                  href="/portal/reservations?capabilities=standing_desk"
                   className="p-3.5 rounded-lg bg-slate-950/70 border border-indigo-950 hover:border-indigo-500/50 transition-all group block"
                 >
                   <div className="flex items-center gap-2 text-emerald-400 mb-1">
@@ -294,7 +294,7 @@ export default async function EmployeePortal() {
                 </Link>
 
                 <Link
-                  href="/workspace/reservations?capabilities=teams"
+                  href="/portal/reservations?capabilities=teams"
                   className="p-3.5 rounded-lg bg-slate-950/70 border border-indigo-950 hover:border-indigo-500/50 transition-all group block"
                 >
                   <div className="flex items-center gap-2 text-blue-400 mb-1">
@@ -309,7 +309,7 @@ export default async function EmployeePortal() {
                 </Link>
 
                 <Link
-                  href="/workspace/reservations?capabilities=zoom"
+                  href="/portal/reservations?capabilities=zoom"
                   className="p-3.5 rounded-lg bg-slate-950/70 border border-indigo-950 hover:border-indigo-500/50 transition-all group block"
                 >
                   <div className="flex items-center gap-2 text-sky-400 mb-1">
@@ -324,7 +324,7 @@ export default async function EmployeePortal() {
                 </Link>
 
                 <Link
-                  href="/workspace/reservations"
+                  href="/portal/reservations?view=floorplan"
                   className="p-3.5 rounded-lg bg-slate-950/70 border border-indigo-950 hover:border-indigo-500/50 transition-all group block"
                 >
                   <div className="flex items-center gap-2 text-amber-400 mb-1">

@@ -145,7 +145,11 @@ export async function middleware(req: NextRequest) {
   }
 
   // 6. Route Guard: Protected portal subpages
-  if (pathname.startsWith("/portal/my-tickets")) {
+  if (
+    pathname.startsWith("/portal/my-tickets") ||
+    pathname.startsWith("/portal/reservations") ||
+    pathname.startsWith("/portal/spaces")
+  ) {
     if (!isAuthenticated) {
       const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("next", pathname);
@@ -179,6 +183,8 @@ export const config = {
     "/workspace/:path*",
     "/studio/:path*",
     "/portal/my-tickets/:path*",
+    "/portal/reservations/:path*",
+    "/portal/spaces/:path*",
     "/login",
   ],
 };

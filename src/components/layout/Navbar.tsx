@@ -23,6 +23,10 @@ import {
   Camera,
   Building2,
   Calendar,
+  ShoppingBag,
+  Ticket,
+  BookOpen,
+  ShieldCheck,
 } from "lucide-react";
 import { ProfilePictureModal } from "@/components/common/ProfilePictureModal";
 import { UpdateSetPicker } from "./UpdateSetPicker";
@@ -48,15 +52,27 @@ export function Navbar() {
   const [impersonateSearch, setImpersonateSearch] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const isEmployee = currentUser.role === "employee";
   const isAdmin = currentUser.role === "admin";
 
-  const navLinks = [
-    { label: "Self-Service Portal", href: "/portal", icon: Compass },
-    { label: "Agent Workspace", href: "/workspace", icon: LayoutDashboard },
-    { label: "Workplace & Reservations", href: "/workspace/reservations", icon: Building2 },
-    { label: "CMDB Topology", href: "/workspace/cmdb", icon: Server },
-    ...(isAdmin ? [{ label: "Studio & Admin Center", href: "/studio", icon: FileCode }] : []),
-  ];
+  const navLinks = isEmployee
+    ? [
+        { label: "Employee Portal", href: "/portal", icon: Compass },
+        { label: "Service Catalog", href: "/portal/catalog", icon: ShoppingBag },
+        { label: "Book Room or Desk", href: "/portal/reservations", icon: Building2 },
+        { label: "Track Requests", href: "/portal/my-tickets", icon: Ticket },
+        { label: "Knowledge Base", href: "/portal/knowledge", icon: BookOpen },
+        { label: "System Status", href: "/portal/status", icon: ShieldCheck },
+      ]
+    : [
+        { label: "Agent Workspace", href: "/workspace", icon: LayoutDashboard },
+        { label: "Workplace & Reservations", href: "/workspace/reservations", icon: Building2 },
+        { label: "CMDB Topology", href: "/workspace/cmdb", icon: Server },
+        { label: "Self-Service Portal", href: "/portal", icon: Compass },
+        ...(isAdmin && !isImpersonating
+          ? [{ label: "Studio & Admin Center", href: "/studio", icon: FileCode }]
+          : []),
+      ];
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -124,9 +140,9 @@ export function Navbar() {
           <div className="flex items-center space-x-4 lg:space-x-6 min-w-0">
             {/* Logo */}
             <Link
-              href="/workspace"
+              href={isEmployee ? "/portal" : "/workspace"}
               className="flex items-center space-x-3 group shrink-0"
-              title="ServiceMeow Enterprise Management"
+              title={isEmployee ? "ServiceMeow Employee Service Center" : "ServiceMeow Enterprise Management"}
             >
               <div
                 className="w-9 h-9 rounded-full flex items-center justify-center font-bold shadow-xs transition-all hover:scale-105"
@@ -151,7 +167,7 @@ export function Navbar() {
                     color: currentThemeDef.colors.sidebarActiveText,
                   }}
                 >
-                  ITSM
+                  {isEmployee ? "PORTAL" : "ITSM"}
                 </span>
               </div>
             </Link>
@@ -162,13 +178,18 @@ export function Navbar() {
                 const Icon = item.icon;
                 const isActive =
                   item.href === "/portal"
-                    ? pathname.startsWith("/portal")
+                    ? pathname === "/portal"
                     : item.href === "/workspace/reservations"
                     ? pathname.startsWith("/workspace/reservations")
+                    : item.href === "/portal/reservations"
+                    ? pathname.startsWith("/portal/reservations")
                     : item.href === "/workspace/cmdb"
                     ? pathname === "/workspace/cmdb"
                     : item.href === "/workspace"
-                    ? pathname.startsWith("/workspace") && pathname !== "/workspace/cmdb" && !pathname.startsWith("/workspace/reservations")
+                    ? pathname.startsWith("/workspace") &&
+                      pathname !== "/workspace/cmdb" &&
+                      !pathname.startsWith("/workspace/reservations") &&
+                      !pathname.startsWith("/workspace/spaces")
                     : pathname.startsWith(item.href);
 
                 return (
@@ -199,7 +220,11 @@ export function Navbar() {
             <div className="relative hidden lg:block w-72">
               <input
                 type="text"
-                placeholder="Search tickets, CIs, articles (e.g. INC*)..."
+                placeholder={
+                  isEmployee
+                    ? "Search services, book desks, articles..."
+                    : "Search tickets, CIs, articles (e.g. INC*)..."
+                }
                 className="w-full rounded-full py-2 pl-9 pr-12 text-xs transition-all border outline-none focus:ring-2"
                 style={{
                   backgroundColor: "var(--md-sys-color-surface-container-high, #ece6f0)",
@@ -427,6 +452,9 @@ export function Navbar() {
                           onClick={() => {
                             setCurrentUser(p);
                             setAvatarDropdownOpen(false);
+                            if (p.role === "employee" && (pathname.startsWith("/workspace") || pathname.startsWith("/studio"))) {
+                              router.push("/portal");
+                            }
                           }}
                           className={`w-full px-2.5 py-1.5 text-left rounded-lg text-xs flex items-center justify-between transition-colors ${
                             currentUser.email === p.email
@@ -566,6 +594,9 @@ export function Navbar() {
                     onClick={() => {
                       impersonateUser(u);
                       setImpersonateModalOpen(false);
+                      if (u.role === "employee" && (pathname.startsWith("/workspace") || pathname.startsWith("/studio"))) {
+                        router.push("/portal");
+                      }
                     }}
                     className={`w-full p-2.5 text-left rounded-[16px] hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-between transition-colors ${
                       currentUser.email === u.email

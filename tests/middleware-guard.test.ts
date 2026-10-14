@@ -96,4 +96,40 @@ describe("middleware API guard", () => {
     expect(res.headers.get("x-middleware-request-x-auth-role")).toBeNull();
     expect(overridden.includes("x-auth-role")).toBe(false);
   });
+
+  describe("workspace and portal route persona segregation", () => {
+    it("redirects regular employees from /workspace to /portal", async () => {
+      currentSession = sessionFor("employee");
+      const res = await call("GET", "/workspace");
+      expect(res.status).toBe(307);
+      expect(res.headers.get("location")).toBe("http://localhost:3000/portal");
+    });
+
+    it("redirects regular employees from /workspace/cmdb to /portal", async () => {
+      currentSession = sessionFor("employee");
+      const res = await call("GET", "/workspace/cmdb");
+      expect(res.status).toBe(307);
+      expect(res.headers.get("location")).toBe("http://localhost:3000/portal");
+    });
+
+    it("allows fulfillers (itil) to access /workspace", async () => {
+      currentSession = sessionFor("itil");
+      const res = await call("GET", "/workspace");
+      expect(res.status).toBe(200);
+    });
+
+    it("requires authentication for /portal/reservations", async () => {
+      currentSession = null;
+      const res = await call("GET", "/portal/reservations");
+      expect(res.status).toBe(307);
+      expect(res.headers.get("location")).toContain("/login");
+    });
+
+    it("allows authenticated employees to access /portal/reservations", async () => {
+      currentSession = sessionFor("employee");
+      const res = await call("GET", "/portal/reservations");
+      expect(res.status).toBe(200);
+    });
+  });
 });
+
