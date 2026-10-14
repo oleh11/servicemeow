@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 660" width="100%" height="100%">
+  <defs>
+    <linearGradient id="sBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070c18" />
+      <stop offset="100%" stop-color="#02040a" />
+    </linearGradient>
+    <filter id="sShadow">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1100" height="660" rx="14" fill="url(#sBg)" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- Window Header -->
+  <g transform="translate(0, 0)">
+    <path d="M 0 14 C 0 6 6 0 14 0 L 1086 0 C 1094 0 1100 6 1100 14 L 1100 44 L 0 44 Z" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+    <circle cx="24" cy="22" r="5" fill="#ef4444"/>
+    <circle cx="40" cy="22" r="5" fill="#f59e0b"/>
+    <circle cx="56" cy="22" r="5" fill="#10b981"/>
+    <text x="80" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#94a3b8">ServiceMeow Studio &amp; Low-Code Configuration Center</text>
+    <!-- Update Set Pill -->
+    <rect x="880" y="10" width="200" height="24" rx="12" fill="#1e293b" stroke="#818cf8" stroke-width="1"/>
+    <circle cx="894" cy="22" r="5" fill="#818cf8"/>
+    <text x="906" y="26" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#c7d2fe">Update Set: Global Default (In Progress)</text>
+  </g>
+
+  <!-- Studio Tab Strip -->
+  <g transform="translate(0, 44)">
+    <rect width="1100" height="38" fill="#0b1120" stroke="#1e293b" stroke-width="1"/>
+    <!-- Active Tab: Script Includes -->
+    <rect x="16" y="6" width="160" height="32" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    <text x="32" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#38bdf8">⚡ Script Includes</text>
+
+    <!-- Tab 2: Schema Tables -->
+    <text x="196" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">📁 Tables (sys_db_object)</text>
+
+    <!-- Tab 3: Business Rules -->
+    <text x="376" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">⚙️ Business Rules</text>
+
+    <!-- Tab 4: Client Scripts -->
+    <text x="510" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">📜 Client Scripts</text>
+
+    <!-- Tab 5: Access Controls -->
+    <text x="636" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">🛡️ ACL Rules</text>
+
+    <!-- Tab 6: Flow Designer -->
+    <text x="750" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">🔀 Flow Designer</text>
+
+    <!-- Tab 7: Update Sets -->
+    <text x="876" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="500" fill="#94a3b8">📦 Update Sets</text>
+  </g>
+
+  <!-- Left Sidebar: Script Include Hierarchy -->
+  <g transform="translate(0, 82)">
+    <rect width="250" height="578" fill="#090e1a" stroke="#1e293b" stroke-width="1"/>
+    <text x="16" y="24" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#64748b" letter-spacing="1">SCRIPT INCLUDES (SYS_SCRIPT_INCLUDE)</text>
+
+    <!-- Selected item -->
+    <rect x="8" y="38" width="234" height="34" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="24" y="60" font-family="monospace" font-size="12" font-weight="700" fill="#38bdf8">IncidentAutomationUtil</text>
+
+    <text x="24" y="100" font-family="monospace" font-size="12" fill="#94a3b8">PaymentGatewayHelper</text>
+    <text x="24" y="132" font-family="monospace" font-size="12" fill="#94a3b8">SlaComplianceCalculators</text>
+    <text x="24" y="164" font-family="monospace" font-size="12" fill="#94a3b8">CmdbTopologyDiscovery</text>
+    <text x="24" y="196" font-family="monospace" font-size="12" fill="#94a3b8">NotificationDispatcher</text>
+  </g>
+
+  <!-- Main Center: Monaco Editor Simulation -->
+  <g transform="translate(250, 82)">
+    <!-- Editor Header Bar -->
+    <rect width="850" height="42" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+    <text x="24" y="26" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#f8fafc">IncidentAutomationUtil.js (QuickJS WASM Sandboxed Execution)</text>
+    <!-- Save & Run Buttons -->
+    <rect x="670" y="8" width="80" height="26" rx="6" fill="#10b981"/>
+    <text x="710" y="24" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Save (Ctrl+S)</text>
+    <rect x="760" y="8" width="70" height="26" rx="6" fill="#38bdf8"/>
+    <text x="795" y="24" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#0f172a" text-anchor="middle">Test Run</text>
+
+    <!-- Code Editor Canvas -->
+    <g transform="translate(0, 42)">
+      <rect width="850" height="380" fill="#030712"/>
+
+      <!-- Line Numbers Column -->
+      <rect width="46" height="380" fill="#080d1a" stroke="#1e293b" stroke-width="0.5"/>
+      <text x="24" y="24" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">1</text>
+      <text x="24" y="44" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">2</text>
+      <text x="24" y="64" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">3</text>
+      <text x="24" y="84" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">4</text>
+      <text x="24" y="104" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">5</text>
+      <text x="24" y="124" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">6</text>
+      <text x="24" y="144" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">7</text>
+      <text x="24" y="164" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">8</text>
+      <text x="24" y="184" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">9</text>
+      <text x="24" y="204" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">10</text>
+      <text x="24" y="224" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">11</text>
+      <text x="24" y="244" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">12</text>
+      <text x="24" y="264" font-family="monospace" font-size="11" fill="#475569" text-anchor="middle">13</text>
+
+      <!-- Code Syntax Highlighted Lines -->
+      <text x="64" y="24" font-family="monospace" font-size="12" fill="#818cf8">const <tspan fill="#38bdf8">IncidentAutomationUtil</tspan> = Class.create();</text>
+      <text x="64" y="44" font-family="monospace" font-size="12" fill="#e2e8f0"><tspan fill="#38bdf8">IncidentAutomationUtil</tspan>.prototype = {</text>
+      <text x="84" y="64" font-family="monospace" font-size="12" fill="#38bdf8">initialize: <tspan fill="#c084fc">function</tspan>() {</text>
+      <text x="104" y="84" font-family="monospace" font-size="12" fill="#64748b">// Sandboxed initialization in QuickJS WebAssembly Realm</text>
+      <text x="104" y="104" font-family="monospace" font-size="12" fill="#f8fafc">gs.log(<tspan fill="#34d399">"IncidentAutomationUtil initialized successfully"</tspan>);</text>
+      <text x="84" y="124" font-family="monospace" font-size="12" fill="#e2e8f0">},</text>
+      <text x="84" y="144" font-family="monospace" font-size="12" fill="#38bdf8">calculateRiskScore: <tspan fill="#c084fc">function</tspan>(<tspan fill="#fbbf24">priority, urgency, impactedUsers</tspan>) {</text>
+      <text x="104" y="164" font-family="monospace" font-size="12" fill="#c084fc">const <tspan fill="#f8fafc">baseWeight</tspan> = (<tspan fill="#f43f5e">6</tspan> - priority) * <tspan fill="#f43f5e">25</tspan>;</text>
+      <text x="104" y="184" font-family="monospace" font-size="12" fill="#c084fc">const <tspan fill="#f8fafc">urgencyMultiplier</tspan> = urgency === <tspan fill="#f43f5e">1</tspan> ? <tspan fill="#f43f5e">1.5</tspan> : <tspan fill="#f43f5e">1.0</tspan>;</text>
+      <text x="104" y="204" font-family="monospace" font-size="12" fill="#c084fc">return <tspan fill="#f8fafc">Math.min(<tspan fill="#f43f5e">100</tspan>, Math.round((baseWeight + impactedUsers * <tspan fill="#f43f5e">0.2</tspan>) * urgencyMultiplier))</tspan>;</text>
+      <text x="84" y="224" font-family="monospace" font-size="12" fill="#e2e8f0">}</text>
+      <text x="64" y="244" font-family="monospace" font-size="12" fill="#e2e8f0">};</text>
+    </g>
+
+    <!-- Execution Output Console -->
+    <g transform="translate(0, 422)">
+      <rect width="850" height="156" fill="#090e1a" stroke="#1e293b" stroke-width="1"/>
+      <text x="20" y="24" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#64748b" letter-spacing="1">SANDBOX EXECUTION LOGS (ISOLATED HOST DISPATCH)</text>
+      <!-- Log items -->
+      <text x="20" y="48" font-family="monospace" font-size="11" fill="#38bdf8">[14:22:04 UTC] [QuickJS WASM] Initializing isolated guest memory context (16MB ceiling)...</text>
+      <text x="20" y="68" font-family="monospace" font-size="11" fill="#10b981">[14:22:04 UTC] [gs.log] IncidentAutomationUtil initialized successfully</text>
+      <text x="20" y="88" font-family="monospace" font-size="11" fill="#e2e8f0">[14:22:04 UTC] Result: { riskScore: 92, classification: "P1_CRITICAL_ESCALATION" }</text>
+      <text x="20" y="108" font-family="monospace" font-size="11" fill="#34d399">✓ Execution completed in 3.8ms with zero sandbox boundary breaches.</text>
+    </g>
+  </g>
+</svg>

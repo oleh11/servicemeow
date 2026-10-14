@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" width="100%" height="100%">
+  <defs>
+    <linearGradient id="pBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1020" />
+      <stop offset="100%" stop-color="#04060d" />
+    </linearGradient>
+    <filter id="pShadow">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1100" height="560" rx="14" fill="url(#pBg)" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- Window Header -->
+  <g transform="translate(0, 0)">
+    <path d="M 0 14 C 0 6 6 0 14 0 L 1086 0 C 1094 0 1100 6 1100 14 L 1100 44 L 0 44 Z" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+    <circle cx="24" cy="22" r="5" fill="#ef4444"/>
+    <circle cx="40" cy="22" r="5" fill="#f59e0b"/>
+    <circle cx="56" cy="22" r="5" fill="#10b981"/>
+    <text x="80" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#94a3b8">ServiceMeow Employee Self-Service Portal — /portal</text>
+    <!-- Cart Pill -->
+    <rect x="940" y="10" width="140" height="24" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="960" y="26" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#38bdf8">🛒 Cart: 2 Items ($0.00)</text>
+  </g>
+
+  <!-- Top Hero Search Banner -->
+  <g transform="translate(60, 68)" filter="url(#pShadow)">
+    <rect width="980" height="110" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+    <text x="30" y="38" font-family="system-ui, sans-serif" font-size="20" font-weight="800" fill="#ffffff">How can IT Operations help you today?</text>
+    <text x="30" y="58" font-family="system-ui, sans-serif" font-size="12" fill="#94a3b8">Search hardware catalog, request cloud developer sandboxes, or report an incident.</text>
+
+    <!-- Search Input Bar -->
+    <rect x="30" y="70" width="920" height="34" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+    <text x="46" y="92" font-family="system-ui, sans-serif" font-size="12" fill="#64748b">🔍 Search requests, hardware, articles (e.g., 'MacBook', 'AWS sandbox', 'VPN access')...</text>
+  </g>
+
+  <!-- Service Status Bar -->
+  <g transform="translate(60, 196)">
+    <rect width="980" height="54" rx="8" fill="#064e3b" stroke="#059669" stroke-width="1"/>
+    <circle cx="30" cy="27" r="6" fill="#10b981"/>
+    <text x="48" y="24" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#ecfdf5">All Systems Operational — 99.98% Historical Uptime (Past 90 Days)</text>
+    <text x="48" y="42" font-family="system-ui, sans-serif" font-size="11" fill="#a7f3d0">Core API, Payment Gateway Cluster, Auth Services, and Database Clusters are green.</text>
+    <text x="890" y="32" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#34d399">View Metrics →</text>
+  </g>
+
+  <!-- Catalog Items Grid -->
+  <g transform="translate(60, 268)">
+    <text x="0" y="16" font-family="system-ui, sans-serif" font-size="14" font-weight="800" fill="#f8fafc" letter-spacing="1">POPULAR SERVICE CATALOG ITEMS &amp; RECORD PRODUCERS</text>
+
+    <!-- Card 1: Hardware -->
+    <g transform="translate(0, 30)" filter="url(#pShadow)">
+      <rect width="230" height="230" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="16" y="16" width="40" height="40" rx="8" fill="#0284c7"/>
+      <text x="36" y="42" font-size="20" text-anchor="middle">💻</text>
+      <text x="16" y="80" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#f1f5f9">MacBook Pro 16"</text>
+      <text x="16" y="98" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Apple M3 Max • 64GB RAM</text>
+      <text x="16" y="126" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Fulfillment: 3 business days with automated manager approval flow.</text>
+      <rect x="16" y="180" width="198" height="32" rx="6" fill="#0284c7"/>
+      <text x="115" y="200" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Order Now</text>
+    </g>
+
+    <!-- Card 2: Cloud Access -->
+    <g transform="translate(250, 30)" filter="url(#pShadow)">
+      <rect width="230" height="230" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="16" y="16" width="40" height="40" rx="8" fill="#d97706"/>
+      <text x="36" y="42" font-size="20" text-anchor="middle">☁️</text>
+      <text x="16" y="80" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#f1f5f9">AWS Dev Sandbox</text>
+      <text x="16" y="98" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Isolated VPC • $500 Budget</text>
+      <text x="16" y="126" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Instant provisioning with automated Terraform &amp; scheduled teardown.</text>
+      <rect x="16" y="180" width="198" height="32" rx="6" fill="#d97706"/>
+      <text x="115" y="200" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Request Access</text>
+    </g>
+
+    <!-- Card 3: Database Access -->
+    <g transform="translate(500, 30)" filter="url(#pShadow)">
+      <rect width="230" height="230" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="16" y="16" width="40" height="40" rx="8" fill="#7c3aed"/>
+      <text x="36" y="42" font-size="20" text-anchor="middle">🗄️</text>
+      <text x="16" y="80" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#f1f5f9">Prod DB Read Replica</text>
+      <text x="16" y="98" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Postgres • Masked PII</text>
+      <text x="16" y="126" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Requires CAB approval. Generates temporary 48-hour credentials.</text>
+      <rect x="16" y="180" width="198" height="32" rx="6" fill="#7c3aed"/>
+      <text x="115" y="200" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Request Grant</text>
+    </g>
+
+    <!-- Card 4: Incident Producer -->
+    <g transform="translate(750, 30)" filter="url(#pShadow)">
+      <rect width="230" height="230" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+      <rect x="16" y="16" width="40" height="40" rx="8" fill="#e11d48"/>
+      <text x="36" y="42" font-size="20" text-anchor="middle">🚨</text>
+      <text x="16" y="80" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#f1f5f9">Report an Outage</text>
+      <text x="16" y="98" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Record Producer • P1/P2</text>
+      <text x="16" y="126" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Auto-triggers on-call paging, SLA timers, and incident command bridge.</text>
+      <rect x="16" y="180" width="198" height="32" rx="6" fill="#e11d48"/>
+      <text x="115" y="200" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">Report Incident</text>
+    </g>
+  </g>
+</svg>
