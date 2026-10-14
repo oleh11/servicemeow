@@ -81,6 +81,11 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
   };
 
   useEffect(() => {
+    if (tableName === "cmn_location") {
+      router.replace("/workspace/cmn_location");
+      return;
+    }
+
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const qParam = params.get("sysparm_query");
@@ -353,11 +358,17 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
     }
   };
 
+  const isSpatialTable = tableName.startsWith("cmn_");
+
   const filteredRecords = records.filter((r) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return (
       r.number?.toLowerCase().includes(q) ||
+      r.name?.toLowerCase().includes(q) ||
+      r.code?.toLowerCase().includes(q) ||
+      r.spaceNumber?.toLowerCase().includes(q) ||
+      r.subject?.toLowerCase().includes(q) ||
       r.short_description?.toLowerCase().includes(q) ||
       r.assigned_to?.display_value?.toLowerCase().includes(q)
     );
@@ -491,48 +502,111 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
                   color: "var(--md-sys-color-on-surface-variant, #49454f)",
                 }}
               >
-                <th
-                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  onContextMenu={(e) => handleHeaderContextMenu(e, "number", "Number")}
-                >
-                  Number
-                </th>
-                <th
-                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  onContextMenu={(e) => handleHeaderContextMenu(e, "priority", "Priority")}
-                >
-                  Priority
-                </th>
-                <th
-                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  onContextMenu={(e) => handleHeaderContextMenu(e, "state", "State")}
-                >
-                  State
-                </th>
-                <th
-                  className="py-3 px-3.5 min-w-[280px] cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  onContextMenu={(e) => handleHeaderContextMenu(e, "short_description", "Short Description")}
-                >
-                  Short Description
-                </th>
-                <th
-                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  onContextMenu={(e) => handleHeaderContextMenu(e, "assigned_to", "Assigned To")}
-                >
-                  Assigned To
-                </th>
-                <th
-                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  onContextMenu={(e) => handleHeaderContextMenu(e, "cmdb_ci", "Configuration Item")}
-                >
-                  Configuration Item
-                </th>
-                <th
-                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                  onContextMenu={(e) => handleHeaderContextMenu(e, "sys_created_on", "Created")}
-                >
-                  Created
-                </th>
+                {isSpatialTable ? (
+                  tableName === "cmn_space" ? (
+                    <>
+                      <th className="py-3 px-3.5">Space Number</th>
+                      <th className="py-3 px-3.5 min-w-[200px]">Space / Room Name</th>
+                      <th className="py-3 px-3.5">Space Type</th>
+                      <th className="py-3 px-3.5">Status</th>
+                      <th className="py-3 px-3.5">Capacity</th>
+                      <th className="py-3 px-3.5">Floor / Level</th>
+                    </>
+                  ) : tableName === "cmn_building" ? (
+                    <>
+                      <th className="py-3 px-3.5">Building Code</th>
+                      <th className="py-3 px-3.5 min-w-[220px]">Building Name</th>
+                      <th className="py-3 px-3.5">Campus</th>
+                      <th className="py-3 px-3.5">Building Type</th>
+                      <th className="py-3 px-3.5">Floors Count</th>
+                    </>
+                  ) : tableName === "cmn_floor" ? (
+                    <>
+                      <th className="py-3 px-3.5">Floor Code</th>
+                      <th className="py-3 px-3.5 min-w-[220px]">Floor Name</th>
+                      <th className="py-3 px-3.5">Floor Number</th>
+                      <th className="py-3 px-3.5">Building</th>
+                      <th className="py-3 px-3.5">Spaces Count</th>
+                    </>
+                  ) : tableName === "cmn_campus" ? (
+                    <>
+                      <th className="py-3 px-3.5">Campus Code</th>
+                      <th className="py-3 px-3.5 min-w-[220px]">Campus Name</th>
+                      <th className="py-3 px-3.5">State</th>
+                      <th className="py-3 px-3.5">City</th>
+                      <th className="py-3 px-3.5">Address</th>
+                    </>
+                  ) : tableName === "cmn_state" ? (
+                    <>
+                      <th className="py-3 px-3.5">State Code</th>
+                      <th className="py-3 px-3.5 min-w-[220px]">State / Province Name</th>
+                      <th className="py-3 px-3.5">Region</th>
+                      <th className="py-3 px-3.5">Country</th>
+                      <th className="py-3 px-3.5">Campuses</th>
+                    </>
+                  ) : tableName === "cmn_region" ? (
+                    <>
+                      <th className="py-3 px-3.5">Region Code</th>
+                      <th className="py-3 px-3.5 min-w-[220px]">Region Name</th>
+                      <th className="py-3 px-3.5 min-w-[240px]">Description</th>
+                      <th className="py-3 px-3.5">States Count</th>
+                      <th className="py-3 px-3.5">Active</th>
+                    </>
+                  ) : (
+                    <>
+                      <th className="py-3 px-3.5">Number / Key</th>
+                      <th className="py-3 px-3.5 min-w-[200px]">Subject / Name</th>
+                      <th className="py-3 px-3.5">Space</th>
+                      <th className="py-3 px-3.5">Status</th>
+                      <th className="py-3 px-3.5">Time Interval</th>
+                    </>
+                  )
+                ) : (
+                  <>
+                    <th
+                      className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      onContextMenu={(e) => handleHeaderContextMenu(e, "number", "Number")}
+                    >
+                      Number
+                    </th>
+                    <th
+                      className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      onContextMenu={(e) => handleHeaderContextMenu(e, "priority", "Priority")}
+                    >
+                      Priority
+                    </th>
+                    <th
+                      className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      onContextMenu={(e) => handleHeaderContextMenu(e, "state", "State")}
+                    >
+                      State
+                    </th>
+                    <th
+                      className="py-3 px-3.5 min-w-[280px] cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      onContextMenu={(e) => handleHeaderContextMenu(e, "short_description", "Short Description")}
+                    >
+                      Short Description
+                    </th>
+                    <th
+                      className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      onContextMenu={(e) => handleHeaderContextMenu(e, "assigned_to", "Assigned To")}
+                    >
+                      Assigned To
+                    </th>
+                    <th
+                      className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      onContextMenu={(e) => handleHeaderContextMenu(e, "cmdb_ci", "Configuration Item")}
+                    >
+                      Configuration Item
+                    </th>
+                    <th
+                      className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                      onContextMenu={(e) => handleHeaderContextMenu(e, "sys_created_on", "Created")}
+                    >
+                      Created
+                    </th>
+                  </>
+                )}
               </tr>
             </thead>
             <tbody
@@ -561,6 +635,130 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
                 </tr>
               ) : (
                 filteredRecords.map((rec) => {
+                  const recId = rec.sys_id || rec.id;
+                  if (isSpatialTable) {
+                    if (tableName === "cmn_space") {
+                      return (
+                        <tr
+                          key={recId}
+                          className="hover:bg-[var(--md-sys-color-surface-container-high)]/50 transition-colors group cursor-pointer"
+                          onClick={() => router.push(`/workspace/${tableName}/${recId}`)}
+                        >
+                          <td className="py-3 px-3.5 font-mono font-bold text-indigo-400">{rec.spaceNumber}</td>
+                          <td className="py-3 px-3.5 font-semibold text-slate-100">{rec.name}</td>
+                          <td className="py-3 px-3.5 text-slate-300">{rec.spaceType}</td>
+                          <td className="py-3 px-3.5">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${rec.status === "available" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"}`}>
+                              {rec.status}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3.5 font-mono">{rec.capacity || 1}</td>
+                          <td className="py-3 px-3.5 text-slate-400">{rec.floor?.name || "Floor"}</td>
+                        </tr>
+                      );
+                    }
+                    if (tableName === "cmn_building") {
+                      return (
+                        <tr
+                          key={recId}
+                          className="hover:bg-[var(--md-sys-color-surface-container-high)]/50 transition-colors group cursor-pointer"
+                          onClick={() => router.push(`/workspace/${tableName}/${recId}`)}
+                        >
+                          <td className="py-3 px-3.5 font-mono font-bold text-indigo-400">{rec.code}</td>
+                          <td className="py-3 px-3.5 font-semibold text-slate-100">{rec.name}</td>
+                          <td className="py-3 px-3.5 text-slate-300">{rec.campus?.name || "Campus"}</td>
+                          <td className="py-3 px-3.5 text-slate-400">{rec.buildingType}</td>
+                          <td className="py-3 px-3.5 font-mono">{rec.floors?.length || rec.floorsCount || 1}</td>
+                        </tr>
+                      );
+                    }
+                    if (tableName === "cmn_floor") {
+                      return (
+                        <tr
+                          key={recId}
+                          className="hover:bg-[var(--md-sys-color-surface-container-high)]/50 transition-colors group cursor-pointer"
+                          onClick={() => router.push(`/workspace/${tableName}/${recId}`)}
+                        >
+                          <td className="py-3 px-3.5 font-mono font-bold text-indigo-400">{rec.code}</td>
+                          <td className="py-3 px-3.5 font-semibold text-slate-100">{rec.name}</td>
+                          <td className="py-3 px-3.5 font-mono">Level {rec.floorNumber}</td>
+                          <td className="py-3 px-3.5 text-slate-300">{rec.building?.name || "Building"}</td>
+                          <td className="py-3 px-3.5 font-mono">{rec.spaces?.length || 0}</td>
+                        </tr>
+                      );
+                    }
+                    if (tableName === "cmn_campus") {
+                      return (
+                        <tr
+                          key={recId}
+                          className="hover:bg-[var(--md-sys-color-surface-container-high)]/50 transition-colors group cursor-pointer"
+                          onClick={() => router.push(`/workspace/${tableName}/${recId}`)}
+                        >
+                          <td className="py-3 px-3.5 font-mono font-bold text-indigo-400">{rec.code}</td>
+                          <td className="py-3 px-3.5 font-semibold text-slate-100">{rec.name}</td>
+                          <td className="py-3 px-3.5 text-slate-300">{rec.state?.name || "State"}</td>
+                          <td className="py-3 px-3.5 text-slate-400">{rec.city || "—"}</td>
+                          <td className="py-3 px-3.5 text-slate-400">{rec.address || "—"}</td>
+                        </tr>
+                      );
+                    }
+                    if (tableName === "cmn_state") {
+                      return (
+                        <tr
+                          key={recId}
+                          className="hover:bg-[var(--md-sys-color-surface-container-high)]/50 transition-colors group cursor-pointer"
+                          onClick={() => router.push(`/workspace/${tableName}/${recId}`)}
+                        >
+                          <td className="py-3 px-3.5 font-mono font-bold text-indigo-400">{rec.code}</td>
+                          <td className="py-3 px-3.5 font-semibold text-slate-100">{rec.name}</td>
+                          <td className="py-3 px-3.5 text-slate-300">{rec.region?.name || "Region"}</td>
+                          <td className="py-3 px-3.5 text-slate-400">{rec.country || "US"}</td>
+                          <td className="py-3 px-3.5 font-mono">{rec.campuses?.length || 0}</td>
+                        </tr>
+                      );
+                    }
+                    if (tableName === "cmn_region") {
+                      return (
+                        <tr
+                          key={recId}
+                          className="hover:bg-[var(--md-sys-color-surface-container-high)]/50 transition-colors group cursor-pointer"
+                          onClick={() => router.push(`/workspace/${tableName}/${recId}`)}
+                        >
+                          <td className="py-3 px-3.5 font-mono font-bold text-indigo-400">{rec.code}</td>
+                          <td className="py-3 px-3.5 font-semibold text-slate-100">{rec.name}</td>
+                          <td className="py-3 px-3.5 text-slate-400 truncate max-w-xs">{rec.description || "—"}</td>
+                          <td className="py-3 px-3.5 font-mono">{rec.states?.length || 0}</td>
+                          <td className="py-3 px-3.5">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400">
+                              {rec.active !== false ? "Active" : "Inactive"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    }
+                    if (tableName === "cmn_reservation") {
+                      return (
+                        <tr
+                          key={recId}
+                          className="hover:bg-[var(--md-sys-color-surface-container-high)]/50 transition-colors group cursor-pointer"
+                          onClick={() => router.push(`/workspace/${tableName}/${recId}`)}
+                        >
+                          <td className="py-3 px-3.5 font-mono font-bold text-indigo-400">{rec.number}</td>
+                          <td className="py-3 px-3.5 font-semibold text-slate-100">{rec.subject}</td>
+                          <td className="py-3 px-3.5 text-slate-300">{rec.space?.name || "Space"}</td>
+                          <td className="py-3 px-3.5">
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-400">
+                              {rec.status}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3.5 font-mono text-[11px] text-slate-400">
+                            {new Date(rec.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} – {new Date(rec.endTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </td>
+                        </tr>
+                      );
+                    }
+                  }
+
                   const ciName =
                     rec.incident?.cmdbCi?.name ||
                     rec.change_request?.cmdbCi?.name ||
@@ -568,9 +766,9 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
 
                   return (
                     <tr
-                      key={rec.sys_id}
+                      key={recId}
                       className="hover:bg-[var(--md-sys-color-surface-container-high)]/50 transition-colors group cursor-pointer"
-                      onClick={() => router.push(`/workspace/${tableName}/${rec.sys_id}`)}
+                      onClick={() => router.push(`/workspace/${tableName}/${recId}`)}
                     >
                       {/* Number Cell */}
                       <td
@@ -578,7 +776,7 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
                         style={{ color: "var(--md-sys-color-primary, #0b57d0)" }}
                         onContextMenu={(e) => handleCellContextMenu(e, rec, "number", rec.number, rec.number)}
                       >
-                        <Link href={`/workspace/${tableName}/${rec.sys_id}`} onClick={(e) => e.stopPropagation()}>
+                        <Link href={`/workspace/${tableName}/${recId}`} onClick={(e) => e.stopPropagation()}>
                           {rec.number}
                         </Link>
                       </td>

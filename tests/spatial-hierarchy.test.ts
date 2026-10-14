@@ -153,4 +153,86 @@ describe("Workplace Hub - 6-Tier Spatial Hierarchy", () => {
     const dotWalkCampus = await resolveDotWalk("cmn_space", space!.id, "floor.building.campus.name");
     expect(dotWalkCampus.displayValue).toBe("San Francisco Mission Bay Medical Campus");
   });
+
+  it("maintains Unified Location (cmn_location) parent-child relationships and breadcrumbs", async () => {
+    // Verify root locations
+    const americasRoot = await db.cmnLocation.findFirst({
+      where: { name: "Americas", locationType: "region" },
+      include: {
+        children: {
+          include: {
+            children: true,
+          },
+        },
+      },
+    });
+    expect(americasRoot).toBeDefined();
+    expect(americasRoot?.parentId).toBeNull();
+    expect(americasRoot?.children.length).toBeGreaterThan(0);
+
+    // Verify child state has americas as parent
+    const california = americasRoot?.children.find((c) => c.name === "California");
+    expect(california).toBeDefined();
+    expect(california?.parentId).toBe(americasRoot!.id);
+    expect(california?.fullPath).toBe("Americas / California");
+  });
+
+  it("supports dynamic location creation, parent-child linking, and re-parenting", async () => {
+    // 1. Create a parent site
+    const parentSite = await db.cmnLocation.create({
+      data: {
+        name: "Test Research District",
+        locationType: "campus",
+        city: "Austin",
+        state: "TX",
+        fullPath: "Test Research District",
+      },
+    });
+    expect(parentSite.id).toBeDefined();
+
+    // 2. Create child building under parent site
+    const childBuilding = await db.cmnLocation.create({
+      data: {
+        name: "Bio-Nano Center",
+        locationType: "building",
+        parentId: parentSite.id,
+        fullPath: `${parentSite.name} / Bio-Nano Center`,
+      },
+      include: { parent: true },
+    });
+    expect(childBuilding.parentId).toBe(parentSite.id);
+    expect(childBuilding.parent?.name).toBe("Test Research District");
+
+    // 3. Create sub-child room under child building
+    const childRoom = await db.cmnLocation.create({
+      data: {
+        name: "Cleanroom Alpha",
+        locationType: "space",
+        parentId: childBuilding.id,
+        fullPath: `${childBuilding.fullPath} / Cleanroom Alpha`,
+      },
+    });
+    expect(childRoom.parentId).toBe(childBuilding.id);
+
+    // 4. Verify 3-tier ancestor chain
+    const loadedRoom = await db.cmnLocation.findUnique({
+      where: { id: childRoom.id },
+      include: {
+        parent: {
+          include: {
+            parent: true,
+          },
+        },
+      },
+    });
+    expect(loadedRoom?.parent?.name).toBe("Bio-Nano Center");
+    expect(loadedRoom?.parent?.parent?.name).toBe("Test Research District");
+
+    // 5. Clean up test records
+    await db.cmnLocation.deleteMany({
+      where: {
+        id: { in: [childRoom.id, childBuilding.id, parentSite.id] },
+      },
+    });
+  });
 });

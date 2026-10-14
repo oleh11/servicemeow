@@ -189,12 +189,36 @@ export async function GET(
     }
 
     if (table === "cmn_location") {
+      const locLimit = Math.min(500, parseInt(searchParams.get("sysparm_limit") || "100", 10));
+      const where: any = {};
+      const parentParam = searchParams.get("parent_id") || searchParams.get("parentId");
+      if (parentParam === "null" || parentParam === "root") {
+        where.parentId = null;
+      } else if (parentParam) {
+        where.parentId = parentParam;
+      }
+      const typeParam = searchParams.get("location_type") || searchParams.get("locationType");
+      if (typeParam && typeParam !== "all") {
+        where.locationType = typeParam;
+      }
+      const search = searchParams.get("search");
+      if (search) {
+        where.OR = [
+          { name: { contains: search, mode: "insensitive" } },
+          { city: { contains: search, mode: "insensitive" } },
+          { fullPath: { contains: search, mode: "insensitive" } },
+        ];
+      }
+
       const locations = await db.cmnLocation.findMany({
-        take: limit,
+        where,
+        take: locLimit,
         skip: offset,
-        orderBy: { name: "asc" },
+        orderBy: [{ fullPath: "asc" }, { name: "asc" }],
         include: {
-          parent: { select: { id: true, name: true } },
+          parent: { select: { id: true, name: true, fullPath: true, locationType: true } },
+          children: { select: { id: true, name: true, locationType: true, fullPath: true, city: true, state: true } },
+          _count: { select: { children: true } },
           region: { select: { id: true, name: true, code: true } },
           campus: { select: { id: true, name: true, code: true } },
           building: { select: { id: true, name: true, code: true } },
@@ -803,6 +827,50 @@ export async function POST(
         },
       });
       return NextResponse.json({ result: { sys_id: member.id, ...member } }, { status: 201 });
+    }
+
+    if (table === "cmn_location") {
+      if (!body.name || !body.name.trim()) {
+        return NextResponse.json({ error: "Location name is required." }, { status: 400 });
+      }
+
+      const parentId = body.parent_id || body.parentId || null;
+      let fullPath = body.full_path || body.fullPath;
+      if (!fullPath) {
+        if (parentId) {
+          const parentLoc = await db.cmnLocation.findUnique({ where: { id: parentId } });
+          const parentPath = parentLoc?.fullPath || parentLoc?.name || "";
+          fullPath = parentPath ? `${parentPath} / ${body.name.trim()}` : body.name.trim();
+        } else {
+          fullPath = body.name.trim();
+        }
+      }
+
+      const location = await db.cmnLocation.create({
+        data: {
+          name: body.name.trim(),
+          locationType: body.location_type || body.locationType || "building",
+          street: body.street || null,
+          city: body.city || null,
+          state: body.state || null,
+          country: body.country || null,
+          parentId: parentId,
+          fullPath: fullPath,
+          regionId: body.region_id || body.regionId || null,
+          stateRefId: body.state_ref_id || body.stateRefId || null,
+          campusId: body.campus_id || body.campusId || null,
+          buildingId: body.building_id || body.buildingId || null,
+          floorId: body.floor_id || body.floorId || null,
+          spaceId: body.space_id || body.spaceId || null,
+        },
+        include: {
+          parent: { select: { id: true, name: true, fullPath: true, locationType: true } },
+          children: { select: { id: true, name: true, locationType: true, fullPath: true } },
+          _count: { select: { children: true } },
+        },
+      });
+
+      return NextResponse.json({ result: { sys_id: location.id, ...location } }, { status: 201 });
     }
 
     // Connected Workplace 6-Tier Spatial POST Handlers
