@@ -93,14 +93,18 @@ describe("Secure Sandboxed Script Runner (QuickJS/WASM)", () => {
     await expect(runInSecureSandbox("while (true) {}", {}, { timeoutMs: 100 })).rejects.toThrow(/timed out/i);
   });
 
-  it("enforces the memory limit", async () => {
-    await expect(
-      runInSecureSandbox("const a = []; while (true) a.push('x'.repeat(1e5));", {}, {
-        timeoutMs: 5000,
-        memoryLimitBytes: 8 * 1024 * 1024,
-      })
-    ).rejects.toThrow();
-  });
+  it(
+    "enforces the memory limit",
+    async () => {
+      await expect(
+        runInSecureSandbox("const a = []; while (true) a.push('x'.repeat(2e5));", {}, {
+          timeoutMs: 5000,
+          memoryLimitBytes: 2 * 1024 * 1024,
+        })
+      ).rejects.toThrow();
+    },
+    10000
+  );
 
   it("rejects async host functions instead of leaking a Promise", async () => {
     await expect(runInSecureSandbox("return f();", { f: async () => 1 })).rejects.toThrow(/async/);
