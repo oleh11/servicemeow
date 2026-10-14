@@ -69,17 +69,121 @@ export interface SysUserGrmember {
 }
 
 /**
- * cmn_location: Physical / Logical Location Hierarchy
+ * cmn_location: Spatial & Physical Location Entity
  * Display Field: name
  */
 export interface CmnLocation {
   id: string;
-  name: string; // Location name (e.g. "San Jose HQ - Building B")
+  name: string; // Location name (e.g. "Silicon Valley Campus / Bldg A / Floor 3 / OR-302")
+  location_type?: "region" | "state" | "campus" | "building" | "floor" | "space" | string | null;
   street?: string | null;
   city?: string | null;
   state?: string | null;
   country?: string | null;
+  full_path?: string | null;
   parent_id?: ReferenceField<CmnLocation>; // Self-referencing FK for location tree
+  region_id?: ReferenceField<CmnRegion>;
+  state_ref_id?: ReferenceField<CmnState>;
+  campus_id?: ReferenceField<CmnCampus>;
+  building_id?: ReferenceField<CmnBuilding>;
+  floor_id?: ReferenceField<CmnFloor>;
+  space_id?: ReferenceField<CmnSpace>;
+  created_at: string;
+}
+
+// ----------------------------------------------------
+// 6-Tier Spatial Hierarchy Interfaces (Connected Workplace)
+// Region -> State -> Campus -> Building -> Floor -> Space/Room
+// ----------------------------------------------------
+
+/**
+ * cmn_region: Tier 1 Spatial Region
+ * Display Field: name
+ */
+export interface CmnRegion {
+  id: string;
+  name: string; // e.g. "Americas", "EMEA", "APAC", "US West"
+  code: string; // e.g. "REG-AMER"
+  description?: string | null;
+  active: boolean;
+  created_at: string;
+}
+
+/**
+ * cmn_state: Tier 2 State / Province
+ * Display Field: name
+ */
+export interface CmnState {
+  id: string;
+  name: string; // e.g. "California", "Texas"
+  code: string; // e.g. "CA", "TX"
+  country?: string | null;
+  region_id?: ReferenceField<CmnRegion>;
+  created_at: string;
+}
+
+/**
+ * cmn_campus: Tier 3 Campus
+ * Display Field: name
+ */
+export interface CmnCampus {
+  id: string;
+  name: string; // e.g. "Silicon Valley Health Sciences Campus"
+  code: string; // e.g. "CAMPUS-SV"
+  state_id?: ReferenceField<CmnState>;
+  address?: string | null;
+  city?: string | null;
+  zip_code?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  created_at: string;
+}
+
+/**
+ * cmn_building: Tier 4 Building
+ * Display Field: name
+ */
+export interface CmnBuilding {
+  id: string;
+  name: string; // e.g. "Building A - Acute Care Hospital"
+  code: string; // e.g. "BLDG-A"
+  campus_id?: ReferenceField<CmnCampus>;
+  building_type?: string | null; // "hospital", "clinic", "lab", "office", "datacenter"
+  floors_count?: number | null;
+  total_area_sq_ft?: number | null;
+  created_at: string;
+}
+
+/**
+ * cmn_floor: Tier 5 Floor
+ * Display Field: name
+ */
+export interface CmnFloor {
+  id: string;
+  name: string; // e.g. "Floor 03 - Surgical & ICU Wing"
+  floor_number: number; // e.g. 3
+  code: string; // e.g. "FL-03"
+  building_id?: ReferenceField<CmnBuilding>;
+  floorplan_svg_url?: string | null;
+  area_sq_ft?: number | null;
+  created_at: string;
+}
+
+/**
+ * cmn_space: Tier 6 Space / Room
+ * Display Field: name
+ */
+export interface CmnSpace {
+  id: string;
+  name: string; // e.g. "Operating Room 2", "Pathology Lab 104"
+  space_number: string; // e.g. "OR-302", "LAB-104"
+  floor_id?: ReferenceField<CmnFloor>;
+  space_type: string; // "operating_room", "icu", "patient_room", "lab", "office", "conference", "server_room", "storage"
+  status: "available" | "occupied" | "maintenance" | "reserved" | "decontamination" | string;
+  capacity?: number | null;
+  square_feet?: number | null;
+  department?: string | null;
+  svg_element_id?: string | null;
   created_at: string;
 }
 
@@ -98,6 +202,7 @@ export interface CmdbCi {
   environment?: "production" | "staging" | "dev" | string;
   tier?: string | null;
   location_id?: ReferenceField<CmnLocation>;
+  space_id?: ReferenceField<CmnSpace>;
   created_at: string;
 }
 
@@ -202,6 +307,53 @@ export const TABLE_METADATA: Record<string, TableDescriptor> = {
     displayField: "name",
     referenceFields: {
       location_id: "cmn_location",
+      space_id: "cmn_space",
+    },
+  },
+  cmn_region: {
+    name: "cmn_region",
+    label: "Region",
+    displayField: "name",
+    referenceFields: {},
+  },
+  cmn_state: {
+    name: "cmn_state",
+    label: "State / Province",
+    displayField: "name",
+    referenceFields: {
+      region_id: "cmn_region",
+    },
+  },
+  cmn_campus: {
+    name: "cmn_campus",
+    label: "Campus",
+    displayField: "name",
+    referenceFields: {
+      state_id: "cmn_state",
+    },
+  },
+  cmn_building: {
+    name: "cmn_building",
+    label: "Building",
+    displayField: "name",
+    referenceFields: {
+      campus_id: "cmn_campus",
+    },
+  },
+  cmn_floor: {
+    name: "cmn_floor",
+    label: "Floor",
+    displayField: "name",
+    referenceFields: {
+      building_id: "cmn_building",
+    },
+  },
+  cmn_space: {
+    name: "cmn_space",
+    label: "Space / Room",
+    displayField: "name",
+    referenceFields: {
+      floor_id: "cmn_floor",
     },
   },
   task: {

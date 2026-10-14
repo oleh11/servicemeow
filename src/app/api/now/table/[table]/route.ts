@@ -195,9 +195,99 @@ export async function GET(
         orderBy: { name: "asc" },
         include: {
           parent: { select: { id: true, name: true } },
+          region: { select: { id: true, name: true, code: true } },
+          campus: { select: { id: true, name: true, code: true } },
+          building: { select: { id: true, name: true, code: true } },
+          floor: { select: { id: true, name: true, code: true } },
+          space: { select: { id: true, name: true, spaceNumber: true } },
         },
       });
       return NextResponse.json({ result: locations });
+    }
+
+    // Connected Workplace 6-Tier Spatial Hierarchy
+    if (table === "cmn_region") {
+      const regions = await db.cmnRegion.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { name: "asc" },
+        include: {
+          states: { select: { id: true, name: true, code: true } },
+        },
+      });
+      return NextResponse.json({ result: regions });
+    }
+
+    if (table === "cmn_state") {
+      const states = await db.cmnState.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { name: "asc" },
+        include: {
+          region: { select: { id: true, name: true, code: true } },
+          campuses: { select: { id: true, name: true, code: true } },
+        },
+      });
+      return NextResponse.json({ result: states });
+    }
+
+    if (table === "cmn_campus") {
+      const campuses = await db.cmnCampus.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { name: "asc" },
+        include: {
+          state: { select: { id: true, name: true, code: true } },
+          buildings: { select: { id: true, name: true, code: true } },
+        },
+      });
+      return NextResponse.json({ result: campuses });
+    }
+
+    if (table === "cmn_building") {
+      const buildings = await db.cmnBuilding.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { name: "asc" },
+        include: {
+          campus: { select: { id: true, name: true, code: true } },
+          floors: { select: { id: true, name: true, code: true, floorNumber: true } },
+        },
+      });
+      return NextResponse.json({ result: buildings });
+    }
+
+    if (table === "cmn_floor") {
+      const floors = await db.cmnFloor.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { floorNumber: "asc" },
+        include: {
+          building: { select: { id: true, name: true, code: true } },
+          spaces: { select: { id: true, name: true, spaceNumber: true, status: true, spaceType: true } },
+        },
+      });
+      return NextResponse.json({ result: floors });
+    }
+
+    if (table === "cmn_space") {
+      const spaces = await db.cmnSpace.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { spaceNumber: "asc" },
+        include: {
+          floor: {
+            select: {
+              id: true,
+              name: true,
+              code: true,
+              floorNumber: true,
+              building: { select: { id: true, name: true, code: true } },
+            },
+          },
+        },
+      });
+      return NextResponse.json({ result: spaces });
     }
 
     if (table === "sys_user_grmember") {
@@ -673,6 +763,114 @@ export async function POST(
         },
       });
       return NextResponse.json({ result: { sys_id: member.id, ...member } }, { status: 201 });
+    }
+
+    // Connected Workplace 6-Tier Spatial POST Handlers
+    if (table === "cmn_region") {
+      const region = await db.cmnRegion.create({
+        data: {
+          name: body.name,
+          code: body.code || body.name.toUpperCase().replace(/\s+/g, "_"),
+          description: body.description || null,
+          active: body.active !== undefined ? body.active : true,
+        },
+      });
+      return NextResponse.json({ result: { sys_id: region.id, ...region } }, { status: 201 });
+    }
+
+    if (table === "cmn_state") {
+      const state = await db.cmnState.create({
+        data: {
+          name: body.name,
+          code: body.code,
+          country: body.country || "US",
+          regionId: body.region_id || body.regionId || null,
+        },
+      });
+      return NextResponse.json({ result: { sys_id: state.id, ...state } }, { status: 201 });
+    }
+
+    if (table === "cmn_campus") {
+      const campus = await db.cmnCampus.create({
+        data: {
+          name: body.name,
+          code: body.code || body.name.toUpperCase().replace(/\s+/g, "_"),
+          stateId: body.state_id || body.stateId || null,
+          address: body.address || null,
+          city: body.city || null,
+          zipCode: body.zip_code || body.zipCode || null,
+          latitude: body.latitude ? parseFloat(body.latitude) : null,
+          longitude: body.longitude ? parseFloat(body.longitude) : null,
+        },
+      });
+      return NextResponse.json({ result: { sys_id: campus.id, ...campus } }, { status: 201 });
+    }
+
+    if (table === "cmn_building") {
+      const building = await db.cmnBuilding.create({
+        data: {
+          name: body.name,
+          code: body.code,
+          campusId: body.campus_id || body.campusId || null,
+          buildingType: body.building_type || body.buildingType || "hospital",
+          floorsCount: body.floors_count ? parseInt(body.floors_count, 10) : 1,
+          totalAreaSqFt: body.total_area_sq_ft ? parseFloat(body.total_area_sq_ft) : null,
+        },
+      });
+      return NextResponse.json({ result: { sys_id: building.id, ...building } }, { status: 201 });
+    }
+
+    if (table === "cmn_floor") {
+      const floor = await db.cmnFloor.create({
+        data: {
+          name: body.name,
+          floorNumber: parseInt(body.floor_number || body.floorNumber || "1", 10),
+          code: body.code,
+          buildingId: body.building_id || body.buildingId || null,
+          floorplanSvgUrl: body.floorplan_svg_url || body.floorplanSvgUrl || null,
+          areaSqFt: body.area_sq_ft ? parseFloat(body.area_sq_ft) : null,
+        },
+      });
+      return NextResponse.json({ result: { sys_id: floor.id, ...floor } }, { status: 201 });
+    }
+
+    if (table === "cmn_space") {
+      const space = await db.cmnSpace.create({
+        data: {
+          name: body.name,
+          spaceNumber: body.space_number || body.spaceNumber,
+          floorId: body.floor_id || body.floorId || null,
+          spaceType: body.space_type || body.spaceType || "room",
+          status: body.status || "available",
+          capacity: body.capacity ? parseInt(body.capacity, 10) : 1,
+          squareFeet: body.square_feet ? parseFloat(body.square_feet) : null,
+          department: body.department || null,
+          svgElementId: body.svg_element_id || body.svgElementId || null,
+        },
+      });
+      return NextResponse.json({ result: { sys_id: space.id, ...space } }, { status: 201 });
+    }
+
+    if (table === "cmn_location") {
+      const loc = await db.cmnLocation.create({
+        data: {
+          name: body.name,
+          locationType: body.location_type || body.locationType || null,
+          street: body.street || null,
+          city: body.city || null,
+          state: body.state || null,
+          country: body.country || null,
+          fullPath: body.full_path || body.fullPath || null,
+          parentId: body.parent_id || body.parentId || null,
+          regionId: body.region_id || body.regionId || null,
+          stateRefId: body.state_ref_id || body.stateRefId || null,
+          campusId: body.campus_id || body.campusId || null,
+          buildingId: body.building_id || body.buildingId || null,
+          floorId: body.floor_id || body.floorId || null,
+          spaceId: body.space_id || body.spaceId || null,
+        },
+      });
+      return NextResponse.json({ result: { sys_id: loc.id, ...loc } }, { status: 201 });
     }
 
     // Dynamic Creation Handler for Any Custom Table

@@ -35,6 +35,9 @@ import {
   FileCheck,
   Box,
   Compass,
+  Building2,
+  MapPin,
+  Map,
 } from "lucide-react";
 
 import { useUser } from "@/lib/user-context";
@@ -72,6 +75,9 @@ const ICON_LOOKUP: Record<string, any> = {
   Layers,
   Box,
   Compass,
+  Building2,
+  MapPin,
+  Map,
   Table,
 };
 
@@ -196,6 +202,20 @@ export function Sidebar() {
       ],
     },
     {
+      title: "Connected Workplace",
+      icon: Building2,
+      items: [
+        { label: "Spatial Explorer", href: "/workspace/spaces", icon: Compass },
+        { label: "Regions (Tier 1)", href: "/workspace/cmn_region", icon: Map },
+        { label: "States / Prov (Tier 2)", href: "/workspace/cmn_state", icon: MapPin },
+        { label: "Campuses (Tier 3)", href: "/workspace/cmn_campus", icon: Building2 },
+        { label: "Buildings (Tier 4)", href: "/workspace/cmn_building", icon: Building2 },
+        { label: "Floors & Levels (Tier 5)", href: "/workspace/cmn_floor", icon: Layers },
+        { label: "Spaces & Rooms (Tier 6)", href: "/workspace/cmn_space", icon: Box },
+        { label: "Unified Locations", href: "/workspace/cmn_location", icon: MapPin },
+      ],
+    },
+    {
       title: "Knowledge Management",
       icon: BookOpen,
       items: [
@@ -203,6 +223,21 @@ export function Sidebar() {
       ],
     },
   ];
+
+  const workplaceSection: SidebarSection = {
+    title: "Connected Workplace",
+    icon: Building2,
+    items: [
+      { label: "Spatial Explorer", href: "/workspace/spaces", icon: Compass },
+      { label: "Regions (Tier 1)", href: "/workspace/cmn_region", icon: Map },
+      { label: "States / Prov (Tier 2)", href: "/workspace/cmn_state", icon: MapPin },
+      { label: "Campuses (Tier 3)", href: "/workspace/cmn_campus", icon: Building2 },
+      { label: "Buildings (Tier 4)", href: "/workspace/cmn_building", icon: Building2 },
+      { label: "Floors & Levels (Tier 5)", href: "/workspace/cmn_floor", icon: Layers },
+      { label: "Spaces & Rooms (Tier 6)", href: "/workspace/cmn_space", icon: Box },
+      { label: "Unified Locations", href: "/workspace/cmn_location", icon: MapPin },
+    ],
+  };
 
   const adminSection: SidebarSection = {
     title: "Admin Configuration Suite",
@@ -224,8 +259,13 @@ export function Sidebar() {
     ],
   };
 
+  const hasWorkplaceInNav = navApplications.some((app) =>
+    app.title?.toLowerCase().includes("workplace") || app.title?.toLowerCase().includes("spatial")
+  );
+
   const sections: SidebarSection[] = [
     ...(navApplications.length > 0 ? dynamicSections : fallbackCoreSections),
+    ...(navApplications.length > 0 && !hasWorkplaceInNav ? [workplaceSection] : []),
     ...(customTables.length > 0 && navApplications.length === 0
       ? [
           {

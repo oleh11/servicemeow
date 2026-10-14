@@ -38,6 +38,13 @@ async function main() {
   await prisma.task.deleteMany();
   await prisma.cIRelation.deleteMany();
   await prisma.configurationItem.deleteMany();
+  await prisma.cmnLocation.deleteMany();
+  await prisma.cmnSpace.deleteMany();
+  await prisma.cmnFloor.deleteMany();
+  await prisma.cmnBuilding.deleteMany();
+  await prisma.cmnCampus.deleteMany();
+  await prisma.cmnState.deleteMany();
+  await prisma.cmnRegion.deleteMany();
   await prisma.knowledgeArticle.deleteMany();
   await prisma.userGroupMember.deleteMany();
   await prisma.group.deleteMany();
@@ -58,6 +65,13 @@ async function main() {
       { name: "sc_req_item", label: "Requested Item", superClass: "task", description: "Individual requested catalog item" },
       { name: "sc_task", label: "Catalog Task", superClass: "task", description: "Fulfillment work unit for catalog items" },
       { name: "cmdb_ci", label: "Configuration Item", superClass: null, description: "Any component that needs to be managed to deliver an IT service" },
+      { name: "cmn_region", label: "Region [cmn_region]", superClass: null, description: "Tier 1: Continental or macro-geographic administrative region" },
+      { name: "cmn_state", label: "State / Province [cmn_state]", superClass: null, description: "Tier 2: State, province, or primary geographic subdivision" },
+      { name: "cmn_campus", label: "Campus [cmn_campus]", superClass: null, description: "Tier 3: Corporate or clinical campus facility complex" },
+      { name: "cmn_building", label: "Building [cmn_building]", superClass: null, description: "Tier 4: Physical architectural structure within a campus" },
+      { name: "cmn_floor", label: "Floor / Level [cmn_floor]", superClass: null, description: "Tier 5: Vertical architectural floor level within a building" },
+      { name: "cmn_space", label: "Space / Room [cmn_space]", superClass: null, description: "Tier 6: Individual functional room, operating suite, or workspace zone" },
+      { name: "cmn_location", label: "Unified Location [cmn_location]", superClass: null, description: "Legacy unified location hierarchy linking all 6 spatial tiers" },
       { name: "kb_knowledge", label: "Knowledge Article", superClass: null, description: "Curated self-service technical and how-to guides" },
       { name: "sys_user", label: "User [sys_user]", superClass: null, description: "Platform users, engineers, and customer personas" },
       { name: "sys_user_group", label: "Group [sys_user_group]", superClass: null, description: "Assignment groups and escalation rosters" },
@@ -91,6 +105,30 @@ async function main() {
       { tableName: "change_request", columnName: "cab_required", columnLabel: "CAB Approval Required", columnType: "boolean", defaultVal: "true" },
       { tableName: "change_request", columnName: "planned_start", columnLabel: "Planned Start Date", columnType: "datetime" },
       { tableName: "change_request", columnName: "planned_end", columnLabel: "Planned End Date", columnType: "datetime" },
+      // Spatial Hierarchy Fields
+      { tableName: "cmn_region", columnName: "name", columnLabel: "Region Name", columnType: "string", isMandatory: true },
+      { tableName: "cmn_region", columnName: "code", columnLabel: "Region Code", columnType: "string", isMandatory: true },
+      { tableName: "cmn_state", columnName: "name", columnLabel: "State / Province Name", columnType: "string", isMandatory: true },
+      { tableName: "cmn_state", columnName: "code", columnLabel: "State Code", columnType: "string", isMandatory: true },
+      { tableName: "cmn_state", columnName: "region", columnLabel: "Parent Region", columnType: "reference", referenceTable: "cmn_region", isMandatory: true },
+      { tableName: "cmn_campus", columnName: "name", columnLabel: "Campus Name", columnType: "string", isMandatory: true },
+      { tableName: "cmn_campus", columnName: "code", columnLabel: "Campus Code", columnType: "string", isMandatory: true },
+      { tableName: "cmn_campus", columnName: "state", columnLabel: "State / Province", columnType: "reference", referenceTable: "cmn_state", isMandatory: true },
+      { tableName: "cmn_building", columnName: "name", columnLabel: "Building Name", columnType: "string", isMandatory: true },
+      { tableName: "cmn_building", columnName: "code", columnLabel: "Building Code", columnType: "string", isMandatory: true },
+      { tableName: "cmn_building", columnName: "campus", columnLabel: "Campus", columnType: "reference", referenceTable: "cmn_campus", isMandatory: true },
+      { tableName: "cmn_building", columnName: "building_type", columnLabel: "Building Type", columnType: "choice" },
+      { tableName: "cmn_floor", columnName: "name", columnLabel: "Floor Name", columnType: "string", isMandatory: true },
+      { tableName: "cmn_floor", columnName: "floor_number", columnLabel: "Floor Number", columnType: "integer", isMandatory: true },
+      { tableName: "cmn_floor", columnName: "code", columnLabel: "Floor Code", columnType: "string", isMandatory: true },
+      { tableName: "cmn_floor", columnName: "building", columnLabel: "Building", columnType: "reference", referenceTable: "cmn_building", isMandatory: true },
+      { tableName: "cmn_space", columnName: "name", columnLabel: "Space Name", columnType: "string", isMandatory: true },
+      { tableName: "cmn_space", columnName: "space_number", columnLabel: "Space / Room Number", columnType: "string", isMandatory: true },
+      { tableName: "cmn_space", columnName: "floor", columnLabel: "Floor Level", columnType: "reference", referenceTable: "cmn_floor", isMandatory: true },
+      { tableName: "cmn_space", columnName: "space_type", columnLabel: "Space Type", columnType: "choice", defaultVal: "Office" },
+      { tableName: "cmn_space", columnName: "status", columnLabel: "Occupancy Status", columnType: "choice", defaultVal: "vacant" },
+      { tableName: "cmn_space", columnName: "capacity", columnLabel: "Capacity", columnType: "integer", defaultVal: "1" },
+      { tableName: "cmdb_ci", columnName: "space", columnLabel: "Space / Room", columnType: "reference", referenceTable: "cmn_space" },
     ],
   });
 
@@ -116,6 +154,23 @@ async function main() {
       { tableName: "task", columnName: "priority", label: "3 - Moderate", value: "3", sequence: 30 },
       { tableName: "task", columnName: "priority", label: "4 - Low", value: "4", sequence: 40 },
       { tableName: "task", columnName: "priority", label: "5 - Planning", value: "5", sequence: 50 },
+      // Spatial Occupancy Status
+      { tableName: "cmn_space", columnName: "status", label: "Occupied", value: "occupied", sequence: 10 },
+      { tableName: "cmn_space", columnName: "status", label: "Vacant", value: "vacant", sequence: 20 },
+      { tableName: "cmn_space", columnName: "status", label: "Reserved", value: "reserved", sequence: 30 },
+      { tableName: "cmn_space", columnName: "status", label: "Maintenance", value: "maintenance", sequence: 40 },
+      // Space Types
+      { tableName: "cmn_space", columnName: "space_type", label: "Operating Room", value: "Operating Room", sequence: 10 },
+      { tableName: "cmn_space", columnName: "space_type", label: "ICU / Clinical", value: "ICU / Clinical", sequence: 20 },
+      { tableName: "cmn_space", columnName: "space_type", label: "Server Room / MDF", value: "Server Room", sequence: 30 },
+      { tableName: "cmn_space", columnName: "space_type", label: "Conference Room", value: "Conference Room", sequence: 40 },
+      { tableName: "cmn_space", columnName: "space_type", label: "Office", value: "Office", sequence: 50 },
+      { tableName: "cmn_space", columnName: "space_type", label: "Laboratory", value: "Laboratory", sequence: 60 },
+      // Building Types
+      { tableName: "cmn_building", columnName: "building_type", label: "Hospital / Clinical", value: "Hospital / Clinical", sequence: 10 },
+      { tableName: "cmn_building", columnName: "building_type", label: "Laboratory", value: "Laboratory", sequence: 20 },
+      { tableName: "cmn_building", columnName: "building_type", label: "Office / Data Center", value: "Office / Data Center", sequence: 30 },
+      { tableName: "cmn_building", columnName: "building_type", label: "Logistics / Warehouse", value: "Logistics / Warehouse", sequence: 40 },
     ],
   });
 
@@ -236,7 +291,305 @@ async function main() {
     ],
   });
 
-  // 5. CMDB Configuration Items
+  // 5. 6-Tier Spatial Hierarchy (Nuvolo Alternative / Connected Workplace)
+  console.log("Creating 6-Tier Connected Workplace Spatial Hierarchy...");
+
+  // Tier 1: Region
+  const regionAmer = await prisma.cmnRegion.create({
+    data: {
+      name: "Americas",
+      code: "AMER",
+      description: "North, Central & South America corporate & healthcare territories",
+      active: true,
+    },
+  });
+
+  const regionEMEA = await prisma.cmnRegion.create({
+    data: {
+      name: "Europe, Middle East & Africa",
+      code: "EMEA",
+      description: "EMEA clinical centers & research institutes",
+      active: true,
+    },
+  });
+
+  // Tier 2: State / Province
+  const stateCA = await prisma.cmnState.create({
+    data: {
+      name: "California",
+      code: "US-CA",
+      country: "United States",
+      regionId: regionAmer.id,
+    },
+  });
+
+  const stateNY = await prisma.cmnState.create({
+    data: {
+      name: "New York",
+      code: "US-NY",
+      country: "United States",
+      regionId: regionAmer.id,
+    },
+  });
+
+  const stateTX = await prisma.cmnState.create({
+    data: {
+      name: "Texas",
+      code: "US-TX",
+      country: "United States",
+      regionId: regionAmer.id,
+    },
+  });
+
+  // Tier 3: Campus
+  const campusSV = await prisma.cmnCampus.create({
+    data: {
+      name: "Silicon Valley Innovation Campus",
+      code: "SV-CAMPUS",
+      stateId: stateCA.id,
+      address: "100 Tech Enterprise Blvd",
+      city: "San Jose",
+      zipCode: "95134",
+      latitude: 37.403,
+      longitude: -121.944,
+    },
+  });
+
+  const campusSFMed = await prisma.cmnCampus.create({
+    data: {
+      name: "San Francisco Mission Bay Medical Campus",
+      code: "SF-MED-CAMPUS",
+      stateId: stateCA.id,
+      address: "1600 Owens Street",
+      city: "San Francisco",
+      zipCode: "94158",
+      latitude: 37.768,
+      longitude: -122.392,
+    },
+  });
+
+  // Tier 4: Building
+  const bldgSurg = await prisma.cmnBuilding.create({
+    data: {
+      name: "Pavilion A - Surgical & Critical Care",
+      code: "BLDG-A-SURG",
+      campusId: campusSFMed.id,
+      buildingType: "Hospital / Clinical",
+      floorsCount: 5,
+      totalAreaSqFt: 185000,
+    },
+  });
+
+  const bldgLabs = await prisma.cmnBuilding.create({
+    data: {
+      name: "Pavilion B - Diagnostic Research & Labs",
+      code: "BLDG-B-LABS",
+      campusId: campusSFMed.id,
+      buildingType: "Laboratory",
+      floorsCount: 4,
+      totalAreaSqFt: 120000,
+    },
+  });
+
+  const bldgTechTwr = await prisma.cmnBuilding.create({
+    data: {
+      name: "Tech Tower One - Operations & Data Center",
+      code: "TECH-TWR-1",
+      campusId: campusSV.id,
+      buildingType: "Office / Data Center",
+      floorsCount: 8,
+      totalAreaSqFt: 250000,
+    },
+  });
+
+  // Tier 5: Floor
+  const flSurg01 = await prisma.cmnFloor.create({
+    data: {
+      name: "Level 1 - Emergency & Triage",
+      floorNumber: 1,
+      code: "L1-ER",
+      buildingId: bldgSurg.id,
+      areaSqFt: 35000,
+    },
+  });
+
+  const flSurg02 = await prisma.cmnFloor.create({
+    data: {
+      name: "Level 2 - Intensive Care Unit (ICU)",
+      floorNumber: 2,
+      code: "L2-ICU",
+      buildingId: bldgSurg.id,
+      areaSqFt: 38000,
+    },
+  });
+
+  const flSurg03 = await prisma.cmnFloor.create({
+    data: {
+      name: "Level 3 - Operating Suites & Surgery",
+      floorNumber: 3,
+      code: "L3-OR",
+      buildingId: bldgSurg.id,
+      areaSqFt: 40000,
+    },
+  });
+
+  const flTech04 = await prisma.cmnFloor.create({
+    data: {
+      name: "Level 4 - MDF Data Center & Infrastructure Vault",
+      floorNumber: 4,
+      code: "L4-DC",
+      buildingId: bldgTechTwr.id,
+      areaSqFt: 32000,
+    },
+  });
+
+  // Tier 6: Space / Room
+  const spaceOR301 = await prisma.cmnSpace.create({
+    data: {
+      name: "Robotic Surgery Suite 1",
+      spaceNumber: "OR-301",
+      floorId: flSurg03.id,
+      spaceType: "Operating Room",
+      status: "occupied",
+      capacity: 8,
+      squareFeet: 650,
+      department: "Surgical Services",
+      svgElementId: "room-or-301",
+    },
+  });
+
+  const spaceOR302 = await prisma.cmnSpace.create({
+    data: {
+      name: "Cardiovascular Surgery Suite 2",
+      spaceNumber: "OR-302",
+      floorId: flSurg03.id,
+      spaceType: "Operating Room",
+      status: "occupied",
+      capacity: 10,
+      squareFeet: 720,
+      department: "Cardiology",
+      svgElementId: "room-or-302",
+    },
+  });
+
+  const spaceOR303 = await prisma.cmnSpace.create({
+    data: {
+      name: "Orthopedic Surgery Suite 3",
+      spaceNumber: "OR-303",
+      floorId: flSurg03.id,
+      spaceType: "Operating Room",
+      status: "vacant",
+      capacity: 6,
+      squareFeet: 580,
+      department: "Orthopedics",
+      svgElementId: "room-or-303",
+    },
+  });
+
+  const spacePACU = await prisma.cmnSpace.create({
+    data: {
+      name: "Post-Anesthesia Care Recovery Unit",
+      spaceNumber: "PACU-320",
+      floorId: flSurg03.id,
+      spaceType: "ICU / Clinical",
+      status: "occupied",
+      capacity: 12,
+      squareFeet: 1200,
+      department: "Anesthesiology",
+      svgElementId: "room-pacu-320",
+    },
+  });
+
+  const spaceICU201 = await prisma.cmnSpace.create({
+    data: {
+      name: "Trauma Intensive Care Unit Bed 1",
+      spaceNumber: "ICU-201",
+      floorId: flSurg02.id,
+      spaceType: "ICU / Clinical",
+      status: "occupied",
+      capacity: 2,
+      squareFeet: 350,
+      department: "Critical Care",
+      svgElementId: "room-icu-201",
+    },
+  });
+
+  const spaceICU202 = await prisma.cmnSpace.create({
+    data: {
+      name: "Cardiac Intensive Care Unit Bed 2",
+      spaceNumber: "ICU-202",
+      floorId: flSurg02.id,
+      spaceType: "ICU / Clinical",
+      status: "vacant",
+      capacity: 2,
+      squareFeet: 350,
+      department: "Critical Care",
+      svgElementId: "room-icu-202",
+    },
+  });
+
+  const spaceMDF401 = await prisma.cmnSpace.create({
+    data: {
+      name: "Main Data Center & Telecomm Vault",
+      spaceNumber: "MDF-401",
+      floorId: flTech04.id,
+      spaceType: "Server Room",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 3200,
+      department: "IT Infrastructure",
+      svgElementId: "room-mdf-401",
+    },
+  });
+
+  const spaceCONF410 = await prisma.cmnSpace.create({
+    data: {
+      name: "Executive Operations Command Briefing",
+      spaceNumber: "CONF-410",
+      floorId: flTech04.id,
+      spaceType: "Conference Room",
+      status: "reserved",
+      capacity: 24,
+      squareFeet: 850,
+      department: "Operations",
+      svgElementId: "room-conf-410",
+    },
+  });
+
+  // Cross-compatibility Unified CmnLocation records
+  const locSFMed = await prisma.cmnLocation.create({
+    data: {
+      name: "San Francisco Mission Bay Medical Center",
+      city: "San Francisco",
+      state: "CA",
+      country: "United States",
+      locationType: "campus",
+      regionId: regionAmer.id,
+      stateRefId: stateCA.id,
+      campusId: campusSFMed.id,
+      fullPath: "Americas / California / San Francisco Mission Bay / Pavilion A",
+    },
+  });
+
+  const locOR301 = await prisma.cmnLocation.create({
+    data: {
+      name: "Mission Bay - OR Suite 301",
+      city: "San Francisco",
+      state: "CA",
+      country: "United States",
+      locationType: "space",
+      parentId: locSFMed.id,
+      regionId: regionAmer.id,
+      stateRefId: stateCA.id,
+      campusId: campusSFMed.id,
+      buildingId: bldgSurg.id,
+      floorId: flSurg03.id,
+      spaceId: spaceOR301.id,
+      fullPath: "Americas / California / San Francisco Mission Bay / Pavilion A / Level 3 / OR-301",
+    },
+  });
+
+  // 6. CMDB Configuration Items
   console.log("Creating CMDB Configuration Items & Topology...");
   const ciPortal = await prisma.configurationItem.create({
     data: {
@@ -246,6 +599,7 @@ async function main() {
       environment: "production",
       tier: "Tier 1 - Mission Critical",
       owner: "Alex Chen",
+      locationId: locSFMed.id,
     },
   });
 
@@ -269,6 +623,7 @@ async function main() {
       ipAddress: "10.0.1.15",
       hostName: "ingress-k8s-us-east.prod.internal",
       tier: "Tier 1",
+      spaceId: spaceMDF401.id,
     },
   });
 
@@ -281,6 +636,7 @@ async function main() {
       ipAddress: "10.0.4.50",
       hostName: "pg-primary.prod.internal",
       tier: "Tier 1",
+      spaceId: spaceMDF401.id,
     },
   });
 
@@ -293,6 +649,54 @@ async function main() {
       ipAddress: "10.0.4.60",
       hostName: "redis-cache.prod.internal",
       tier: "Tier 2",
+      spaceId: spaceMDF401.id,
+    },
+  });
+
+  // Biomedical & IoT Medical Device CIs linked to spaces
+  const ciRobot = await prisma.configurationItem.create({
+    data: {
+      name: "da Vinci Xi Surgical Robot System #1",
+      ciClass: "biomedical_device",
+      sysClass: "cmdb_ci_medical",
+      status: "in_service",
+      operationalStatus: "operational",
+      environment: "production",
+      assetTag: "MED-ROBOT-001",
+      tier: "Tier 1 - Life Safety",
+      owner: "Clinical Engineering",
+      spaceId: spaceOR301.id,
+      locationId: locOR301.id,
+    },
+  });
+
+  const ciHeartMonitor = await prisma.configurationItem.create({
+    data: {
+      name: "Philips IntelliSpace Multi-Lead ECG Station",
+      ciClass: "biomedical_device",
+      sysClass: "cmdb_ci_medical",
+      status: "in_service",
+      operationalStatus: "operational",
+      environment: "production",
+      assetTag: "MED-ECG-108",
+      tier: "Tier 1 - Life Safety",
+      owner: "Cardiology Tech",
+      spaceId: spaceOR302.id,
+    },
+  });
+
+  const ciPatientMonitor = await prisma.configurationItem.create({
+    data: {
+      name: "GE Carescape B850 Bedside Patient Monitor",
+      ciClass: "biomedical_device",
+      sysClass: "cmdb_ci_medical",
+      status: "in_service",
+      operationalStatus: "operational",
+      environment: "production",
+      assetTag: "MED-MON-042",
+      tier: "Tier 1 - Life Safety",
+      owner: "Clinical Engineering",
+      spaceId: spaceICU201.id,
     },
   });
 

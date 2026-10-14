@@ -131,10 +131,88 @@ export async function GET(
         include: {
           parent: { select: { id: true, name: true } },
           children: { select: { id: true, name: true } },
+          region: { select: { id: true, name: true, code: true } },
+          campus: { select: { id: true, name: true, code: true } },
+          building: { select: { id: true, name: true, code: true } },
+          floor: { select: { id: true, name: true, code: true } },
+          space: { select: { id: true, name: true, spaceNumber: true } },
         },
       });
       if (!loc) return NextResponse.json({ error: "Location not found" }, { status: 404 });
       return NextResponse.json({ result: loc });
+    }
+
+    if (table === "cmn_region") {
+      const region = await db.cmnRegion.findUnique({
+        where: { id },
+        include: { states: true },
+      });
+      if (!region) return NextResponse.json({ error: "Region not found" }, { status: 404 });
+      return NextResponse.json({ result: region });
+    }
+
+    if (table === "cmn_state") {
+      const state = await db.cmnState.findUnique({
+        where: { id },
+        include: { region: true, campuses: true },
+      });
+      if (!state) return NextResponse.json({ error: "State not found" }, { status: 404 });
+      return NextResponse.json({ result: state });
+    }
+
+    if (table === "cmn_campus") {
+      const campus = await db.cmnCampus.findUnique({
+        where: { id },
+        include: { state: true, buildings: true },
+      });
+      if (!campus) return NextResponse.json({ error: "Campus not found" }, { status: 404 });
+      return NextResponse.json({ result: campus });
+    }
+
+    if (table === "cmn_building") {
+      const building = await db.cmnBuilding.findUnique({
+        where: { id },
+        include: { campus: true, floors: true },
+      });
+      if (!building) return NextResponse.json({ error: "Building not found" }, { status: 404 });
+      return NextResponse.json({ result: building });
+    }
+
+    if (table === "cmn_floor") {
+      const floor = await db.cmnFloor.findUnique({
+        where: { id },
+        include: { building: true, spaces: true },
+      });
+      if (!floor) return NextResponse.json({ error: "Floor not found" }, { status: 404 });
+      return NextResponse.json({ result: floor });
+    }
+
+    if (table === "cmn_space") {
+      const space = await db.cmnSpace.findUnique({
+        where: { id },
+        include: {
+          floor: {
+            include: {
+              building: {
+                include: {
+                  campus: {
+                    include: {
+                      state: {
+                        include: {
+                          region: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          configurationItems: { select: { id: true, name: true, status: true, ciClass: true, assetTag: true } },
+        },
+      });
+      if (!space) return NextResponse.json({ error: "Space not found" }, { status: 404 });
+      return NextResponse.json({ result: space });
     }
 
     if (table === "sys_user_grmember") {
@@ -279,6 +357,97 @@ export async function PATCH(
     }
 
     // Foundation tables PATCH handlers
+    if (table === "cmn_region") {
+      const updated = await db.cmnRegion.update({
+        where: { id },
+        data: {
+          name: body.name !== undefined ? body.name : undefined,
+          code: body.code !== undefined ? body.code : undefined,
+          description: body.description !== undefined ? body.description : undefined,
+          active: body.active !== undefined ? Boolean(body.active) : undefined,
+        },
+      });
+      return NextResponse.json({ result: updated });
+    }
+
+    if (table === "cmn_state") {
+      const updated = await db.cmnState.update({
+        where: { id },
+        data: {
+          name: body.name !== undefined ? body.name : undefined,
+          code: body.code !== undefined ? body.code : undefined,
+          country: body.country !== undefined ? body.country : undefined,
+          regionId: body.region_id !== undefined ? body.region_id : (body.regionId !== undefined ? body.regionId : undefined),
+        },
+      });
+      return NextResponse.json({ result: updated });
+    }
+
+    if (table === "cmn_campus") {
+      const updated = await db.cmnCampus.update({
+        where: { id },
+        data: {
+          name: body.name !== undefined ? body.name : undefined,
+          code: body.code !== undefined ? body.code : undefined,
+          stateId: body.state_id !== undefined ? body.state_id : (body.stateId !== undefined ? body.stateId : undefined),
+          address: body.address !== undefined ? body.address : undefined,
+          city: body.city !== undefined ? body.city : undefined,
+          zipCode: body.zip_code !== undefined ? body.zip_code : (body.zipCode !== undefined ? body.zipCode : undefined),
+          latitude: body.latitude !== undefined ? (body.latitude ? parseFloat(body.latitude) : null) : undefined,
+          longitude: body.longitude !== undefined ? (body.longitude ? parseFloat(body.longitude) : null) : undefined,
+        },
+      });
+      return NextResponse.json({ result: updated });
+    }
+
+    if (table === "cmn_building") {
+      const updated = await db.cmnBuilding.update({
+        where: { id },
+        data: {
+          name: body.name !== undefined ? body.name : undefined,
+          code: body.code !== undefined ? body.code : undefined,
+          campusId: body.campus_id !== undefined ? body.campus_id : (body.campusId !== undefined ? body.campusId : undefined),
+          buildingType: body.building_type !== undefined ? body.building_type : (body.buildingType !== undefined ? body.buildingType : undefined),
+          floorsCount: body.floors_count !== undefined ? (body.floors_count ? parseInt(body.floors_count) : null) : (body.floorsCount !== undefined ? (body.floorsCount ? parseInt(body.floorsCount) : null) : undefined),
+          totalAreaSqFt: body.total_area_sq_ft !== undefined ? (body.total_area_sq_ft ? parseFloat(body.total_area_sq_ft) : null) : (body.totalAreaSqFt !== undefined ? (body.totalAreaSqFt ? parseFloat(body.totalAreaSqFt) : null) : undefined),
+        },
+      });
+      return NextResponse.json({ result: updated });
+    }
+
+    if (table === "cmn_floor") {
+      const updated = await db.cmnFloor.update({
+        where: { id },
+        data: {
+          name: body.name !== undefined ? body.name : undefined,
+          floorNumber: body.floor_number !== undefined ? (body.floor_number ? parseInt(body.floor_number) : 0) : (body.floorNumber !== undefined ? (body.floorNumber ? parseInt(body.floorNumber) : 0) : undefined),
+          code: body.code !== undefined ? body.code : undefined,
+          buildingId: body.building_id !== undefined ? body.building_id : (body.buildingId !== undefined ? body.buildingId : undefined),
+          floorplanSvgUrl: body.floorplan_svg_url !== undefined ? body.floorplan_svg_url : (body.floorplanSvgUrl !== undefined ? body.floorplanSvgUrl : undefined),
+          areaSqFt: body.area_sq_ft !== undefined ? (body.area_sq_ft ? parseFloat(body.area_sq_ft) : null) : (body.areaSqFt !== undefined ? (body.areaSqFt ? parseFloat(body.areaSqFt) : null) : undefined),
+        },
+      });
+      return NextResponse.json({ result: updated });
+    }
+
+    if (table === "cmn_space") {
+      const updated = await db.cmnSpace.update({
+        where: { id },
+        data: {
+          name: body.name !== undefined ? body.name : undefined,
+          spaceNumber: body.space_number !== undefined ? body.space_number : (body.spaceNumber !== undefined ? body.spaceNumber : undefined),
+          floorId: body.floor_id !== undefined ? body.floor_id : (body.floorId !== undefined ? body.floorId : undefined),
+          spaceType: body.space_type !== undefined ? body.space_type : (body.spaceType !== undefined ? body.spaceType : undefined),
+          status: body.status !== undefined ? body.status : undefined,
+          capacity: body.capacity !== undefined ? (body.capacity ? parseInt(body.capacity) : 1) : undefined,
+          squareFeet: body.square_feet !== undefined ? (body.square_feet ? parseFloat(body.square_feet) : null) : (body.squareFeet !== undefined ? (body.squareFeet ? parseFloat(body.squareFeet) : null) : undefined),
+          department: body.department !== undefined ? body.department : undefined,
+          svgElementId: body.svg_element_id !== undefined ? body.svg_element_id : (body.svgElementId !== undefined ? body.svgElementId : undefined),
+        },
+      });
+      return NextResponse.json({ result: updated });
+    }
+
     if (table === "cmn_location") {
       const updated = await db.cmnLocation.update({
         where: { id },
@@ -289,6 +458,14 @@ export async function PATCH(
           state: body.state !== undefined ? body.state : undefined,
           country: body.country !== undefined ? body.country : undefined,
           parentId: body.parent_id !== undefined ? (body.parent_id || null) : (body.parentId !== undefined ? (body.parentId || null) : undefined),
+          locationType: body.location_type !== undefined ? body.location_type : (body.locationType !== undefined ? body.locationType : undefined),
+          fullPath: body.full_path !== undefined ? body.full_path : (body.fullPath !== undefined ? body.fullPath : undefined),
+          regionId: body.region_id !== undefined ? (body.region_id || null) : (body.regionId !== undefined ? (body.regionId || null) : undefined),
+          stateRefId: body.state_ref_id !== undefined ? (body.state_ref_id || null) : (body.stateRefId !== undefined ? (body.stateRefId || null) : undefined),
+          campusId: body.campus_id !== undefined ? (body.campus_id || null) : (body.campusId !== undefined ? (body.campusId || null) : undefined),
+          buildingId: body.building_id !== undefined ? (body.building_id || null) : (body.buildingId !== undefined ? (body.buildingId || null) : undefined),
+          floorId: body.floor_id !== undefined ? (body.floor_id || null) : (body.floorId !== undefined ? (body.floorId || null) : undefined),
+          spaceId: body.space_id !== undefined ? (body.space_id || null) : (body.spaceId !== undefined ? (body.spaceId || null) : undefined),
         },
       });
       return NextResponse.json({ result: updated });
@@ -310,6 +487,7 @@ export async function PATCH(
           tier: body.tier !== undefined ? body.tier : undefined,
           owner: body.owner !== undefined ? body.owner : undefined,
           locationId: body.location_id !== undefined ? (body.location_id || null) : (body.locationId !== undefined ? (body.locationId || null) : undefined),
+          spaceId: body.space_id !== undefined ? (body.space_id || null) : (body.spaceId !== undefined ? (body.spaceId || null) : undefined),
         },
       });
       return NextResponse.json({ result: updated });
@@ -685,6 +863,36 @@ export async function DELETE(
         { error: `Only administrators can modify '${table}'`, code: "FORBIDDEN" },
         { status: 403 }
       );
+    }
+
+    if (table === "cmn_region") {
+      await db.cmnRegion.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "cmn_state") {
+      await db.cmnState.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "cmn_campus") {
+      await db.cmnCampus.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "cmn_building") {
+      await db.cmnBuilding.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "cmn_floor") {
+      await db.cmnFloor.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "cmn_space") {
+      await db.cmnSpace.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
     }
 
     if (table === "cmn_location") {

@@ -1,0 +1,299 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 660" width="100%" height="100%">
+  <defs>
+    <linearGradient id="cwBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1329" />
+      <stop offset="100%" stop-color="#030712" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="highlightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#065f46" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+    <linearGradient id="cyanBadge" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0891b2" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1100" height="660" rx="14" fill="url(#cwBg)" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- Window Header / Title Bar -->
+  <g transform="translate(0, 0)">
+    <path d="M 0 14 C 0 6 6 0 14 0 L 1086 0 C 1094 0 1100 6 1100 14 L 1100 44 L 0 44 Z" fill="#0f172a" stroke="#1e293b" stroke-width="1"/>
+    <circle cx="24" cy="22" r="5" fill="#ef4444"/>
+    <circle cx="40" cy="22" r="5" fill="#f59e0b"/>
+    <circle cx="56" cy="22" r="5" fill="#10b981"/>
+    <text x="80" y="26" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="#94a3b8">ServiceMeow Connected Workplace — 6-Tier Spatial Hierarchy &amp; Asset Explorer</text>
+    <rect x="910" y="10" width="170" height="24" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+    <circle cx="924" cy="22" r="7" fill="#10b981"/>
+    <text x="938" y="26" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#f1f5f9">Nuvolo Alternative Active</text>
+  </g>
+
+  <!-- 6-Tier Hierarchy Flow Ribbon -->
+  <g transform="translate(30, 60)">
+    <rect width="1040" height="48" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+    <text x="16" y="29" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#38bdf8" letter-spacing="1">6-TIER HIERARCHY:</text>
+
+    <!-- Tier 1: Region -->
+    <g transform="translate(140, 10)">
+      <rect width="115" height="28" rx="6" fill="#1e293b" stroke="#475569"/>
+      <text x="10" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8">Tier 1: </text>
+      <text x="48" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#f8fafc">Americas</text>
+    </g>
+    <text x="264" y="28" font-family="system-ui, sans-serif" font-size="14" fill="#64748b">→</text>
+
+    <!-- Tier 2: State -->
+    <g transform="translate(285, 10)">
+      <rect width="125" height="28" rx="6" fill="#1e293b" stroke="#475569"/>
+      <text x="10" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8">Tier 2: </text>
+      <text x="48" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#f8fafc">California</text>
+    </g>
+    <text x="419" y="28" font-family="system-ui, sans-serif" font-size="14" fill="#64748b">→</text>
+
+    <!-- Tier 3: Campus -->
+    <g transform="translate(440, 10)">
+      <rect width="145" height="28" rx="6" fill="#1e293b" stroke="#475569"/>
+      <text x="10" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8">Tier 3: </text>
+      <text x="48" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#f8fafc">Mission Bay</text>
+    </g>
+    <text x="594" y="28" font-family="system-ui, sans-serif" font-size="14" fill="#64748b">→</text>
+
+    <!-- Tier 4: Building -->
+    <g transform="translate(615, 10)">
+      <rect width="145" height="28" rx="6" fill="#1e293b" stroke="#475569"/>
+      <text x="10" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8">Tier 4: </text>
+      <text x="48" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#f8fafc">Pavilion A Surg</text>
+    </g>
+    <text x="769" y="28" font-family="system-ui, sans-serif" font-size="14" fill="#64748b">→</text>
+
+    <!-- Tier 5: Floor -->
+    <g transform="translate(790, 10)">
+      <rect width="110" height="28" rx="6" fill="#1e293b" stroke="#475569"/>
+      <text x="10" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8">Tier 5: </text>
+      <text x="48" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#f8fafc">Floor 3 (OR)</text>
+    </g>
+    <text x="909" y="28" font-family="system-ui, sans-serif" font-size="14" fill="#64748b">→</text>
+
+    <!-- Tier 6: Space -->
+    <g transform="translate(930, 10)">
+      <rect width="95" height="28" rx="6" fill="#0284c7" stroke="#38bdf8"/>
+      <text x="10" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#e0f2fe">Tier 6: </text>
+      <text x="48" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="800" fill="#ffffff">OR-301</text>
+    </g>
+  </g>
+
+  <!-- Metric KPI Cards Row -->
+  <g transform="translate(30, 122)">
+    <!-- KPI 1 -->
+    <g transform="translate(0, 0)">
+      <rect width="192" height="74" rx="8" fill="url(#cardGrad)" stroke="#1e293b" filter="url(#shadow)"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" letter-spacing="0.5">TOTAL SPACES</text>
+      <text x="16" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="800" fill="#f8fafc">142</text>
+      <text x="64" y="52" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Rooms &amp; Suites</text>
+    </g>
+    <!-- KPI 2 -->
+    <g transform="translate(212, 0)">
+      <rect width="192" height="74" rx="8" fill="url(#cardGrad)" stroke="#1e293b" filter="url(#shadow)"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" letter-spacing="0.5">OCCUPANCY RATE</text>
+      <text x="16" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="800" fill="#10b981">84%</text>
+      <text x="74" y="52" font-family="system-ui, sans-serif" font-size="11" fill="#10b981">119 Occupied</text>
+    </g>
+    <!-- KPI 3 -->
+    <g transform="translate(424, 0)">
+      <rect width="192" height="74" rx="8" fill="url(#cardGrad)" stroke="#1e293b" filter="url(#shadow)"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" letter-spacing="0.5">FACILITY AREA</text>
+      <text x="16" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="800" fill="#38bdf8">555k</text>
+      <text x="76" y="52" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Total Sq Ft</text>
+    </g>
+    <!-- KPI 4 -->
+    <g transform="translate(636, 0)">
+      <rect width="192" height="74" rx="8" fill="url(#cardGrad)" stroke="#1e293b" filter="url(#shadow)"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" letter-spacing="0.5">BIOMEDICAL ASSETS</text>
+      <text x="16" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="800" fill="#a855f7">318</text>
+      <text x="64" y="52" font-family="system-ui, sans-serif" font-size="11" fill="#64748b">Tracked Devices</text>
+    </g>
+    <!-- KPI 5 -->
+    <g transform="translate(848, 0)">
+      <rect width="192" height="74" rx="8" fill="url(#cardGrad)" stroke="#1e293b" filter="url(#shadow)"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="600" fill="#94a3b8" letter-spacing="0.5">CMDB LINKAGE</text>
+      <text x="16" y="52" font-family="system-ui, sans-serif" font-size="24" font-weight="800" fill="#fbbf24">100%</text>
+      <text x="80" y="52" font-family="system-ui, sans-serif" font-size="11" fill="#10b981">FK Integrated</text>
+    </g>
+  </g>
+
+  <!-- Interactive Floorplan Grid (Left 2/3) -->
+  <g transform="translate(30, 210)">
+    <rect width="670" height="420" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" filter="url(#shadow)"/>
+
+    <!-- Section Header -->
+    <text x="20" y="32" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#f8fafc">Pavilion A Surgical — Floor 3 Operating Suites</text>
+    <text x="440" y="32" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Interactive Floorplan Matrix</text>
+
+    <!-- Room 1: OR-301 (Selected) -->
+    <g transform="translate(20, 52)">
+      <rect width="200" height="165" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+      <rect x="10" y="10" width="70" height="20" rx="4" fill="#0369a1"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="800" fill="#ffffff">OR-301</text>
+      <rect x="120" y="10" width="70" height="20" rx="10" fill="#065f46"/>
+      <text x="130" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#34d399">Occupied</text>
+
+      <text x="12" y="56" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Robotic Surgery Suite 1</text>
+      <text x="12" y="74" font-family="system-ui, sans-serif" font-size="10" fill="#94a3b8">Dept: Surgical Services</text>
+
+      <!-- Asset Pill inside room -->
+      <g transform="translate(10, 88)">
+        <rect width="180" height="38" rx="6" fill="#0f172a" stroke="#334155"/>
+        <circle cx="20" cy="19" r="6" fill="#38bdf8"/>
+        <text x="34" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#f1f5f9">da Vinci Xi Robot #1</text>
+        <text x="34" y="30" font-family="system-ui, sans-serif" font-size="9" fill="#94a3b8">Tag: MED-ROBOT-001</text>
+      </g>
+
+      <text x="12" y="150" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Cap: 8 • 650 sq ft</text>
+    </g>
+
+    <!-- Room 2: OR-302 -->
+    <g transform="translate(235, 52)">
+      <rect width="200" height="165" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+      <rect x="10" y="10" width="70" height="20" rx="4" fill="#334155"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="800" fill="#f1f5f9">OR-302</text>
+      <rect x="120" y="10" width="70" height="20" rx="10" fill="#065f46"/>
+      <text x="130" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#34d399">Occupied</text>
+
+      <text x="12" y="56" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Cardiovascular Suite</text>
+      <text x="12" y="74" font-family="system-ui, sans-serif" font-size="10" fill="#94a3b8">Dept: Cardiology</text>
+
+      <g transform="translate(10, 88)">
+        <rect width="180" height="38" rx="6" fill="#0f172a" stroke="#334155"/>
+        <circle cx="20" cy="19" r="6" fill="#a855f7"/>
+        <text x="34" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#f1f5f9">Philips ECG Station</text>
+        <text x="34" y="30" font-family="system-ui, sans-serif" font-size="9" fill="#94a3b8">Tag: MED-ECG-108</text>
+      </g>
+
+      <text x="12" y="150" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Cap: 10 • 720 sq ft</text>
+    </g>
+
+    <!-- Room 3: OR-303 (Vacant) -->
+    <g transform="translate(450, 52)">
+      <rect width="200" height="165" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.2"/>
+      <rect x="10" y="10" width="70" height="20" rx="4" fill="#334155"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="800" fill="#f1f5f9">OR-303</text>
+      <rect x="125" y="10" width="65" height="20" rx="10" fill="#78350f"/>
+      <text x="137" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#fde68a">Vacant</text>
+
+      <text x="12" y="56" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Orthopedic Suite 3</text>
+      <text x="12" y="74" font-family="system-ui, sans-serif" font-size="10" fill="#94a3b8">Dept: Orthopedics</text>
+
+      <g transform="translate(10, 88)">
+        <rect width="180" height="38" rx="6" fill="#0f172a" stroke="#334155"/>
+        <text x="24" y="24" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Ready for Scheduled Procedure</text>
+      </g>
+
+      <text x="12" y="150" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Cap: 6 • 580 sq ft</text>
+    </g>
+
+    <!-- Lower Level Rooms Row -->
+    <!-- Room 4: PACU-320 -->
+    <g transform="translate(20, 230)">
+      <rect width="310" height="170" rx="8" fill="#1e293b" stroke="#334155"/>
+      <rect x="10" y="10" width="80" height="20" rx="4" fill="#334155"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="800" fill="#f1f5f9">PACU-320</text>
+      <rect x="230" y="10" width="70" height="20" rx="10" fill="#065f46"/>
+      <text x="240" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#34d399">Occupied</text>
+
+      <text x="12" y="56" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Post-Anesthesia Care Recovery Unit</text>
+      <text x="12" y="74" font-family="system-ui, sans-serif" font-size="10" fill="#94a3b8">Dept: Anesthesiology • 12 Clinical Recovery Bays</text>
+
+      <g transform="translate(10, 88)">
+        <rect width="290" height="42" rx="6" fill="#0f172a" stroke="#334155"/>
+        <circle cx="20" cy="21" r="6" fill="#10b981"/>
+        <text x="36" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#f1f5f9">GE Carescape Bedside Monitors (12 Units)</text>
+        <text x="36" y="32" font-family="system-ui, sans-serif" font-size="9" fill="#10b981">All telemetry nodes online &bull; HL7 stream connected</text>
+      </g>
+      <text x="12" y="155" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Capacity: 12 • 1,200 sq ft</text>
+    </g>
+
+    <!-- Room 5: MDF Telecomm & Server Room -->
+    <g transform="translate(340, 230)">
+      <rect width="310" height="170" rx="8" fill="#1e293b" stroke="#334155"/>
+      <rect x="10" y="10" width="80" height="20" rx="4" fill="#334155"/>
+      <text x="16" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="800" fill="#f1f5f9">MDF-401</text>
+      <rect x="230" y="10" width="70" height="20" rx="10" fill="#065f46"/>
+      <text x="240" y="24" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#34d399">Occupied</text>
+
+      <text x="12" y="56" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#f8fafc">Main Data Center &amp; Telecomm Vault</text>
+      <text x="12" y="74" font-family="system-ui, sans-serif" font-size="10" fill="#94a3b8">Dept: IT Infrastructure • Redundant UPS</text>
+
+      <g transform="translate(10, 88)">
+        <rect width="290" height="42" rx="6" fill="#0f172a" stroke="#334155"/>
+        <circle cx="20" cy="21" r="6" fill="#06b6d4"/>
+        <text x="36" y="18" font-family="system-ui, sans-serif" font-size="10" font-weight="700" fill="#f1f5f9">Kubernetes Ingress + PostgreSQL Primaries</text>
+        <text x="36" y="32" font-family="system-ui, sans-serif" font-size="9" fill="#06b6d4">Rack R-01 &amp; R-02 &bull; 40kW redundant power</text>
+      </g>
+      <text x="12" y="155" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Capacity: 4 • 3,200 sq ft</text>
+    </g>
+  </g>
+
+  <!-- Live Space & Asset Detail Drawer (Right 1/3) -->
+  <g transform="translate(720, 210)">
+    <rect width="350" height="420" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1.5" filter="url(#shadow)"/>
+
+    <text x="20" y="32" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#f8fafc">Space &amp; Asset Inspection</text>
+    <text x="20" y="48" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">Selected Target: OR-301</text>
+
+    <!-- Detail Box -->
+    <g transform="translate(16, 62)">
+      <rect width="318" height="110" rx="8" fill="#1e293b" stroke="#334155"/>
+      <text x="14" y="24" font-family="system-ui, sans-serif" font-size="13" font-weight="800" fill="#38bdf8">Robotic Surgery Suite 1</text>
+      <text x="14" y="42" font-family="system-ui, sans-serif" font-size="10" fill="#94a3b8">Space Type: Operating Room (Sterile Zone)</text>
+      <text x="14" y="58" font-family="system-ui, sans-serif" font-size="10" fill="#94a3b8">Capacity: 8 Persons • Area: 650 sq ft</text>
+
+      <rect x="14" y="72" width="290" height="26" rx="4" fill="#0b1120"/>
+      <text x="20" y="89" font-family="system-ui, sans-serif" font-size="9" fill="#38bdf8">Americas &gt; CA &gt; Mission Bay &gt; Pav A &gt; Fl 3 &gt; OR-301</text>
+    </g>
+
+    <!-- CMDB Assets Section Header -->
+    <text x="20" y="196" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#38bdf8" letter-spacing="0.5">CMDB CONFIGURATION ITEMS INSIDE (2)</text>
+
+    <!-- Asset 1 -->
+    <g transform="translate(16, 208)">
+      <rect width="318" height="52" rx="6" fill="#1e293b" stroke="#334155"/>
+      <circle cx="20" cy="26" r="6" fill="#38bdf8"/>
+      <text x="36" y="22" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#f8fafc">da Vinci Xi Surgical Robot System #1</text>
+      <text x="36" y="38" font-family="system-ui, sans-serif" font-size="9" fill="#94a3b8">Class: biomedical_device • Tag: MED-ROBOT-001</text>
+      <rect x="245" y="14" width="60" height="18" rx="9" fill="#065f46"/>
+      <text x="253" y="26" font-family="system-ui, sans-serif" font-size="9" font-weight="700" fill="#34d399">In Service</text>
+    </g>
+
+    <!-- Asset 2 -->
+    <g transform="translate(16, 268)">
+      <rect width="318" height="52" rx="6" fill="#1e293b" stroke="#334155"/>
+      <circle cx="20" cy="26" r="6" fill="#a855f7"/>
+      <text x="36" y="22" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#f8fafc">Anesthesia Gas Delivery Workstation</text>
+      <text x="36" y="38" font-family="system-ui, sans-serif" font-size="9" fill="#94a3b8">Class: medical_gas • Tag: MED-GAS-014</text>
+      <rect x="245" y="14" width="60" height="18" rx="9" fill="#065f46"/>
+      <text x="253" y="26" font-family="system-ui, sans-serif" font-size="9" font-weight="700" fill="#34d399">In Service</text>
+    </g>
+
+    <!-- Action Buttons -->
+    <g transform="translate(16, 332)">
+      <rect width="154" height="34" rx="6" fill="#0284c7"/>
+      <text x="32" y="21" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="#ffffff">Open Space Form</text>
+
+      <rect x="164" y="0" width="154" height="34" rx="6" fill="#1e293b" stroke="#475569"/>
+      <text x="186" y="21" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#f1f5f9">View CMDB Assets</text>
+    </g>
+
+    <!-- Bottom Compliance Badge -->
+    <g transform="translate(16, 378)">
+      <rect width="318" height="26" rx="4" fill="#0b1120" stroke="#1e293b"/>
+      <text x="12" y="17" font-family="system-ui, sans-serif" font-size="9" fill="#10b981">✓ Life Safety Tier 1 Asset Compliance Active</text>
+    </g>
+  </g>
+</svg>

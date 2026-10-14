@@ -100,18 +100,138 @@ model Group {
 
 model CmnLocation {
   id                 String              @id @default(cuid())
-  name               String              // Display field
+  name               String              // Display field e.g. "Silicon Valley Campus / Bldg A / Floor 3 / OR-302"
+  locationType       String?             // "region", "state", "campus", "building", "floor", "space"
   street             String?
   city               String?
   state              String?
   country            String?
+  fullPath           String?             // Breadcrumb path e.g. "Americas / California / Silicon Valley / Bldg A / Floor 3 / OR-302"
   parentId           String?
   parent             CmnLocation?        @relation("LocationHierarchy", fields: [parentId], references: [id])
   children           CmnLocation[]       @relation("LocationHierarchy")
+
+  // Explicit foreign keys to the 6 spatial tiers
+  regionId           String?
+  region             CmnRegion?          @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  stateRefId         String?
+  stateRef           CmnState?           @relation(fields: [stateRefId], references: [id], onDelete: SetNull)
+  campusId           String?
+  campus             CmnCampus?          @relation(fields: [campusId], references: [id], onDelete: SetNull)
+  buildingId         String?
+  building           CmnBuilding?        @relation(fields: [buildingId], references: [id], onDelete: SetNull)
+  floorId            String?
+  floor              CmnFloor?           @relation(fields: [floorId], references: [id], onDelete: SetNull)
+  spaceId            String?
+  space              CmnSpace?           @relation(fields: [spaceId], references: [id], onDelete: SetNull)
+
   users              User[]
   configurationItems ConfigurationItem[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
+}
+
+// ----------------------------------------------------
+// Spatial Hierarchy (Connected Workplace & EAM / IWMS)
+// Region -> State -> Campus -> Building -> Floor -> Space/Room
+// ----------------------------------------------------
+
+model CmnRegion {
+  id          String        @id @default(cuid())
+  name        String        // e.g. "North America", "EMEA", "APAC", "US West"
+  code        String        @unique // e.g. "REG-AMER", "REG-WEST"
+  description String?
+  active      Boolean       @default(true)
+  states      CmnState[]
+  locations   CmnLocation[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model CmnState {
+  id          String        @id @default(cuid())
+  name        String        // e.g. "California", "Texas", "New York"
+  code        String        // e.g. "CA", "TX", "NY"
+  country     String?       @default("US")
+  regionId    String?
+  region      CmnRegion?    @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  campuses    CmnCampus[]
+  locations   CmnLocation[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([regionId, code])
+}
+
+model CmnCampus {
+  id          String        @id @default(cuid())
+  name        String        // e.g. "Silicon Valley Health Sciences Campus"
+  code        String        @unique // e.g. "CAMPUS-SV"
+  stateId     String?
+  state       CmnState?     @relation(fields: [stateId], references: [id], onDelete: SetNull)
+  address     String?
+  city        String?
+  zipCode     String?
+  latitude    Float?
+  longitude   Float?
+  buildings   CmnBuilding[]
+  locations   CmnLocation[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model CmnBuilding {
+  id            String        @id @default(cuid())
+  name          String        // e.g. "Building A - Acute Care Hospital"
+  code          String        // e.g. "BLDG-A"
+  campusId      String?
+  campus        CmnCampus?    @relation(fields: [campusId], references: [id], onDelete: SetNull)
+  buildingType  String?       @default("hospital") // "hospital", "clinic", "lab", "office", "datacenter"
+  floorsCount   Int?          @default(1)
+  totalAreaSqFt Float?
+  floors        CmnFloor[]
+  locations     CmnLocation[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([campusId, code])
+}
+
+model CmnFloor {
+  id              String        @id @default(cuid())
+  name            String        // e.g. "Floor 03 - Surgical & ICU Wing"
+  floorNumber     Int           // e.g. 3, 0 for Ground, -1 for Basement
+  code            String        // e.g. "FL-03"
+  buildingId      String?
+  building        CmnBuilding?  @relation(fields: [buildingId], references: [id], onDelete: SetNull)
+  floorplanSvgUrl String?
+  areaSqFt        Float?
+  spaces          CmnSpace[]
+  locations       CmnLocation[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([buildingId, code])
+}
+
+model CmnSpace {
+  id                 String              @id @default(cuid())
+  name               String              // e.g. "Operating Room 2", "Lab 104 - Pathology"
+  spaceNumber        String              // e.g. "OR-302", "LAB-104", "RM-402"
+  floorId            String?
+  floor              CmnFloor?           @relation(fields: [floorId], references: [id], onDelete: SetNull)
+  spaceType          String              @default("room") // "operating_room", "icu", "patient_room", "lab", "office", "conference", "server_room", "storage"
+  status             String              @default("available") // "available", "occupied", "maintenance", "reserved", "decontamination"
+  capacity           Int?                @default(1)
+  squareFeet         Float?
+  department         String?
+  svgElementId       String?             // e.g. "room-302" for matching in SVG floorplan maps
+  locations          CmnLocation[]
+  configurationItems ConfigurationItem[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@unique([floorId, spaceNumber])
 }
 
 model UserGroupMember {
@@ -346,6 +466,8 @@ model ConfigurationItem {
   owner             String?
   locationId        String?
   location          CmnLocation?    @relation(fields: [locationId], references: [id])
+  spaceId           String?
+  space             CmnSpace?       @relation(fields: [spaceId], references: [id])
   rackId            String?
   rack              CmdbRack?       @relation(fields: [rackId], references: [id])
   rackUnitStart     Int?            // 1 to 42

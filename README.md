@@ -13,7 +13,7 @@
   <a href="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml"><img src="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml/badge.svg" alt="ServiceMeow CI" /></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-emerald.svg" alt="Node.js Version" /></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-16-blue.svg" alt="PostgreSQL" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-59%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-63%20passed-8b5cf6.svg" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
 </p>
 
@@ -99,6 +99,20 @@
 
 ---
 
+### 5. Connected Workplace & 6-Tier Spatial Hierarchy (Nuvolo Alternative)
+<p align="center">
+  <img src="docs/assets/connected-workplace-showcase.svg" alt="Connected Workplace 6-Tier Spatial Hierarchy" width="100%" />
+</p>
+
+ServiceMeow provides an enterprise Connected Workplace alternative designed for corporate facilities, data centers, and clinical healthcare operations:
+- **Strict 6-Tier Spatial Model**:
+  $$\text{Region} \longrightarrow \text{State / Province} \longrightarrow \text{Campus} \longrightarrow \text{Building} \longrightarrow \text{Floor / Level} \longrightarrow \text{Space / Room}$$
+- **Interactive Space Explorer (`/workspace/spaces`)**: Real-time floorplan room matrix, live occupancy states (*Occupied*, *Vacant*, *Reserved*, *Maintenance*), and capacity meters.
+- **Biomedical & IoT CMDB Linkage**: Direct foreign key relation between physical spaces (`cmn_space`) and configuration items (`cmdb_ci`), supporting medical devices, surgical robotics, rack servers, and life safety assets.
+- **Multi-Hop Dot-Walking & Cascading Lookups**: Traverse properties effortlessly (e.g. `space.floor.building.campus.name` or `ci.space.floor.building.name`).
+
+---
+
 ## 🚀 Quick Start with Docker Compose
 
 Run ServiceMeow with PostgreSQL and the background scheduler daemon using Docker Compose:
@@ -164,7 +178,7 @@ npm run worker
 
 ## 🧪 Testing & Verification
 
-ServiceMeow includes a full Vitest test suite with **59 passing tests** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, and QuickJS WASM sandbox security boundaries.
+ServiceMeow includes a full Vitest test suite with **63 passing tests** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, and the 6-tier Connected Workplace spatial hierarchy.
 
 ```bash
 # Run Vitest test suite once

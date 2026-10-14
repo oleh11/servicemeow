@@ -123,6 +123,69 @@ export async function resolveReference(tableName: string, recordId: string): Pro
           details: loc,
         };
       }
+      case "cmn_region": {
+        const r = await db.cmnRegion.findUnique({ where: { id: recordId } });
+        if (!r) return null;
+        return {
+          value: r.id,
+          display_value: `${r.name} (${r.code})`,
+          link: `/api/now/table/cmn_region/${r.id}`,
+          details: r,
+        };
+      }
+      case "cmn_state": {
+        const s = await db.cmnState.findUnique({ where: { id: recordId }, include: { region: true } });
+        if (!s) return null;
+        return {
+          value: s.id,
+          display_value: `${s.name} (${s.code})`,
+          link: `/api/now/table/cmn_state/${s.id}`,
+          details: s,
+        };
+      }
+      case "cmn_campus": {
+        const c = await db.cmnCampus.findUnique({ where: { id: recordId }, include: { state: true } });
+        if (!c) return null;
+        return {
+          value: c.id,
+          display_value: `${c.name} (${c.code})`,
+          link: `/api/now/table/cmn_campus/${c.id}`,
+          details: c,
+        };
+      }
+      case "cmn_building": {
+        const b = await db.cmnBuilding.findUnique({ where: { id: recordId }, include: { campus: true } });
+        if (!b) return null;
+        return {
+          value: b.id,
+          display_value: `${b.name} (${b.code})`,
+          link: `/api/now/table/cmn_building/${b.id}`,
+          details: b,
+        };
+      }
+      case "cmn_floor": {
+        const f = await db.cmnFloor.findUnique({ where: { id: recordId }, include: { building: true } });
+        if (!f) return null;
+        return {
+          value: f.id,
+          display_value: `${f.name} (Floor ${f.floorNumber})`,
+          link: `/api/now/table/cmn_floor/${f.id}`,
+          details: f,
+        };
+      }
+      case "cmn_space": {
+        const sp = await db.cmnSpace.findUnique({
+          where: { id: recordId },
+          include: { floor: { include: { building: true } } },
+        });
+        if (!sp) return null;
+        return {
+          value: sp.id,
+          display_value: `${sp.name} [${sp.spaceNumber}]`,
+          link: `/api/now/table/cmn_space/${sp.id}`,
+          details: sp,
+        };
+      }
       case "cmdb_ci": {
         const ci = await db.configurationItem.findUnique({ where: { id: recordId } });
         if (!ci) return null;
@@ -245,8 +308,20 @@ export async function resolveDotWalk(
   } else if (currentTable === "cmdb_ci") {
     currentRecord = await db.configurationItem.findUnique({
       where: { id: currentRecordId },
-      include: { location: true },
+      include: { location: true, space: true },
     });
+  } else if (currentTable === "cmn_region") {
+    currentRecord = await db.cmnRegion.findUnique({ where: { id: currentRecordId } });
+  } else if (currentTable === "cmn_state") {
+    currentRecord = await db.cmnState.findUnique({ where: { id: currentRecordId }, include: { region: true } });
+  } else if (currentTable === "cmn_campus") {
+    currentRecord = await db.cmnCampus.findUnique({ where: { id: currentRecordId }, include: { state: true } });
+  } else if (currentTable === "cmn_building") {
+    currentRecord = await db.cmnBuilding.findUnique({ where: { id: currentRecordId }, include: { campus: true } });
+  } else if (currentTable === "cmn_floor") {
+    currentRecord = await db.cmnFloor.findUnique({ where: { id: currentRecordId }, include: { building: true } });
+  } else if (currentTable === "cmn_space") {
+    currentRecord = await db.cmnSpace.findUnique({ where: { id: currentRecordId }, include: { floor: true } });
   }
 
   if (!currentRecord) {
@@ -297,6 +372,24 @@ export async function resolveDotWalk(
       } else if (tokenNorm === "caller") {
         matchedRefField = "callerId";
         nextTable = "sys_user";
+      } else if (tokenNorm === "floor" && currentTable === "cmn_space") {
+        matchedRefField = "floorId";
+        nextTable = "cmn_floor";
+      } else if (tokenNorm === "building" && currentTable === "cmn_floor") {
+        matchedRefField = "buildingId";
+        nextTable = "cmn_building";
+      } else if (tokenNorm === "campus" && currentTable === "cmn_building") {
+        matchedRefField = "campusId";
+        nextTable = "cmn_campus";
+      } else if (tokenNorm === "state" && currentTable === "cmn_campus") {
+        matchedRefField = "stateId";
+        nextTable = "cmn_state";
+      } else if (tokenNorm === "region" && currentTable === "cmn_state") {
+        matchedRefField = "regionId";
+        nextTable = "cmn_region";
+      } else if (tokenNorm === "space" && currentTable === "cmdb_ci") {
+        matchedRefField = "spaceId";
+        nextTable = "cmn_space";
       }
     }
 
@@ -337,8 +430,20 @@ export async function resolveDotWalk(
       } else if (nextTable === "cmdb_ci") {
         nextRec = await db.configurationItem.findUnique({
           where: { id: fkId },
-          include: { location: true },
+          include: { location: true, space: true },
         });
+      } else if (nextTable === "cmn_region") {
+        nextRec = await db.cmnRegion.findUnique({ where: { id: fkId } });
+      } else if (nextTable === "cmn_state") {
+        nextRec = await db.cmnState.findUnique({ where: { id: fkId }, include: { region: true } });
+      } else if (nextTable === "cmn_campus") {
+        nextRec = await db.cmnCampus.findUnique({ where: { id: fkId }, include: { state: true } });
+      } else if (nextTable === "cmn_building") {
+        nextRec = await db.cmnBuilding.findUnique({ where: { id: fkId }, include: { campus: true } });
+      } else if (nextTable === "cmn_floor") {
+        nextRec = await db.cmnFloor.findUnique({ where: { id: fkId }, include: { building: true } });
+      } else if (nextTable === "cmn_space") {
+        nextRec = await db.cmnSpace.findUnique({ where: { id: fkId }, include: { floor: true } });
       }
 
       if (!nextRec) {
@@ -635,6 +740,256 @@ export async function getDynamicReferenceCandidates(
         total,
         page,
         limit,
+      };
+    }
+
+    case "cmn_region": {
+      const regionWhere: any = {};
+      if (search) {
+        regionWhere.OR = [
+          { name: { contains: search } },
+          { code: { contains: search } },
+        ];
+      }
+
+      const [total, regions] = await Promise.all([
+        db.cmnRegion.count({ where: regionWhere }),
+        db.cmnRegion.findMany({
+          where: regionWhere,
+          skip,
+          take: limit,
+          orderBy: { name: "asc" },
+        }),
+      ]);
+
+      return {
+        results: regions.map((r) => ({
+          value: r.id,
+          display_value: `${r.name} (${r.code})`,
+          subtitle: r.description || `Region Code: ${r.code}`,
+          details: r,
+        })),
+        total,
+        page,
+        limit,
+      };
+    }
+
+    case "cmn_state": {
+      const stateWhere: any = {};
+      const isRegionDependent =
+        (options.dependentField === "region" || options.dependentField === "region_id" || options.dependentField === "regionId") &&
+        Boolean(options.dependentValue);
+
+      if (isRegionDependent) {
+        stateWhere.regionId = options.dependentValue;
+      }
+      if (search) {
+        stateWhere.OR = [
+          { name: { contains: search } },
+          { code: { contains: search } },
+        ];
+      }
+
+      const [total, states] = await Promise.all([
+        db.cmnState.count({ where: stateWhere }),
+        db.cmnState.findMany({
+          where: stateWhere,
+          skip,
+          take: limit,
+          include: { region: { select: { id: true, name: true, code: true } } },
+          orderBy: { name: "asc" },
+        }),
+      ]);
+
+      return {
+        results: states.map((s) => ({
+          value: s.id,
+          display_value: `${s.name} (${s.code})`,
+          subtitle: (s.region ? `Region: ${s.region.name} (${s.region.code})` : s.country) || undefined,
+          details: s,
+        })),
+        total,
+        page,
+        limit,
+        dependentQualifierApplied: isRegionDependent,
+      };
+    }
+
+    case "cmn_campus": {
+      const campusWhere: any = {};
+      const isStateDependent =
+        (options.dependentField === "state" || options.dependentField === "state_id" || options.dependentField === "stateId") &&
+        Boolean(options.dependentValue);
+
+      if (isStateDependent) {
+        campusWhere.stateId = options.dependentValue;
+      }
+      if (search) {
+        campusWhere.OR = [
+          { name: { contains: search } },
+          { code: { contains: search } },
+          { city: { contains: search } },
+        ];
+      }
+
+      const [total, campuses] = await Promise.all([
+        db.cmnCampus.count({ where: campusWhere }),
+        db.cmnCampus.findMany({
+          where: campusWhere,
+          skip,
+          take: limit,
+          include: { state: { select: { id: true, name: true, code: true } } },
+          orderBy: { name: "asc" },
+        }),
+      ]);
+
+      return {
+        results: campuses.map((c) => ({
+          value: c.id,
+          display_value: `${c.name} (${c.code})`,
+          subtitle: [c.city, c.state?.name].filter(Boolean).join(", ") || c.address || c.code,
+          details: c,
+        })),
+        total,
+        page,
+        limit,
+        dependentQualifierApplied: isStateDependent,
+      };
+    }
+
+    case "cmn_building": {
+      const buildingWhere: any = {};
+      const isCampusDependent =
+        (options.dependentField === "campus" || options.dependentField === "campus_id" || options.dependentField === "campusId") &&
+        Boolean(options.dependentValue);
+
+      if (isCampusDependent) {
+        buildingWhere.campusId = options.dependentValue;
+      }
+      if (search) {
+        buildingWhere.OR = [
+          { name: { contains: search } },
+          { code: { contains: search } },
+          { buildingType: { contains: search } },
+        ];
+      }
+
+      const [total, buildings] = await Promise.all([
+        db.cmnBuilding.count({ where: buildingWhere }),
+        db.cmnBuilding.findMany({
+          where: buildingWhere,
+          skip,
+          take: limit,
+          include: { campus: { select: { id: true, name: true, code: true } } },
+          orderBy: { name: "asc" },
+        }),
+      ]);
+
+      return {
+        results: buildings.map((b) => ({
+          value: b.id,
+          display_value: `${b.name} (${b.code})`,
+          subtitle: `${b.buildingType || "Building"}${b.campus ? ` • Campus: ${b.campus.name}` : ""}`,
+          details: b,
+        })),
+        total,
+        page,
+        limit,
+        dependentQualifierApplied: isCampusDependent,
+      };
+    }
+
+    case "cmn_floor": {
+      const floorWhere: any = {};
+      const isBuildingDependent =
+        (options.dependentField === "building" || options.dependentField === "building_id" || options.dependentField === "buildingId") &&
+        Boolean(options.dependentValue);
+
+      if (isBuildingDependent) {
+        floorWhere.buildingId = options.dependentValue;
+      }
+      if (search) {
+        floorWhere.OR = [
+          { name: { contains: search } },
+          { code: { contains: search } },
+        ];
+      }
+
+      const [total, floors] = await Promise.all([
+        db.cmnFloor.count({ where: floorWhere }),
+        db.cmnFloor.findMany({
+          where: floorWhere,
+          skip,
+          take: limit,
+          include: { building: { select: { id: true, name: true, code: true } } },
+          orderBy: [{ floorNumber: "asc" }, { name: "asc" }],
+        }),
+      ]);
+
+      return {
+        results: floors.map((f) => ({
+          value: f.id,
+          display_value: `${f.name} (Floor ${f.floorNumber})`,
+          subtitle: f.building ? `Building: ${f.building.name} • ${f.code}` : f.code,
+          details: f,
+        })),
+        total,
+        page,
+        limit,
+        dependentQualifierApplied: isBuildingDependent,
+      };
+    }
+
+    case "cmn_space": {
+      const spaceWhere: any = {};
+      const isFloorDependent =
+        (options.dependentField === "floor" || options.dependentField === "floor_id" || options.dependentField === "floorId") &&
+        Boolean(options.dependentValue);
+
+      if (isFloorDependent) {
+        spaceWhere.floorId = options.dependentValue;
+      }
+      if (search) {
+        spaceWhere.OR = [
+          { name: { contains: search } },
+          { spaceNumber: { contains: search } },
+          { spaceType: { contains: search } },
+          { department: { contains: search } },
+        ];
+      }
+
+      const [total, spaces] = await Promise.all([
+        db.cmnSpace.count({ where: spaceWhere }),
+        db.cmnSpace.findMany({
+          where: spaceWhere,
+          skip,
+          take: limit,
+          include: {
+            floor: {
+              select: {
+                id: true,
+                name: true,
+                floorNumber: true,
+                building: { select: { id: true, name: true, code: true } },
+              },
+            },
+          },
+          orderBy: [{ spaceNumber: "asc" }, { name: "asc" }],
+        }),
+      ]);
+
+      return {
+        results: spaces.map((sp) => ({
+          value: sp.id,
+          display_value: `${sp.name} [${sp.spaceNumber}]`,
+          subtitle: `${sp.spaceType}${sp.floor ? ` • Floor ${sp.floor.floorNumber}` : ""} (${sp.status})${sp.floor?.building ? ` • Bldg: ${sp.floor.building.name}` : ""}`,
+          details: sp,
+        })),
+        total,
+        page,
+        limit,
+        dependentQualifierApplied: isFloorDependent,
       };
     }
 
