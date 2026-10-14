@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <strong>The Open-Source Enterprise Service Operations (ITIL) Platform &amp; Hermes Autonomous Agent</strong><br>
-  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Hermes Workflow Agent
+  <strong>The Open-Source Enterprise Service Operations (ITIL) Platform</strong><br>
+  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Workflow Agent
 </p>
 
 <p align="center">

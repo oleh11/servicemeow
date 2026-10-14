@@ -103,12 +103,8 @@ async function main() {
     // 7. Universal Excel-Style Table Data Editor
     await capture('/studio?tab=table_editor', 'table-editor-showcase.png', { waitMs: 2500 });
 
-    // 8. Real Hero Banner (Crisp capture of the Studio / Workspace Command Center)
-    await capture('/workspace', 'hero-banner.png', { waitMs: 2500 });
-    fs.copyFileSync(
-      path.join(ASSETS_DIR, 'hero-banner.png'),
-      path.join(ASSETS_DIR, 'hero-banner.jpg')
-    );
+    // 8. Agent Operations Center Showcase
+    await capture('/workspace', 'agent-operations-center.png', { waitMs: 2500 });
 
     console.log('[capture] ALL REAL SCREENSHOTS CAPTURED SUCCESSFULLY!');
   } finally {
