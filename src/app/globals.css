@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "../styles/m3-tokens.css";
+
+:root {
+  --background: #f8f9fa;
+  --foreground: #1f1f1f;
+  --theme-accent: #0b57d0;
+  --theme-accent-hover: #0842a0;
+  --theme-accent-light: #d3e3fd;
+  --theme-accent-glow: none;
+  --theme-header-bg: #f0f4f9;
+  --theme-header-text: #1f1f1f;
+  --theme-header-border: #c4c7c5;
+  --theme-sidebar-bg: #f7f9fc;
+  --theme-sidebar-text: #444746;
+  --theme-sidebar-border: #c4c7c5;
+  --theme-sidebar-active-bg: #d3e3fd;
+  --theme-sidebar-active-text: #041e49;
+  --theme-page-bg: #f8f9fa;
+  --theme-card-bg: #ffffff;
+  --theme-card-border: #c4c7c5;
+  --theme-text-primary: #1f1f1f;
+  --theme-text-secondary: #444746;
+}
+
+body {
+  color: var(--theme-text-primary);
+  background: var(--theme-page-bg);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==================================================== */
+/* DARK THEME MODE (Midnight Cyber & Synthwave)        */
+/* ==================================================== */
+[data-theme-mode="dark"] {
+  --background: var(--theme-page-bg);
+  --foreground: var(--theme-text-primary);
+}
+
+[data-theme-mode="dark"] body {
+  background-color: var(--theme-page-bg);
+  color: var(--theme-text-primary);
+}
+
+[data-theme-mode="dark"] .bg-slate-50,
+[data-theme-mode="dark"] .bg-slate-100 {
+  background-color: var(--theme-page-bg) !important;
+}
+
+[data-theme-mode="dark"] .bg-white {
+  background-color: var(--theme-card-bg) !important;
+}
+
+[data-theme-mode="dark"] .text-slate-900,
+[data-theme-mode="dark"] .text-slate-800 {
+  color: var(--theme-text-primary) !important;
+}
+
+[data-theme-mode="dark"] .text-slate-700,
+[data-theme-mode="dark"] .text-slate-600,
+[data-theme-mode="dark"] .text-slate-500 {
+  color: var(--theme-text-secondary) !important;
+}
+
+[data-theme-mode="dark"] .border-slate-200,
+[data-theme-mode="dark"] .border-slate-100,
+[data-theme-mode="dark"] .border-slate-300 {
+  border-color: var(--theme-card-border) !important;
+}
+
+[data-theme-mode="dark"] .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+[data-theme-mode="dark"] .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: var(--theme-card-border) !important;
+}
+
+[data-theme-mode="dark"] input,
+[data-theme-mode="dark"] select,
+[data-theme-mode="dark"] textarea {
+  background-color: var(--theme-card-bg);
+  color: var(--theme-text-primary);
+  border-color: var(--theme-card-border);
+}
+
+/* ==================================================== */
+/* COMPACT DENSITY MODE                                 */
+/* ==================================================== */
+.density-compact td,
+.density-compact th {
+  padding-top: 0.375rem !important;
+  padding-bottom: 0.375rem !important;
+  font-size: 0.75rem !important;
+}
+
+.density-compact .py-3 {
+  padding-top: 0.375rem !important;
+  padding-bottom: 0.375rem !important;
+}
+
+.density-compact .py-4 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.density-compact .p-6 {
+  padding: 1rem !important;
+}
+
+.density-compact .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem !important;
+}
+
+.density-compact .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.5rem !important;
+}
+
+/* ==================================================== */
+/* SCROLLBAR CUSTOMIZATION                              */
+/* ==================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--theme-sidebar-border, #334155);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-accent, #10b981);
+}

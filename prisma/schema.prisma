@@ -1,0 +1,998 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ----------------------------------------------------
+// System & Data Dictionary (The "Now Engine")
+// ----------------------------------------------------
+
+model SysDbObject {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g. "task", "incident", "cmdb_ci"
+  label       String   // e.g. "Incident", "Task", "Configuration Item"
+  superClass  String?  // e.g. "task" (inheritance)
+  isCustom    Boolean  @default(false)
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model SysDictionary {
+  id             String   @id @default(cuid())
+  tableName      String   // e.g. "incident"
+  columnName     String   // e.g. "category"
+  columnLabel    String   // e.g. "Category"
+  columnType     String   // "string", "integer", "choice", "boolean", "reference", "datetime", "text"
+  isMandatory    Boolean  @default(false)
+  isReadOnly     Boolean  @default(false)
+  referenceTable String?  // e.g. "sys_user" if columnType is "reference"
+  defaultVal     String?
+  isCustom       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  @@unique([tableName, columnName])
+}
+
+model SysChoice {
+  id         String   @id @default(cuid())
+  tableName  String   // e.g. "incident"
+  columnName String   // e.g. "state"
+  label      String   // e.g. "In Progress"
+  value      String   // e.g. "2"
+  sequence   Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([tableName, columnName])
+}
+
+// ----------------------------------------------------
+// Organization & RBAC
+// ----------------------------------------------------
+
+model User {
+  id            String             @id @default(cuid())
+  userName      String?            @unique // Unique username identifier (e.g. "admin", "whiskers.mcpaws")
+  email         String             @unique
+  passwordHash  String?            // bcrypt password hash
+  name          String             // Display field
+  title         String?
+  department    String?
+  role          String             @default("employee") // Primary role: "admin", "itil", "cab_approver", "employee"
+  roles         String?            @default("") // Comma-separated secondary directly-assigned roles
+  active        Boolean            @default(true)
+  avatar        String?
+  managerId     String?            // Self-referencing FK -> sys_user.id
+  manager       User?              @relation("UserManager", fields: [managerId], references: [id])
+  directReports User[]             @relation("UserManager")
+  locationId    String?            // FK -> cmn_location.id
+  location      CmnLocation?       @relation(fields: [locationId], references: [id])
+  createdAt     DateTime           @default(now())
+  
+  // Relations
+  assignedTasks        Task[]            @relation("AssignedTo")
+  openedTasks          Task[]            @relation("OpenedBy")
+  groupMembers         UserGroupMember[]
+  managedGroups        Group[]           @relation("GroupManager")
+  calledIncidents      Incident[]        @relation("IncidentCaller")
+  activityNotes        ActivityNote[]
+  approvals            ApprovalRecord[]
+  articles             KnowledgeArticle[]
+  sessions             SysUserSession[]  @relation("UserSessions")
+  impersonatedSessions SysUserSession[]  @relation("ImpersonatedSessionUser")
+}
+
+model Group {
+  id          String            @id @default(cuid())
+  name        String            @unique // Display field
+  description String?
+  active      Boolean           @default(true)
+  managerId   String?
+  manager     User?             @relation("GroupManager", fields: [managerId], references: [id])
+  roles       String?           @default("")
+  createdAt   DateTime          @default(now())
+  members     UserGroupMember[]
+  tasks       Task[]            @relation("AssignmentGroup")
+}
+
+model CmnLocation {
+  id                 String              @id @default(cuid())
+  name               String              // Display field
+  street             String?
+  city               String?
+  state              String?
+  country            String?
+  parentId           String?
+  parent             CmnLocation?        @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children           CmnLocation[]       @relation("LocationHierarchy")
+  users              User[]
+  configurationItems ConfigurationItem[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+}
+
+model UserGroupMember {
+  id        String   @id @default(cuid())
+  userId    String
+  groupId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, groupId])
+}
+
+model SysUserRole {
+  id                String   @id @default(cuid())
+  name              String   @unique // e.g. "admin", "itil", "problem_manager"
+  label             String   // e.g. "Problem Manager"
+  description       String?  // e.g. "Investigate root causes and manage problem records"
+  elevatedPrivilege Boolean  @default(false)
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ----------------------------------------------------
+// Server-Side Sessions & Impersonation (sys_user_session)
+// ----------------------------------------------------
+
+model SysUserSession {
+  id                 String    @id @default(cuid()) // Token / Session ID
+  userId             String
+  user               User      @relation("UserSessions", fields: [userId], references: [id], onDelete: Cascade)
+  impersonatedUserId String?   // When admin impersonates another user
+  impersonatedUser   User?     @relation("ImpersonatedSessionUser", fields: [impersonatedUserId], references: [id], onDelete: SetNull)
+  expiresAt          DateTime
+  userAgent          String?
+  ipAddress          String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+
+// ----------------------------------------------------
+// Core ITIL Polymorphic Task Model
+// ----------------------------------------------------
+
+model Task {
+  id                String            @id @default(cuid())
+  number            String            @unique // e.g. INC0001001, CHG0001001
+  sysClass          String            @default("task") // Discriminator
+  sysClassName      String            // "incident", "change_request", "problem", "sc_request", "sc_req_item", "sc_task"
+  shortDescription  String
+  description       String?
+  priority          Int               @default(3) // 1 (Critical) to 5 (Planning)
+  state             Int               @default(1) // 1: New, 2: In Progress, 3: On Hold, 6: Resolved, 7: Closed, 8: Canceled
+  impact            Int               @default(2) // 1 (High), 2 (Medium), 3 (Low)
+  urgency           Int               @default(2) // 1 (High), 2 (Medium), 3 (Low)
+  assignedToId      String?
+  assignedTo        User?             @relation("AssignedTo", fields: [assignedToId], references: [id])
+  assignmentGroupId String?
+  assignmentGroup   Group?            @relation("AssignmentGroup", fields: [assignmentGroupId], references: [id])
+  openedById        String?
+  openedBy          User?             @relation("OpenedBy", fields: [openedById], references: [id])
+  cmdbCiId          String?
+  cmdbCi            ConfigurationItem? @relation("TaskCmdbCi", fields: [cmdbCiId], references: [id])
+  openedAt          DateTime          @default(now())
+  closedAt          DateTime?
+  closeCode         String?
+  closeNotes        String?
+  dueDate           DateTime?
+  active            Boolean           @default(true)
+  dynamicFields     String?           // JSON string of custom dynamic attributes
+
+  // ITIL Child Extensions (1-to-1)
+  incident          Incident?
+  changeRequest     ChangeRequest?
+  problem           Problem?
+  request           Request?
+  requestedItem     RequestedItem?
+  catalogTask       CatalogTask?
+
+  // Associated entities
+  activityNotes     ActivityNote[]
+  slaInstances      SlaInstance[]
+  approvals         ApprovalRecord[]
+  changeTask        ChangeTask?
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([sysClassName, state, priority])
+}
+
+// ----------------------------------------------------
+// Specific ITIL Extensions
+// ----------------------------------------------------
+
+model Incident {
+  id                  String             @id @default(cuid())
+  taskId              String             @unique
+  task                Task               @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  callerId            String?            // Reference to User
+  caller              User?              @relation("IncidentCaller", fields: [callerId], references: [id])
+  callerName          String?
+  callerEmail         String?
+  category            String             @default("inquiry") // inquiry, software, hardware, network, database
+  subcategory         String?
+  holdReason          String?            // "awaiting_caller", "awaiting_vendor", "awaiting_change"
+  severity            Int                @default(3)
+  businessServiceCiId String?
+  cmdbCiId            String?
+  cmdbCi              ConfigurationItem? @relation(fields: [cmdbCiId], references: [id])
+  problemId           String?
+  problem             Problem?           @relation(fields: [problemId], references: [id])
+}
+
+model ChangeRequest {
+  id                 String    @id @default(cuid())
+  taskId             String    @unique
+  task               Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  changeType         String    @default("normal") // "normal", "standard", "emergency"
+  risk               String    @default("moderate") // "very_high", "high", "moderate", "low"
+  cabRequired        Boolean   @default(true)
+  cabApprovalState   String    @default("not_requested") // "not_requested", "requested", "approved", "rejected"
+  plannedStart       DateTime?
+  plannedEnd         DateTime?
+  implementationPlan String?
+  backoutPlan        String?
+  testPlan           String?
+  cmdbCiId           String?
+  cmdbCi             ConfigurationItem? @relation(fields: [cmdbCiId], references: [id])
+  changeTasks        ChangeTask[]
+  conflicts          ChangeConflict[]   @relation("PrimaryChange")
+}
+
+model Problem {
+  id           String     @id @default(cuid())
+  taskId       String     @unique
+  task         Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  rootCause    String?
+  workaround   String?
+  isKnownError Boolean    @default(false)
+  incidents    Incident[]
+}
+
+// ----------------------------------------------------
+// Service Catalog & Request Fulfillment
+// ----------------------------------------------------
+
+model CatalogItem {
+  id               String            @id @default(cuid())
+  name             String
+  shortDescription String
+  description      String?
+  category         String            // Hardware, Software, Access, Cloud Services
+  price            Float             @default(0.0)
+  icon             String            @default("Box") // Lucide icon name
+  deliveryDays     Int               @default(2)
+  active           Boolean           @default(true)
+  variables        CatalogVariable[]
+  requestedItems   RequestedItem[]
+  createdAt        DateTime          @default(now())
+}
+
+model CatalogVariable {
+  id            String              @id @default(cuid())
+  catalogItemId String?
+  catalogItem   CatalogItem?        @relation(fields: [catalogItemId], references: [id], onDelete: Cascade)
+  producerId    String?
+  producer      SysRecordProducer?  @relation(fields: [producerId], references: [id], onDelete: Cascade)
+  variableSetId String?
+  variableSet   CatalogVariableSet? @relation(fields: [variableSetId], references: [id], onDelete: Cascade)
+  name          String              // e.g. "storage_size", "short_description"
+  label         String              // e.g. "Storage Option", "Issue Summary"
+  varType       String              // "string", "select", "checkbox", "date", "reference", "text"
+  isMandatory   Boolean             @default(false)
+  optionsJson   String?             // Array of choice strings: ["256GB", "512GB", "1TB"]
+  order         Int                 @default(0)
+  mapToField    Boolean             @default(false)
+  targetField   String?             // Column name in target table, e.g. "short_description"
+}
+
+model Request {
+  id            String          @id @default(cuid())
+  taskId        String          @unique
+  task          Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  requestedFor  String?
+  totalPrice    Float           @default(0.0)
+  items         RequestedItem[]
+}
+
+model RequestedItem {
+  id            String        @id @default(cuid())
+  taskId        String        @unique
+  task          Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  requestId     String
+  request       Request       @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  catalogItemId String
+  catalogItem   CatalogItem   @relation(fields: [catalogItemId], references: [id])
+  variablesJson String?       // Form values chosen by user
+  stage         String        @default("submitted") // "submitted", "approval", "fulfillment", "complete"
+  catalogTasks  CatalogTask[]
+}
+
+model CatalogTask {
+  id            String        @id @default(cuid())
+  taskId        String        @unique
+  task          Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  ritmId        String
+  requestedItem RequestedItem @relation(fields: [ritmId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------------------------------
+// CMDB (Configuration Management Database)
+// ----------------------------------------------------
+
+model ConfigurationItem {
+  id                String          @id @default(cuid())
+  name              String          @unique // Display field, e.g. "prod-web-01"
+  ciClass           String          // "business_service", "server", "database", "application", "network"
+  sysClass          String          @default("cmdb_ci") // Discriminator
+  status            String          @default("in_service") // "in_service", "maintenance", "retired"
+  operationalStatus String          @default("operational") // "operational", "non_operational", "maintenance", "retired"
+  environment       String          @default("production") // "production", "staging", "dev"
+  assetTag          String?
+  ipAddress         String?
+  hostName          String?
+  tier              String?         // "Tier 1 - Mission Critical", "Tier 2", "Tier 3"
+  owner             String?
+  locationId        String?
+  location          CmnLocation?    @relation(fields: [locationId], references: [id])
+  rackId            String?
+  rack              CmdbRack?       @relation(fields: [rackId], references: [id])
+  rackUnitStart     Int?            // 1 to 42
+  rackUnitHeight    Int?            @default(1) // 1U, 2U, 4U
+  metadataJson      String?
+  createdAt         DateTime        @default(now())
+
+  // Relationships in topology
+  parentRelations CIRelation[]   @relation("ParentCI")
+  childRelations  CIRelation[]   @relation("ChildCI")
+  tasks           Task[]         @relation("TaskCmdbCi")
+  incidents       Incident[]
+  changes         ChangeRequest[]
+}
+
+model SysNumber {
+  id            String   @id @default(cuid())
+  tableName     String   @unique // e.g. "task", "incident", "change_request", "problem"
+  prefix        String   // e.g. "TASK", "INC", "CHG", "PRB"
+  digits        Int      @default(7)
+  currentNumber Int      @default(1000)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model CIRelation {
+  id           String            @id @default(cuid())
+  parentCiId  String
+  childCiId   String
+  relationType String            // "Depends on", "Runs on", "Connects to", "Hosted on"
+  parentCi     ConfigurationItem @relation("ParentCI", fields: [parentCiId], references: [id], onDelete: Cascade)
+  childCi      ConfigurationItem @relation("ChildCI", fields: [childCiId], references: [id], onDelete: Cascade)
+
+  @@unique([parentCiId, childCiId, relationType])
+}
+
+model CmdbRack {
+  id             String              @id @default(cuid())
+  name           String              @unique // e.g. "Rack DC-A01"
+  site           String              @default("Austin Datacenter Primary")
+  uHeight        Int                 @default(42) // 42U standard
+  maxPowerWatts  Int                 @default(5000)
+  status         String              @default("active") // "active", "full", "maintenance"
+  notes          String?
+  mountedCis     ConfigurationItem[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+model CmnService {
+  id             String              @id @default(cuid())
+  name           String              @unique // e.g. "Identity & Single Sign-On (SSO)"
+  category       String              @default("Core Infrastructure")
+  status         String              @default("operational") // "operational", "degraded", "partial_outage", "major_outage", "maintenance"
+  description    String?
+  uptimePercent  Float               @default(99.98)
+  updatedAt      DateTime            @updatedAt
+  createdAt      DateTime            @default(now())
+}
+
+model AstContract {
+  id             String              @id @default(cuid())
+  contractNumber String              @unique // e.g. "CTR001001"
+  name           String              // e.g. "AWS Enterprise Support"
+  vendor         String              // e.g. "Amazon Web Services"
+  contractType   String              @default("service") // "software_license", "hardware_lease", "maintenance", "service"
+  cost           Float               @default(0.0)
+  startDate      DateTime            @default(now())
+  endDate        DateTime
+  status         String              @default("active") // "active", "expiring_soon", "expired"
+  terms          String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+// ----------------------------------------------------
+// Knowledge Management
+// ----------------------------------------------------
+
+model KnowledgeArticle {
+  id          String   @id @default(cuid())
+  number      String   @unique // e.g. DOC0001001
+  title       String
+  content     String
+  category    String   // "Hardware", "Software", "Network", "How-To", "Policy"
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  views       Int      @default(0)
+  helpfulVotes Int     @default(0)
+  isPublished Boolean  @default(true)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
+
+// ----------------------------------------------------
+// SLA Engine & Activity Streams
+// ----------------------------------------------------
+
+model SlaDefinition {
+  id                    String        @id @default(cuid())
+  name                  String        // e.g. "Priority 1 Resolution SLA (4 Hours)"
+  targetTable           String        @default("incident")
+  targetDurationMinutes Int           // in minutes
+  priorityTarget        Int?          // 1, 2, 3, etc.
+  stage                 String        @default("resolution") // "response", "resolution"
+  scheduleId            String?
+  schedule              CmnSchedule?  @relation(fields: [scheduleId], references: [id])
+  active                Boolean       @default(true)
+  instances             SlaInstance[]
+}
+
+model SlaInstance {
+  id                  String        @id @default(cuid())
+  slaDefinitionId     String
+  slaDefinition       SlaDefinition @relation(fields: [slaDefinitionId], references: [id], onDelete: Cascade)
+  taskId              String
+  task                Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  startTime           DateTime      @default(now())
+  breachTime          DateTime
+  state               String        @default("in_progress") // "in_progress", "achieved", "breached", "paused"
+  pausedAt            DateTime?
+  totalPauseSeconds   Int           @default(0)
+  createdAt           DateTime      @default(now())
+}
+
+model ActivityNote {
+  id        String   @id @default(cuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id])
+  noteType  String   // "work_note" (yellow internal) or "customer_comment" (purple public)
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model ApprovalRecord {
+  id           String   @id @default(cuid())
+  taskId       String
+  task         Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  approverId   String
+  approver     User     @relation(fields: [approverId], references: [id])
+  state        String   @default("requested") // "requested", "approved", "rejected"
+  comments     String?
+  approvalType String   @default("cab") // "cab", "manager"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ----------------------------------------------------
+// Admin & Studio Automation Engine (ServiceMeow Core)
+// ----------------------------------------------------
+
+model SysScript {
+  id               String   @id @default(cuid())
+  name             String   // e.g. "Auto-assign Network Incidents to SRE"
+  tableName        String   // "incident", "change_request", "problem", "task"
+  when             String   // "before_insert", "after_insert", "before_update", "after_update"
+  active           Boolean  @default(true)
+  order            Int      @default(100)
+  filterConditions String?  // JSON array of conditions: [{"field":"category","operator":"=","value":"network"}]
+  actionsJson      String   // JSON object: {"setFields":{"assignmentGroupId":"..."},"addWorkNote":"...","autoAssignTo":"..."}
+  description      String?
+  script           String?  // Custom script snippet or comment
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([tableName, when, active])
+}
+
+model SysUiPolicy {
+  id               String              @id @default(cuid())
+  name             String              // e.g. "Make Close Notes Mandatory on Resolve"
+  tableName        String              // "incident", "change_request", "problem"
+  shortDescription String?
+  active           Boolean             @default(true)
+  order            Int                 @default(100)
+  conditionField   String              // e.g. "state"
+  conditionOperator String             @default("=") // "=", "!=", "in"
+  conditionValue   String              // e.g. "6"
+  reverseIfFalse   Boolean             @default(true)
+  actions          SysUiPolicyAction[]
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@index([tableName, active])
+}
+
+model SysUiPolicyAction {
+  id          String      @id @default(cuid())
+  uiPolicyId  String
+  uiPolicy    SysUiPolicy @relation(fields: [uiPolicyId], references: [id], onDelete: Cascade)
+  fieldName   String      // e.g. "close_notes", "subcategory", "close_code"
+  mandatory   String      @default("ignore") // "true", "false", "ignore"
+  readOnly    String      @default("ignore") // "true", "false", "ignore"
+  visible     String      @default("ignore") // "true", "false", "ignore"
+  createdAt   DateTime    @default(now())
+}
+
+model SysHubFlow {
+  id               String                @id @default(cuid())
+  name             String                // e.g. "P1 Major Incident Auto-Triage & Cat-Swarm Flow"
+  triggerTable     String                // "incident", "change_request", "problem"
+  triggerCondition String                // e.g. "priority=1", "risk=high"
+  active           Boolean               @default(true)
+  description      String?
+  stepsJson        String                // JSON array of steps: [{"step":1,"action":"notification","title":"Alert SRE On-Call","detail":"..."}]
+  runCount         Int                   @default(0)
+  lastRunAt        DateTime?
+  executions       SysHubFlowExecution[]
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  @@index([triggerTable, active])
+}
+
+model SysHubFlowExecution {
+  id           String     @id @default(cuid())
+  flowId       String
+  flow         SysHubFlow @relation(fields: [flowId], references: [id], onDelete: Cascade)
+  recordId     String     // e.g. taskId
+  recordNumber String?    // e.g. INC0001001
+  status       String     @default("completed") // "running", "completed", "failed"
+  executionLog String     // JSON array of step execution log messages
+  createdAt    DateTime   @default(now())
+}
+
+// ----------------------------------------------------
+// Security & Access Control Lists (ACLs - sys_security_acl)
+// ----------------------------------------------------
+
+model SysSecurityAcl {
+  id           String   @id @default(cuid())
+  name         String   // e.g. "Incident Read Policy"
+  operation    String   // "read", "write", "create", "delete"
+  tableName    String   // "incident", "task", "u_custom", or "*"
+  fieldName    String?  // null or "*" for table-level, or specific field name
+  roleRequired String   // "admin", "itil", "cab_approver", "employee", "public"
+  condition    String?  // Optional query/filter condition
+  active       Boolean  @default(true)
+  description  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([tableName, operation, active])
+}
+
+// ----------------------------------------------------
+// Dynamic Custom Table Record Storage
+// ----------------------------------------------------
+
+model SysCustomRecord {
+  id        String   @id @default(cuid())
+  tableName String   // e.g. "u_hardware_inventory"
+  dataJson  String   // JSON string of all attributes
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tableName])
+}
+
+// ----------------------------------------------------
+// Audit History Engine (sys_audit)
+// ----------------------------------------------------
+
+model SysAudit {
+  id         String   @id @default(cuid())
+  tableName  String   // e.g. "incident", "task"
+  documentId String   // sys_id of the record
+  fieldName  String   // field that changed
+  oldValue   String?
+  newValue   String?
+  userId     String?
+  userName   String?
+  createdAt  DateTime @default(now())
+
+  @@index([tableName, documentId])
+}
+
+// ----------------------------------------------------
+// Data Import Sets & Transform Maps (sys_import_set, sys_transform_map)
+// ----------------------------------------------------
+
+model SysImportSet {
+  id            String            @id @default(cuid())
+  number        String            @unique // e.g. ISET0001001
+  tableName     String            @default("u_imp_staging")
+  targetTable   String            @default("incident")
+  state         String            @default("loaded") // "pending", "loaded", "transformed", "failed"
+  rowsCount     Int               @default(0)
+  rows          SysImportSetRow[]
+  transformMaps SysTransformMap[]
+  createdAt     DateTime          @default(now())
+}
+
+model SysImportSetRow {
+  id           String       @id @default(cuid())
+  importSetId  String
+  importSet    SysImportSet @relation(fields: [importSetId], references: [id], onDelete: Cascade)
+  rowNumber    Int
+  status       String       @default("pending") // "pending", "inserted", "updated", "ignored", "error"
+  errorMessage String?
+  rawDataJson  String       // JSON string of parsed row
+  targetId     String?      // Resulting record sys_id
+  createdAt    DateTime     @default(now())
+
+  @@index([importSetId])
+}
+
+model SysTransformMap {
+  id          String              @id @default(cuid())
+  name        String              // e.g. "Incident CSV Transform"
+  sourceTable String              @default("u_imp_staging")
+  targetTable String              @default("incident")
+  active      Boolean             @default(true)
+  importSetId String?
+  importSet   SysImportSet?       @relation(fields: [importSetId], references: [id])
+  entries     SysTransformEntry[]
+  createdAt   DateTime            @default(now())
+}
+
+model SysTransformEntry {
+  id             String          @id @default(cuid())
+  transformMapId String
+  transformMap   SysTransformMap @relation(fields: [transformMapId], references: [id], onDelete: Cascade)
+  sourceField    String          // CSV column header
+  targetField    String          // Target field in table
+  coalesce       Boolean         @default(false) // Match key for upsert
+  createdAt      DateTime        @default(now())
+
+  @@index([transformMapId])
+}
+
+// ----------------------------------------------------
+// Client Scripts Engine (sys_script_client)
+// ----------------------------------------------------
+
+model SysClientScript {
+  id          String   @id @default(cuid())
+  name        String   // e.g. "Validate Impact on Urgency Change"
+  tableName   String   // e.g. "incident", "change_request"
+  type        String   // "onLoad", "onChange", "onSubmit"
+  fieldName   String?  // for onChange
+  scriptBody  String   // JS code executed with (g_form, oldValue, newValue)
+  active      Boolean  @default(true)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tableName, type, active])
+}
+
+// ----------------------------------------------------
+// Update Sets Engine (sys_update_set)
+// ----------------------------------------------------
+
+model SysUpdateSet {
+  id          String   @id @default(cuid())
+  name        String   // e.g. "Default", "Incident Enhancements v1"
+  state       String   @default("in_progress") // "in_progress", "complete", "committed"
+  description String?
+  application String   @default("global") // Scope e.g. "global", "x_custom_app"
+  isCurrent   Boolean  @default(false)
+  payloadJson String   @default("[]") // Captured XML/JSON change manifests
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ----------------------------------------------------
+// Custom Applications & Navigation Modules (sys_app, sys_app_application, sys_app_module)
+// ----------------------------------------------------
+
+model SysApp {
+  id               String              @id @default(cuid())
+  name             String              // e.g. "Security Incident Response", "Pet Care Management"
+  scope            String              @unique // e.g. "global", "x_purr_secops"
+  version          String              @default("1.0.0")
+  description      String?
+  vendor           String?             @default("ServiceMeow")
+  active           Boolean             @default(true)
+  icon             String              @default("Box") // Lucide icon
+  applicationMenus SysAppApplication[]
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+}
+
+model SysAppApplication {
+  id        String         @id @default(cuid())
+  appId     String?
+  app       SysApp?        @relation(fields: [appId], references: [id], onDelete: Cascade)
+  title     String         // e.g. "Security Operations", "Incident Management"
+  name      String         // technical identifier e.g. "secops", "incident"
+  category  String         @default("Custom Applications")
+  roles     String         @default("itil") // Roles allowed to access
+  order     Int            @default(100)
+  active    Boolean        @default(true)
+  icon      String         @default("Layers")
+  modules   SysAppModule[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model SysAppModule {
+  id            String            @id @default(cuid())
+  applicationId String
+  application   SysAppApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  title         String            // e.g. "All Incidents", "Create New", "Critical Alerts"
+  order         Int               @default(100)
+  roles         String            @default("itil")
+  active        Boolean           @default(true)
+  linkType      String            @default("list") // "list", "new", "url", "separator"
+  tableName     String?           // e.g. "incident", "change_request", "u_custom"
+  filterQuery   String?           // e.g. "priority=1^active=true"
+  url           String?           // e.g. "/workspace/dashboard"
+  icon          String?           // Lucide icon
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([applicationId])
+}
+
+// ----------------------------------------------------
+// Record Producers & Variable Sets (sc_cat_item_producer)
+// ----------------------------------------------------
+
+model SysRecordProducer {
+  id               String            @id @default(cuid())
+  name             String
+  shortDescription String
+  description      String?
+  category         String            @default("IT Services")
+  targetTable      String            @default("incident") // "incident", "change_request", "problem", "u_*"
+  producerScript   String?           // Sandbox script running with (current, producer)
+  redirectUrl      String?           // Target URL e.g. "/workspace/incident/{id}"
+  icon             String            @default("FileSpreadsheet")
+  active           Boolean           @default(true)
+  variables        CatalogVariable[]
+  uiPolicies       CatalogUiPolicy[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model CatalogVariableSet {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  description String?
+  variables   CatalogVariable[]
+  createdAt   DateTime          @default(now())
+}
+
+model CatalogUiPolicy {
+  id                 String                  @id @default(cuid())
+  name               String
+  producerId         String?
+  producer           SysRecordProducer?      @relation(fields: [producerId], references: [id], onDelete: Cascade)
+  catalogItemId      String?
+  conditionVariable  String
+  conditionOperator  String                  @default("=") // "=", "!=", "in"
+  conditionValue     String
+  reverseIfFalse     Boolean                 @default(true)
+  active             Boolean                 @default(true)
+  actions            CatalogUiPolicyAction[]
+  createdAt          DateTime                @default(now())
+}
+
+model CatalogUiPolicyAction {
+  id           String          @id @default(cuid())
+  uiPolicyId   String
+  uiPolicy     CatalogUiPolicy @relation(fields: [uiPolicyId], references: [id], onDelete: Cascade)
+  variableName String
+  mandatory    String          @default("ignore") // "true", "false", "ignore"
+  visible      String          @default("ignore") // "true", "false", "ignore"
+  createdAt    DateTime        @default(now())
+}
+
+// ----------------------------------------------------
+// Script Includes (sys_script_include)
+// ----------------------------------------------------
+
+model SysScriptInclude {
+  id             String   @id @default(cuid())
+  name           String   @unique // e.g. "IncidentUtils"
+  apiName        String   @unique // e.g. "global.IncidentUtils"
+  script         String   // JavaScript class implementation
+  clientCallable Boolean  @default(false)
+  description    String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ----------------------------------------------------
+// Event Registry & Email Notifications (sysevent & sysevent_email_action)
+// ----------------------------------------------------
+
+model SysEvent {
+  id          String    @id @default(cuid())
+  name        String    // e.g. "incident.created", "incident.priority.p1", "approval.requested"
+  tableName   String
+  instanceId  String
+  parm1       String?
+  parm2       String?
+  processed   Boolean   @default(false)
+  processedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([name, processed])
+}
+
+model SysEmailNotification {
+  id             String   @id @default(cuid())
+  name           String   // e.g. "Incident P1 Escalation Alert"
+  tableName      String   // "incident", "change_request", "task"
+  eventTrigger   String   // e.g. "incident.created"
+  condition      String?  // e.g. "priority=1"
+  subject        String   // e.g. "CRITICAL: Incident ${number} - ${short_description}"
+  bodyTemplate   String   // Text/HTML template with ${token} substitution
+  recipientRoles String   @default("itil,admin")
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ----------------------------------------------------
+// Scheduled Jobs (sysauto_script / sys_trigger)
+// ----------------------------------------------------
+
+model SysScheduledJob {
+  id                 String    @id @default(cuid())
+  name               String    @unique // e.g. "Auto-Close Inactive Resolved Incidents"
+  runIntervalMinutes Int       @default(60) // in minutes
+  script             String
+  lastRunAt          DateTime?
+  nextRunAt          DateTime?
+  active             Boolean   @default(true)
+  lastLog            String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+// ----------------------------------------------------
+// SLA Business Schedules (cmn_schedule)
+// ----------------------------------------------------
+
+model CmnSchedule {
+  id             String          @id @default(cuid())
+  name           String          @unique // e.g. "8x5 Americas (Mon-Fri 9-5)", "24x7 Continuous"
+  timeZone       String          @default("America/New_York")
+  workDays       String          @default("1,2,3,4,5") // Mon(1) to Fri(5)
+  startHour      Int             @default(9) // 9 AM
+  endHour        Int             @default(17) // 5 PM
+  holidaysJson   String          @default("[]") // Array of "YYYY-MM-DD"
+  slaDefinitions SlaDefinition[]
+  createdAt      DateTime        @default(now())
+}
+
+// ----------------------------------------------------
+// Change Governance & Change Tasks (change_task & change_collision)
+// ----------------------------------------------------
+
+model ChangeTask {
+  id              String        @id @default(cuid())
+  taskId          String        @unique
+  task            Task          @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  changeRequestId String
+  changeRequest   ChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Cascade)
+  taskType        String        @default("implementation") // "planning", "implementation", "testing", "verification", "backout"
+  sequence        Int           @default(1)
+  required        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model ChangeConflict {
+  id                  String        @id @default(cuid())
+  changeId            String
+  change              ChangeRequest @relation("PrimaryChange", fields: [changeId], references: [id], onDelete: Cascade)
+  conflictingChangeId String?
+  ciId                String?
+  conflictType        String        @default("ci_window_overlap") // "ci_window_overlap", "blackout_window"
+  details             String
+  createdAt           DateTime      @default(now())
+}
+
+// ----------------------------------------------------
+// File Attachments (sys_attachment)
+// ----------------------------------------------------
+
+model SysAttachment {
+  id             String   @id @default(cuid())
+  tableName      String   // "incident", "change_request", "cmdb_ci", "kb_knowledge"
+  recordId       String   // Document sys_id or number
+  fileName       String
+  contentType    String   @default("application/octet-stream")
+  byteSize       Int      @default(0)
+  base64Data     String   // Content
+  uploadedById   String?
+  uploadedByName String?
+  createdAt      DateTime @default(now())
+
+  @@index([tableName, recordId])
+}
+
+// ----------------------------------------------------
+// Ad-Hoc Reports (sys_report)
+// ----------------------------------------------------
+
+model SysReport {
+  id           String   @id @default(cuid())
+  name         String   // e.g. "Active Incidents by Priority"
+  tableName    String   @default("incident")
+  chartType    String   @default("bar") // "bar", "pie", "donut", "line", "score", "pivot"
+  groupByField String   @default("priority")
+  filterQuery  String?  // sysparm_query
+  roles        String   @default("itil,admin")
+  colorPalette String   @default("polaris")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ----------------------------------------------------
+// Scripted REST APIs (sys_ws_definition & sys_ws_operation)
+// ----------------------------------------------------
+
+model SysWsDefinition {
+  id          String           @id @default(cuid())
+  name        String           // e.g. "Monitoring Webhook Receiver"
+  basePath    String           @unique // e.g. "custom/v1/alerts"
+  description String?
+  active      Boolean          @default(true)
+  operations  SysWsOperation[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model SysWsOperation {
+  id                     String          @id @default(cuid())
+  webServiceDefinitionId String
+  webService             SysWsDefinition @relation(fields: [webServiceDefinitionId], references: [id], onDelete: Cascade)
+  httpMethod             String          @default("GET") // "GET", "POST", "PATCH", "DELETE"
+  uriTemplate            String          @default("/") // e.g. "/", "/:id"
+  script                 String          // (request, response) => { ... }
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
+
+  @@unique([webServiceDefinitionId, httpMethod, uriTemplate])
+}
+
+
+

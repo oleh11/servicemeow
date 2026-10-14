@@ -1,0 +1,692 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { FilterBuilder } from "./FilterBuilder";
+import { SlaBadge } from "./SlaBadge";
+import { ContextMenu, ContextMenuItem } from "@/components/common/ContextMenu";
+import { ShowRecordPayloadModal } from "@/components/common/ShowRecordPayloadModal";
+import { useUser } from "@/lib/user-context";
+import {
+  Plus,
+  Search,
+  RefreshCw,
+  AlertCircle,
+  Clock,
+  ChevronRight,
+  Filter,
+  FilterX,
+  Copy,
+  ExternalLink,
+  Code2,
+  UserCheck,
+  Settings,
+  ArrowDownAZ,
+  ArrowUpAZ,
+  Check,
+} from "lucide-react";
+
+interface RecordListProps {
+  tableName: string;
+  tableTitle: string;
+}
+
+export function RecordList({ tableName, tableTitle }: RecordListProps) {
+  const router = useRouter();
+  const { currentUser } = useUser();
+  const [records, setRecords] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterQuery, setFilterQuery] = useState("");
+
+  // Context Menu State
+  const [contextMenu, setContextMenu] = useState<{
+    isOpen: boolean;
+    x: number;
+    y: number;
+    items: ContextMenuItem[];
+    title?: string;
+  }>({ isOpen: false, x: 0, y: 0, items: [] });
+
+  // Payload Modal State
+  const [payloadModal, setPayloadModal] = useState<{
+    isOpen: boolean;
+    recordData: any;
+    recordTitle: string;
+  }>({ isOpen: false, recordData: null, recordTitle: "" });
+
+  // Toast Notification
+  const [toastMsg, setToastMsg] = useState("");
+
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(""), 2500);
+  };
+
+  const fetchRecords = async (query = filterQuery) => {
+    setLoading(true);
+    try {
+      const url = `/api/now/table/${tableName}${query ? `?sysparm_query=${encodeURIComponent(query)}` : ""}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.result) {
+        setRecords(data.result);
+      }
+    } catch (err) {
+      console.error("Failed to load records:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const qParam = params.get("sysparm_query");
+      const priority = params.get("priority");
+      const cab = params.get("cab");
+      const knownError = params.get("known_error");
+
+      let initialQuery = qParam || "";
+      if (priority) {
+        initialQuery = initialQuery ? `${initialQuery}^priority=${priority}` : `priority=${priority}`;
+      }
+      if (cab) {
+        initialQuery = initialQuery ? `${initialQuery}^cabApprovalState=${cab}` : `cabApprovalState=${cab}`;
+      }
+      if (knownError === "true") {
+        initialQuery = initialQuery ? `${initialQuery}^isKnownError=true` : `isKnownError=true`;
+      }
+
+      if (initialQuery) {
+        setFilterQuery(initialQuery);
+        fetchRecords(initialQuery);
+        return;
+      }
+    }
+    fetchRecords();
+  }, [tableName]);
+
+  const handleApplyFilter = (q: string) => {
+    setFilterQuery(q);
+    fetchRecords(q);
+  };
+
+  const addFilterCondition = (field: string, op: "=" | "!=", val: string) => {
+    const newCond = `${field}${op}${val}`;
+    const nextQuery = filterQuery ? `${filterQuery}^${newCond}` : newCond;
+    handleApplyFilter(nextQuery);
+    showToast(`Filter applied: ${field} ${op === "=" ? "is" : "is not"} ${val}`);
+  };
+
+  // Cell right-click handler (interactive context menu)
+  const handleCellContextMenu = (
+    e: React.MouseEvent,
+    rec: any,
+    colField: string,
+    colVal: string | number,
+    displayVal: string
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const menuItems: ContextMenuItem[] = [
+      {
+        label: `Show Matching ('${displayVal}')`,
+        icon: Filter,
+        onClick: () => addFilterCondition(colField, "=", String(colVal)),
+      },
+      {
+        label: `Filter Out ('${displayVal}')`,
+        icon: FilterX,
+        onClick: () => addFilterCondition(colField, "!=", String(colVal)),
+      },
+      { divider: true, label: "" },
+      {
+        label: "Open Record",
+        icon: ExternalLink,
+        onClick: () => router.push(`/workspace/${tableName}/${rec.sys_id}`),
+      },
+      {
+        label: "Open in New Tab",
+        icon: ExternalLink,
+        onClick: () => window.open(`/workspace/${tableName}/${rec.sys_id}`, "_blank"),
+      },
+      {
+        label: "Copy sys_id",
+        icon: Copy,
+        onClick: () => {
+          navigator.clipboard.writeText(rec.sys_id);
+          showToast(`Copied sys_id (${rec.sys_id.substring(0, 12)}...) to clipboard`);
+        },
+      },
+      {
+        label: "Copy URL",
+        icon: Copy,
+        onClick: () => {
+          navigator.clipboard.writeText(`${window.location.origin}/workspace/${tableName}/${rec.sys_id}`);
+          showToast("Copied record URL to clipboard");
+        },
+      },
+      {
+        label: "Show XML / JSON Payload",
+        icon: Code2,
+        onClick: () => {
+          setPayloadModal({
+            isOpen: true,
+            recordData: rec,
+            recordTitle: rec.number || rec.sys_id,
+          });
+        },
+      },
+      { divider: true, label: "" },
+      {
+        label: "Assign to Me",
+        icon: UserCheck,
+        onClick: async () => {
+          try {
+            await fetch(`/api/now/table/${tableName}/${rec.sys_id}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ assigned_to_id: currentUser.id }),
+            });
+            showToast(`Assigned ${rec.number} to ${currentUser.name}`);
+            fetchRecords();
+          } catch (err) {
+            console.error(err);
+          }
+        },
+      },
+      ...(currentUser.role === "admin"
+        ? [
+            { divider: true, label: "" },
+            {
+              label: "Configure",
+              icon: Settings,
+              children: [
+                {
+                  label: "Business Rules",
+                  onClick: () => router.push(`/studio?tab=business_rules&table=${tableName}`),
+                },
+                {
+                  label: "UI Policies",
+                  onClick: () => router.push(`/studio?tab=ui_policies&table=${tableName}`),
+                },
+                {
+                  label: "Table Dictionary",
+                  onClick: () => router.push(`/studio?tab=schema&table=${tableName}`),
+                },
+              ],
+            },
+          ]
+        : []),
+    ];
+
+    setContextMenu({
+      isOpen: true,
+      x: e.clientX,
+      y: e.clientY,
+      items: menuItems,
+      title: `${rec.number || "Record"} Context`,
+    });
+  };
+
+  // Column header right-click handler
+  const handleHeaderContextMenu = (e: React.MouseEvent, colField: string, colLabel: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const menuItems: ContextMenuItem[] = [
+      {
+        label: `Sort (A to Z) on ${colLabel}`,
+        icon: ArrowDownAZ,
+        onClick: () => {
+          const nextQuery = filterQuery ? `${filterQuery}^ORDERBY${colField}` : `ORDERBY${colField}`;
+          handleApplyFilter(nextQuery);
+        },
+      },
+      {
+        label: `Sort (Z to A) on ${colLabel}`,
+        icon: ArrowUpAZ,
+        onClick: () => {
+          const nextQuery = filterQuery ? `${filterQuery}^ORDERBYDESC${colField}` : `ORDERBYDESC${colField}`;
+          handleApplyFilter(nextQuery);
+        },
+      },
+      ...(currentUser.role === "admin"
+        ? [
+            { divider: true, label: "" },
+            {
+              label: "Configure Dictionary Column",
+              icon: Settings,
+              onClick: () => router.push(`/studio?tab=schema&table=${tableName}`),
+            },
+          ]
+        : []),
+    ];
+
+    setContextMenu({
+      isOpen: true,
+      x: e.clientX,
+      y: e.clientY,
+      items: menuItems,
+      title: `${colLabel} Column`,
+    });
+  };
+
+  const getPriorityBadge = (priority: string | number) => {
+    const p = String(priority);
+    switch (p) {
+      case "1":
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-p1-bg,#fee2e2)] text-[var(--md-sys-color-p1-fg,#991b1b)] border border-red-300">
+            P1 - Critical
+          </span>
+        );
+      case "2":
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-p2-bg,#ffedd5)] text-[var(--md-sys-color-p2-fg,#9a3412)] border border-amber-300">
+            P2 - High
+          </span>
+        );
+      case "3":
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-p3-bg,#fef9c3)] text-[var(--md-sys-color-p3-fg,#854d0e)] border border-yellow-300">
+            P3 - Moderate
+          </span>
+        );
+      case "4":
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-p4-bg,#f0fdf4)] text-[var(--md-sys-color-p4-fg,#166534)] border border-emerald-300">
+            P4 - Low
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-300">
+            P5 - Planning
+          </span>
+        );
+    }
+  };
+
+  const getStatePill = (state: string | number) => {
+    const s = String(state);
+    switch (s) {
+      case "1":
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-state-new-bg,#e0f2fe)] text-[var(--md-sys-color-state-new-fg,#0369a1)] border border-sky-300">
+            New
+          </span>
+        );
+      case "2":
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-state-progress-bg,#fef3c7)] text-[var(--md-sys-color-state-progress-fg,#92400e)] border border-amber-300">
+            In Progress
+          </span>
+        );
+      case "3":
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-amber-100 text-amber-900 border border-amber-300">
+            On Hold
+          </span>
+        );
+      case "6":
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-state-resolved-bg,#dcfce7)] text-[var(--md-sys-color-state-resolved-fg,#15803d)] border border-emerald-300">
+            Resolved
+          </span>
+        );
+      case "7":
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-state-closed-bg,#f1f5f9)] text-[var(--md-sys-color-state-closed-fg,#475569)] border border-slate-300">
+            Closed
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-300">
+            Open
+          </span>
+        );
+    }
+  };
+
+  const filteredRecords = records.filter((r) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      r.number?.toLowerCase().includes(q) ||
+      r.short_description?.toLowerCase().includes(q) ||
+      r.assigned_to?.display_value?.toLowerCase().includes(q)
+    );
+  });
+
+  return (
+    <div
+      className="space-y-4 p-6 min-h-screen relative"
+      style={{
+        backgroundColor: "var(--theme-page-bg, #f8f9fa)",
+        color: "var(--theme-text-primary, #1f1f1f)",
+      }}
+    >
+      {/* Toast Alert (M3 Snackbar: rounded-full pill) */}
+      {toastMsg && (
+        <div
+          className="fixed bottom-6 right-6 z-50 rounded-full px-5 py-3 shadow-2xl text-xs flex items-center gap-2.5 animate-in slide-in-from-bottom-2 duration-150"
+          style={{
+            backgroundColor: "var(--md-sys-color-on-surface, #1d1b20)",
+            color: "var(--md-sys-color-surface, #fdfbff)",
+          }}
+        >
+          <Check className="w-4 h-4 text-emerald-400" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
+      {/* Top Action Header (M3 Outlined Container Card: rounded-[16px]) */}
+      <div
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-[16px] border shadow-[var(--md-sys-elevation-1)]"
+        style={{
+          backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
+          borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
+        }}
+      >
+        <div>
+          <div className="flex items-center space-x-2.5">
+            <h1 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
+              {tableTitle}
+            </h1>
+            <span
+              className="text-xs font-mono px-2.5 py-0.5 rounded-full border"
+              style={{
+                backgroundColor: "var(--md-sys-color-surface-container-high, #ece6f0)",
+                borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
+                color: "var(--md-sys-color-on-surface-variant, #49454f)",
+              }}
+            >
+              sys_table: {tableName}
+            </span>
+          </div>
+          <p
+            className="text-xs mt-1"
+            style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
+          >
+            Right-click any cell for <strong>Show Matching</strong>, <strong>Filter Out</strong>, or <strong>Copy sys_id</strong>.
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-2.5 w-full sm:w-auto">
+          {/* Quick Search (M3 Pill Search Bar: 40px) */}
+          <div className="relative flex-1 sm:w-60">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search in list..."
+              className="w-full rounded-full py-2 pl-9 pr-4 text-xs transition-all border outline-none focus:ring-2"
+              style={{
+                backgroundColor: "var(--md-sys-color-surface-container-high, #ece6f0)",
+                borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
+                color: "var(--md-sys-color-on-surface, #1d1b20)",
+              }}
+            />
+            <Search
+              className="w-3.5 h-3.5 absolute left-3 top-2.5"
+              style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
+            />
+          </div>
+
+          <button
+            onClick={() => fetchRecords()}
+            className="p-2 border rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+            style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
+            title="Refresh list"
+          >
+            <RefreshCw
+              className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+              style={{ color: "var(--md-sys-color-primary, #0b57d0)" }}
+            />
+          </button>
+
+          {/* New Record Button (M3 Filled Button: rounded-full, 40px) */}
+          <Link
+            href={`/workspace/${tableName}/new`}
+            className="inline-flex items-center gap-1.5 font-medium px-5 py-2 rounded-full text-xs transition-all shadow-[var(--md-sys-elevation-1)] hover:shadow-[var(--md-sys-elevation-2)] shrink-0"
+            style={{
+              backgroundColor: "var(--md-sys-color-primary, #0b57d0)",
+              color: "var(--md-sys-color-on-primary, #ffffff)",
+            }}
+          >
+            <Plus className="w-4 h-4" />
+            <span>New</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Filter / Condition Breadcrumb */}
+      <FilterBuilder
+        tableName={tableName}
+        onApplyFilter={handleApplyFilter}
+        activeConditions={[]}
+      />
+
+      {/* High-Density Data Grid with Right-Click Context Menus (M3 Card Container) */}
+      <div
+        className="rounded-[16px] border shadow-[var(--md-sys-elevation-1)] overflow-hidden"
+        style={{
+          backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
+          borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
+        }}
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr
+                className="border-b text-[11px] font-bold uppercase tracking-wider select-none"
+                style={{
+                  backgroundColor: "var(--md-sys-color-surface-container, #f3edf7)",
+                  borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
+                  color: "var(--md-sys-color-on-surface-variant, #49454f)",
+                }}
+              >
+                <th
+                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  onContextMenu={(e) => handleHeaderContextMenu(e, "number", "Number")}
+                >
+                  Number
+                </th>
+                <th
+                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  onContextMenu={(e) => handleHeaderContextMenu(e, "priority", "Priority")}
+                >
+                  Priority
+                </th>
+                <th
+                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  onContextMenu={(e) => handleHeaderContextMenu(e, "state", "State")}
+                >
+                  State
+                </th>
+                <th
+                  className="py-3 px-3.5 min-w-[280px] cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  onContextMenu={(e) => handleHeaderContextMenu(e, "short_description", "Short Description")}
+                >
+                  Short Description
+                </th>
+                <th
+                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  onContextMenu={(e) => handleHeaderContextMenu(e, "assigned_to", "Assigned To")}
+                >
+                  Assigned To
+                </th>
+                <th
+                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  onContextMenu={(e) => handleHeaderContextMenu(e, "cmdb_ci", "Configuration Item")}
+                >
+                  Configuration Item
+                </th>
+                <th
+                  className="py-3 px-3.5 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                  onContextMenu={(e) => handleHeaderContextMenu(e, "sys_created_on", "Created")}
+                >
+                  Created
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              className="divide-y"
+              style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
+            >
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="py-10 text-center italic text-xs"
+                    style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
+                  >
+                    Loading records from database...
+                  </td>
+                </tr>
+              ) : filteredRecords.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="py-10 text-center italic text-xs"
+                    style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
+                  >
+                    No matching records found.
+                  </td>
+                </tr>
+              ) : (
+                filteredRecords.map((rec) => {
+                  const ciName =
+                    rec.incident?.cmdbCi?.name ||
+                    rec.change_request?.cmdbCi?.name ||
+                    "—";
+
+                  return (
+                    <tr
+                      key={rec.sys_id}
+                      className="hover:bg-[var(--md-sys-color-surface-container-high)]/50 transition-colors group cursor-pointer"
+                      onClick={() => router.push(`/workspace/${tableName}/${rec.sys_id}`)}
+                    >
+                      {/* Number Cell */}
+                      <td
+                        className="py-3 px-3.5 font-mono font-bold group-hover:underline"
+                        style={{ color: "var(--md-sys-color-primary, #0b57d0)" }}
+                        onContextMenu={(e) => handleCellContextMenu(e, rec, "number", rec.number, rec.number)}
+                      >
+                        <Link href={`/workspace/${tableName}/${rec.sys_id}`} onClick={(e) => e.stopPropagation()}>
+                          {rec.number}
+                        </Link>
+                      </td>
+
+                      {/* Priority Cell */}
+                      <td
+                        className="py-3 px-3.5"
+                        onContextMenu={(e) => handleCellContextMenu(e, rec, "priority", rec.priority, `Priority ${rec.priority}`)}
+                      >
+                        {getPriorityBadge(rec.priority)}
+                      </td>
+
+                      {/* State Cell */}
+                      <td
+                        className="py-3 px-3.5"
+                        onContextMenu={(e) => handleCellContextMenu(e, rec, "state", rec.state, `State ${rec.state}`)}
+                      >
+                        {getStatePill(rec.state)}
+                      </td>
+
+                      {/* Short Description Cell */}
+                      <td
+                        className="py-3 px-3.5 font-medium truncate max-w-md"
+                        style={{ color: "var(--md-sys-color-on-surface, #1d1b20)" }}
+                        onContextMenu={(e) => handleCellContextMenu(e, rec, "short_description", rec.short_description, rec.short_description)}
+                      >
+                        {rec.short_description}
+                      </td>
+
+                      {/* Assigned To Cell */}
+                      <td
+                        className="py-3 px-3.5"
+                        style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
+                        onContextMenu={(e) => handleCellContextMenu(e, rec, "assigned_to", rec.assigned_to?.value || "", rec.assigned_to?.display_value || "Unassigned")}
+                      >
+                        {rec.assigned_to?.display_value || <span className="opacity-60 italic">Unassigned</span>}
+                      </td>
+
+                      {/* Configuration Item Cell */}
+                      <td
+                        className="py-3 px-3.5 font-mono text-[11px]"
+                        style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
+                        onContextMenu={(e) => handleCellContextMenu(e, rec, "cmdb_ci", rec.incident?.cmdbCiId || "", ciName)}
+                      >
+                        {ciName}
+                      </td>
+
+                      {/* Created Date Cell */}
+                      <td
+                        className="py-3 px-3.5 font-mono text-[11px] whitespace-nowrap"
+                        style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
+                      >
+                        {new Date(rec.sys_created_on).toLocaleDateString([], {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Table Footer */}
+        <div
+          className="px-4 py-3 border-t flex items-center justify-between text-xs"
+          style={{
+            backgroundColor: "var(--md-sys-color-surface-container, #f3edf7)",
+            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
+            color: "var(--md-sys-color-on-surface-variant, #49454f)",
+          }}
+        >
+          <span>
+            Total records: <strong>{filteredRecords.length}</strong>
+          </span>
+          <span
+            className="font-mono text-xs"
+            style={{ color: "var(--md-sys-color-primary, #0b57d0)" }}
+          >
+            Right-Click Enabled • Material Design 3 Data Grid 🐾
+          </span>
+        </div>
+      </div>
+
+      {/* Floating Right-Click Context Menu */}
+      {contextMenu.isOpen && (
+        <ContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          items={contextMenu.items}
+          title={contextMenu.title}
+          onClose={() => setContextMenu({ ...contextMenu, isOpen: false })}
+        />
+      )}
+
+      {/* Show Payload Modal */}
+      {payloadModal.isOpen && (
+        <ShowRecordPayloadModal
+          isOpen={payloadModal.isOpen}
+          recordData={payloadModal.recordData}
+          recordTitle={payloadModal.recordTitle}
+          onClose={() => setPayloadModal({ ...payloadModal, isOpen: false })}
+        />
+      )}
+    </div>
+  );
+}

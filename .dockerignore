@@ -1,0 +1,14 @@
+.git
+.gitignore
+.env
+.env*.local
+node_modules
+.next
+prisma/*.db*
+*.tsbuildinfo
+coverage
+.omo
+.lazycodex
+Dockerfile
+docker-compose*.yml
+README.md

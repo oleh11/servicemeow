@@ -1,0 +1,177 @@
+/**
+ * Material Design 3 (M3) Enterprise Token Architecture
+ * Strict compliance with M3 color roles, tonal surfaces, elevation levels, and typography tokens.
+ * https://m3.material.io
+ */
+
+:root {
+  /* ========================================================================= */
+  /* Primary & Accent Roles (Sapphire Enterprise Palette)                      */
+  /* ========================================================================= */
+  --md-sys-color-primary: #005ac1;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #d8e2ff;
+  --md-sys-color-on-primary-container: #001a41;
+  --md-sys-color-primary-fixed: #d8e2ff;
+  --md-sys-color-primary-fixed-dim: #a8c8ff;
+  --md-sys-color-on-primary-fixed: #001a41;
+
+  /* ========================================================================= */
+  /* Secondary Roles                                                           */
+  /* ========================================================================= */
+  --md-sys-color-secondary: #575e71;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #dbe2f9;
+  --md-sys-color-on-secondary-container: #141b2c;
+
+  /* ========================================================================= */
+  /* Tertiary Roles (Warm Warning / Activity Indicator)                       */
+  /* ========================================================================= */
+  --md-sys-color-tertiary: #715573;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #fbd7fc;
+  --md-sys-color-on-tertiary-container: #29132d;
+
+  /* ========================================================================= */
+  /* Error Roles                                                               */
+  /* ========================================================================= */
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-on-error-container: #410002;
+
+  /* ========================================================================= */
+  /* Surface & Container Tonal Hierarchy (Light Mode)                          */
+  /* ========================================================================= */
+  --md-sys-color-surface: #fdfbff;
+  --md-sys-color-surface-dim: #ded8e1;
+  --md-sys-color-surface-bright: #fdf8fd;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #f7f2fa;
+  --md-sys-color-surface-container: #f3edf7;
+  --md-sys-color-surface-container-high: #ece6f0;
+  --md-sys-color-surface-container-highest: #e6e0e9;
+
+  --md-sys-color-on-surface: #1d1b20;
+  --md-sys-color-on-surface-variant: #49454f;
+
+  /* ========================================================================= */
+  /* Outline & Borders                                                         */
+  /* ========================================================================= */
+  --md-sys-color-outline: #79747e;
+  --md-sys-color-outline-variant: #cac4d0;
+
+  /* ========================================================================= */
+  /* State Containers & Priority Semantic Roles                                */
+  /* ========================================================================= */
+  --md-sys-color-state-new-bg: #e0f2fe;
+  --md-sys-color-state-new-fg: #0369a1;
+  --md-sys-color-state-progress-bg: #fef3c7;
+  --md-sys-color-state-progress-fg: #92400e;
+  --md-sys-color-state-resolved-bg: #dcfce7;
+  --md-sys-color-state-resolved-fg: #15803d;
+  --md-sys-color-state-closed-bg: #f1f5f9;
+  --md-sys-color-state-closed-fg: #475569;
+
+  --md-sys-color-p1-bg: #fee2e2;
+  --md-sys-color-p1-fg: #991b1b;
+  --md-sys-color-p2-bg: #ffedd5;
+  --md-sys-color-p2-fg: #9a3412;
+  --md-sys-color-p3-bg: #fef9c3;
+  --md-sys-color-p3-fg: #854d0e;
+  --md-sys-color-p4-bg: #f0fdf4;
+  --md-sys-color-p4-fg: #166534;
+
+  /* ========================================================================= */
+  /* Elevation Shadows (Strict M3 Spec: no cyan/purple glows)                  */
+  /* ========================================================================= */
+  --md-sys-elevation-0: none;
+  --md-sys-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.08), 0px 1px 2px 0px rgba(0, 0, 0, 0.12);
+  --md-sys-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.08), 0px 1px 2px 0px rgba(0, 0, 0, 0.12);
+  --md-sys-elevation-3: 0px 1px 3px 0px rgba(0, 0, 0, 0.15), 0px 4px 8px 3px rgba(0, 0, 0, 0.1);
+  --md-sys-elevation-4: 0px 2px 3px 0px rgba(0, 0, 0, 0.15), 0px 6px 10px 4px rgba(0, 0, 0, 0.1);
+  --md-sys-elevation-5: 0px 4px 4px 0px rgba(0, 0, 0, 0.15), 0px 8px 12px 6px rgba(0, 0, 0, 0.1);
+
+  /* Shapes */
+  --md-sys-shape-corner-xs: 4px;
+  --md-sys-shape-corner-sm: 8px;
+  --md-sys-shape-corner-md: 12px;
+  --md-sys-shape-corner-lg: 16px;
+  --md-sys-shape-corner-xl: 28px;
+  --md-sys-shape-corner-full: 9999px;
+}
+
+/* Dark mode M3 tokens */
+[data-theme-mode="dark"] {
+  --md-sys-color-primary: #a8c8ff;
+  --md-sys-color-on-primary: #003063;
+  --md-sys-color-primary-container: #00458e;
+  --md-sys-color-on-primary-container: #d8e2ff;
+
+  --md-sys-color-secondary: #bec6dc;
+  --md-sys-color-on-secondary: #293041;
+  --md-sys-color-secondary-container: #3f4759;
+  --md-sys-color-on-secondary-container: #dbe2f9;
+
+  --md-sys-color-tertiary: #debcdf;
+  --md-sys-color-on-tertiary: #402843;
+  --md-sys-color-tertiary-container: #583e5b;
+  --md-sys-color-on-tertiary-container: #fbd7fc;
+
+  --md-sys-color-surface: #111318;
+  --md-sys-color-surface-dim: #111318;
+  --md-sys-color-surface-bright: #37393e;
+  --md-sys-color-surface-container-lowest: #0c0e13;
+  --md-sys-color-surface-container-low: #1a1c21;
+  --md-sys-color-surface-container: #1e2025;
+  --md-sys-color-surface-container-high: #282a2f;
+  --md-sys-color-surface-container-highest: #33353a;
+
+  --md-sys-color-on-surface: #e2e2e6;
+  --md-sys-color-on-surface-variant: #c4c6d0;
+
+  --md-sys-color-outline: #8e9099;
+  --md-sys-color-outline-variant: #44474f;
+
+  --md-sys-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.4), 0px 1px 2px 0px rgba(0, 0, 0, 0.6);
+  --md-sys-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.4), 0px 1px 2px 0px rgba(0, 0, 0, 0.6);
+  --md-sys-elevation-3: 0px 1px 3px 0px rgba(0, 0, 0, 0.5), 0px 4px 8px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* Material Design 3 Helper Classes */
+.m3-surface {
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-surface-container {
+  background-color: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-surface-container-low {
+  background-color: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-surface-container-high {
+  background-color: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-surface-container-highest {
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface);
+}
+
+.m3-elevation-1 {
+  box-shadow: var(--md-sys-elevation-1);
+}
+
+.m3-elevation-2 {
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+.m3-elevation-3 {
+  box-shadow: var(--md-sys-elevation-3);
+}
