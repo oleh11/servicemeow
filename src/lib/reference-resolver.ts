@@ -50,7 +50,13 @@ function normalizeKey(key: string): string {
  */
 export async function getNextTaskNumber(tableName: string = "incident", customPrefix?: string): Promise<string> {
   const meta = TABLE_METADATA[tableName];
-  const prefix = customPrefix || meta?.numberPrefix || tableName.substring(0, 3).toUpperCase();
+  let prefix = customPrefix || meta?.numberPrefix;
+  if (!prefix) {
+    if (tableName === "cmn_reservation") prefix = "RES";
+    else if (tableName === "sc_task" || tableName === "task") prefix = "TASK";
+    else if (tableName === "change_task") prefix = "CTASK";
+    else prefix = tableName.substring(0, 3).toUpperCase();
+  }
   const digits = 7;
 
   // Use an atomic upsert transaction
@@ -71,7 +77,16 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
             initialNumber = parseInt(match[0], 10) + 1;
           }
         }
-      } else if (tableName === "incident" || tableName === "task" || tableName === "change_request" || tableName === "problem") {
+      } else if (
+        tableName === "incident" ||
+        tableName === "task" ||
+        tableName === "change_request" ||
+        tableName === "problem" ||
+        tableName === "sc_task" ||
+        tableName === "sc_request" ||
+        tableName === "sc_req_item" ||
+        tableName === "change_task"
+      ) {
         const highest = await tx.task.findFirst({
           where: tableName !== "task" ? { sysClassName: tableName } : {},
           orderBy: { number: "desc" },
@@ -110,18 +125,24 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
         }
       }
 
+      const updateData: any = {
+        currentNumber: nextNum,
+      };
+      // Self-heal corrupted or misconfigured prefixes in sys_number
+      if (sysNum.prefix !== prefix) {
+        updateData.prefix = prefix;
+      }
+
       sysNum = await tx.sysNumber.update({
         where: { tableName },
-        data: {
-          currentNumber: nextNum,
-        },
+        data: updateData,
       });
       return sysNum;
     }
   });
 
   const paddedNum = String(record.currentNumber).padStart(record.digits || digits, "0");
-  return `${record.prefix}${paddedNum}`;
+  return `${prefix}${paddedNum}`;
 }
 
 /**

@@ -268,4 +268,38 @@ describe("Workplace Hub - Room & Desk Reservation System", () => {
       expect(CALENDAR_HOURLY_SLOTS).toContain("17:00");
     });
   });
+
+  describe("ITIL Numbering & Prefix Segregation", () => {
+    it("generates TASK prefix for sc_task and never leaks cmn_reservation prefix", async () => {
+      const taskNum = await getNextNumber("TASK");
+      expect(taskNum).toMatch(/^TASK\d{7}$/);
+      expect(taskNum).not.toContain("cmn_reservation");
+      expect(taskNum).not.toContain("RES");
+
+      const scTaskNum = await getNextNumber("sc_task");
+      expect(scTaskNum).toMatch(/^TASK\d{7}$/);
+      expect(scTaskNum).not.toContain("cmn_reservation");
+    });
+
+    it("generates RES prefix for cmn_reservation and isolates from task sequences", async () => {
+      const resNum = await getNextNumber("cmn_reservation");
+      expect(resNum).toMatch(/^RES\d{7}$/);
+      expect(resNum).not.toContain("cmn_reservation");
+      expect(resNum).not.toContain("TASK");
+
+      const resNumExplicit = await getNextNumber("RES");
+      expect(resNumExplicit).toMatch(/^RES\d{7}$/);
+    });
+
+    it("generates distinct prefixes for REQ, RITM, and CTASK", async () => {
+      const reqNum = await getNextNumber("REQ");
+      expect(reqNum).toMatch(/^REQ\d{7}$/);
+
+      const ritmNum = await getNextNumber("RITM");
+      expect(ritmNum).toMatch(/^RITM\d{7}$/);
+
+      const ctaskNum = await getNextNumber("CTASK");
+      expect(ctaskNum).toMatch(/^CTASK\d{7}$/);
+    });
+  });
 });
