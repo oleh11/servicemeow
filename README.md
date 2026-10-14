@@ -13,7 +13,7 @@
   <a href="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml"><img src="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml/badge.svg" alt="ServiceMeow CI" /></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-emerald.svg" alt="Node.js Version" /></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-16-blue.svg" alt="PostgreSQL" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-83%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-85%20passed-8b5cf6.svg" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
 </p>
 
@@ -149,6 +149,43 @@ A modern, conflict-checked workspace reservation platform allowing employees and
 - **Amenity & Hardware Filtering**: Discover spaces equipped with **Teams**, **Zoom Rooms**, **Standing desks**, **Whiteboards**, **4K Projectors**, **Telepresence**, and **Dual Monitors**.
 - **Double-Booking Prevention Engine**: Atomic conflict checking returning standard `409 Conflict` on overlapping intervals.
 - **Atomic Reservation Sequences**: Auto-generated reservation keys (`RES0001001`) with full Table API parity (`cmn_reservation`).
+
+---
+
+### 7. Unified Locations & Spatial Hierarchy Builder (`/workspace/cmn_location`)
+
+A specialized, enterprise-grade interface for managing physical enterprise locations (`cmn_location`), editing records inline, and building multi-tier parent-child relationships across the enterprise spatial topology:
+
+#### 📋 Inline Editable List View
+<p align="center">
+  <img src="docs/assets/unified_locations_editable_list.png" alt="Unified Locations Editable List View" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Instant Inline Cell Editing**: Click any cell to edit Location Name, Tier Type, Parent Location (Relationship), City, or State with optimistic rendering and immediate Table API persistence.
+- **Hierarchical Breadcrumb Paths**: Automatically computed recursive dot-walking paths (e.g. `Americas / California / San Francisco Mission Bay Medical Campus / Pavilion A / Level 3 / Robotic Surgery Suite 1`).
+- **Child Rollups & Accordion Expansion**: Visual child badges showing sub-location counts with accordion row expansion to inspect nested children inline.
+- **One-Click Sub-Location Builder**: Add child locations at any tier with pre-filled parent relationships.
+
+---
+
+#### 🌳 Multi-Tier Spatial Relationship Tree
+<p align="center">
+  <img src="docs/assets/unified_locations_tree_builder.png" alt="Multi-Tier Spatial Relationship Tree Builder" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Recursive Visual Tree Graph**: Full ancestral tree from Continental Regions (Tier 1) down to Individual Desks & Rooms (Tier 6).
+- **Expand / Collapse All Controls**: One-click branch expansion to navigate deep topologies effortlessly.
+- **Interactive Re-Parenting & Branch Management**: Move nodes between parents with cyclic reference protection and automatic downstream path cascading.
+
+---
+
+#### 🔀 Tree + Detail Split Explorer
+<p align="center">
+  <img src="docs/assets/unified_locations_split_explorer.png" alt="Tree and Detail Split Explorer" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Dual-Pane Productivity**: Browse the spatial tree on the left while modifying comprehensive address metadata, parent relationships, and direct children tables on the right.
+- **One-Click Spatial Sync**: Automatically synchronize legacy spatial records (`cmn_region`, `cmn_state`, `cmn_campus`, `cmn_building`, `cmn_floor`, `cmn_space`) into unified `cmn_location` hierarchies.
 
 ---
 

@@ -543,17 +543,41 @@ export async function PATCH(
     }
 
     if (table === "cmn_location") {
+      const existing = await db.cmnLocation.findUnique({ where: { id } });
+      if (!existing) {
+        return NextResponse.json({ error: "Location not found" }, { status: 404 });
+      }
+
+      const newName = body.name !== undefined ? body.name.trim() : existing.name;
+      const targetParentId = body.parent_id !== undefined ? (body.parent_id || null) : (body.parentId !== undefined ? (body.parentId || null) : existing.parentId);
+
+      // Prevent cyclic parent assignment
+      if (targetParentId === id) {
+        return NextResponse.json({ error: "A location cannot be its own parent." }, { status: 400 });
+      }
+
+      let computedFullPath = body.full_path !== undefined ? body.full_path : (body.fullPath !== undefined ? body.fullPath : undefined);
+      if (computedFullPath === undefined && (body.name !== undefined || body.parent_id !== undefined || body.parentId !== undefined)) {
+        if (targetParentId) {
+          const parentLoc = await db.cmnLocation.findUnique({ where: { id: targetParentId } });
+          const parentPath = parentLoc?.fullPath || parentLoc?.name || "";
+          computedFullPath = parentPath ? `${parentPath} / ${newName}` : newName;
+        } else {
+          computedFullPath = newName;
+        }
+      }
+
       const updated = await db.cmnLocation.update({
         where: { id },
         data: {
-          name: body.name !== undefined ? body.name : undefined,
+          name: body.name !== undefined ? newName : undefined,
           street: body.street !== undefined ? body.street : undefined,
           city: body.city !== undefined ? body.city : undefined,
           state: body.state !== undefined ? body.state : undefined,
           country: body.country !== undefined ? body.country : undefined,
-          parentId: body.parent_id !== undefined ? (body.parent_id || null) : (body.parentId !== undefined ? (body.parentId || null) : undefined),
+          parentId: targetParentId !== undefined ? targetParentId : undefined,
           locationType: body.location_type !== undefined ? body.location_type : (body.locationType !== undefined ? body.locationType : undefined),
-          fullPath: body.full_path !== undefined ? body.full_path : (body.fullPath !== undefined ? body.fullPath : undefined),
+          fullPath: computedFullPath !== undefined ? computedFullPath : undefined,
           regionId: body.region_id !== undefined ? (body.region_id || null) : (body.regionId !== undefined ? (body.regionId || null) : undefined),
           stateRefId: body.state_ref_id !== undefined ? (body.state_ref_id || null) : (body.stateRefId !== undefined ? (body.stateRefId || null) : undefined),
           campusId: body.campus_id !== undefined ? (body.campus_id || null) : (body.campusId !== undefined ? (body.campusId || null) : undefined),
@@ -561,7 +585,25 @@ export async function PATCH(
           floorId: body.floor_id !== undefined ? (body.floor_id || null) : (body.floorId !== undefined ? (body.floorId || null) : undefined),
           spaceId: body.space_id !== undefined ? (body.space_id || null) : (body.spaceId !== undefined ? (body.spaceId || null) : undefined),
         },
+        include: {
+          parent: { select: { id: true, name: true, fullPath: true, locationType: true } },
+          children: { select: { id: true, name: true, locationType: true, fullPath: true, city: true, state: true } },
+          _count: { select: { children: true } },
+        },
       });
+
+      // Cascade updated path to direct children if path changed
+      if (computedFullPath && computedFullPath !== existing.fullPath) {
+        const children = await db.cmnLocation.findMany({ where: { parentId: id } });
+        for (const child of children) {
+          const childPath = `${computedFullPath} / ${child.name}`;
+          await db.cmnLocation.update({
+            where: { id: child.id },
+            data: { fullPath: childPath },
+          });
+        }
+      }
+
       return NextResponse.json({ result: updated });
     }
 
