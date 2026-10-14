@@ -77,9 +77,10 @@ async function main() {
 
   // Save 1: Editable List View
   const listImgPath = path.join(ASSETS_DIR, 'unified_locations_editable_list.png');
-  const artifactListImgPath = path.join(ARTIFACT_DIR, 'unified_locations_editable_list.png');
   await page.screenshot({ path: listImgPath });
-  fs.copyFileSync(listImgPath, artifactListImgPath);
+  if (fs.existsSync(ARTIFACT_DIR)) {
+    fs.copyFileSync(listImgPath, path.join(ARTIFACT_DIR, 'unified_locations_editable_list.png'));
+  }
   console.log(`[capture] Saved Editable List View -> ${listImgPath}`);
 
   // Switch to View 2: Hierarchy Tree
@@ -100,9 +101,10 @@ async function main() {
   await page.evaluate(() => new Promise((r) => setTimeout(r, 1500)));
 
   const treeImgPath = path.join(ASSETS_DIR, 'unified_locations_tree_builder.png');
-  const artifactTreeImgPath = path.join(ARTIFACT_DIR, 'unified_locations_tree_builder.png');
   await page.screenshot({ path: treeImgPath });
-  fs.copyFileSync(treeImgPath, artifactTreeImgPath);
+  if (fs.existsSync(ARTIFACT_DIR)) {
+    fs.copyFileSync(treeImgPath, path.join(ARTIFACT_DIR, 'unified_locations_tree_builder.png'));
+  }
   console.log(`[capture] Saved Hierarchy Tree Builder -> ${treeImgPath}`);
 
   // Switch to View 3: Tree + Detail (Split Explorer)
@@ -115,9 +117,10 @@ async function main() {
   await page.evaluate(() => new Promise((r) => setTimeout(r, 1500)));
 
   const splitImgPath = path.join(ASSETS_DIR, 'unified_locations_split_explorer.png');
-  const artifactSplitImgPath = path.join(ARTIFACT_DIR, 'unified_locations_split_explorer.png');
   await page.screenshot({ path: splitImgPath });
-  fs.copyFileSync(splitImgPath, artifactSplitImgPath);
+  if (fs.existsSync(ARTIFACT_DIR)) {
+    fs.copyFileSync(splitImgPath, path.join(ARTIFACT_DIR, 'unified_locations_split_explorer.png'));
+  }
   console.log(`[capture] Saved Tree + Detail -> ${splitImgPath}`);
 
   await browser.close();
