@@ -53,7 +53,7 @@
 
 ### 1. Fulfiller Workspace with Multi-Tab Multitasking & Purr-Assist AI
 <p align="center">
-  <img src="docs/assets/workspace-showcase.svg" alt="Fulfiller Workspace Showcase" width="100%" />
+  <img src="docs/assets/workspace-showcase.png" alt="Fulfiller Workspace Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
 </p>
 
 - **Browser-Style Dockable Tabs**: Work on multiple Incidents, Changes, and CMDB Topologies simultaneously with persistent form state.
@@ -65,7 +65,7 @@
 
 ### 2. Studio & Low-Code Configuration Center
 <p align="center">
-  <img src="docs/assets/studio-showcase.svg" alt="Studio Configuration Center Showcase" width="100%" />
+  <img src="docs/assets/studio-showcase.png" alt="Studio Configuration Center Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
 </p>
 
 - **Data Dictionary (`sys_db_object`, `sys_dictionary`)**: Define custom tables (`u_*`), choices, and reference qualifiers dynamically.
@@ -76,7 +76,7 @@
 
 ### 3. Self-Service Portal & 90-Day System Uptime Status
 <p align="center">
-  <img src="docs/assets/portal-showcase.svg" alt="Self-Service Portal Showcase" width="100%" />
+  <img src="docs/assets/portal-showcase.png" alt="Self-Service Portal Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
 </p>
 
 - **Service Catalog & Shopping Cart**: Request hardware, developer sandboxes, and cloud access with automated approval workflows.
@@ -101,7 +101,7 @@
 
 ### 5. Workplace Hub & 6-Tier Spatial Hierarchy (Enterprise IWMS)
 <p align="center">
-  <img src="docs/assets/connected-workplace-showcase.svg" alt="Workplace Hub 6-Tier Spatial Hierarchy" width="100%" />
+  <img src="docs/assets/spaces-showcase.png" alt="Workplace Hub 6-Tier Spatial Hierarchy" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
 </p>
 
 ServiceMeow provides an enterprise Workplace Hub & Integrated Workplace Management System (IWMS) designed for corporate facilities, data centers, and clinical healthcare operations:
@@ -114,6 +114,10 @@ ServiceMeow provides an enterprise Workplace Hub & Integrated Workplace Manageme
 ---
 
 ### 6. Interactive Room & Desk Reservation System (`/workspace/reservations`)
+<p align="center">
+  <img src="docs/assets/workplace-showcase.png" alt="Workplace Hub Interactive Reservation System" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
 A modern, conflict-checked workspace reservation platform allowing employees and facility coordinators to discover, filter, and book meeting spaces, collaboration hubs, and hot desks across **3 distinct interactive views**:
 
 1. **📋 Room & Desk Catalog View**:
