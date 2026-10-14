@@ -99,17 +99,36 @@
 
 ---
 
-### 5. Connected Workplace & 6-Tier Spatial Hierarchy (Nuvolo Alternative)
+### 5. Connected Workplace & 6-Tier Spatial Hierarchy (Enterprise IWMS)
 <p align="center">
   <img src="docs/assets/connected-workplace-showcase.svg" alt="Connected Workplace 6-Tier Spatial Hierarchy" width="100%" />
 </p>
 
-ServiceMeow provides an enterprise Connected Workplace alternative designed for corporate facilities, data centers, and clinical healthcare operations:
+ServiceMeow provides an enterprise Connected Workplace & Integrated Workplace Management System (IWMS) designed for corporate facilities, data centers, and clinical healthcare operations:
 - **Strict 6-Tier Spatial Model**:
   $$\text{Region} \longrightarrow \text{State / Province} \longrightarrow \text{Campus} \longrightarrow \text{Building} \longrightarrow \text{Floor / Level} \longrightarrow \text{Space / Room}$$
 - **Interactive Space Explorer (`/workspace/spaces`)**: Real-time floorplan room matrix, live occupancy states (*Occupied*, *Vacant*, *Reserved*, *Maintenance*), and capacity meters.
 - **Biomedical & IoT CMDB Linkage**: Direct foreign key relation between physical spaces (`cmn_space`) and configuration items (`cmdb_ci`), supporting medical devices, surgical robotics, rack servers, and life safety assets.
 - **Multi-Hop Dot-Walking & Cascading Lookups**: Traverse properties effortlessly (e.g. `space.floor.building.campus.name` or `ci.space.floor.building.name`).
+
+---
+
+### 6. Interactive Room & Desk Reservation System (`/workspace/reservations`)
+A modern, conflict-checked workspace reservation platform allowing employees and facility coordinators to discover, filter, and book meeting spaces, collaboration hubs, and hot desks across **3 distinct interactive views**:
+
+1. **📋 Room & Desk Catalog View**:
+   - Filterable by specific room capabilities and amenities: **Teams**, **Zoom**, **Standing desk**, **Whiteboard**, **4K Projector**, **Telepresence**, and **Dual Monitor**.
+   - Real-time availability badges for selected date/time intervals with attendee capacity limits.
+2. **📅 Daily Calendar Schedule View**:
+   - Interactive schedule timeline grid displaying active reservation blocks, organizers, and statuses.
+   - Click-to-book on any vacant time slot to initiate instant reservation.
+3. **🗺️ Architectural PDF / Picture Floorplan View**:
+   - High-fidelity CAD / SVG architectural schematic backdrop with live-pulsing green (available) and red (booked) room hotspots.
+   - Interactive hover cards and one-click direct floorplan booking.
+   - Vector and PDF export support for physical printouts and facility briefings.
+4. **🛡️ Conflict Prevention & Atomic Numbering**:
+   - Strict double-booking prevention engine returning standard `409 Conflict` on overlapping intervals.
+   - Atomic reservation sequences (`RES0001001`) with full Table API parity (`cmn_reservation`).
 
 ---
 

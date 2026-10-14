@@ -39,6 +39,7 @@ async function main() {
   await prisma.cIRelation.deleteMany();
   await prisma.configurationItem.deleteMany();
   await prisma.cmnLocation.deleteMany();
+  await prisma.cmnReservation.deleteMany();
   await prisma.cmnSpace.deleteMany();
   await prisma.cmnFloor.deleteMany();
   await prisma.cmnBuilding.deleteMany();
@@ -71,6 +72,7 @@ async function main() {
       { name: "cmn_building", label: "Building [cmn_building]", superClass: null, description: "Tier 4: Physical architectural structure within a campus" },
       { name: "cmn_floor", label: "Floor / Level [cmn_floor]", superClass: null, description: "Tier 5: Vertical architectural floor level within a building" },
       { name: "cmn_space", label: "Space / Room [cmn_space]", superClass: null, description: "Tier 6: Individual functional room, operating suite, or workspace zone" },
+      { name: "cmn_reservation", label: "Space Reservation [cmn_reservation]", superClass: null, description: "Workplace space and desk reservation booking" },
       { name: "cmn_location", label: "Unified Location [cmn_location]", superClass: null, description: "Legacy unified location hierarchy linking all 6 spatial tiers" },
       { name: "kb_knowledge", label: "Knowledge Article", superClass: null, description: "Curated self-service technical and how-to guides" },
       { name: "sys_user", label: "User [sys_user]", superClass: null, description: "Platform users, engineers, and customer personas" },
@@ -291,7 +293,7 @@ async function main() {
     ],
   });
 
-  // 5. 6-Tier Spatial Hierarchy (Nuvolo Alternative / Connected Workplace)
+  // 5. 6-Tier Spatial Hierarchy (Connected Workplace / Enterprise Facility & Space Management)
   console.log("Creating 6-Tier Connected Workplace Spatial Hierarchy...");
 
   // Tier 1: Region
@@ -435,10 +437,12 @@ async function main() {
 
   const flTech04 = await prisma.cmnFloor.create({
     data: {
-      name: "Level 4 - MDF Data Center & Infrastructure Vault",
+      name: "Level 4 - Connected Workplace & Collaboration Center",
       floorNumber: 4,
-      code: "L4-DC",
+      code: "L4-CW",
       buildingId: bldgTechTwr.id,
+      floorplanSvgUrl: "/floorplans/tech_tower_l4.svg",
+      floorplanImageUrl: "/floorplans/tech_tower_l4.svg",
       areaSqFt: 32000,
     },
   });
@@ -544,15 +548,201 @@ async function main() {
 
   const spaceCONF410 = await prisma.cmnSpace.create({
     data: {
-      name: "Executive Operations Command Briefing",
+      name: "Executive Boardroom 410",
       spaceNumber: "CONF-410",
       floorId: flTech04.id,
       spaceType: "Conference Room",
-      status: "reserved",
-      capacity: 24,
+      status: "available",
+      capacity: 20,
       squareFeet: 850,
-      department: "Operations",
-      svgElementId: "room-conf-410",
+      department: "Executive Leadership",
+      svgElementId: "svg-room-conf-410",
+      capabilities: JSON.stringify(["teams", "zoom", "whiteboard", "4k_projector"]),
+      imageUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 4.0,
+      floorplanY: 9.1,
+      floorplanWidth: 26.0,
+      floorplanHeight: 34.1,
+    },
+  });
+
+  const spaceCONF405 = await prisma.cmnSpace.create({
+    data: {
+      name: "Agile Teams Huddle 405",
+      spaceNumber: "CONF-405",
+      floorId: flTech04.id,
+      spaceType: "Huddle Room",
+      status: "available",
+      capacity: 6,
+      squareFeet: 280,
+      department: "Engineering",
+      svgElementId: "svg-room-conf-405",
+      capabilities: JSON.stringify(["teams", "whiteboard"]),
+      imageUrl: "https://images.unsplash.com/photo-1517502884422-41eaead166d4?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 33.0,
+      floorplanY: 9.1,
+      floorplanWidth: 19.0,
+      floorplanHeight: 22.5,
+    },
+  });
+
+  const spaceCONF408 = await prisma.cmnSpace.create({
+    data: {
+      name: "Zoom Studio Suite 408",
+      spaceNumber: "CONF-408",
+      floorId: flTech04.id,
+      spaceType: "Video Suite",
+      status: "available",
+      capacity: 8,
+      squareFeet: 360,
+      department: "Product Marketing",
+      svgElementId: "svg-room-conf-408",
+      capabilities: JSON.stringify(["zoom", "whiteboard", "telepresence"]),
+      imageUrl: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 54.0,
+      floorplanY: 9.1,
+      floorplanWidth: 19.0,
+      floorplanHeight: 22.5,
+    },
+  });
+
+  const spaceCONF420 = await prisma.cmnSpace.create({
+    data: {
+      name: "Global Hybrid Arena 420",
+      spaceNumber: "CONF-420",
+      floorId: flTech04.id,
+      spaceType: "Auditorium",
+      status: "available",
+      capacity: 60,
+      squareFeet: 1800,
+      department: "All-Hands Operations",
+      svgElementId: "svg-room-conf-420",
+      capabilities: JSON.stringify(["teams", "zoom", "telepresence", "4k_projector", "microphones"]),
+      imageUrl: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 75.0,
+      floorplanY: 9.1,
+      floorplanWidth: 21.0,
+      floorplanHeight: 81.6,
+    },
+  });
+
+  const spaceDESK401 = await prisma.cmnSpace.create({
+    data: {
+      name: "Ergonomic Standing Desk 401",
+      spaceNumber: "DESK-401",
+      floorId: flTech04.id,
+      spaceType: "Hot Desk",
+      status: "available",
+      capacity: 1,
+      squareFeet: 55,
+      department: "Digital Workplace",
+      svgElementId: "svg-desk-401",
+      capabilities: JSON.stringify(["standing_desk", "teams", "dual_monitor"]),
+      imageUrl: "https://images.unsplash.com/photo-1593062096033-9a26b09da705?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 34.5,
+      floorplanY: 40.0,
+      floorplanWidth: 10.5,
+      floorplanHeight: 8.6,
+    },
+  });
+
+  const spaceDESK402 = await prisma.cmnSpace.create({
+    data: {
+      name: "Ergonomic Standing Desk 402",
+      spaceNumber: "DESK-402",
+      floorId: flTech04.id,
+      spaceType: "Hot Desk",
+      status: "available",
+      capacity: 1,
+      squareFeet: 55,
+      department: "Digital Workplace",
+      svgElementId: "svg-desk-402",
+      capabilities: JSON.stringify(["standing_desk", "zoom", "dual_monitor"]),
+      imageUrl: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 47.0,
+      floorplanY: 40.0,
+      floorplanWidth: 10.5,
+      floorplanHeight: 8.6,
+    },
+  });
+
+  const spaceDESK403 = await prisma.cmnSpace.create({
+    data: {
+      name: "Ergonomic Standing Desk 403",
+      spaceNumber: "DESK-403",
+      floorId: flTech04.id,
+      spaceType: "Hot Desk",
+      status: "available",
+      capacity: 1,
+      squareFeet: 55,
+      department: "Digital Workplace",
+      svgElementId: "svg-desk-403",
+      capabilities: JSON.stringify(["standing_desk", "teams", "zoom", "dual_monitor"]),
+      imageUrl: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 59.5,
+      floorplanY: 40.0,
+      floorplanWidth: 10.5,
+      floorplanHeight: 8.6,
+    },
+  });
+
+  const spacePOD415 = await prisma.cmnSpace.create({
+    data: {
+      name: "Acoustic Quiet Pod 415",
+      spaceNumber: "POD-415",
+      floorId: flTech04.id,
+      spaceType: "Focus Pod",
+      status: "available",
+      capacity: 2,
+      squareFeet: 75,
+      department: "Focus Zone",
+      svgElementId: "svg-room-pod-415",
+      capabilities: JSON.stringify(["teams", "zoom"]),
+      imageUrl: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 4.0,
+      floorplanY: 46.6,
+      floorplanWidth: 13.0,
+      floorplanHeight: 44.1,
+    },
+  });
+
+  const spaceLAB430 = await prisma.cmnSpace.create({
+    data: {
+      name: "Hardware Prototyping & IoT Lab",
+      spaceNumber: "LAB-430",
+      floorId: flTech04.id,
+      spaceType: "Innovation Lab",
+      status: "available",
+      capacity: 12,
+      squareFeet: 720,
+      department: "Hardware Engineering",
+      svgElementId: "svg-room-lab-430",
+      capabilities: JSON.stringify(["standing_desk", "whiteboard", "teams"]),
+      imageUrl: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 19.0,
+      floorplanY: 53.3,
+      floorplanWidth: 24.0,
+      floorplanHeight: 37.5,
+    },
+  });
+
+  const spaceLOUNGE450 = await prisma.cmnSpace.create({
+    data: {
+      name: "Commons & Team Lounge 450",
+      spaceNumber: "LOUNGE-450",
+      floorId: flTech04.id,
+      spaceType: "Breakout Lounge",
+      status: "available",
+      capacity: 25,
+      squareFeet: 920,
+      department: "Employee Experience",
+      svgElementId: "svg-room-lounge-450",
+      capabilities: JSON.stringify(["whiteboard"]),
+      imageUrl: "https://images.unsplash.com/photo-1527192491265-7e15c55b1ed2?auto=format&fit=crop&w=800&q=80",
+      floorplanX: 45.0,
+      floorplanY: 53.3,
+      floorplanWidth: 28.0,
+      floorplanHeight: 37.5,
     },
   });
 
@@ -1351,6 +1541,66 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
             detail: "Governance workflow initiated. Backout and test plans attached.",
           },
         ]),
+      },
+    ],
+  });
+
+  // 17. Seed Workplace Reservations
+  console.log("Seeding Workspace Reservations...");
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = today.getMonth();
+  const d = today.getDate();
+
+  await prisma.cmnReservation.createMany({
+    data: [
+      {
+        number: "RES0001001",
+        spaceId: spaceCONF410.id,
+        reservedById: adminUser.id,
+        subject: "Executive Leadership & Connected Workplace Architecture Review",
+        startTime: new Date(y, m, d, 10, 0, 0),
+        endTime: new Date(y, m, d, 11, 30, 0),
+        status: "confirmed",
+        attendeesCount: 12,
+        capabilitiesNeeded: JSON.stringify(["teams", "zoom", "whiteboard", "4k_projector"]),
+        notes: "Executive steering committee hybrid alignment. Catering requested.",
+      },
+      {
+        number: "RES0001002",
+        spaceId: spaceDESK402.id,
+        reservedById: itilUser.id,
+        subject: "ITIL Incident Commander Duty Shift",
+        startTime: new Date(y, m, d, 8, 30, 0),
+        endTime: new Date(y, m, d, 17, 0, 0),
+        status: "checked_in",
+        attendeesCount: 1,
+        capabilitiesNeeded: JSON.stringify(["standing_desk", "zoom"]),
+        notes: "Primary command station for Sev-1 on-call rotation.",
+      },
+      {
+        number: "RES0001003",
+        spaceId: spaceCONF405.id,
+        reservedById: callerAlex.id,
+        subject: "Core Engineering Sprint Demo & Whiteboarding",
+        startTime: new Date(y, m, d, 14, 0, 0),
+        endTime: new Date(y, m, d, 15, 30, 0),
+        status: "confirmed",
+        attendeesCount: 6,
+        capabilitiesNeeded: JSON.stringify(["teams", "whiteboard"]),
+        notes: "Sprint 42 retrospective and architecture breakdown.",
+      },
+      {
+        number: "RES0001004",
+        spaceId: spaceCONF420.id,
+        reservedById: cabUser.id,
+        subject: "Global IT & Engineering All-Hands Broadcast",
+        startTime: new Date(y, m, d + 1, 13, 0, 0),
+        endTime: new Date(y, m, d + 1, 14, 30, 0),
+        status: "confirmed",
+        attendeesCount: 55,
+        capabilitiesNeeded: JSON.stringify(["teams", "zoom", "telepresence", "4k_projector", "microphones"]),
+        notes: "Global live broadcast with dual telepresence feed.",
       },
     ],
   });

@@ -208,11 +208,35 @@ export async function GET(
               },
             },
           },
+          reservations: {
+            where: {
+              status: { not: "cancelled" },
+            },
+            orderBy: { startTime: "asc" },
+          },
           configurationItems: { select: { id: true, name: true, status: true, ciClass: true, assetTag: true } },
         },
       });
       if (!space) return NextResponse.json({ error: "Space not found" }, { status: 404 });
       return NextResponse.json({ result: space });
+    }
+
+    if (table === "cmn_reservation") {
+      const reservation = await db.cmnReservation.findUnique({
+        where: { id },
+        include: {
+          space: {
+            include: {
+              floor: {
+                include: { building: true },
+              },
+            },
+          },
+          reservedBy: { select: { id: true, name: true, email: true } },
+        },
+      });
+      if (!reservation) return NextResponse.json({ error: "Reservation not found" }, { status: 404 });
+      return NextResponse.json({ result: reservation });
     }
 
     if (table === "sys_user_grmember") {
@@ -424,6 +448,7 @@ export async function PATCH(
           code: body.code !== undefined ? body.code : undefined,
           buildingId: body.building_id !== undefined ? body.building_id : (body.buildingId !== undefined ? body.buildingId : undefined),
           floorplanSvgUrl: body.floorplan_svg_url !== undefined ? body.floorplan_svg_url : (body.floorplanSvgUrl !== undefined ? body.floorplanSvgUrl : undefined),
+          floorplanImageUrl: body.floorplan_image_url !== undefined ? body.floorplan_image_url : (body.floorplanImageUrl !== undefined ? body.floorplanImageUrl : undefined),
           areaSqFt: body.area_sq_ft !== undefined ? (body.area_sq_ft ? parseFloat(body.area_sq_ft) : null) : (body.areaSqFt !== undefined ? (body.areaSqFt ? parseFloat(body.areaSqFt) : null) : undefined),
         },
       });
@@ -443,8 +468,77 @@ export async function PATCH(
           squareFeet: body.square_feet !== undefined ? (body.square_feet ? parseFloat(body.square_feet) : null) : (body.squareFeet !== undefined ? (body.squareFeet ? parseFloat(body.squareFeet) : null) : undefined),
           department: body.department !== undefined ? body.department : undefined,
           svgElementId: body.svg_element_id !== undefined ? body.svg_element_id : (body.svgElementId !== undefined ? body.svgElementId : undefined),
+          capabilities: body.capabilities !== undefined ? (typeof body.capabilities === "string" ? body.capabilities : JSON.stringify(body.capabilities)) : undefined,
+          imageUrl: body.image_url !== undefined ? body.image_url : (body.imageUrl !== undefined ? body.imageUrl : undefined),
+          floorplanX: body.floorplan_x !== undefined ? parseFloat(body.floorplan_x) : (body.floorplanX !== undefined ? parseFloat(body.floorplanX) : undefined),
+          floorplanY: body.floorplan_y !== undefined ? parseFloat(body.floorplan_y) : (body.floorplanY !== undefined ? parseFloat(body.floorplanY) : undefined),
+          floorplanWidth: body.floorplan_width !== undefined ? parseFloat(body.floorplan_width) : (body.floorplanWidth !== undefined ? parseFloat(body.floorplanWidth) : undefined),
+          floorplanHeight: body.floorplan_height !== undefined ? parseFloat(body.floorplan_height) : (body.floorplanHeight !== undefined ? parseFloat(body.floorplanHeight) : undefined),
         },
       });
+      return NextResponse.json({ result: updated });
+    }
+
+    if (table === "cmn_reservation") {
+      const existing = await db.cmnReservation.findUnique({ where: { id } });
+      if (!existing) {
+        return NextResponse.json({ error: "Reservation not found" }, { status: 404 });
+      }
+
+      const targetSpaceId = body.space_id || body.spaceId || existing.spaceId;
+      const targetStartTime = body.start_time || body.startTime ? new Date(body.start_time || body.startTime) : existing.startTime;
+      const targetEndTime = body.end_time || body.endTime ? new Date(body.end_time || body.endTime) : existing.endTime;
+      const targetStatus = body.status !== undefined ? body.status : existing.status;
+
+      if (targetEndTime <= targetStartTime) {
+        return NextResponse.json({ error: "end_time must be greater than start_time" }, { status: 400 });
+      }
+
+      // Check conflict if active
+      if (targetStatus !== "cancelled") {
+        const conflict = await db.cmnReservation.findFirst({
+          where: {
+            id: { not: id },
+            spaceId: targetSpaceId,
+            status: { not: "cancelled" },
+            startTime: { lt: targetEndTime },
+            endTime: { gt: targetStartTime },
+          },
+          include: {
+            reservedBy: { select: { id: true, name: true, email: true } },
+          },
+        });
+
+        if (conflict) {
+          return NextResponse.json(
+            {
+              error: "Reservation conflict: Space is already booked during this time interval.",
+              conflictWith: conflict,
+            },
+            { status: 409 }
+          );
+        }
+      }
+
+      const updated = await db.cmnReservation.update({
+        where: { id },
+        data: {
+          spaceId: body.space_id !== undefined ? body.space_id : (body.spaceId !== undefined ? body.spaceId : undefined),
+          reservedById: body.reserved_by_id !== undefined ? body.reserved_by_id : (body.reservedById !== undefined ? body.reservedById : undefined),
+          subject: body.subject !== undefined ? body.subject : undefined,
+          startTime: (body.start_time || body.startTime) ? targetStartTime : undefined,
+          endTime: (body.end_time || body.endTime) ? targetEndTime : undefined,
+          status: body.status !== undefined ? body.status : undefined,
+          attendeesCount: body.attendees_count !== undefined ? parseInt(body.attendees_count, 10) : (body.attendeesCount !== undefined ? parseInt(body.attendeesCount, 10) : undefined),
+          capabilitiesNeeded: body.capabilities_needed !== undefined ? (typeof body.capabilities_needed === "string" ? body.capabilities_needed : JSON.stringify(body.capabilities_needed)) : (body.capabilitiesNeeded !== undefined ? (typeof body.capabilitiesNeeded === "string" ? body.capabilitiesNeeded : JSON.stringify(body.capabilitiesNeeded)) : undefined),
+          notes: body.notes !== undefined ? body.notes : undefined,
+        },
+        include: {
+          space: true,
+          reservedBy: { select: { id: true, name: true, email: true } },
+        },
+      });
+
       return NextResponse.json({ result: updated });
     }
 
@@ -892,6 +986,11 @@ export async function DELETE(
 
     if (table === "cmn_space") {
       await db.cmnSpace.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "cmn_reservation") {
+      await db.cmnReservation.delete({ where: { id } });
       return NextResponse.json({ result: { status: "deleted", sys_id: id } });
     }
 

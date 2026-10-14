@@ -60,21 +60,60 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
     });
 
     if (!sysNum) {
-      // Seed default number counter
+      let initialNumber = 1001;
+      if (tableName === "cmn_reservation") {
+        const highest = await tx.cmnReservation.findFirst({
+          orderBy: { number: "desc" },
+        });
+        if (highest?.number) {
+          const match = highest.number.match(/\d+$/);
+          if (match) {
+            initialNumber = parseInt(match[0], 10) + 1;
+          }
+        }
+      } else if (tableName === "incident" || tableName === "task" || tableName === "change_request" || tableName === "problem") {
+        const highest = await tx.task.findFirst({
+          where: tableName !== "task" ? { sysClassName: tableName } : {},
+          orderBy: { number: "desc" },
+        });
+        if (highest?.number) {
+          const match = highest.number.match(/\d+$/);
+          if (match) {
+            initialNumber = parseInt(match[0], 10) + 1;
+          }
+        }
+      }
+
       sysNum = await tx.sysNumber.create({
         data: {
           tableName,
           prefix,
           digits,
-          currentNumber: 1001,
+          currentNumber: initialNumber,
         },
       });
       return sysNum;
     } else {
+      let nextNum = sysNum.currentNumber + 1;
+      if (tableName === "cmn_reservation") {
+        const highest = await tx.cmnReservation.findFirst({
+          orderBy: { number: "desc" },
+        });
+        if (highest?.number) {
+          const match = highest.number.match(/\d+$/);
+          if (match) {
+            const highestNum = parseInt(match[0], 10);
+            if (nextNum <= highestNum) {
+              nextNum = highestNum + 1;
+            }
+          }
+        }
+      }
+
       sysNum = await tx.sysNumber.update({
         where: { tableName },
         data: {
-          currentNumber: { increment: 1 },
+          currentNumber: nextNum,
         },
       });
       return sysNum;
@@ -184,6 +223,19 @@ export async function resolveReference(tableName: string, recordId: string): Pro
           display_value: `${sp.name} [${sp.spaceNumber}]`,
           link: `/api/now/table/cmn_space/${sp.id}`,
           details: sp,
+        };
+      }
+      case "cmn_reservation": {
+        const res = await db.cmnReservation.findUnique({
+          where: { id: recordId },
+          include: { space: true, reservedBy: true },
+        });
+        if (!res) return null;
+        return {
+          value: res.id,
+          display_value: `${res.number} - ${res.subject} (${res.space?.name || "Space"})`,
+          link: `/api/now/table/cmn_reservation/${res.id}`,
+          details: res,
         };
       }
       case "cmdb_ci": {
@@ -322,6 +374,8 @@ export async function resolveDotWalk(
     currentRecord = await db.cmnFloor.findUnique({ where: { id: currentRecordId }, include: { building: true } });
   } else if (currentTable === "cmn_space") {
     currentRecord = await db.cmnSpace.findUnique({ where: { id: currentRecordId }, include: { floor: true } });
+  } else if (currentTable === "cmn_reservation") {
+    currentRecord = await db.cmnReservation.findUnique({ where: { id: currentRecordId }, include: { space: true, reservedBy: true } });
   }
 
   if (!currentRecord) {
@@ -387,9 +441,12 @@ export async function resolveDotWalk(
       } else if (tokenNorm === "region" && currentTable === "cmn_state") {
         matchedRefField = "regionId";
         nextTable = "cmn_region";
-      } else if (tokenNorm === "space" && currentTable === "cmdb_ci") {
+      } else if (tokenNorm === "space" && (currentTable === "cmdb_ci" || currentTable === "cmn_reservation")) {
         matchedRefField = "spaceId";
         nextTable = "cmn_space";
+      } else if ((tokenNorm === "reservedby" || tokenNorm === "reserved_by") && currentTable === "cmn_reservation") {
+        matchedRefField = "reservedById";
+        nextTable = "sys_user";
       }
     }
 
@@ -444,6 +501,8 @@ export async function resolveDotWalk(
         nextRec = await db.cmnFloor.findUnique({ where: { id: fkId }, include: { building: true } });
       } else if (nextTable === "cmn_space") {
         nextRec = await db.cmnSpace.findUnique({ where: { id: fkId }, include: { floor: true } });
+      } else if (nextTable === "cmn_reservation") {
+        nextRec = await db.cmnReservation.findUnique({ where: { id: fkId }, include: { space: true, reservedBy: true } });
       }
 
       if (!nextRec) {
@@ -1026,6 +1085,50 @@ export async function getDynamicReferenceCandidates(
         total,
         page,
         limit,
+      };
+    }
+
+    case "cmn_reservation": {
+      const resWhere: any = {};
+      const isSpaceDependent =
+        (options.dependentField === "space" || options.dependentField === "space_id" || options.dependentField === "spaceId") &&
+        Boolean(options.dependentValue);
+
+      if (isSpaceDependent) {
+        resWhere.spaceId = options.dependentValue;
+      }
+      if (search) {
+        resWhere.OR = [
+          { number: { contains: search } },
+          { subject: { contains: search } },
+        ];
+      }
+
+      const [total, reservations] = await Promise.all([
+        db.cmnReservation.count({ where: resWhere }),
+        db.cmnReservation.findMany({
+          where: resWhere,
+          skip,
+          take: limit,
+          include: {
+            space: { select: { id: true, name: true, spaceNumber: true } },
+            reservedBy: { select: { id: true, name: true, email: true } },
+          },
+          orderBy: { startTime: "desc" },
+        }),
+      ]);
+
+      return {
+        results: reservations.map((r) => ({
+          value: r.id,
+          display_value: `${r.number} - ${r.subject}`,
+          subtitle: `${r.space?.name || "Space"} • ${r.status} (${new Date(r.startTime).toLocaleDateString()})`,
+          details: r,
+        })),
+        total,
+        page,
+        limit,
+        dependentQualifierApplied: isSpaceDependent,
       };
     }
 

@@ -285,9 +285,49 @@ export async function GET(
               building: { select: { id: true, name: true, code: true } },
             },
           },
+          reservations: {
+            where: {
+              status: { not: "cancelled" },
+            },
+            take: 20,
+            orderBy: { startTime: "asc" },
+          },
         },
       });
       return NextResponse.json({ result: spaces });
+    }
+
+    if (table === "cmn_reservation") {
+      const where: any = {};
+      for (const cond of parsedQuery.conditions) {
+        if (cond.field === "space_id" || cond.field === "spaceId") {
+          where.spaceId = cond.value;
+        } else if (cond.field === "reserved_by_id" || cond.field === "reservedById") {
+          where.reservedById = cond.value;
+        } else if (cond.field === "status") {
+          where.status = cond.value;
+        } else if (cond.field === "number") {
+          where.number = cond.value;
+        }
+      }
+
+      const reservations = await db.cmnReservation.findMany({
+        where,
+        take: limit,
+        skip: offset,
+        orderBy: { startTime: "asc" },
+        include: {
+          space: {
+            include: {
+              floor: {
+                include: { building: true },
+              },
+            },
+          },
+          reservedBy: { select: { id: true, name: true, email: true } },
+        },
+      });
+      return NextResponse.json({ result: reservations });
     }
 
     if (table === "sys_user_grmember") {
@@ -828,6 +868,7 @@ export async function POST(
           code: body.code,
           buildingId: body.building_id || body.buildingId || null,
           floorplanSvgUrl: body.floorplan_svg_url || body.floorplanSvgUrl || null,
+          floorplanImageUrl: body.floorplan_image_url || body.floorplanImageUrl || null,
           areaSqFt: body.area_sq_ft ? parseFloat(body.area_sq_ft) : null,
         },
       });
@@ -846,9 +887,72 @@ export async function POST(
           squareFeet: body.square_feet ? parseFloat(body.square_feet) : null,
           department: body.department || null,
           svgElementId: body.svg_element_id || body.svgElementId || null,
+          capabilities: typeof body.capabilities === "string" ? body.capabilities : (body.capabilities ? JSON.stringify(body.capabilities) : null),
+          imageUrl: body.image_url || body.imageUrl || null,
+          floorplanX: body.floorplan_x !== undefined ? parseFloat(body.floorplan_x) : (body.floorplanX !== undefined ? parseFloat(body.floorplanX) : null),
+          floorplanY: body.floorplan_y !== undefined ? parseFloat(body.floorplan_y) : (body.floorplanY !== undefined ? parseFloat(body.floorplanY) : null),
+          floorplanWidth: body.floorplan_width !== undefined ? parseFloat(body.floorplan_width) : (body.floorplanWidth !== undefined ? parseFloat(body.floorplanWidth) : null),
+          floorplanHeight: body.floorplan_height !== undefined ? parseFloat(body.floorplan_height) : (body.floorplanHeight !== undefined ? parseFloat(body.floorplanHeight) : null),
         },
       });
       return NextResponse.json({ result: { sys_id: space.id, ...space } }, { status: 201 });
+    }
+
+    if (table === "cmn_reservation") {
+      const spaceId = body.space_id || body.spaceId;
+      if (!spaceId) {
+        return NextResponse.json({ error: "space_id is required for reservations" }, { status: 400 });
+      }
+      const startTime = new Date(body.start_time || body.startTime);
+      const endTime = new Date(body.end_time || body.endTime);
+      if (isNaN(startTime.getTime()) || isNaN(endTime.getTime()) || endTime <= startTime) {
+        return NextResponse.json({ error: "Valid start_time and end_time (end_time > start_time) are required." }, { status: 400 });
+      }
+
+      // Check conflict
+      const conflict = await db.cmnReservation.findFirst({
+        where: {
+          spaceId,
+          status: { not: "cancelled" },
+          startTime: { lt: endTime },
+          endTime: { gt: startTime },
+        },
+        include: {
+          reservedBy: { select: { id: true, name: true, email: true } },
+        },
+      });
+
+      if (conflict) {
+        return NextResponse.json(
+          {
+            error: "Reservation conflict: Space is already booked during this time interval.",
+            conflictWith: conflict,
+          },
+          { status: 409 }
+        );
+      }
+
+      const resNumber = body.number || await getNextNumber("cmn_reservation", "RES");
+      const reservation = await db.cmnReservation.create({
+        data: {
+          number: resNumber,
+          spaceId,
+          reservedById: body.reserved_by_id || body.reservedById || callerUserId || null,
+          subject: body.subject || "Workspace Reservation",
+          startTime,
+          endTime,
+          status: body.status || "confirmed",
+          attendeesCount: body.attendees_count ? parseInt(body.attendees_count, 10) : (body.attendeesCount ? parseInt(body.attendeesCount, 10) : 1),
+          capabilitiesNeeded: typeof body.capabilities_needed === "string" ? body.capabilities_needed : (body.capabilitiesNeeded ? JSON.stringify(body.capabilitiesNeeded) : (body.capabilities ? JSON.stringify(body.capabilities) : null)),
+          notes: body.notes || null,
+        },
+        include: {
+          space: true,
+          reservedBy: { select: { id: true, name: true, email: true } },
+        },
+      });
+
+      return NextResponse.json({ result: { sys_id: reservation.id, ...reservation } }, { status: 201 });
     }
 
     if (table === "cmn_location") {

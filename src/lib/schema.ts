@@ -165,6 +165,7 @@ export interface CmnFloor {
   code: string; // e.g. "FL-03"
   building_id?: ReferenceField<CmnBuilding>;
   floorplan_svg_url?: string | null;
+  floorplan_image_url?: string | null;
   area_sq_ft?: number | null;
   created_at: string;
 }
@@ -183,7 +184,32 @@ export interface CmnSpace {
   capacity?: number | null;
   square_feet?: number | null;
   department?: string | null;
+  capabilities?: string[] | string | null; // e.g. ["teams", "zoom", "standing_desk", "whiteboard", "projector"]
+  image_url?: string | null;
+  floorplan_x?: number | null;
+  floorplan_y?: number | null;
+  floorplan_width?: number | null;
+  floorplan_height?: number | null;
   svg_element_id?: string | null;
+  created_at: string;
+}
+
+/**
+ * cmn_reservation: Room & Desk Booking
+ * Display Field: number
+ */
+export interface CmnReservation {
+  id: string;
+  number: string; // e.g. "RES0001001"
+  space_id: ReferenceField<CmnSpace>;
+  reserved_by_id: ReferenceField<SysUser>;
+  subject: string;
+  start_time: string;
+  end_time: string;
+  status: "confirmed" | "checked_in" | "cancelled" | "completed";
+  attendees_count: number;
+  capabilities_needed?: string[] | string | null;
+  notes?: string | null;
   created_at: string;
 }
 
@@ -354,6 +380,16 @@ export const TABLE_METADATA: Record<string, TableDescriptor> = {
     displayField: "name",
     referenceFields: {
       floor_id: "cmn_floor",
+    },
+  },
+  cmn_reservation: {
+    name: "cmn_reservation",
+    label: "Space Reservation",
+    displayField: "number",
+    numberPrefix: "RES",
+    referenceFields: {
+      space_id: "cmn_space",
+      reserved_by_id: "sys_user",
     },
   },
   task: {

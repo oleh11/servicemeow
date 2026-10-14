@@ -83,6 +83,7 @@ model User {
   articles             KnowledgeArticle[]
   sessions             SysUserSession[]  @relation("UserSessions")
   impersonatedSessions SysUserSession[]  @relation("ImpersonatedSessionUser")
+  reservations         CmnReservation[]
 }
 
 model Group {
@@ -204,12 +205,13 @@ model CmnFloor {
   code            String        // e.g. "FL-03"
   buildingId      String?
   building        CmnBuilding?  @relation(fields: [buildingId], references: [id], onDelete: SetNull)
-  floorplanSvgUrl String?
-  areaSqFt        Float?
-  spaces          CmnSpace[]
-  locations       CmnLocation[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  floorplanSvgUrl   String?
+  floorplanImageUrl String?      // High-res picture / architectural schematic
+  areaSqFt          Float?
+  spaces            CmnSpace[]
+  locations         CmnLocation[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
   @@unique([buildingId, code])
 }
@@ -225,13 +227,41 @@ model CmnSpace {
   capacity           Int?                @default(1)
   squareFeet         Float?
   department         String?
+  capabilities       String?             // JSON array string e.g. '["teams", "zoom", "standing_desk", "whiteboard", "projector"]'
+  imageUrl           String?             // Room photo / render / diagram URL
+  floorplanX         Float?              // Normalized X percentage (0-100) on picture/PDF
+  floorplanY         Float?              // Normalized Y percentage (0-100)
+  floorplanWidth     Float?              // Hotspot width percentage
+  floorplanHeight    Float?              // Hotspot height percentage
   svgElementId       String?             // e.g. "room-302" for matching in SVG floorplan maps
   locations          CmnLocation[]
   configurationItems ConfigurationItem[]
+  reservations       CmnReservation[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 
   @@unique([floorId, spaceNumber])
+}
+
+model CmnReservation {
+  id                 String     @id @default(cuid())
+  number             String     @unique // e.g. "RES0001001"
+  spaceId            String
+  space              CmnSpace   @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  reservedById       String
+  reservedBy         User       @relation(fields: [reservedById], references: [id], onDelete: Cascade)
+  subject            String     // e.g. "Sprint Review & Remote Zoom Demo"
+  startTime          DateTime
+  endTime            DateTime
+  status             String     @default("confirmed") // "confirmed", "checked_in", "cancelled", "completed"
+  attendeesCount     Int        @default(1)
+  capabilitiesNeeded String?    // JSON array of requested amenities e.g. '["zoom", "standing_desk"]'
+  notes              String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@index([spaceId, startTime, endTime])
+  @@index([reservedById])
 }
 
 model UserGroupMember {

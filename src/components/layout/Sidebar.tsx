@@ -38,6 +38,7 @@ import {
   Building2,
   MapPin,
   Map,
+  Calendar,
 } from "lucide-react";
 
 import { useUser } from "@/lib/user-context";
@@ -79,6 +80,7 @@ const ICON_LOOKUP: Record<string, any> = {
   MapPin,
   Map,
   Table,
+  Calendar,
 };
 
 function resolveIcon(name?: string, fallback: any = Layers) {
@@ -205,7 +207,9 @@ export function Sidebar() {
       title: "Connected Workplace",
       icon: Building2,
       items: [
+        { label: "Room & Desk Reservations", href: "/workspace/reservations", icon: Calendar, badge: "New" },
         { label: "Spatial Explorer", href: "/workspace/spaces", icon: Compass },
+        { label: "All Reservations", href: "/workspace/cmn_reservation", icon: Calendar },
         { label: "Regions (Tier 1)", href: "/workspace/cmn_region", icon: Map },
         { label: "States / Prov (Tier 2)", href: "/workspace/cmn_state", icon: MapPin },
         { label: "Campuses (Tier 3)", href: "/workspace/cmn_campus", icon: Building2 },
@@ -228,7 +232,9 @@ export function Sidebar() {
     title: "Connected Workplace",
     icon: Building2,
     items: [
+      { label: "Room & Desk Reservations", href: "/workspace/reservations", icon: Calendar, badge: "New" },
       { label: "Spatial Explorer", href: "/workspace/spaces", icon: Compass },
+      { label: "All Reservations", href: "/workspace/cmn_reservation", icon: Calendar },
       { label: "Regions (Tier 1)", href: "/workspace/cmn_region", icon: Map },
       { label: "States / Prov (Tier 2)", href: "/workspace/cmn_state", icon: MapPin },
       { label: "Campuses (Tier 3)", href: "/workspace/cmn_campus", icon: Building2 },
