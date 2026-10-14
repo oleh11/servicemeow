@@ -102,7 +102,7 @@ export async function evaluateAcl({
   });
 
   // Filter for field-level matching if specified, or table-level matching
-  const matchingAcls = acls.filter((acl) => {
+  let matchingAcls = acls.filter((acl) => {
     if (fieldName) {
       return !acl.fieldName || acl.fieldName === "*" || acl.fieldName === fieldName;
     }
@@ -110,7 +110,21 @@ export async function evaluateAcl({
     return !acl.fieldName || acl.fieldName === "*";
   });
 
-  // If no ACLs exist specifically governing this table/operation, default access is granted
+  // System tables (sys_user, sys_user_group, sys_user_grmember, sys_security_acl, ...)
+  // are default-DENY for non-read operations: a write requires an ACL that names the
+  // table explicitly. Wildcard ("*") table ACLs never grant writes to system tables.
+  const isSystemTable = normTable.startsWith("sys_");
+  if (isSystemTable && normOp !== "read") {
+    matchingAcls = matchingAcls.filter((acl) => acl.tableName.toLowerCase().trim() === normTable);
+    if (matchingAcls.length === 0) {
+      return {
+        allowed: false,
+        reason: `Security ACL Access Denied: '${normOp}' on system table '${normTable}' requires an explicit ACL (default deny)`,
+      };
+    }
+  }
+
+  // Non-system tables: if no ACLs govern this table/operation, default access is granted
   if (matchingAcls.length === 0) {
     return {
       allowed: true,

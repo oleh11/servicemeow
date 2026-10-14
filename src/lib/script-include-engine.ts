@@ -26,15 +26,12 @@ export async function executeScriptInclude(
     throw new Error(`Invalid method name: '${methodName}'. Method names must be valid JavaScript identifiers.`);
   }
 
-  // 2. Build sandbox context
-  const Class = {
-    create: function() {
-      return function(this: any, ...initArgs: any[]) {
-        if (this.initialize) this.initialize.apply(this, initArgs);
-      };
-    },
-  };
+  // The include's name is interpolated into the wrapper below, so it must be a plain identifier.
+  if (!/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(scriptInclude.name)) {
+    throw new Error(`Script Include name '${scriptInclude.name}' is not a valid JavaScript identifier.`);
+  }
 
+  // 2. Build sandbox context (data + synchronous host callbacks only; `Class` is defined guest-side)
   const gs = {
     log: (msg: any) => console.log("[gs.log]", msg),
     warn: (msg: any) => console.warn("[gs.warn]", msg),
@@ -45,7 +42,6 @@ export async function executeScriptInclude(
   };
 
   const sandboxContext = {
-    Class,
     gs,
     args,
     context,
@@ -54,6 +50,14 @@ export async function executeScriptInclude(
 
   // Safe wrapper code that inspects targetMethod passed via context without string concatenation!
   const wrappedCode = `
+    const Class = {
+      create: function () {
+        return function () {
+          if (this.initialize) this.initialize.apply(this, arguments);
+        };
+      },
+    };
+
     ${scriptInclude.script}
 
     if (typeof ${scriptInclude.name} !== "undefined") {
@@ -67,7 +71,7 @@ export async function executeScriptInclude(
   `;
 
   try {
-    return runInSecureSandbox(wrappedCode, sandboxContext, { timeoutMs: 3000 });
+    return await runInSecureSandbox(wrappedCode, sandboxContext, { timeoutMs: 3000 });
   } catch (err: any) {
     throw new Error(`Script Include '${scriptInclude.name}' execution failed: ${err.message}`);
   }

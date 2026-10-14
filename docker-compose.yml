@@ -29,7 +29,7 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-servicemeow}?schema=public
-      - AUTH_SECRET=${AUTH_SECRET:-purr-secret-jwt-signing-key-servicemeow-prod-2026-super-strong-auth-32chars}
+      - AUTH_SECRET=${AUTH_SECRET:?AUTH_SECRET must be set (generate one with: openssl rand -base64 48)}
       - PORT=3000
     depends_on:
       postgres:
@@ -51,7 +51,7 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-servicemeow}?schema=public
-      - AUTH_SECRET=${AUTH_SECRET:-purr-secret-jwt-signing-key-servicemeow-prod-2026-super-strong-auth-32chars}
+      - AUTH_SECRET=${AUTH_SECRET:?AUTH_SECRET must be set (generate one with: openssl rand -base64 48)}
       - WORKER_INTERVAL_MS=15000
     depends_on:
       postgres:

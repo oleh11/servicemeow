@@ -77,7 +77,7 @@ export async function executeRecordProducer(
   // 3. Evaluate Producer Script ('current' & 'producer' context) safely
   if (producer.producerScript && producer.producerScript.trim()) {
     try {
-      runInSecureSandbox(
+      await runInSecureSandbox(
         producer.producerScript,
         { current: currentRecord, producer: variables, user },
         { timeoutMs: 2000 }

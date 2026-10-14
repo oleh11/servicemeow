@@ -1,5 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { randomBytes } from "node:crypto";
+
+// Seed passwords come from the environment; if unset, a random one is generated and
+// printed once. There are no shared, hardcoded default passwords.
+function seedPassword(envVar: string, label: string): string {
+  const fromEnv = process.env[envVar];
+  if (fromEnv && fromEnv.length >= 8) return fromEnv;
+  const generated = randomBytes(12).toString("base64url");
+  console.log(`  [seed] ${label} password (set ${envVar} to choose your own): ${generated}`);
+  return generated;
+}
 
 const prisma = new PrismaClient();
 
@@ -110,8 +121,8 @@ async function main() {
 
   // 4. Users
   console.log("Creating System Users & Groups...");
-  const adminPasswordHash = await bcrypt.hash("admin123", 10);
-  const defaultPasswordHash = await bcrypt.hash("ServiceMeow!2026", 10);
+  const adminPasswordHash = await bcrypt.hash(seedPassword("SEED_ADMIN_PASSWORD", "Admin"), 10);
+  const defaultPasswordHash = await bcrypt.hash(seedPassword("SEED_DEFAULT_PASSWORD", "Default (all non-admin users)"), 10);
 
   const adminUser = await prisma.user.create({
     data: {

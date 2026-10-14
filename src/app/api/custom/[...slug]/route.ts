@@ -100,7 +100,7 @@ async function handleScriptedRest(
         const gs = sandboxContext.gs;
         ${matchedOp.script}
       `;
-      resultOutput = runInSecureSandbox(
+      resultOutput = await runInSecureSandbox(
         codeToRun,
         { sandboxContext },
         { timeoutMs: 3000 }

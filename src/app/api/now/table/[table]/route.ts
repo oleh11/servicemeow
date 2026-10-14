@@ -8,6 +8,8 @@ import { triggerFlows } from "@/lib/flow-engine";
 import { evaluateAcl } from "@/lib/acl-engine";
 import { getServerSession } from "@/lib/auth";
 
+const ADMIN_ONLY_WRITE_TABLES = new Set(["sys_user", "sys_user_group", "sys_user_grmember", "sys_security_acl", "sys_user_role"]);
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ table: string }> }
@@ -347,6 +349,13 @@ export async function POST(
     });
     if (!aclCheck.allowed) {
       return NextResponse.json({ error: aclCheck.reason }, { status: 403 });
+    }
+    // Identity & security tables: writes are admin-only regardless of ACL configuration
+    if (ADMIN_ONLY_WRITE_TABLES.has(table) && !session?.isAdmin) {
+      return NextResponse.json(
+        { error: `Only administrators can modify '${table}'`, code: "FORBIDDEN" },
+        { status: 403 }
+      );
     }
 
     // 1. Execute ServiceMeow Business Rules: before_insert

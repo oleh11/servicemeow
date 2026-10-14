@@ -58,7 +58,7 @@ async function executeDueJobs() {
         },
       };
 
-      const result = runInSecureSandbox(job.script, sandboxContext, { timeoutMs: 5000 });
+      const result = await runInSecureSandbox(job.script, sandboxContext, { timeoutMs: 5000 });
       if (result && typeof result === "string") {
         outputLogs.push(result);
       }

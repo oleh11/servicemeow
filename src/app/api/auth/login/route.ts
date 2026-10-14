@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
 
       user = await db.user.findFirst({
         where: {
-          OR: [{ id: personaId }, { role: personaId }, { userName: personaId }],
+          OR: [{ id: personaId }, { email: String(personaId).toLowerCase() }, { userName: personaId }],
         },
         include: {
           groupMembers: { include: { group: true } },
@@ -94,6 +94,7 @@ export async function POST(req: NextRequest) {
             { userName: { equals: identifier } },
           ],
         },
+        omit: { passwordHash: false }, // opt back in: needed for bcrypt comparison only
         include: {
           groupMembers: { include: { group: true } },
         },
@@ -130,28 +131,13 @@ export async function POST(req: NextRequest) {
           );
         }
       } else {
-        // Fallback for unseeded / newly migrated accounts only in non-prod
-        if (process.env.NODE_ENV === "production") {
-          return NextResponse.json(
-            { error: "Account credentials uninitialized. Contact platform administrator." },
-            { status: 401 }
-          );
-        }
-
-        const validDefaults = ["admin123", "ServiceMeow!2026", user.role, user.userName];
-        if (!inputPassword || !validDefaults.includes(inputPassword)) {
-          recordFailedLogin(rateLimitKey);
-          return NextResponse.json(
-            { error: "Invalid password for uninitialized account" },
-            { status: 401 }
-          );
-        }
-        // Save initial bcrypt hash
-        const newHash = await hashPassword(inputPassword);
-        await db.user.update({
-          where: { id: user.id },
-          data: { passwordHash: newHash },
-        });
+        // Accounts without a password hash cannot log in with a password.
+        // An administrator must set one (Studio > Users, or scripts/seed-passwords.ts).
+        recordFailedLogin(rateLimitKey);
+        return NextResponse.json(
+          { error: "Account credentials uninitialized. Contact platform administrator." },
+          { status: 401 }
+        );
       }
     }
 

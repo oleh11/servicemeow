@@ -2005,7 +2005,7 @@ INC0099001,Data Center cooling unit sensor warning - REMEDIATED,hardware,1`;
   const goodLoginReq = new NextRequest("http://localhost:3000/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: "admin@servicemeow.io", password: "admin123" }),
+    body: JSON.stringify({ email: "admin@servicemeow.io", password: process.env.SEED_ADMIN_PASSWORD || "" }),
   });
   const goodLoginRes = await loginRoute(goodLoginReq);
   const goodLoginData = await goodLoginRes.json();

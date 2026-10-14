@@ -162,16 +162,24 @@ npm run test:watch
 
 ---
 
-## 🔐 Default Persona Credentials (Development Only)
+## 🔐 Seeded Personas & Passwords
 
-> **IMPORTANT**: In production, change all passwords immediately. The system enforces bcrypt password hashing.
+There are **no hardcoded default passwords**. When you run the seed (`npm run db:setup` / `prisma/seed.ts`
+or `scripts/seed-passwords.ts`), passwords come from `SEED_ADMIN_PASSWORD` and `SEED_DEFAULT_PASSWORD`.
+If those are unset, random passwords are generated and **printed once** to the seed output.
 
-| Persona | Name | Role | Email | Default Password |
+| Persona | Name | Role | Email | Password from |
 | :--- | :--- | :--- | :--- | :--- |
-| **System Administrator** | Felix Vance (Admin Cat) | `admin` | `admin@servicemeow.io` | `admin123` |
-| **Incident Commander** | Sarah Jenkins | `itil` | `sarah.jenkins@servicemeow.io` | `ServiceMeow!2026` |
-| **CAB Governance Chair** | Marcus Vance | `cab_approver` | `marcus.vance@servicemeow.io` | `ServiceMeow!2026` |
-| **Staff Engineer** | Alex Chen | `employee` | `alex.chen@servicemeow.io` | `ServiceMeow!2026` |
+| **System Administrator** | Felix Vance (Admin Cat) | `admin` | `admin@servicemeow.io` | `SEED_ADMIN_PASSWORD` |
+| **Incident Commander** | Sarah Jenkins | `itil` | `sarah.jenkins@servicemeow.io` | `SEED_DEFAULT_PASSWORD` |
+| **CAB Governance Chair** | Marcus Vance | `cab_approver` | `marcus.vance@servicemeow.io` | `SEED_DEFAULT_PASSWORD` |
+| **Staff Engineer** | Alex Chen | `employee` | `alex.chen@servicemeow.io` | `SEED_DEFAULT_PASSWORD` |
+
+The one-click persona buttons on the login page only work in development with
+`ALLOW_DEV_PERSONA_LOGIN=true` (they are always refused when `NODE_ENV=production`).
+
+Users created via `POST /api/now/users` without a `password` get a random temporary password,
+returned once as `temporaryPassword` in the response.
 
 ---
 

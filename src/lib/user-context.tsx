@@ -110,24 +110,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           });
           setImpersonatedUser(null);
         }
-      } else {
-        // Automatically establish initial demo session with Admin Cat
-        const initRes = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: "admin@servicemeow.io", password: "ServiceMeow!2026" }),
-        });
-        if (initRes.ok) {
-          const initData = await initRes.json();
-          if (initData.user) {
-            setActualUser({
-              ...initData.user,
-              effectiveRoles: initData.effectiveRoles,
-            });
-            setImpersonatedUser(null);
-          }
-        }
       }
+      // No session: stay logged out. Protected pages are redirected to /login by middleware.
     } catch (err) {
       console.error("Failed to sync server session:", err);
     }

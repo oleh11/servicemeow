@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "node:crypto";
 import { db } from "@/lib/db";
 import { requireAdmin, hashPassword } from "@/lib/auth";
 import { DEFAULT_AVATAR } from "@/lib/avatar-presets";
@@ -61,7 +62,10 @@ export async function POST(request: NextRequest) {
       ? body.roles.map((r: string) => r.trim()).filter(Boolean).join(",")
       : (body.roles || "");
 
-    const rawPassword = body.password || "ServiceMeow!2026";
+    // No shared default password: if none is supplied, generate a random temporary one
+    // and return it once in the response so the admin can hand it over.
+    const generatedPassword = body.password ? null : randomBytes(12).toString("base64url");
+    const rawPassword = body.password || generatedPassword!;
     const passwordHash = await hashPassword(rawPassword);
 
     const user = await db.user.create({
@@ -98,7 +102,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ result: created }, { status: 201 });
+    return NextResponse.json(
+      generatedPassword
+        ? { result: created, temporaryPassword: generatedPassword }
+        : { result: created },
+      { status: 201 }
+    );
   } catch (error: any) {
     if (error.code === "P2002") {
       return NextResponse.json({ error: "A user with this email already exists" }, { status: 409 });

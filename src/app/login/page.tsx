@@ -17,8 +17,8 @@ import {
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useUser();
-  const [emailInput, setEmailInput] = useState("admin@servicemeow.io");
-  const [passwordInput, setPasswordInput] = useState("ServiceMeow!2026");
+  const [emailInput, setEmailInput] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -55,16 +55,15 @@ export default function LoginPage() {
 
   const handlePersonaLogin = async (persona: any) => {
     setErrorMsg("");
-    const defaultPassword = persona.role === "admin" ? "admin123" : "ServiceMeow!2026";
+    // Quick persona login only works when the server has ALLOW_DEV_PERSONA_LOGIN=true (non-production).
     setEmailInput(persona.email);
-    setPasswordInput(defaultPassword);
 
     setLoading(true);
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: persona.email, password: defaultPassword }),
+        body: JSON.stringify({ personaId: persona.email }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -135,7 +134,6 @@ export default function LoginPage() {
               <label className="block text-xs font-semibold text-slate-300">
                 Password (bcrypt protected)
               </label>
-              <span className="text-[10px] text-slate-500 font-mono">Demo: ServiceMeow!2026</span>
             </div>
             <input
               type="password"

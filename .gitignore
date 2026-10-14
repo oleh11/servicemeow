@@ -48,3 +48,6 @@ yarn-error.log*
 *.sw?
 .lazycodex/
 .omo/
+.verify-creds
+*.creds
+

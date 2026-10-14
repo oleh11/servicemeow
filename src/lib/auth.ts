@@ -1,6 +1,9 @@
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-import type { User, SysUserSession } from "@prisma/client";
+import type { User as PrismaUser, SysUserSession } from "@prisma/client";
+
+/** User as returned by the db client: passwordHash is globally omitted. */
+export type User = Omit<PrismaUser, "passwordHash">;
 
 import {
   SESSION_COOKIE_NAME,
