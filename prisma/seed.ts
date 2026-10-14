@@ -1,6 +1,29 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+
+function ensureDatabaseUrl() {
+  if (process.env.DATABASE_URL) return;
+
+  const envPath = path.resolve(process.cwd(), ".env");
+  if (fs.existsSync(envPath)) {
+    try {
+      const match = fs.readFileSync(envPath, "utf8").match(/^DATABASE_URL=["']?([^"'\r\n]+)/m);
+      if (match) {
+        process.env.DATABASE_URL = match[1];
+        return;
+      }
+    } catch {}
+  }
+
+  // Fallback to local SQLite dev.db in prisma directory
+  const dbPath = path.resolve(process.cwd(), "prisma/dev.db");
+  process.env.DATABASE_URL = `file:${dbPath}`;
+}
+
+ensureDatabaseUrl();
 
 // Seed passwords come from the environment; if unset, a random one is generated and
 // printed once. There are no shared, hardcoded default passwords.
@@ -746,7 +769,31 @@ async function main() {
     },
   });
 
-  // Cross-compatibility Unified CmnLocation records
+  // Cross-compatibility Unified CmnLocation records (Full 6-Tier Hierarchy)
+  const locAmericas = await prisma.cmnLocation.create({
+    data: {
+      name: "Americas",
+      locationType: "region",
+      regionId: regionAmer.id,
+      parentId: null,
+      fullPath: "Americas",
+    },
+  });
+
+  const locCalifornia = await prisma.cmnLocation.create({
+    data: {
+      name: "California",
+      city: "San Francisco",
+      state: "CA",
+      country: "United States",
+      locationType: "state",
+      parentId: locAmericas.id,
+      regionId: regionAmer.id,
+      stateRefId: stateCA.id,
+      fullPath: "Americas / California",
+    },
+  });
+
   const locSFMed = await prisma.cmnLocation.create({
     data: {
       name: "San Francisco Mission Bay Medical Center",
@@ -754,10 +801,11 @@ async function main() {
       state: "CA",
       country: "United States",
       locationType: "campus",
+      parentId: locCalifornia.id,
       regionId: regionAmer.id,
       stateRefId: stateCA.id,
       campusId: campusSFMed.id,
-      fullPath: "Americas / California / San Francisco Mission Bay / Pavilion A",
+      fullPath: "Americas / California / San Francisco Mission Bay Medical Center",
     },
   });
 
@@ -775,7 +823,7 @@ async function main() {
       buildingId: bldgSurg.id,
       floorId: flSurg03.id,
       spaceId: spaceOR301.id,
-      fullPath: "Americas / California / San Francisco Mission Bay / Pavilion A / Level 3 / OR-301",
+      fullPath: "Americas / California / San Francisco Mission Bay Medical Center / Mission Bay - OR Suite 301",
     },
   });
 
