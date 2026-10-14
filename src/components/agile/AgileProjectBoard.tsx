@@ -68,6 +68,12 @@ const COLUMNS = [
 
 const FIBONACCI_POINTS = [1, 2, 3, 5, 8, 13, 21];
 
+function getAssigneeName(val: any): string {
+  if (!val) return "";
+  if (typeof val === "object") return val.name || val.display_value || val.email || "";
+  return String(val);
+}
+
 export function AgileProjectBoard() {
   const { currentUser } = useUser();
   const [stories, setStories] = useState<AgileStory[]>([]);
@@ -261,20 +267,31 @@ export function AgileProjectBoard() {
     }
   };
 
+  const activeSprintObj = useMemo(() => {
+    return sprints.find((s) => s.number === selectedSprint || s.id === selectedSprint);
+  }, [sprints, selectedSprint]);
+
   // Filtered Stories
   const filteredStories = useMemo(() => {
     return stories.filter((story) => {
       // Sprint filter
       if (selectedSprint === "backlog" && story.sprint_id) return false;
       if (selectedSprint !== "all" && selectedSprint !== "backlog") {
-        if (story.sprint_id !== selectedSprint) return false;
+        const matchesSprint =
+          story.sprint_id === selectedSprint ||
+          (activeSprintObj &&
+            (story.sprint_id === activeSprintObj.id ||
+              story.sprint_id === activeSprintObj.number ||
+              story.sprint_name === activeSprintObj.name));
+        if (!matchesSprint) return false;
       }
 
       // Priority filter
-      if (priorityFilter !== "all" && story.priority !== priorityFilter) return false;
+      if (priorityFilter !== "all" && String(story.priority) !== String(priorityFilter)) return false;
 
       // Assignee filter
-      if (assigneeFilter !== "all" && story.assigned_to !== assigneeFilter) return false;
+      const storyAssignee = getAssigneeName(story.assigned_to);
+      if (assigneeFilter !== "all" && storyAssignee !== assigneeFilter) return false;
 
       // Text query
       if (searchQuery.trim()) {
@@ -282,7 +299,7 @@ export function AgileProjectBoard() {
         const num = (story.number || "").toLowerCase();
         const title = (story.short_description || "").toLowerCase();
         const desc = (story.description || "").toLowerCase();
-        const assignee = (story.assigned_to || "").toLowerCase();
+        const assignee = storyAssignee.toLowerCase();
         const epic = (story.epic_name || "").toLowerCase();
         return (
           num.includes(q) ||
@@ -295,7 +312,7 @@ export function AgileProjectBoard() {
 
       return true;
     });
-  }, [stories, selectedSprint, priorityFilter, assigneeFilter, searchQuery]);
+  }, [stories, selectedSprint, activeSprintObj, priorityFilter, assigneeFilter, searchQuery]);
 
   // Velocity & Metrics Calculation
   const metrics = useMemo(() => {
@@ -304,16 +321,16 @@ export function AgileProjectBoard() {
       (sum, s) => sum + (Number(s.story_points) || 0),
       0
     );
-    const completedCount = filteredStories.filter((s) => s.state === "7").length;
+    const completedCount = filteredStories.filter((s) => String(s.state) === "7").length;
     const completedPoints = filteredStories
-      .filter((s) => s.state === "7")
+      .filter((s) => String(s.state) === "7")
       .reduce((sum, s) => sum + (Number(s.story_points) || 0), 0);
 
     const progressPct =
       totalPoints > 0 ? Math.round((completedPoints / totalPoints) * 100) : 0;
 
     const inProgressPoints = filteredStories
-      .filter((s) => s.state === "3" || s.state === "4")
+      .filter((s) => String(s.state) === "3" || String(s.state) === "4")
       .reduce((sum, s) => sum + (Number(s.story_points) || 0), 0);
 
     return {
@@ -330,14 +347,11 @@ export function AgileProjectBoard() {
   const assignees = useMemo(() => {
     const set = new Set<string>();
     stories.forEach((s) => {
-      if (s.assigned_to) set.add(s.assigned_to);
+      const name = getAssigneeName(s.assigned_to);
+      if (name) set.add(name);
     });
     return Array.from(set);
   }, [stories]);
-
-  const activeSprintObj = useMemo(() => {
-    return sprints.find((s) => s.number === selectedSprint);
-  }, [sprints, selectedSprint]);
 
   return (
     <div className="space-y-6">
@@ -553,7 +567,9 @@ export function AgileProjectBoard() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-start">
           {COLUMNS.map((col) => {
-            const colStories = filteredStories.filter((s) => s.state === col.id);
+            const colStories = filteredStories.filter(
+              (s) => String(s.state) === String(col.id)
+            );
             const colPoints = colStories.reduce(
               (sum, s) => sum + (Number(s.story_points) || 0),
               0
@@ -651,7 +667,7 @@ export function AgileProjectBoard() {
                           <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-xs">
                             <div className="flex items-center gap-1.5 text-slate-400 text-[11px] truncate max-w-[120px]">
                               <User className="w-3 h-3 text-slate-500 shrink-0" />
-                              <span className="truncate">{story.assigned_to || "Unassigned"}</span>
+                              <span className="truncate">{getAssigneeName(story.assigned_to) || "Unassigned"}</span>
                             </div>
 
                             {/* Card Navigation Controls */}
@@ -912,7 +928,7 @@ export function AgileProjectBoard() {
                 <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
                   <span className="text-[10px] uppercase font-mono text-slate-400 block">Assignee</span>
                   <span className="font-semibold text-slate-200 mt-0.5 block truncate">
-                    {selectedStory.assigned_to || "Unassigned"}
+                    {getAssigneeName(selectedStory.assigned_to) || "Unassigned"}
                   </span>
                 </div>
 

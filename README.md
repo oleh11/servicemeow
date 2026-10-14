@@ -13,7 +13,7 @@
   <a href="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml"><img src="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml/badge.svg" alt="ServiceMeow CI" /></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-emerald.svg" alt="Node.js Version" /></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-16-blue.svg" alt="PostgreSQL" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-86%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-89%20passed-8b5cf6.svg" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
 </p>
 
@@ -208,9 +208,30 @@ ServiceMeow replaces generic ITIL task forms with tailored, context-aware spatia
 - **Hierarchy Placement Card**: Dedicated right-hand rail displaying Tier classification, database table metadata, parent relationship links, and Connected Workplace Architecture notes.
 - **Related Child Assets & Deep Linkage**: Directly inspect and manage child assets (e.g. Campuses located within a State) with inline "+ Add New" actions.
 
+### 9. Agile 2.0 Sprint Management & Interactive Kanban Board (`/workspace/agile`)
 <p align="center">
-  <img src="docs/assets/cmn_state_saved_detail.png" alt="Saved State Detail View" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+  <img src="docs/assets/agile-board-showcase.png" alt="Agile 2.0 Project Management Board" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
 </p>
+
+ServiceMeow includes a full Agile Project Management module modeled on modern engineering standards and ITIL Agile 2.0:
+- **5-Column Flow State Matrix**: Organize work across *Backlog (1)*, *Sprint Ready (2)*, *In Progress (3)*, *Testing & QA (4)*, and *Complete (7)*.
+- **Sprint Management & Velocity Progress**: Live sprint tabs (e.g. *Sprint 26.1*, *Sprint 26.2*, *Backlog Unassigned*) with real-time story point burn-up calculation and percentage completion meters.
+- **Fibonacci Story Pointing & Epic Attribution**: Assign standard Fibonacci complexity points (1, 2, 3, 5, 8, 13, 21 pts) and link stories directly to business Epics (`rm_epic`) and Projects (`rm_project`).
+- **Interactive Optimistic State Controls**: Rapidly advance or regress story states with 1-click `<` and `>` controls backed by the Table API (`rm_story`).
+- **Story Creation & Detail Inspection**: Modal forms for creating new user stories and deep-dive drawer panels inspecting acceptance criteria, task number sequence (`STRY0001001`), assignees, and state history.
+
+---
+
+### 10. Universal Excel-Style Table Data Editor (`/studio?tab=table_editor`)
+<p align="center">
+  <img src="docs/assets/table-editor-showcase.png" alt="Universal Excel-Style Table Data Editor" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+A high-productivity, spreadsheet-grade administrative data grid providing platform admins complete control over all system and operational tables (`incident`, `change_request`, `sys_user`, `cmdb_ci`, `rm_story`, `cmn_location`, `sc_task`, etc.):
+- **Inline Cell Editing & Auto-Save**: Double-click or click any cell to edit fields directly in place with real-time green pulse feedback and immediate PATCH persistence.
+- **Admin View Customizer**: Toggle column visibility, reorder columns, and personalize grid density with preferences saved permanently to `localStorage` per table (`servicemeow_view_${table}`).
+- **Batch Operations & Record Creation**: Add new rows via quick inline insert or structured modal form; multi-select rows for bulk deletion with atomic confirmation safeguards.
+- **Instant Sorting, Filtering & CSV Export**: Column header sort toggles, multi-field regex text search, pagination size selection (15, 25, 50, 100), and 1-click client-side CSV spreadsheet export.
 
 ---
 
@@ -279,7 +300,7 @@ npm run worker
 
 ## 🧪 Testing & Verification
 
-ServiceMeow includes a full Vitest test suite with **86 passing tests across 10 test suites** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, spatial entity operations, and the 6-tier Workplace Hub spatial hierarchy.
+ServiceMeow includes a full Vitest test suite with **89 passing tests across 10 test suites** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, spatial entity operations, and the 6-tier Workplace Hub spatial hierarchy.
 
 ```bash
 # Run Vitest test suite once

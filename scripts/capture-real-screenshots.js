@@ -97,7 +97,13 @@ async function main() {
     // 5. Workplace Spatial Hierarchy (Real 6-Tier Spatial Tree)
     await capture('/portal/spaces', 'spaces-showcase.png', { waitMs: 2500 });
 
-    // 6. Real Hero Banner (Crisp capture of the Studio / Workspace Command Center)
+    // 6. Agile Project Management Kanban Board
+    await capture('/workspace/agile', 'agile-board-showcase.png', { waitMs: 2500 });
+
+    // 7. Universal Excel-Style Table Data Editor
+    await capture('/studio?tab=table_editor', 'table-editor-showcase.png', { waitMs: 2500 });
+
+    // 8. Real Hero Banner (Crisp capture of the Studio / Workspace Command Center)
     await capture('/workspace', 'hero-banner.png', { waitMs: 2500 });
     fs.copyFileSync(
       path.join(ASSETS_DIR, 'hero-banner.png'),

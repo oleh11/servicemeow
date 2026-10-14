@@ -76,8 +76,6 @@ export function Navbar() {
     ? [
         { label: "Table Data Editor", href: "/studio?tab=table_editor", icon: Database },
         { label: "Schema Dictionary", href: "/studio?tab=schema", icon: Layers },
-        { label: "Server Automation", href: "/studio?tab=business_rules", icon: FileCode },
-        { label: "Workplace & Spaces", href: "/studio?tab=workplace", icon: Building2 },
         { label: "Operations Workspace ↗", href: "/workspace", icon: LayoutDashboard },
       ]
     : [
@@ -282,7 +280,7 @@ export function Navbar() {
           <div className="flex items-center space-x-3 shrink-0">
             {/* 3-Surface Segmented Context Switcher (Frontend Portal / Operations Workspace / Admin Backend) */}
             {!isEmployee && (
-              <div className="hidden xl:flex items-center bg-black/10 dark:bg-white/5 p-1 rounded-full border border-black/10 dark:border-white/10 text-xs font-semibold">
+              <div className="hidden 2xl:flex items-center bg-black/10 dark:bg-white/5 p-1 rounded-full border border-black/10 dark:border-white/10 text-xs font-semibold shrink-0">
                 <Link
                   href="/portal"
                   className={`px-3 py-1 rounded-full flex items-center gap-1.5 transition-all ${
