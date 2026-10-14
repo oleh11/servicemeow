@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { recordUpdateChange } from "@/lib/update-set";
+import { requireAdmin } from "@/lib/auth";
 
 // GET /api/now/navigation/modules -> returns modules, optionally filtered by applicationId
 export async function GET(request: NextRequest) {
@@ -28,6 +29,7 @@ export async function GET(request: NextRequest) {
 // POST /api/now/navigation/modules -> create new navigation module
 export async function POST(request: NextRequest) {
   try {
+    await requireAdmin(request);
     const body = await request.json();
     const {
       applicationId,
@@ -75,6 +77,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ result: created }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }

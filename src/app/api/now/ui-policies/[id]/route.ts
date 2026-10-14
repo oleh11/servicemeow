@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import { recordUpdateChange } from "@/lib/update-set";
 
 export async function GET(
@@ -7,6 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireAdmin(request);
     const { id } = await params;
     const policy = await db.sysUiPolicy.findUnique({
       where: { id },
@@ -15,7 +17,8 @@ export async function GET(
     if (!policy) return NextResponse.json({ error: "Policy not found" }, { status: 404 });
     return NextResponse.json({ result: policy });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }
 
@@ -24,6 +27,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireAdmin(request);
     const { id } = await params;
     const body = await request.json();
 
@@ -75,7 +79,8 @@ export async function PATCH(
 
     return NextResponse.json({ result: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }
 
@@ -84,6 +89,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireAdmin(request);
     const { id } = await params;
     const policy = await db.sysUiPolicy.findUnique({ where: { id } });
     if (!policy) {
@@ -102,6 +108,7 @@ export async function DELETE(
 
     return NextResponse.json({ result: { status: "deleted", id } });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }

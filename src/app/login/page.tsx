@@ -55,10 +55,26 @@ export default function LoginPage() {
 
   const handlePersonaLogin = async (persona: any) => {
     setErrorMsg("");
+    const defaultPassword = persona.role === "admin" ? "admin123" : "ServiceMeow!2026";
+    setEmailInput(persona.email);
+    setPasswordInput(defaultPassword);
+
     setLoading(true);
     try {
-      await login(persona);
-      const redirectUrl = persona.role === "employee" ? "/portal" : "/workspace";
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: persona.email, password: defaultPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || "Authentication failed.");
+        setLoading(false);
+        return;
+      }
+
+      await login(data.user);
+      const redirectUrl = data.user.role === "employee" ? "/portal" : "/workspace";
       router.push(redirectUrl);
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to switch persona.");

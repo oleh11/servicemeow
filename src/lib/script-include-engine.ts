@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { runInSecureSandbox } from "./script-sandbox";
 
 export async function executeScriptInclude(
   nameOrApiName: string,
@@ -20,34 +21,45 @@ export async function executeScriptInclude(
     throw new Error(`Script Include '${nameOrApiName}' was not found or is inactive.`);
   }
 
-  // Sandbox runner
-  // Script includes are typically written as:
-  // var IncidentUtils = Class.create();
-  // IncidentUtils.prototype = { initialize: function() {}, myMethod: function(arg) { return ...; } };
-  // or standard ES6 class:
-  // class IncidentUtils { myMethod(arg) { return ...; } }
-  const wrapperCode = `
-    const Class = {
-      create: function() {
-        return function() {
-          if (this.initialize) this.initialize.apply(this, arguments);
-        };
-      }
-    };
-    const gs = {
-      log: (msg) => console.log("[gs.log]", msg),
-      error: (msg) => console.error("[gs.error]", msg),
-      getUserID: () => context.userId || "admin",
-      getUserName: () => context.userName || "System Administrator",
-      nowDateTime: () => new Date().toISOString(),
-    };
+  // 1. Validate methodName identifier strictly to prevent code injection
+  if (methodName && !/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(methodName)) {
+    throw new Error(`Invalid method name: '${methodName}'. Method names must be valid JavaScript identifiers.`);
+  }
 
+  // 2. Build sandbox context
+  const Class = {
+    create: function() {
+      return function(this: any, ...initArgs: any[]) {
+        if (this.initialize) this.initialize.apply(this, initArgs);
+      };
+    },
+  };
+
+  const gs = {
+    log: (msg: any) => console.log("[gs.log]", msg),
+    warn: (msg: any) => console.warn("[gs.warn]", msg),
+    error: (msg: any) => console.error("[gs.error]", msg),
+    getUserID: () => context.userId || "admin",
+    getUserName: () => context.userName || "System Administrator",
+    nowDateTime: () => new Date().toISOString(),
+  };
+
+  const sandboxContext = {
+    Class,
+    gs,
+    args,
+    context,
+    targetMethod: methodName || null,
+  };
+
+  // Safe wrapper code that inspects targetMethod passed via context without string concatenation!
+  const wrappedCode = `
     ${scriptInclude.script}
 
     if (typeof ${scriptInclude.name} !== "undefined") {
       const Instance = typeof ${scriptInclude.name} === "function" ? new ${scriptInclude.name}() : ${scriptInclude.name};
-      if ("${methodName || ""}" && typeof Instance["${methodName || ""}"] === "function") {
-        return Instance["${methodName || ""}"](...args);
+      if (targetMethod && typeof Instance[targetMethod] === "function") {
+        return Instance[targetMethod](...args);
       }
       return Instance;
     }
@@ -55,8 +67,7 @@ export async function executeScriptInclude(
   `;
 
   try {
-    const fn = new Function("args", "context", wrapperCode);
-    return fn(args, context);
+    return runInSecureSandbox(wrappedCode, sandboxContext, { timeoutMs: 3000 });
   } catch (err: any) {
     throw new Error(`Script Include '${scriptInclude.name}' execution failed: ${err.message}`);
   }

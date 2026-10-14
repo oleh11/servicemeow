@@ -4,7 +4,18 @@
 export const SESSION_COOKIE_NAME = "servicemeow_session";
 export const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
 
-const SECRET_KEY = process.env.AUTH_SECRET || "servicemeow_secret_enterprise_2026_super_secure_key";
+function getAuthSecret(): string {
+  const secret = process.env.AUTH_SECRET;
+  if (!secret || secret.trim().length === 0) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error(
+        "FATAL SECURITY ERROR: AUTH_SECRET environment variable is required in production. Please set AUTH_SECRET in your environment or .env file."
+      );
+    }
+    return "servicemeow-dev-only-local-secret-key-32-chars-change-for-prod";
+  }
+  return secret;
+}
 
 function bytesToBase64Url(bytes: Uint8Array): string {
   let binary = "";
@@ -29,7 +40,7 @@ async function getCryptoKey(): Promise<CryptoKey> {
   const enc = new TextEncoder();
   return await crypto.subtle.importKey(
     "raw",
-    enc.encode(SECRET_KEY),
+    enc.encode(getAuthSecret()),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign", "verify"]

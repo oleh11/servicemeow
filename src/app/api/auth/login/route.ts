@@ -8,16 +8,61 @@ import {
   SESSION_MAX_AGE_SECONDS,
   calculateEffectiveRoles,
 } from "@/lib/auth";
+import {
+  checkLoginRateLimit,
+  recordFailedLogin,
+  resetLoginRateLimit,
+} from "@/lib/rate-limiter";
 
 export async function POST(req: NextRequest) {
   try {
+    const ipAddress =
+      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+      req.headers.get("x-real-ip") ||
+      "127.0.0.1";
+
     const body = await req.json();
     const { email, username, password, personaId } = body;
 
+    const identifier = (email || username || personaId || "").trim().toLowerCase();
+    const rateLimitKey = `${ipAddress}:${identifier || "anonymous"}`;
+
+    // 1. Check Rate Limit & Account Lockout
+    const rateLimit = checkLoginRateLimit(rateLimitKey);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: "Too many failed login attempts. Account temporarily locked out. Please try again later.",
+          code: "ACCOUNT_LOCKED",
+          retryAfterSeconds: rateLimit.retryAfterSeconds,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimit.retryAfterSeconds || 900),
+          },
+        }
+      );
+    }
+
     let user: any = null;
 
-    // 1. Authenticate via personaId (1-click persona switch from UI)
+    // 2. Persona bypass handling (STRICTLY ENV-GATED to dev and default disabled)
     if (personaId) {
+      const devBypassAllowed =
+        process.env.NODE_ENV !== "production" &&
+        process.env.ALLOW_DEV_PERSONA_LOGIN === "true";
+
+      if (!devBypassAllowed) {
+        return NextResponse.json(
+          {
+            error: "Password-less persona login is disabled. Please authenticate with email/username and password.",
+            code: "PERSONA_LOGIN_DISABLED",
+          },
+          { status: 403 }
+        );
+      }
+
       user = await db.user.findFirst({
         where: {
           OR: [{ id: personaId }, { role: personaId }, { userName: personaId }],
@@ -26,6 +71,7 @@ export async function POST(req: NextRequest) {
           groupMembers: { include: { group: true } },
         },
       });
+
       if (!user) {
         return NextResponse.json(
           { error: `Persona '${personaId}' not found in database` },
@@ -33,8 +79,7 @@ export async function POST(req: NextRequest) {
         );
       }
     } else {
-      // 2. Authenticate via email or username + password
-      const identifier = (email || username || "").trim().toLowerCase();
+      // 3. Standard Credential Authentication (Email/Username + Password)
       if (!identifier) {
         return NextResponse.json(
           { error: "Email or username is required" },
@@ -55,13 +100,14 @@ export async function POST(req: NextRequest) {
       });
 
       if (!user) {
+        recordFailedLogin(rateLimitKey);
         return NextResponse.json(
           { error: "Invalid username, email, or password" },
           { status: 401 }
         );
       }
 
-      // Check if user is active
+      // Check if user account is active
       if (!user.active) {
         return NextResponse.json(
           { error: "User account is inactive. Contact platform administrator." },
@@ -74,16 +120,27 @@ export async function POST(req: NextRequest) {
       if (user.passwordHash) {
         const matches = await comparePassword(inputPassword, user.passwordHash);
         if (!matches) {
+          const failResult = recordFailedLogin(rateLimitKey);
           return NextResponse.json(
-            { error: "Invalid username, email, or password" },
+            {
+              error: "Invalid username, email, or password",
+              remainingAttempts: failResult.remainingAttempts,
+            },
             { status: 401 }
           );
         }
       } else {
-        // Fallback for unseeded / newly migrated accounts:
-        // Accept default passwords 'admin123', 'ServiceMeow!2026', or username
+        // Fallback for unseeded / newly migrated accounts only in non-prod
+        if (process.env.NODE_ENV === "production") {
+          return NextResponse.json(
+            { error: "Account credentials uninitialized. Contact platform administrator." },
+            { status: 401 }
+          );
+        }
+
         const validDefaults = ["admin123", "ServiceMeow!2026", user.role, user.userName];
         if (!inputPassword || !validDefaults.includes(inputPassword)) {
+          recordFailedLogin(rateLimitKey);
           return NextResponse.json(
             { error: "Invalid password for uninitialized account" },
             { status: 401 }
@@ -98,13 +155,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Login successful: Reset failed attempt counters
+    resetLoginRateLimit(rateLimitKey);
+
     // Create DB session
     const userAgent = req.headers.get("user-agent") || undefined;
-    const ipAddress =
-      req.headers.get("x-forwarded-for") ||
-      req.headers.get("x-real-ip") ||
-      undefined;
-
     const { session, token } = await createDbSession(user.id, userAgent, ipAddress);
 
     // Compute effective roles from DB

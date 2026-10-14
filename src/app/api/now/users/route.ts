@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin, hashPassword } from "@/lib/auth";
+import { DEFAULT_AVATAR } from "@/lib/avatar-presets";
 
 export async function GET(request: NextRequest) {
   try {
+    await requireAdmin(request);
+
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search") || "";
     const role = searchParams.get("role");
@@ -38,37 +42,39 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ result: formatted });
   } catch (error: any) {
-    console.error("GET /api/now/users error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || (error.name === "AuthError" ? error.status : 500);
+    return NextResponse.json({ error: error.message }, { status: status || 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAdmin(request);
+
     const body = await request.json();
 
     if (!body.name || !body.email) {
       return NextResponse.json({ error: "Name and Email are required" }, { status: 400 });
     }
 
-    // Default cat avatar if none provided
-    const defaultAvatar =
-      body.avatar ||
-      `https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=128&h=128&fit=crop&crop=faces`;
-
     const rolesStr = Array.isArray(body.roles)
       ? body.roles.map((r: string) => r.trim()).filter(Boolean).join(",")
       : (body.roles || "");
+
+    const rawPassword = body.password || "ServiceMeow!2026";
+    const passwordHash = await hashPassword(rawPassword);
 
     const user = await db.user.create({
       data: {
         name: body.name,
         email: body.email.toLowerCase().trim(),
+        userName: body.userName || body.email.split("@")[0],
+        passwordHash,
         role: body.role || "employee",
         roles: rolesStr,
         department: body.department || "General IT",
         title: body.title || "Support Analyst",
-        avatar: defaultAvatar,
+        avatar: body.avatar || DEFAULT_AVATAR,
         active: body.active !== false,
       },
     });
@@ -94,10 +100,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ result: created }, { status: 201 });
   } catch (error: any) {
-    console.error("POST /api/now/users error:", error);
     if (error.code === "P2002") {
       return NextResponse.json({ error: "A user with this email already exists" }, { status: 409 });
     }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || (error.name === "AuthError" ? error.status : 500);
+    return NextResponse.json({ error: error.message }, { status: status || 500 });
   }
 }

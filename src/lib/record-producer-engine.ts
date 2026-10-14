@@ -3,6 +3,7 @@ import { getNextNumber } from "./numbering";
 import { executeBusinessRules } from "./business-rules";
 import { triggerFlows } from "./flow-engine";
 import { enqueueEvent } from "./event-notification-engine";
+import { runInSecureSandbox } from "./script-sandbox";
 
 export interface RecordProducerSubmissionResult {
   success: boolean;
@@ -73,13 +74,14 @@ export async function executeRecordProducer(
     currentRecord.description = variables.description;
   }
 
-  // 3. Evaluate Producer Script ('current' & 'producer' context)
+  // 3. Evaluate Producer Script ('current' & 'producer' context) safely
   if (producer.producerScript && producer.producerScript.trim()) {
     try {
-      const sandboxFn = new Function("current", "producer", "user", `
-        ${producer.producerScript}
-      `);
-      sandboxFn(currentRecord, variables, user);
+      runInSecureSandbox(
+        producer.producerScript,
+        { current: currentRecord, producer: variables, user },
+        { timeoutMs: 2000 }
+      );
     } catch (err: any) {
       console.error(`Error in producer script for ${producer.name}:`, err);
     }

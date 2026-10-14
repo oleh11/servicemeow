@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import { recordUpdateChange } from "@/lib/update-set";
 
 export async function GET(request: NextRequest) {
   try {
+    await requireAdmin(request);
     const searchParams = request.nextUrl.searchParams;
     const table = searchParams.get("table");
     const when = searchParams.get("when");
@@ -19,12 +21,14 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ result: rules });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAdmin(request);
     const body = await request.json();
 
     if (!body.name || !body.tableName || !body.when) {
@@ -59,6 +63,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ result: rule }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }

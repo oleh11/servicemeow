@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireAdmin(request);
     const { id } = await params;
     const flow = await db.sysHubFlow.findUnique({
       where: { id },
@@ -19,7 +21,8 @@ export async function GET(
     if (!flow) return NextResponse.json({ error: "Flow not found" }, { status: 404 });
     return NextResponse.json({ result: flow });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }
 
@@ -28,6 +31,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireAdmin(request);
     const { id } = await params;
     const body = await request.json();
 
@@ -58,7 +62,8 @@ export async function PATCH(
 
     return NextResponse.json({ result: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }
 
@@ -67,6 +72,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireAdmin(request);
     const { id } = await params;
     const existing = await db.sysHubFlow.findUnique({ where: { id } });
     if (existing) {
@@ -82,6 +88,7 @@ export async function DELETE(
     }
     return NextResponse.json({ result: { status: "deleted", id } });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }

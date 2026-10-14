@@ -270,23 +270,40 @@ export function RecordForm({ tableName, recordId }: RecordFormProps) {
 
   const runClientScript = async (script: any, args: any[]) => {
     try {
-      const scriptNameLit = JSON.stringify(script.name || "Unnamed Script");
+      const allowedTypes = ["onLoad", "onChange", "onSubmit"];
+      if (!allowedTypes.includes(script.type)) {
+        console.warn("Invalid client script type:", script.type);
+        return;
+      }
+
       const fn = new Function(
         "g_form",
         "oldValue",
         "newValue",
-        `
+        "scriptType",
+        `"use strict";
         try {
+          // Shield sensitive browser globals
+          const window = undefined;
+          const document = undefined;
+          const fetch = undefined;
+          const localStorage = undefined;
+          const sessionStorage = undefined;
+
           ${script.scriptBody}
-          if (typeof ${script.type} === 'function') {
-            return ${script.type}(g_form, oldValue, newValue);
+
+          if (scriptType === "onLoad" && typeof onLoad === "function") {
+            return onLoad(g_form);
+          } else if (scriptType === "onChange" && typeof onChange === "function") {
+            return onChange(g_form, oldValue, newValue);
+          } else if (scriptType === "onSubmit" && typeof onSubmit === "function") {
+            return onSubmit(g_form);
           }
         } catch (err) {
-          console.error("Error executing client script " + ${scriptNameLit} + ":", err);
-        }
-      `
+          console.error("Error executing client script (" + (scriptType || "") + "):", err);
+        }`
       );
-      return await fn(...args);
+      return await fn(args[0], args[1], args[2], script.type);
     } catch (err) {
       console.error("Client Script compilation error (" + (script.name || "") + "):", err);
     }

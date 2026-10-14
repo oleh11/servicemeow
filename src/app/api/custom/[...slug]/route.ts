@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth";
+import { runInSecureSandbox } from "@/lib/script-sandbox";
 
 async function handleScriptedRest(
   request: NextRequest,
@@ -7,16 +9,19 @@ async function handleScriptedRest(
   method: string
 ) {
   try {
+    // 1. Session verification
+    const session = await requireAuth(request);
+
     const { slug } = await params;
     const pathJoined = slug.join("/");
 
-    // Find all active API definitions
+    // 2. Find active API definitions
     const definitions = await db.sysWsDefinition.findMany({
       where: { active: true },
       include: { operations: true },
     });
 
-    // Match definition by basePath prefix
+    // 3. Match definition by basePath prefix
     let matchedDef: any = null;
     let matchedOp: any = null;
 
@@ -62,28 +67,44 @@ async function handleScriptedRest(
       queryParams[key] = val;
     });
 
-    const scriptContext = {
+    const safeResponse = {
+      status: 200,
+      headers: {} as Record<string, string>,
+    };
+
+    const sandboxContext = {
       request: {
         method,
         path: pathJoined,
         queryParams,
         body: requestBody,
-        headers: Object.fromEntries(request.headers.entries()),
+        user: {
+          id: session.user.id,
+          name: session.user.name,
+          email: session.user.email,
+          role: session.user.role,
+        },
       },
-      db,
-      response: {
-        status: 200,
-        headers: {},
+      response: safeResponse,
+      gs: {
+        log: (...args: any[]) => console.log(`[ScriptedRest ${matchedDef.name}]`, ...args),
+        nowDateTime: () => new Date().toISOString(),
       },
     };
 
     let resultOutput: any = null;
     try {
-      const sandboxFn = new Function("context", `
-        const { request, response, db } = context;
+      const codeToRun = `
+        const request = sandboxContext.request;
+        const response = sandboxContext.response;
+        const gs = sandboxContext.gs;
         ${matchedOp.script}
-      `);
-      resultOutput = await sandboxFn(scriptContext);
+      `;
+      resultOutput = runInSecureSandbox(
+        codeToRun,
+        { sandboxContext },
+        { timeoutMs: 3000 }
+      );
     } catch (scriptErr: any) {
       return NextResponse.json(
         { error: `Script execution error in ${matchedDef.name}: ${scriptErr.message}` },
@@ -93,10 +114,11 @@ async function handleScriptedRest(
 
     return NextResponse.json(
       { result: resultOutput ?? { success: true } },
-      { status: scriptContext.response.status || 200 }
+      { status: safeResponse.status || 200 }
     );
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const status = err.status || 500;
+    return NextResponse.json({ error: err.message }, { status });
   }
 }
 

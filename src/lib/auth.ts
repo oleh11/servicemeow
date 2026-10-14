@@ -246,12 +246,12 @@ export async function getServerSession(req?: Request): Promise<SessionContext | 
 
     let sessionId: string | null = null;
 
-    // Token might be a signed JWT or a raw session ID (for testing)
+    // Tokens MUST be cryptographically verified signed JWTs
     const verified = await verifySessionToken(rawToken);
     if (verified) {
       sessionId = verified.sessionId;
-    } else if (rawToken.length >= 20 && !rawToken.includes(".")) {
-      // Direct session ID fallback (useful for direct API test clients)
+    } else if (process.env.ALLOW_RAW_SESSION_ID === "true" && rawToken.length >= 20 && !rawToken.includes(".")) {
+      // Strictly restricted to local tests when explicitly enabled
       sessionId = rawToken;
     }
 
@@ -330,4 +330,43 @@ export async function getServerSession(req?: Request): Promise<SessionContext | 
     console.error("Error in getServerSession:", err);
     return null;
   }
+}
+
+// ------------------------------------------------------------------
+// Explicit Route Guards & Auth Verification Helpers
+// ------------------------------------------------------------------
+
+export class AuthError extends Error {
+  status: number;
+  code: string;
+  constructor(message: string, status = 401, code = "UNAUTHORIZED") {
+    super(message);
+    this.name = "AuthError";
+    this.status = status;
+    this.code = code;
+  }
+}
+
+/**
+ * Requires a valid, active authenticated session.
+ * Throws an AuthError (401) if missing or expired.
+ */
+export async function requireAuth(req: Request): Promise<SessionContext> {
+  const session = await getServerSession(req);
+  if (!session || !session.user) {
+    throw new AuthError("Authentication required to access this resource", 401, "UNAUTHORIZED");
+  }
+  return session;
+}
+
+/**
+ * Requires an active session with administrative privileges (role === 'admin').
+ * Throws AuthError (401) if unauthenticated, or AuthError (403) if unauthorized.
+ */
+export async function requireAdmin(req: Request): Promise<SessionContext> {
+  const session = await requireAuth(req);
+  if (!session.isAdmin) {
+    throw new AuthError("Administrative privileges required to access this resource", 403, "FORBIDDEN");
+  }
+  return session;
 }

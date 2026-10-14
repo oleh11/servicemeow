@@ -1,19 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
+    await requireAdmin(request);
     const includes = await db.sysScriptInclude.findMany({
       orderBy: { name: "asc" },
     });
     return NextResponse.json({ result: includes });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAdmin(request);
     const body = await request.json();
     const { name, apiName, script, clientCallable, description, active } = body;
 
@@ -48,6 +52,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ result: created }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }

@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createTable } from "@/lib/dictionary";
 import { recordUpdateChange } from "@/lib/update-set";
+import { requireAdmin } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAdmin(request);
     const body = await request.json();
     if (!body.name || !body.label) {
       return NextResponse.json(
@@ -25,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ result: table }, { status: 201 });
   } catch (error: any) {
-    console.error("Create table error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }

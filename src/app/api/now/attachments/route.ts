@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
+    await requireAuth(request);
     const table = request.nextUrl.searchParams.get("table");
     const recordId = request.nextUrl.searchParams.get("record_id");
 
@@ -28,12 +30,14 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ result: attachments });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await requireAuth(request);
     const body = await request.json();
     const {
       tableName,
@@ -42,8 +46,6 @@ export async function POST(request: NextRequest) {
       contentType = "application/octet-stream",
       byteSize = 0,
       base64Data,
-      uploadedById,
-      uploadedByName,
     } = body;
 
     if (!tableName || !recordId || !fileName || !base64Data) {
@@ -61,8 +63,8 @@ export async function POST(request: NextRequest) {
         contentType,
         byteSize: Number(byteSize) || Math.floor((base64Data.length * 3) / 4),
         base64Data,
-        uploadedById: uploadedById || null,
-        uploadedByName: uploadedByName || "User",
+        uploadedById: session.user.id,
+        uploadedByName: session.user.name,
       },
     });
 
@@ -73,10 +75,10 @@ export async function POST(request: NextRequest) {
           taskId: recordId,
           noteType: "work_note",
           content: `📎 Attached file: ${fileName} (${Math.round((attachment.byteSize / 1024) * 10) / 10} KB)`,
-          authorId: uploadedById || null,
+          authorId: session.user.id,
         },
       });
-    } catch (e) {
+    } catch {
       // Ignored if recordId is not a task id
     }
 
@@ -93,6 +95,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }

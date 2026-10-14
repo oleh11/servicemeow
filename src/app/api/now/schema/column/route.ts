@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateColumn } from "@/lib/dictionary";
 import { recordUpdateChange } from "@/lib/update-set";
+import { requireAdmin } from "@/lib/auth";
 
 export async function PATCH(request: NextRequest) {
   try {
+    await requireAdmin(request);
     const body = await request.json();
     const updated = await updateColumn(body);
 
@@ -18,7 +20,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ result: updated });
   } catch (error: any) {
-    console.error("Column PATCH error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }

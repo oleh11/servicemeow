@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
 import { recordUpdateChange } from "@/lib/update-set";
 
 export async function GET(request: NextRequest) {
   try {
+    await requireAdmin(request);
     const { searchParams } = new URL(request.url);
     const table = searchParams.get("table");
 
@@ -17,12 +19,14 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ result: scripts });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAdmin(request);
     const body = await request.json();
     const { name, tableName, type, fieldName, scriptBody, active, description } = body;
 
@@ -56,6 +60,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ result: script });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const status = error.status || 500;
+    return NextResponse.json({ error: error.message }, { status });
   }
 }

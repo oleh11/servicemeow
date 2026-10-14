@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { AVATAR_PRESETS } from "./avatar-presets";
 
 export interface UserPersona {
   id: string;
@@ -23,7 +24,7 @@ export const DEFAULT_PERSONAS: UserPersona[] = [
     role: "admin",
     title: "Platform Superadmin & Head Cat",
     department: "IT Infrastructure",
-    avatar: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=128&h=128&fit=crop&crop=faces",
+    avatar: AVATAR_PRESETS[0].url,
     effectiveRoles: ["admin", "itil", "cab_approver", "employee", "public"],
   },
   {
@@ -33,7 +34,7 @@ export const DEFAULT_PERSONAS: UserPersona[] = [
     role: "itil",
     title: "Senior ITIL Incident Commander",
     department: "Global Service Desk",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=128&h=128&fit=crop&crop=faces",
+    avatar: AVATAR_PRESETS[7].url,
     effectiveRoles: ["itil", "employee", "public"],
   },
   {
@@ -43,7 +44,7 @@ export const DEFAULT_PERSONAS: UserPersona[] = [
     role: "cab_approver",
     title: "CAB Governance Chair & Change Director",
     department: "IT Governance",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=128&h=128&fit=crop&crop=faces",
+    avatar: AVATAR_PRESETS[6].url,
     effectiveRoles: ["cab_approver", "employee", "public"],
   },
   {
@@ -53,7 +54,7 @@ export const DEFAULT_PERSONAS: UserPersona[] = [
     role: "employee",
     title: "Staff Software Architect",
     department: "Core Engineering",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=128&h=128&fit=crop&crop=faces",
+    avatar: AVATAR_PRESETS[8].url,
     effectiveRoles: ["employee", "public"],
   },
 ];
