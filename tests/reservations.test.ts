@@ -2,6 +2,14 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { db } from "@/lib/db";
 import { resolveReference, getDynamicReferenceCandidates, resolveDotWalk } from "@/lib/reference-resolver";
 import { getNextNumber } from "@/lib/numbering";
+import {
+  formatTimeSlot,
+  formatTimeOption,
+  formatInterval,
+  toMilitaryCallout,
+  STANDARD_TIME_OPTIONS,
+  CALENDAR_HOURLY_SLOTS,
+} from "@/lib/time-format";
 
 describe("Workplace Hub - Room & Desk Reservation System", () => {
   let testSpace: any;
@@ -202,5 +210,62 @@ describe("Workplace Hub - Room & Desk Reservation System", () => {
     const firstResult = candidates.results[0];
     expect(firstResult.value).toBeDefined();
     expect(firstResult.display_value).toMatch(/^RES\d{7}/);
+  });
+
+  describe("Time Formatting & Military Time Booking", () => {
+    it("formats 24-hour military time accurately", () => {
+      expect(formatTimeSlot("08:00", "24h")).toBe("08:00");
+      expect(formatTimeSlot("09:30", "24h")).toBe("09:30");
+      expect(formatTimeSlot("12:00", "24h")).toBe("12:00");
+      expect(formatTimeSlot("14:30", "24h")).toBe("14:30");
+      expect(formatTimeSlot("17:00", "24h")).toBe("17:00");
+      expect(formatTimeSlot("21:30", "24h")).toBe("21:30");
+      expect(formatTimeSlot("00:15", "24h")).toBe("00:15");
+    });
+
+    it("formats 12-hour AM/PM time accurately", () => {
+      expect(formatTimeSlot("08:00", "12h")).toBe("8:00 AM");
+      expect(formatTimeSlot("09:30", "12h")).toBe("9:30 AM");
+      expect(formatTimeSlot("12:00", "12h")).toBe("12:00 PM");
+      expect(formatTimeSlot("13:00", "12h")).toBe("1:00 PM");
+      expect(formatTimeSlot("14:30", "12h")).toBe("2:30 PM");
+      expect(formatTimeSlot("17:00", "12h")).toBe("5:00 PM");
+      expect(formatTimeSlot("21:30", "12h")).toBe("9:30 PM");
+      expect(formatTimeSlot("00:15", "12h")).toBe("12:15 AM");
+    });
+
+    it("generates unambiguous military callout notations", () => {
+      expect(toMilitaryCallout("08:00")).toBe("0800 hrs");
+      expect(toMilitaryCallout("09:30")).toBe("0930 hrs");
+      expect(toMilitaryCallout("14:00")).toBe("1400 hrs");
+      expect(toMilitaryCallout("17:45")).toBe("1745 hrs");
+    });
+
+    it("formats dropdown options with military annotations", () => {
+      expect(formatTimeOption("14:30", "12h")).toBe("2:30 PM");
+      expect(formatTimeOption("14:30", "24h")).toBe("14:30 (1430 hrs)");
+      expect(formatTimeOption("09:00", "24h")).toBe("09:00 (0900 hrs)");
+    });
+
+    it("formats booking intervals with callouts in military mode", () => {
+      const standardInterval = formatInterval("09:00", "10:30", "12h");
+      expect(standardInterval).toBe("9:00 AM – 10:30 AM");
+
+      const militaryInterval = formatInterval("09:00", "10:30", "24h");
+      expect(militaryInterval).toBe("09:00 – 10:30 (0900 – 1030 hrs)");
+    });
+
+    it("provides standard 30-minute intervals and calendar hourly slots", () => {
+      expect(STANDARD_TIME_OPTIONS.length).toBeGreaterThan(20);
+      expect(STANDARD_TIME_OPTIONS).toContain("08:00");
+      expect(STANDARD_TIME_OPTIONS).toContain("09:30");
+      expect(STANDARD_TIME_OPTIONS).toContain("10:30");
+      expect(STANDARD_TIME_OPTIONS).toContain("14:00");
+      expect(STANDARD_TIME_OPTIONS).toContain("17:30");
+
+      expect(CALENDAR_HOURLY_SLOTS).toContain("08:00");
+      expect(CALENDAR_HOURLY_SLOTS).toContain("12:00");
+      expect(CALENDAR_HOURLY_SLOTS).toContain("17:00");
+    });
   });
 });

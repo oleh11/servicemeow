@@ -33,6 +33,7 @@ import {
   FileText,
   SlidersHorizontal,
 } from "lucide-react";
+import { TimeFormat, formatDateTimeSlot } from "@/lib/time-format";
 
 interface SpaceItem {
   id: string;
@@ -198,6 +199,18 @@ export function WorkplaceConfigTab() {
     requireApprovalForAuditorium: true,
     enableRecurringBookings: true,
   });
+
+  // Time format state (12-Hour AM/PM vs. 24-Hour Military Time)
+  const [timeFormat, setTimeFormat] = useState<TimeFormat>("12h");
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("servicemeow_time_format");
+      if (saved === "12h" || saved === "24h") {
+        setTimeFormat(saved);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     loadAllWorkplaceData();
@@ -1151,6 +1164,37 @@ export function WorkplaceConfigTab() {
                 <option value="checked_in">Checked In</option>
                 <option value="cancelled">Cancelled</option>
               </select>
+
+              <div className="flex items-center p-0.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px]" title="Toggle 12-Hour AM/PM vs. 24-Hour Military Time">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTimeFormat("12h");
+                    try { localStorage.setItem("servicemeow_time_format", "12h"); } catch {}
+                  }}
+                  className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                    timeFormat === "12h"
+                      ? "bg-indigo-600 text-white font-semibold shadow-xs"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  12H
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTimeFormat("24h");
+                    try { localStorage.setItem("servicemeow_time_format", "24h"); } catch {}
+                  }}
+                  className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                    timeFormat === "24h"
+                      ? "bg-indigo-600 text-white font-semibold shadow-xs"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  24H
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1203,7 +1247,7 @@ export function WorkplaceConfigTab() {
                           <td className="py-3 px-4 text-slate-300">
                             <div>{start.toLocaleDateString()}</div>
                             <div className="text-[10px] font-mono text-slate-400">
-                              {start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} &ndash; {end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                              {formatDateTimeSlot(start, timeFormat)} &ndash; {formatDateTimeSlot(end, timeFormat)}
                             </div>
                           </td>
 

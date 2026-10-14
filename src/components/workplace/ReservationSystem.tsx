@@ -32,6 +32,17 @@ import {
   Compass,
   Clock,
 } from "lucide-react";
+import {
+  TimeFormat,
+  STANDARD_TIME_OPTIONS,
+  CALENDAR_HOURLY_SLOTS,
+  formatTimeSlot,
+  formatTimeOption,
+  formatInterval,
+  formatDateTimeSlot,
+  formatReservationWindow,
+  toMilitaryCallout,
+} from "@/lib/time-format";
 
 interface Reservation {
   id: string;
@@ -105,11 +116,6 @@ const AVAILABLE_CAPABILITIES = [
   { id: "microphones", label: "Microphones", icon: Sparkles, color: "bg-pink-500/10 text-pink-400 border-pink-500/30" },
 ];
 
-const TIME_SLOTS = [
-  "08:00", "09:00", "10:00", "11:00", "12:00",
-  "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"
-];
-
 interface ReservationSystemProps {
   isFulfiller?: boolean;
 }
@@ -125,6 +131,25 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
   const [allReservations, setAllReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Time format state (12-Hour AM/PM vs. 24-Hour Military Time)
+  const [timeFormat, setTimeFormat] = useState<TimeFormat>("12h");
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("servicemeow_time_format");
+      if (saved === "12h" || saved === "24h") {
+        setTimeFormat(saved);
+      }
+    } catch {}
+  }, []);
+
+  const handleToggleTimeFormat = (fmt: TimeFormat) => {
+    setTimeFormat(fmt);
+    try {
+      localStorage.setItem("servicemeow_time_format", fmt);
+    } catch {}
+  };
 
   // Filter States
   const [selectedDate, setSelectedDate] = useState<string>(() => {
@@ -375,6 +400,39 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
             <span>My Bookings</span>
           </button>
 
+          {/* Time Format Switcher (12H AM/PM vs. 24H Military Time) */}
+          <div
+            className="flex items-center p-1 rounded-xl bg-slate-900 border border-slate-800 shadow-sm"
+            title="Toggle room & desk booking time format"
+          >
+            <div className="flex items-center px-2 py-1 text-slate-400 text-xs gap-1 border-r border-slate-800 mr-1">
+              <Clock className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="hidden xl:inline font-semibold text-slate-300">Format:</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleToggleTimeFormat("12h")}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                timeFormat === "12h"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              12H (AM/PM)
+            </button>
+            <button
+              type="button"
+              onClick={() => handleToggleTimeFormat("24h")}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                timeFormat === "24h"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              24H (Military)
+            </button>
+          </div>
+
           <div className="flex items-center p-1 rounded-xl bg-slate-900 border border-slate-800">
             <button
               onClick={() => setActiveView("catalog")}
@@ -431,30 +489,40 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5">Start Time</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-slate-400">Start Time</label>
+              {timeFormat === "24h" && (
+                <span className="text-[10px] font-mono text-indigo-400 font-semibold">{toMilitaryCallout(startTime)}</span>
+              )}
+            </div>
             <select
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-hidden focus:border-indigo-500"
+              className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-hidden focus:border-indigo-500 font-mono"
             >
-              {TIME_SLOTS.map((t) => (
+              {STANDARD_TIME_OPTIONS.map((t) => (
                 <option key={t} value={t}>
-                  {t}
+                  {formatTimeOption(t, timeFormat)}
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-400 mb-1.5">End Time</label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-semibold text-slate-400">End Time</label>
+              {timeFormat === "24h" && (
+                <span className="text-[10px] font-mono text-indigo-400 font-semibold">{toMilitaryCallout(endTime)}</span>
+              )}
+            </div>
             <select
               value={endTime}
               onChange={(e) => setEndTime(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-hidden focus:border-indigo-500"
+              className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-hidden focus:border-indigo-500 font-mono"
             >
-              {TIME_SLOTS.map((t) => (
+              {STANDARD_TIME_OPTIONS.map((t) => (
                 <option key={t} value={t}>
-                  {t}
+                  {formatTimeOption(t, timeFormat)}
                 </option>
               ))}
             </select>
@@ -547,8 +615,15 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
               Total filtered spaces: <strong className="text-white">{totalSpacesCount}</strong>
             </div>
           </div>
-          <div className="text-slate-500 italic">
-            Interval: {selectedDate} &bull; {startTime} - {endTime}
+          <div className="text-slate-400 flex items-center gap-1.5 font-medium">
+            <Clock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+            <span>
+              Interval: <strong className="text-slate-200">{selectedDate}</strong> &bull;{" "}
+              <strong className="text-indigo-300">{formatInterval(startTime, endTime, timeFormat)}</strong>
+            </span>
+            <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono uppercase tracking-wider">
+              {timeFormat === "24h" ? "24H MIL" : "12H AM/PM"}
+            </span>
           </div>
         </div>
       </div>
@@ -675,7 +750,12 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
                       {/* Conflicting reservation details if booked */}
                       {!sp.isAvailable && sp.reservations.length > 0 && (
                         <div className="mt-3 p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300">
-                          <div className="font-semibold text-rose-400">Currently Reserved:</div>
+                          <div className="font-semibold text-rose-400 flex items-center justify-between">
+                            <span>Currently Reserved:</span>
+                            <span className="text-[10px] font-mono text-rose-300/90">
+                              {formatDateTimeSlot(sp.reservations[0].startTime, timeFormat)} – {formatDateTimeSlot(sp.reservations[0].endTime, timeFormat)}
+                            </span>
+                          </div>
                           <div className="truncate">{sp.reservations[0].subject}</div>
                           <div className="text-slate-400 text-[11px]">
                             Holder: {sp.reservations[0].reservedBy?.name || "Staff Member"}
@@ -766,11 +846,21 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
                   <th className="p-3 w-56 font-semibold sticky left-0 bg-slate-950 z-10 border-r border-slate-800">
                     Room / Space
                   </th>
-                  {TIME_SLOTS.slice(0, -1).map((t, idx) => (
-                    <th key={t} className="p-3 font-semibold text-center border-r border-slate-800/60 w-28">
-                      {t} - {TIME_SLOTS[idx + 1]}
-                    </th>
-                  ))}
+                  {CALENDAR_HOURLY_SLOTS.slice(0, -1).map((t, idx) => {
+                    const nextT = CALENDAR_HOURLY_SLOTS[idx + 1];
+                    return (
+                      <th key={t} className="p-3 font-semibold text-center border-r border-slate-800/60 w-32">
+                        <div className="font-mono text-white text-[11px]">
+                          {formatTimeSlot(t, timeFormat)} – {formatTimeSlot(nextT, timeFormat)}
+                        </div>
+                        {timeFormat === "24h" && (
+                          <div className="text-[10px] text-indigo-400 font-mono mt-0.5">
+                            {toMilitaryCallout(t).replace(" hrs", "")}–{toMilitaryCallout(nextT)}
+                          </div>
+                        )}
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 text-xs">
@@ -793,8 +883,8 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
                       </td>
 
                       {/* Hourly Cells */}
-                      {TIME_SLOTS.slice(0, -1).map((slotHour, idx) => {
-                        const slotNextHour = TIME_SLOTS[idx + 1];
+                      {CALENDAR_HOURLY_SLOTS.slice(0, -1).map((slotHour, idx) => {
+                        const slotNextHour = CALENDAR_HOURLY_SLOTS[idx + 1];
                         const cellStart = new Date(`${selectedDate}T${slotHour}:00`).getTime();
                         const cellEnd = new Date(`${selectedDate}T${slotNextHour}:00`).getTime();
 
@@ -812,9 +902,9 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
                           >
                             {overlappingRes ? (
                               <div
-                                title={`${overlappingRes.subject} (${overlappingRes.status})\nReserved by: ${overlappingRes.reservedBy?.name || "Staff"}`}
+                                title={`${overlappingRes.subject} (${overlappingRes.status})\nTime: ${formatReservationWindow(overlappingRes.startTime, overlappingRes.endTime, timeFormat)}\nReserved by: ${overlappingRes.reservedBy?.name || "Staff"}`}
                                 className="h-12 rounded-lg bg-rose-500/20 border border-rose-500/40 text-rose-300 p-1.5 flex flex-col justify-between text-left hover:bg-rose-500/30 transition-colors cursor-pointer"
-                                onClick={() => alert(`Reservation: ${overlappingRes.number}\nSubject: ${overlappingRes.subject}\nHolder: ${overlappingRes.reservedBy?.name || "N/A"}\nStatus: ${overlappingRes.status}`)}
+                                onClick={() => alert(`Reservation: ${overlappingRes.number}\nSubject: ${overlappingRes.subject}\nTime: ${formatReservationWindow(overlappingRes.startTime, overlappingRes.endTime, timeFormat)}\nHolder: ${overlappingRes.reservedBy?.name || "N/A"}\nStatus: ${overlappingRes.status}`)}
                               >
                                 <span className="font-semibold text-[11px] truncate leading-tight text-white">
                                   {overlappingRes.subject}
@@ -826,6 +916,7 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
                             ) : (
                               <button
                                 onClick={() => handleOpenBooking(sp, slotHour, slotNextHour)}
+                                title={`Book ${sp.name} for ${formatInterval(slotHour, slotNextHour, timeFormat)}`}
                                 className="w-full h-12 rounded-lg border border-dashed border-slate-800 hover:border-emerald-500/60 hover:bg-emerald-500/10 text-slate-600 hover:text-emerald-400 flex items-center justify-center gap-1 transition-all group cursor-pointer"
                               >
                                 <Plus className="w-3.5 h-3.5 opacity-40 group-hover:opacity-100" />
@@ -856,6 +947,15 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
               <p className="text-xs text-slate-400 mt-0.5">
                 Interactive spatial blueprint with real-time green (available) and red (reserved) occupancy pins. Click any room or desk to book directly.
               </p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-500/10 border border-indigo-500/30 text-xs font-mono text-indigo-300">
+                  <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Window: {formatInterval(startTime, endTime, timeFormat)}</span>
+                </span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 uppercase font-mono">
+                  {timeFormat === "24h" ? "Military 24H" : "Standard 12H"}
+                </span>
+              </div>
             </div>
 
             <div className="flex items-center gap-3">
@@ -1047,34 +1147,81 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-slate-300 mb-1">Start Time</label>
-                  <select
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-hidden focus:border-indigo-500"
-                  >
-                    {TIME_SLOTS.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
+              {/* Time Window & Format Switcher */}
+              <div className="space-y-2 p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
+                <div className="flex items-center justify-between pb-1 border-b border-slate-800/60">
+                  <span className="font-semibold text-slate-300 flex items-center gap-1.5 text-xs">
+                    <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Booking Time Window</span>
+                  </span>
+                  <div className="flex items-center p-0.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleTimeFormat("12h")}
+                      className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                        timeFormat === "12h"
+                          ? "bg-indigo-600 text-white font-semibold shadow-xs"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      12H (AM/PM)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleTimeFormat("24h")}
+                      className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                        timeFormat === "24h"
+                          ? "bg-indigo-600 text-white font-semibold shadow-xs"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      24H (Military)
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <label className="block font-semibold text-slate-300 mb-1">End Time</label>
-                  <select
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-sm focus:outline-hidden focus:border-indigo-500"
-                  >
-                    {TIME_SLOTS.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
+
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="block text-slate-400 mb-1 text-[11px] font-medium">Start Time</label>
+                    <select
+                      value={startTime}
+                      onChange={(e) => setStartTime(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-hidden focus:border-indigo-500 font-mono"
+                    >
+                      {STANDARD_TIME_OPTIONS.map((t) => (
+                        <option key={t} value={t}>
+                          {formatTimeOption(t, timeFormat)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 mb-1 text-[11px] font-medium">End Time</label>
+                    <select
+                      value={endTime}
+                      onChange={(e) => setEndTime(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-100 text-sm focus:outline-hidden focus:border-indigo-500 font-mono"
+                    >
+                      {STANDARD_TIME_OPTIONS.map((t) => (
+                        <option key={t} value={t}>
+                          {formatTimeOption(t, timeFormat)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Duration Preview */}
+                <div className="flex items-center justify-between pt-1 text-[11px] text-slate-400">
+                  <span className="flex items-center gap-1">
+                    <span>Selected Window:</span>
+                    <strong className="text-indigo-300 font-mono">{formatInterval(startTime, endTime, timeFormat)}</strong>
+                  </span>
+                  {timeFormat === "24h" && (
+                    <span className="text-emerald-400 font-mono text-[10px]">
+                      [Mil: {toMilitaryCallout(startTime)} &ndash; {toMilitaryCallout(endTime)}]
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -1188,11 +1335,9 @@ function ReservationContent({ isFulfiller = false }: ReservationSystemProps) {
                       </div>
 
                       <div className="text-slate-400 flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-indigo-400" />
-                        <span>
-                          {new Date(res.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} -{" "}
-                          {new Date(res.endTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} (
-                          {new Date(res.startTime).toLocaleDateString()})
+                        <Clock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <span className="font-mono text-slate-300">
+                          {formatReservationWindow(res.startTime, res.endTime, timeFormat)}
                         </span>
                       </div>
 
