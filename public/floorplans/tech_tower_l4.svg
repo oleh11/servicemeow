@@ -20,7 +20,7 @@
 
   <!-- Blueprint Header / Border Metadata -->
   <rect x="15" y="15" width="970" height="570" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.3"/>
-  <text x="35" y="38" fill="#38bdf8" font-size="12" font-weight="700" letter-spacing="1.5">TECH TOWER • LEVEL 4 CONNECTED WORKPLACE ARCHITECTURAL SCHEMATIC</text>
+  <text x="35" y="38" fill="#38bdf8" font-size="12" font-weight="700" letter-spacing="1.5">TECH TOWER • LEVEL 4 WORKPLACE HUB ARCHITECTURAL SCHEMATIC</text>
   <text x="750" y="38" fill="#94a3b8" font-size="11" font-family="monospace">SCALE: 1:100 • DWG-REF: MEOW-L4-2026</text>
 
   <!-- Outer Building Boundary Walls -->

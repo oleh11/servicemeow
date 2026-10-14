@@ -99,12 +99,12 @@
 
 ---
 
-### 5. Connected Workplace & 6-Tier Spatial Hierarchy (Enterprise IWMS)
+### 5. Workplace Hub & 6-Tier Spatial Hierarchy (Enterprise IWMS)
 <p align="center">
-  <img src="docs/assets/connected-workplace-showcase.svg" alt="Connected Workplace 6-Tier Spatial Hierarchy" width="100%" />
+  <img src="docs/assets/connected-workplace-showcase.svg" alt="Workplace Hub 6-Tier Spatial Hierarchy" width="100%" />
 </p>
 
-ServiceMeow provides an enterprise Connected Workplace & Integrated Workplace Management System (IWMS) designed for corporate facilities, data centers, and clinical healthcare operations:
+ServiceMeow provides an enterprise Workplace Hub & Integrated Workplace Management System (IWMS) designed for corporate facilities, data centers, and clinical healthcare operations:
 - **Strict 6-Tier Spatial Model**:
   $$\text{Region} \longrightarrow \text{State / Province} \longrightarrow \text{Campus} \longrightarrow \text{Building} \longrightarrow \text{Floor / Level} \longrightarrow \text{Space / Room}$$
 - **Interactive Space Explorer (`/workspace/spaces`)**: Real-time floorplan room matrix, live occupancy states (*Occupied*, *Vacant*, *Reserved*, *Maintenance*), and capacity meters.
@@ -197,7 +197,7 @@ npm run worker
 
 ## 🧪 Testing & Verification
 
-ServiceMeow includes a full Vitest test suite with **63 passing tests** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, and the 6-tier Connected Workplace spatial hierarchy.
+ServiceMeow includes a full Vitest test suite with **77 passing tests** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, and the 6-tier Workplace Hub spatial hierarchy.
 
 ```bash
 # Run Vitest test suite once

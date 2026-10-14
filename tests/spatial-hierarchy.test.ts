@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { db } from "@/lib/db";
 import { resolveReference, getDynamicReferenceCandidates, resolveDotWalk } from "@/lib/reference-resolver";
 
-describe("Connected Workplace - 6-Tier Spatial Hierarchy", () => {
+describe("Workplace Hub - 6-Tier Spatial Hierarchy", () => {
   it("persists and traverses the full 6-tier hierarchy (Region -> State -> Campus -> Building -> Floor -> Space)", async () => {
     // 1. Region
     const region = await db.cmnRegion.findUnique({

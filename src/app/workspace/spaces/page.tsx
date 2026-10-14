@@ -228,7 +228,7 @@ export default function SpacesExplorerPage() {
               <span className="p-2 rounded-lg bg-primary/10 text-primary">
                 <Compass className="w-6 h-6" />
               </span>
-              <h1 className="text-2xl font-bold tracking-tight">Connected Workplace & Spatial Explorer</h1>
+              <h1 className="text-2xl font-bold tracking-tight">Workplace Hub &amp; Spatial Explorer</h1>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
               Enterprise 6-Tier Spatial Hierarchy: Region &rarr; State &rarr; Campus &rarr; Building &rarr; Floor &rarr; Space / Room

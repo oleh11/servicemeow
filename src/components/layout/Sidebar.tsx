@@ -207,7 +207,7 @@ export function Sidebar() {
       ],
     },
     {
-      title: "Connected Workplace",
+      title: "Workplace Hub",
       icon: Building2,
       items: [
         { label: "Room & Desk Reservations", href: "/workspace/reservations", icon: Calendar, badge: "New" },
@@ -232,7 +232,7 @@ export function Sidebar() {
   ];
 
   const workplaceSection: SidebarSection = {
-    title: "Connected Workplace",
+    title: "Workplace Hub",
     icon: Building2,
     items: [
       { label: "Room & Desk Reservations", href: "/workspace/reservations", icon: Calendar, badge: "New" },
@@ -299,7 +299,7 @@ export function Sidebar() {
     if (section.title === "Problem Management") return "/workspace/problem";
     if (section.title === "Service Catalog Tasks") return "/workspace/sc_task";
     if (section.title === "Configuration & CMDB") return "/workspace/cmdb";
-    if (section.title === "Connected Workplace") return "/workspace/reservations";
+    if (section.title === "Workplace Hub" || section.title === "Connected Workplace") return "/workspace/reservations";
     if (section.title === "Knowledge Management") return "/portal/knowledge";
     if (section.title === "Agent Workspace") return "/workspace";
     return section.items[0]?.href || "/workspace";

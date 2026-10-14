@@ -237,7 +237,7 @@ export default async function EmployeePortal() {
             <div className="space-y-1.5">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/30">
                 <Building2 className="w-3.5 h-3.5" />
-                <span>Connected Workplace & Facility Hub</span>
+                <span>Workplace Hub &amp; Facility Services</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
                 Reserve Rooms, Desks & Workplace Services

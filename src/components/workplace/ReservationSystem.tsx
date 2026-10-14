@@ -1245,7 +1245,7 @@ export function ReservationSystem(props: ReservationSystemProps) {
       fallback={
         <div className="flex items-center justify-center p-12 text-slate-400 gap-3">
           <RefreshCw className="w-6 h-6 animate-spin text-indigo-400" />
-          <span>Loading Connected Workplace...</span>
+          <span>Loading Workplace Hub...</span>
         </div>
       }
     >

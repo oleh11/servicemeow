@@ -437,9 +437,9 @@ async function main() {
 
   const flTech04 = await prisma.cmnFloor.create({
     data: {
-      name: "Level 4 - Connected Workplace & Collaboration Center",
+      name: "Level 4 - Workplace Hub & Collaboration Center",
       floorNumber: 4,
-      code: "L4-CW",
+      code: "L4-WH",
       buildingId: bldgTechTwr.id,
       floorplanSvgUrl: "/floorplans/tech_tower_l4.svg",
       floorplanImageUrl: "/floorplans/tech_tower_l4.svg",
@@ -1722,7 +1722,7 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
         number: "RES0001001",
         spaceId: spaceCONF410.id,
         reservedById: adminUser.id,
-        subject: "Executive Leadership & Connected Workplace Architecture Review",
+        subject: "Executive Leadership & Workplace Hub Architecture Review",
         startTime: new Date(y, m, d, 10, 0, 0),
         endTime: new Date(y, m, d, 11, 30, 0),
         status: "confirmed",

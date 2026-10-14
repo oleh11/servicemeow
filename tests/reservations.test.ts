@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { resolveReference, getDynamicReferenceCandidates, resolveDotWalk } from "@/lib/reference-resolver";
 import { getNextNumber } from "@/lib/numbering";
 
-describe("Connected Workplace - Room & Desk Reservation System", () => {
+describe("Workplace Hub - Room & Desk Reservation System", () => {
   let testSpace: any;
   let testDesk: any;
   let testUser: any;

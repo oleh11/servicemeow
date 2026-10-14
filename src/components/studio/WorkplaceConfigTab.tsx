@@ -551,7 +551,7 @@ export function WorkplaceConfigTab() {
         <div className="space-y-1.5">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold">
             <Building2 className="w-3.5 h-3.5" />
-            <span>Connected Workplace & Facility Management Console</span>
+            <span>Workplace Hub &amp; Facility Management Console</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             Workplace & Reservations Configuration

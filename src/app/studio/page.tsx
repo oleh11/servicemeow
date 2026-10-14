@@ -292,7 +292,7 @@ const STUDIO_MODULES: StudioModuleDef[] = [
   },
   {
     id: "workplace",
-    title: "Connected Workplace & Reservations",
+    title: "Workplace Hub & Reservations",
     tableCode: "cmn_reservation",
     category: "platform",
     description: "6-tier spatial hierarchy, room & desk capabilities, floorplans & booking governance",
@@ -4582,7 +4582,7 @@ function StudioContent() {
         {activeTab === "navigation" && <NavigationTab />}
 
         {/* ==================================================== */}
-        {/* TAB 20: CONNECTED WORKPLACE & RESERVATIONS           */}
+        {/* TAB 20: WORKPLACE HUB & RESERVATIONS                  */}
         {/* ==================================================== */}
         {activeTab === "workplace" && <WorkplaceConfigTab />}
       </div>
