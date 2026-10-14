@@ -113,26 +113,42 @@ ServiceMeow provides an enterprise Workplace Hub & Integrated Workplace Manageme
 
 ---
 
-### 6. Interactive Room & Desk Reservation System (`/workspace/reservations`)
-<p align="center">
-  <img src="docs/assets/workplace-showcase.png" alt="Workplace Hub Interactive Reservation System" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
-</p>
+### 6. Workplace Hub & Interactive Reservation System (`/workspace/reservations` & `/portal/reservations`)
 
 A modern, conflict-checked workspace reservation platform allowing employees and facility coordinators to discover, filter, and book meeting spaces, collaboration hubs, and hot desks across **3 distinct interactive views**:
 
-1. **📋 Room & Desk Catalog View**:
-   - Filterable by specific room capabilities and amenities: **Teams**, **Zoom**, **Standing desk**, **Whiteboard**, **4K Projector**, **Telepresence**, and **Dual Monitor**.
-   - Real-time availability badges for selected date/time intervals with attendee capacity limits.
-2. **📅 Daily Calendar Schedule View**:
-   - Interactive schedule timeline grid displaying active reservation blocks, organizers, and statuses.
-   - Click-to-book on any vacant time slot to initiate instant reservation.
-3. **🗺️ Architectural PDF / Picture Floorplan View**:
-   - High-fidelity CAD / SVG architectural schematic backdrop with live-pulsing green (available) and red (booked) room hotspots.
-   - Interactive hover cards and one-click direct floorplan booking.
-   - Vector and PDF export support for physical printouts and facility briefings.
-4. **🛡️ Conflict Prevention & Atomic Numbering**:
-   - Strict double-booking prevention engine returning standard `409 Conflict` on overlapping intervals.
-   - Atomic reservation sequences (`RES0001001`) with full Table API parity (`cmn_reservation`).
+#### 📐 Architectural CAD / Drawing Floorplan View
+<p align="center">
+  <img src="docs/assets/cad-drawing-showcase.png" alt="Architectural CAD & Drawing Floorplan View" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Architectural Schematic Backdrop (`tech_tower_l4.svg`)**: 1:100 scale CAD blueprint schematic with standard drawing references (`DWG-REF: MEOW-L4-2026`).
+- **Interactive Spatial Hotspots**: Real-time pulsing green (available / click-to-book) and red (reserved) occupancy beacons positioned directly over architectural room coordinates.
+- **Micro-Badges & Hover Intelligence**: Instant insight into capacity, required amenities, and room status before initiating booking.
+- **Vector & PDF Export**: One-click download of architectural CAD/vector schematics for physical site briefings, operations, and facility signage.
+
+---
+
+#### 📅 Real-Time Daily Calendar Schedule Matrix
+<p align="center">
+  <img src="docs/assets/calendar-view-showcase.png" alt="Daily Calendar Schedule View" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Hourly Space Matrix**: Rooms and desks mapped on the Y-axis against hourly time slots across the operating day.
+- **Click-to-Book Vacant Slots**: Click any vacant hourly slot to immediately launch the booking modal with pre-filled time intervals.
+- **Dual Time Format Support**: Seamless toggle between **12-Hour AM/PM** standard time and **24-Hour Military Time** (e.g. `0900 hrs`, `1430 hrs`) with persistent `localStorage` preference.
+- **Meeting Detail & Organizer Attribution**: Live inspection of booked blocks displaying subject, status, attendee count, and organizer credentials.
+
+---
+
+#### 📋 Room & Hot Desk Catalog View
+<p align="center">
+  <img src="docs/assets/workplace-showcase.png" alt="Workplace Hub Catalog View" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Amenity & Hardware Filtering**: Discover spaces equipped with **Teams**, **Zoom Rooms**, **Standing desks**, **Whiteboards**, **4K Projectors**, **Telepresence**, and **Dual Monitors**.
+- **Double-Booking Prevention Engine**: Atomic conflict checking returning standard `409 Conflict` on overlapping intervals.
+- **Atomic Reservation Sequences**: Auto-generated reservation keys (`RES0001001`) with full Table API parity (`cmn_reservation`).
 
 ---
 
