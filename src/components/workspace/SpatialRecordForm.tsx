@@ -539,18 +539,18 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
       )}
 
       {/* Header & Navigation */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <Link
               href={`/workspace/${tableName}`}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to {meta.title} List</span>
             </Link>
-            <span className="text-slate-600 font-mono text-xs">•</span>
-            <span className="font-mono text-[11px] text-slate-500 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800">
+            <span className="text-slate-400 font-mono text-xs">•</span>
+            <span className="font-mono text-[11px] text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900/80 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800">
               sys_table: {tableName}
             </span>
           </div>
@@ -560,13 +560,13 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
               <IconComponent className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span>{isNew ? `New ${meta.title}` : name || code || "Record Detail"}</span>
                 <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${meta.badgeBg}`}>
                   {meta.tier}
                 </span>
               </h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {isNew
                   ? `Configure and create a new ${meta.title} in the workplace spatial topology.`
                   : `Managing spatial entity (${code || recordId}) with relational links and child assets.`}
@@ -582,7 +582,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/30 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>{deleting ? "Deleting..." : "Delete"}</span>
@@ -591,7 +591,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
 
           <Link
             href={`/workspace/${tableName}`}
-            className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white transition-colors"
+            className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             Cancel
           </Link>
@@ -610,8 +610,8 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs">
+          <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
           <div className="flex-1">
             <strong className="font-semibold">Validation Notice: </strong>
             <span>{errorMsg}</span>
@@ -623,9 +623,9 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
       <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left / Primary Column: Fields */}
         <div className="lg:col-span-8 space-y-6">
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-6">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-3 flex items-center gap-2">
-              <FolderTree className="w-4 h-4 text-indigo-400" />
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center gap-2">
+              <FolderTree className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
               <span>General Entity Information</span>
             </h3>
 
@@ -633,7 +633,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName !== "cmn_reservation" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     {meta.title} Name <span className="text-rose-400">*</span>
                   </label>
                   <input
@@ -656,12 +656,12 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                         ? "e.g. Robotic Surgery Suite 1"
                         : "Name"
                     }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     {tableName === "cmn_space" ? "Space / Room Number" : "Unique Code"}{" "}
                     <span className="text-rose-400">*</span>
                   </label>
@@ -685,7 +685,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                         ? "e.g. FL-03"
                         : "e.g. OR-302"
                     }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   />
                   <p className="text-[11px] text-slate-500 mt-1">
                     System identifier used for spatial matching and Table API integration.
@@ -697,7 +697,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {/* Parent Hierarchy Selector (if table has a parent tier) */}
             {meta.parentTable && (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 flex items-center justify-between">
                   <span>{meta.parentLabel} (Hierarchical Ancestor)</span>
                   <Link
                     href={`/workspace/${meta.parentTable}`}
@@ -710,7 +710,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                 <select
                   value={parentId}
                   onChange={(e) => setParentId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-medium"
                 >
                   <option value="">-- Select {meta.parentLabel} --</option>
                   {parentOptions.map((opt) => (
@@ -729,13 +729,13 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_state" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Country</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Country</label>
                   <input
                     type="text"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                     placeholder="e.g. United States or US"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                   />
                 </div>
               </div>
@@ -745,13 +745,13 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_region" && (
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Description</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Description</label>
                   <textarea
                     rows={3}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Provide operational scope, timezones, and regional facility notes..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                   />
                 </div>
                 <div className="flex items-center gap-2 pt-1">
@@ -773,60 +773,60 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_campus" && (
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Street Address</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Street Address</label>
                   <input
                     type="text"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="e.g. 500 Parnassus Ave"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">City</label>
                     <input
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="e.g. San Francisco"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Zip / Postal Code</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Zip / Postal Code</label>
                     <input
                       type="text"
                       value={zipCode}
                       onChange={(e) => setZipCode(e.target.value)}
                       placeholder="e.g. 94143"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Latitude</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Latitude</label>
                     <input
                       type="number"
                       step="any"
                       value={latitude}
                       onChange={(e) => setLatitude(e.target.value)}
                       placeholder="e.g. 37.7631"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Longitude</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Longitude</label>
                     <input
                       type="number"
                       step="any"
                       value={longitude}
                       onChange={(e) => setLongitude(e.target.value)}
                       placeholder="e.g. -122.4578"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
@@ -837,11 +837,11 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_building" && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Building Type</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Building Type</label>
                   <select
                     value={buildingType}
                     onChange={(e) => setBuildingType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
                   >
                     <option value="hospital">Hospital / Acute Care</option>
                     <option value="clinic">Outpatient Clinic</option>
@@ -852,25 +852,25 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Floors Count</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Floors Count</label>
                   <input
                     type="number"
                     min={1}
                     value={floorsCount}
                     onChange={(e) => setFloorsCount(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Total Area (Sq Ft)</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Total Area (Sq Ft)</label>
                   <input
                     type="number"
                     step="any"
                     value={totalAreaSqFt}
                     onChange={(e) => setTotalAreaSqFt(e.target.value)}
                     placeholder="e.g. 150000"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                   />
                 </div>
               </div>
@@ -881,31 +881,31 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
               <div className="space-y-4 pt-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Floor Level Number</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Floor Level Number</label>
                     <input
                       type="number"
                       value={floorNumber}
                       onChange={(e) => setFloorNumber(e.target.value)}
                       placeholder="e.g. 3 (0 for Ground, -1 for Basement)"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Floor Area (Sq Ft)</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Floor Area (Sq Ft)</label>
                     <input
                       type="number"
                       step="any"
                       value={areaSqFt}
                       onChange={(e) => setAreaSqFt(e.target.value)}
                       placeholder="e.g. 24000"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     Floorplan CAD / SVG Drawing URL
                   </label>
                   <input
@@ -913,7 +913,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                     value={floorplanSvgUrl}
                     onChange={(e) => setFloorplanSvgUrl(e.target.value)}
                     placeholder="e.g. /floorplans/tech_tower_l4.svg"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                   />
                   <p className="text-[11px] text-slate-500 mt-1">
                     Used by the CAD / Drawing Floorplan view for room coordinates and spatial hotspot mapping.
@@ -927,11 +927,11 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
               <div className="space-y-4 pt-2">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Space Type</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Space Type</label>
                     <select
                       value={spaceType}
                       onChange={(e) => setSpaceType(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
                     >
                       <option value="room">Standard Meeting Room</option>
                       <option value="operating_room">Operating Suite (OR)</option>
@@ -946,11 +946,11 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Occupancy Status</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Occupancy Status</label>
                     <select
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
                     >
                       <option value="available">Available</option>
                       <option value="occupied">Occupied</option>
@@ -961,45 +961,45 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Maximum Capacity</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Maximum Capacity</label>
                     <input
                       type="number"
                       min={1}
                       value={capacity}
                       onChange={(e) => setCapacity(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Department</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Department</label>
                     <input
                       type="text"
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
                       placeholder="e.g. Surgical Services, Critical Care, Engineering"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Room Size (Sq Ft)</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Room Size (Sq Ft)</label>
                     <input
                       type="number"
                       step="any"
                       value={squareFeet}
                       onChange={(e) => setSquareFeet(e.target.value)}
                       placeholder="e.g. 650"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Amenities / Capabilities Selection */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-2">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
                     Equipped Amenities & Hardware Capabilities
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -1013,7 +1013,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
                             isSelected
                               ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/30"
-                              : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-white"
+                              : "bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700 hover:text-slate-900 dark:hover:text-white"
                           }`}
                         >
                           {amenity.label}
@@ -1029,11 +1029,11 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_location" && (
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Location Tier</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Location Tier</label>
                   <select
                     value={locationType}
                     onChange={(e) => setLocationType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
                   >
                     <option value="region">Region (Tier 1)</option>
                     <option value="state">State / Province (Tier 2)</option>
@@ -1049,46 +1049,46 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Street Address</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Street Address</label>
                     <input
                       type="text"
                       value={street}
                       onChange={(e) => setStreet(e.target.value)}
                       placeholder="e.g. 100 Innovation Way"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">City</label>
                     <input
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="e.g. San Jose"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">State / Province</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">State / Province</label>
                     <input
                       type="text"
                       value={locState}
                       onChange={(e) => setLocState(e.target.value)}
                       placeholder="e.g. CA"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Country</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Country</label>
                     <input
                       type="text"
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
                       placeholder="e.g. United States"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
@@ -1099,7 +1099,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_reservation" && (
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     Meeting / Reservation Subject <span className="text-rose-400">*</span>
                   </label>
                   <input
@@ -1108,50 +1108,50 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="e.g. Cardiovascular Surgical Planning"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all font-medium"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Start Time</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Start Time</label>
                     <input
                       type="datetime-local"
                       required
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">End Time</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">End Time</label>
                     <input
                       type="datetime-local"
                       required
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Attendees Count</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Attendees Count</label>
                     <input
                       type="number"
                       min={1}
                       value={attendeesCount}
                       onChange={(e) => setAttendeesCount(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Status</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Status</label>
                     <select
                       value={reservationStatus}
                       onChange={(e) => setReservationStatus(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
                     >
                       <option value="confirmed">Confirmed</option>
                       <option value="pending">Pending Approval</option>
@@ -1167,40 +1167,40 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
         {/* Right Column: Spatial Hierarchy Context Card & Child Assets */}
         <div className="lg:col-span-4 space-y-6">
           {/* Spatial Hierarchy Card */}
-          <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2 pb-2 border-b border-slate-800">
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-slate-800">
               <Compass className="w-4 h-4 text-indigo-400" />
               <span>Spatial Hierarchy Placement</span>
             </h3>
 
             <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
                 <span className="text-slate-400">Classification Tier</span>
-                <span className="font-semibold text-white">{meta.tierNum > 0 ? `Tier ${meta.tierNum}` : "Entity"}</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{meta.tierNum > 0 ? `Tier ${meta.tierNum}` : "Entity"}</span>
               </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-950/60 border border-slate-800">
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
                 <span className="text-slate-400">Database Schema</span>
                 <span className="font-mono text-[11px] text-indigo-400">{tableName}</span>
               </div>
               {meta.parentLabel && (
-                <div className="flex items-center justify-between p-2 rounded-lg bg-slate-950/60 border border-slate-800">
+                <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800">
                   <span className="text-slate-400">{meta.parentLabel}</span>
-                  <span className="font-semibold text-white truncate max-w-[150px]">
+                  <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]">
                     {parentOptions.find((p) => p.id === parentId)?.name || <span className="opacity-50">Not Set</span>}
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="p-3 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-[11px] text-indigo-300">
+            <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-500/20 text-[11px] text-indigo-800 dark:text-indigo-300">
               💡 <strong>Connected Workplace Architecture:</strong> Changes made here reflect immediately across the CAD floorplan view, daily calendar matrix, and unified location hierarchy (`cmn_location`).
             </div>
           </div>
 
           {/* Child Records Card (in Edit Mode) */}
           {!isNew && meta.childTable && (
-            <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-3">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
                   {meta.childLabel} ({childRecords.length})
                 </h3>
@@ -1221,9 +1221,9 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                     <Link
                       key={child.id}
                       href={`/workspace/${meta.childTable}/${child.id}`}
-                      className="flex items-center justify-between p-2 rounded-lg bg-slate-950 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/50 transition-all text-xs group"
+                      className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all text-xs group"
                     >
-                      <span className="text-slate-200 font-medium group-hover:text-indigo-300 truncate">
+                      <span className="text-slate-800 dark:text-slate-200 font-medium group-hover:text-indigo-600 dark:group-hover:text-indigo-300 truncate">
                         {child.name || child.spaceNumber || child.code}
                       </span>
                       <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-indigo-400 shrink-0" />

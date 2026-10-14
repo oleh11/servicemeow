@@ -353,7 +353,7 @@ export default function UnifiedLocationsPage() {
   }, [rootNodes]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 space-y-6">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-4 sm:p-6 space-y-6">
       {/* Toast Notification */}
       {toastMsg && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-full bg-indigo-600 text-white shadow-2xl text-xs font-medium animate-in slide-in-from-bottom-2">
@@ -363,7 +363,7 @@ export default function UnifiedLocationsPage() {
       )}
 
       {/* Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
         <div>
           <div className="flex items-center gap-2">
             <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
@@ -371,10 +371,10 @@ export default function UnifiedLocationsPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight text-white">
+                <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                   Unified Locations &amp; Hierarchy
                 </h1>
-                <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 border border-slate-700">
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
                   cmn_location
                 </span>
               </div>
@@ -386,15 +386,15 @@ export default function UnifiedLocationsPage() {
 
           {/* Quick Metrics Bar */}
           <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-slate-400 font-mono">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800/80 border border-slate-700/60">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300">
               <MapPin className="w-3.5 h-3.5 text-indigo-400" />
               <span>Total Locations: <strong>{locations.length}</strong></span>
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800/80 border border-slate-700/60">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300">
               <MapIcon className="w-3.5 h-3.5 text-purple-400" />
               <span>Root Nodes: <strong>{rootNodes.length}</strong></span>
             </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800/80 border border-slate-700/60">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 text-slate-700 dark:text-slate-300">
               <GitFork className="w-3.5 h-3.5 text-emerald-400" />
               <span>Hierarchical Links: <strong>{locations.filter((l) => l.parentId).length}</strong></span>
             </span>
@@ -404,13 +404,13 @@ export default function UnifiedLocationsPage() {
         {/* Action Controls & View Switcher */}
         <div className="flex flex-wrap items-center gap-2.5">
           {/* View Mode Toggle */}
-          <div className="flex items-center p-1 rounded-xl bg-slate-950 border border-slate-800 text-xs font-medium">
+          <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs font-medium">
             <button
               onClick={() => setViewMode("list")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                 viewMode === "list"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <List className="w-3.5 h-3.5" />
@@ -421,7 +421,7 @@ export default function UnifiedLocationsPage() {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                 viewMode === "tree"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <FolderTree className="w-3.5 h-3.5" />
@@ -432,7 +432,7 @@ export default function UnifiedLocationsPage() {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
                 viewMode === "split"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                  : "text-slate-400 hover:text-white"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <Columns className="w-3.5 h-3.5" />
@@ -444,7 +444,7 @@ export default function UnifiedLocationsPage() {
           <button
             onClick={handleSyncLocations}
             disabled={syncing}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-colors disabled:opacity-50"
             title="Synchronize all 6 spatial tiers (Regions -> States -> Campuses -> Buildings -> Floors -> Spaces) into unified locations"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-indigo-400 ${syncing ? "animate-spin" : ""}`} />
@@ -470,7 +470,7 @@ export default function UnifiedLocationsPage() {
       {viewMode === "list" && (
         <div className="space-y-4">
           {/* Filter Bar */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-3 p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 p-4 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto flex-1">
               {/* Search */}
               <div className="relative flex-1 min-w-[240px]">
@@ -480,7 +480,7 @@ export default function UnifiedLocationsPage() {
                   placeholder="Search locations, paths, cities, parents..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-100 placeholder-slate-500 focus:outline-hidden focus:border-indigo-500"
+                  className="w-full pl-9 pr-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-hidden focus:border-indigo-500"
                 />
               </div>
 
@@ -488,7 +488,7 @@ export default function UnifiedLocationsPage() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-hidden focus:border-indigo-500"
+                className="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 focus:outline-hidden focus:border-indigo-500"
               >
                 <option value="all">All Location Types</option>
                 {LOCATION_TYPES.map((t) => (
@@ -518,11 +518,11 @@ export default function UnifiedLocationsPage() {
           </div>
 
           {/* High-Density Editable Data Grid */}
-          <div className="rounded-2xl bg-slate-900 border border-slate-800 shadow-xl overflow-hidden">
+          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider text-[11px] select-none">
+                  <tr className="bg-slate-50 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wider text-[11px] select-none">
                     <th className="p-3 w-8 text-center"></th>
                     <th className="p-3 min-w-[200px]">Location Name</th>
                     <th className="p-3 min-w-[140px]">Type (Tier)</th>
@@ -533,7 +533,7 @@ export default function UnifiedLocationsPage() {
                     <th className="p-3 w-28 text-right pr-4">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-sans">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-sans">
                   {filteredLocations.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="p-8 text-center text-slate-500">
@@ -550,7 +550,7 @@ export default function UnifiedLocationsPage() {
 
                       return (
                         <React.Fragment key={loc.id}>
-                          <tr className="hover:bg-slate-800/30 transition-colors group">
+                          <tr className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors group">
                             {/* Expand row chevron */}
                             <td className="p-3 text-center align-middle">
                               {childCount > 0 ? (
@@ -571,7 +571,7 @@ export default function UnifiedLocationsPage() {
                             </td>
 
                             {/* Location Name Cell (Inline Editable) */}
-                            <td className="p-3 align-middle font-medium text-white">
+                            <td className="p-3 align-middle font-medium text-slate-900 dark:text-white">
                               {editingCell?.id === loc.id && editingCell.field === "name" ? (
                                 <div className="flex items-center gap-1.5">
                                   <input
@@ -604,10 +604,10 @@ export default function UnifiedLocationsPage() {
                                     setEditingCell({ id: loc.id, field: "name" });
                                     setCellEditValue(loc.name);
                                   }}
-                                  className="flex items-center gap-2 group/cell cursor-pointer py-1 rounded hover:bg-slate-800/60 px-1 -mx-1"
+                                  className="flex items-center gap-2 group/cell cursor-pointer py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800/60 px-1 -mx-1"
                                   title="Click to rename location"
                                 >
-                                  <span className="font-semibold text-slate-100">{loc.name}</span>
+                                  <span className="font-semibold text-slate-900 dark:text-slate-100">{loc.name}</span>
                                   <Edit2 className="w-3 h-3 text-slate-500 opacity-0 group-hover/cell:opacity-100 transition-opacity" />
                                 </div>
                               )}
@@ -776,7 +776,7 @@ export default function UnifiedLocationsPage() {
 
                           {/* Accordion Row for Child Sub-Locations */}
                           {isExpanded && childCount > 0 && (
-                            <tr className="bg-slate-950/60 border-y border-slate-800">
+                            <tr className="bg-slate-50/70 dark:bg-slate-950/60 border-y border-slate-200 dark:border-slate-800">
                               <td colSpan={8} className="p-4 pl-12">
                                 <div className="space-y-2 border-l-2 border-indigo-500/40 pl-4 py-1">
                                   <div className="flex items-center justify-between mb-2">
@@ -800,14 +800,14 @@ export default function UnifiedLocationsPage() {
                                       return (
                                         <div
                                           key={child.id}
-                                          className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2"
+                                          className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 shadow-xs"
                                         >
                                           <div className="flex items-center gap-2 overflow-hidden">
                                             <div className={`p-1.5 rounded-lg ${cMeta.color}`}>
                                               <CIcon className="w-3 h-3" />
                                             </div>
                                             <div className="overflow-hidden">
-                                              <span className="font-semibold text-xs text-white truncate block">
+                                              <span className="font-semibold text-xs text-slate-900 dark:text-white truncate block">
                                                 {child.name}
                                               </span>
                                               <span className="text-[10px] text-slate-400 capitalize block">
@@ -843,10 +843,10 @@ export default function UnifiedLocationsPage() {
 
       {/* VIEW 2: INTERACTIVE HIERARCHY TREE BUILDER */}
       {viewMode === "tree" && (
-        <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <FolderTree className="w-4 h-4 text-indigo-400" />
                 <span>Multi-Tier Spatial Relationship Tree</span>
               </h2>
@@ -861,13 +861,13 @@ export default function UnifiedLocationsPage() {
                   const allIds = new Set<string>(locations.map((l) => l.id));
                   setTreeExpandedIds(allIds);
                 }}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition-colors"
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
               >
                 Expand All
               </button>
               <button
                 onClick={() => setTreeExpandedIds(new Set())}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition-colors"
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors"
               >
                 Collapse All
               </button>
@@ -898,8 +898,8 @@ export default function UnifiedLocationsPage() {
       {viewMode === "split" && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Panel: Tree Navigator */}
-          <div className="lg:col-span-5 p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-4 max-h-[800px] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="lg:col-span-5 p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 max-h-[800px] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
               <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                 <FolderTree className="w-3.5 h-3.5 text-indigo-400" />
                 <span>Spatial Hierarchy Tree</span>
@@ -930,9 +930,9 @@ export default function UnifiedLocationsPage() {
           {/* Right Panel: Selected Location Detail Card & Children Manager */}
           <div className="lg:col-span-7 space-y-6">
             {selectedLocation ? (
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-6">
+              <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
                 {/* Header */}
-                <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-800">
+                <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
                   <div className="flex items-center gap-3">
                     {(() => {
                       const tMeta = getTypeMeta(selectedLocation.locationType);
@@ -944,7 +944,7 @@ export default function UnifiedLocationsPage() {
                       );
                     })()}
                     <div>
-                      <h2 className="text-lg font-bold text-white">{selectedLocation.name}</h2>
+                      <h2 className="text-lg font-bold text-slate-900 dark:text-white">{selectedLocation.name}</h2>
                       <p className="text-xs text-indigo-400 font-mono mt-0.5">
                         {selectedLocation.fullPath || selectedLocation.name}
                       </p>
@@ -972,7 +972,7 @@ export default function UnifiedLocationsPage() {
                 {/* Edit Form */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1">Location Name</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-400 mb-1">Location Name</label>
                     <input
                       type="text"
                       value={selectedLocation.name}
@@ -983,16 +983,16 @@ export default function UnifiedLocationsPage() {
                         );
                       }}
                       onBlur={(e) => saveInlineCell(selectedLocation.id, "name", e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1">Location Type (Tier)</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-400 mb-1">Location Type (Tier)</label>
                     <select
                       value={selectedLocation.locationType}
                       onChange={(e) => saveInlineCell(selectedLocation.id, "type", e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                     >
                       {LOCATION_TYPES.map((t) => (
                         <option key={t.value} value={t.value}>
@@ -1003,11 +1003,11 @@ export default function UnifiedLocationsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1">Parent Location (Re-Parent)</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-400 mb-1">Parent Location (Re-Parent)</label>
                     <select
                       value={selectedLocation.parentId || "none"}
                       onChange={(e) => saveInlineCell(selectedLocation.id, "parent", e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500 font-mono"
                     >
                       <option value="none">-- None (Root Location) --</option>
                       {locations
@@ -1021,7 +1021,7 @@ export default function UnifiedLocationsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1">Street Address</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-400 mb-1">Street Address</label>
                     <input
                       type="text"
                       value={selectedLocation.street || ""}
@@ -1033,12 +1033,12 @@ export default function UnifiedLocationsPage() {
                         );
                       }}
                       onBlur={(e) => saveInlineCell(selectedLocation.id, "street", e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1">City</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-400 mb-1">City</label>
                     <input
                       type="text"
                       value={selectedLocation.city || ""}
@@ -1050,12 +1050,12 @@ export default function UnifiedLocationsPage() {
                         );
                       }}
                       onBlur={(e) => saveInlineCell(selectedLocation.id, "city", e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-400 mb-1">State / Province</label>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-400 mb-1">State / Province</label>
                     <input
                       type="text"
                       value={selectedLocation.state || ""}
@@ -1067,13 +1067,13 @@ export default function UnifiedLocationsPage() {
                         );
                       }}
                       onBlur={(e) => saveInlineCell(selectedLocation.id, "state", e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                      className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                     />
                   </div>
                 </div>
 
                 {/* Direct Children Sub-List */}
-                <div className="pt-4 border-t border-slate-800 space-y-3">
+                <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                       <CornerDownRight className="w-3.5 h-3.5 text-indigo-400" />
@@ -1150,13 +1150,13 @@ export default function UnifiedLocationsPage() {
       {isCreateModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
           <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl p-6 space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400">
                   <Plus className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Create New Location</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Create New Location</h3>
                   <p className="text-xs text-slate-400">Add a location into the unified hierarchy.</p>
                 </div>
               </div>
@@ -1179,7 +1179,7 @@ export default function UnifiedLocationsPage() {
                   placeholder="e.g. West Coast Innovation Hub, Building C, Suite 402"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                 />
               </div>
 
@@ -1189,7 +1189,7 @@ export default function UnifiedLocationsPage() {
                   <select
                     value={newType}
                     onChange={(e) => setNewType(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                   >
                     {LOCATION_TYPES.map((t) => (
                       <option key={t.value} value={t.value}>
@@ -1204,7 +1204,7 @@ export default function UnifiedLocationsPage() {
                   <select
                     value={newLocationParentId || ""}
                     onChange={(e) => setNewLocationParentId(e.target.value || null)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500 font-mono"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500 font-mono"
                   >
                     <option value="">-- None (Root Node) --</option>
                     {locations.map((cand) => (
@@ -1224,7 +1224,7 @@ export default function UnifiedLocationsPage() {
                     placeholder="e.g. 500 Market St"
                     value={newStreet}
                     onChange={(e) => setNewStreet(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
 
@@ -1235,7 +1235,7 @@ export default function UnifiedLocationsPage() {
                     placeholder="e.g. San Francisco"
                     value={newCity}
                     onChange={(e) => setNewCity(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
               </div>
@@ -1248,7 +1248,7 @@ export default function UnifiedLocationsPage() {
                     placeholder="e.g. CA"
                     value={newState}
                     onChange={(e) => setNewState(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
 
@@ -1258,12 +1258,12 @@ export default function UnifiedLocationsPage() {
                     type="text"
                     value={newCountry}
                     onChange={(e) => setNewCountry(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-indigo-500"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsCreateModalOpen(false)}
@@ -1331,7 +1331,7 @@ function TreeNodeItem({
         className={`flex items-center justify-between p-2 rounded-xl transition-colors group ${
           isSelected
             ? "bg-indigo-600/20 border border-indigo-500/50"
-            : "hover:bg-slate-800/40 border border-transparent"
+            : "hover:bg-slate-100 dark:hover:bg-slate-800/40 border border-transparent"
         }`}
       >
         <div className="flex items-center gap-2 overflow-hidden flex-1">
@@ -1361,7 +1361,7 @@ function TreeNodeItem({
             onClick={() => onSelectNode && onSelectNode(node.id)}
             className="cursor-pointer overflow-hidden flex items-center gap-2"
           >
-            <span className="font-semibold text-xs text-white hover:text-indigo-300 transition-colors truncate">
+            <span className="font-semibold text-xs text-slate-800 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-300 transition-colors truncate">
               {node.name}
             </span>
             <span className="text-[10px] text-slate-500 font-mono capitalize">
@@ -1371,7 +1371,7 @@ function TreeNodeItem({
 
           {/* Child count badge */}
           {hasChildren && (
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400">
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
               {children.length}
             </span>
           )}
@@ -1429,7 +1429,7 @@ function TreeNodeItem({
 
       {/* Recursive Children */}
       {isExpanded && hasChildren && (
-        <div className="pl-6 border-l-2 border-slate-800 space-y-1 ml-3.5 py-0.5">
+        <div className="pl-6 border-l-2 border-slate-200 dark:border-slate-800 space-y-1 ml-3.5 py-0.5">
           {children.map((child) => (
             <TreeNodeItem
               key={child.id}
