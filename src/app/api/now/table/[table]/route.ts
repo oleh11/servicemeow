@@ -40,7 +40,19 @@ export async function GET(
     const parsedQuery = parseEncodedQuery(sysparmQuery);
 
     // Common query handler based on table
-    if (table === "incident" || table === "task" || table === "change_request" || table === "problem") {
+    if (
+      table === "incident" ||
+      table === "task" ||
+      table === "change_request" ||
+      table === "problem" ||
+      table === "sc_task" ||
+      table === "sc_request" ||
+      table === "sc_req_item" ||
+      table === "change_task" ||
+      table === "rm_story" ||
+      table === "rm_epic" ||
+      table === "rm_project"
+    ) {
       const where: any = {};
       if (table !== "task") {
         where.sysClassName = table;
@@ -1052,7 +1064,7 @@ export async function POST(
 
     if (tableMeta) {
       if (tableMeta.superClass === "task") {
-        const number = await getNextNumber("TASK");
+        const number = await getNextNumber(table as any);
         const task = await db.task.create({
           data: {
             number,

@@ -26,6 +26,10 @@ const PREFIX_TABLE_MAP: Record<string, string> = {
   DOC: "kb_knowledge",
   KB: "kb_knowledge",
   RES: "cmn_reservation",
+  STRY: "rm_story",
+  SPNT: "rm_sprint",
+  EPIC: "rm_epic",
+  PRJ: "rm_project",
 };
 
 const TABLE_PREFIX_MAP: Record<string, string> = {
@@ -39,6 +43,10 @@ const TABLE_PREFIX_MAP: Record<string, string> = {
   cmn_reservation: "RES",
   kb_knowledge: "KB",
   task: "TASK",
+  rm_story: "STRY",
+  rm_sprint: "SPNT",
+  rm_epic: "EPIC",
+  rm_project: "PRJ",
 };
 
 export async function getNextNumber(prefixOrTable: NumberPrefix, customPrefix?: string): Promise<string> {

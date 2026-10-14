@@ -71,10 +71,12 @@ import { ScriptedApisTab } from "@/components/studio/ScriptedApisTab";
 import { ApplicationsTab } from "@/components/studio/ApplicationsTab";
 import { NavigationTab } from "@/components/studio/NavigationTab";
 import { WorkplaceConfigTab } from "@/components/studio/WorkplaceConfigTab";
+import { TableDataEditorTab } from "@/components/studio/TableDataEditorTab";
 import { ThemePickerModal } from "@/components/theme/ThemePickerModal";
 import { AVATAR_PRESETS, DEFAULT_AVATAR } from "@/lib/avatar-presets";
 
 type StudioTab =
+  | "table_editor"
   | "schema"
   | "catalog_items"
   | "apps"
@@ -117,6 +119,15 @@ const STUDIO_CATEGORIES = [
 
 const STUDIO_MODULES: StudioModuleDef[] = [
   // 1. Data & Architecture
+  {
+    id: "table_editor",
+    title: "Universal Table Data Editor",
+    tableCode: "sys_db_records",
+    category: "data",
+    description: "Excel-style live spreadsheet editor: inline editing, add/delete records, and view customizer across all tables",
+    icon: LayoutGrid,
+    accentColor: "emerald",
+  },
   {
     id: "schema",
     title: "Schema Dictionary",
@@ -313,7 +324,8 @@ function StudioContent() {
   const { currentUser, isImpersonating, endImpersonation } = useUser();
   const tabParam = searchParams.get("tab") as StudioTab | null;
   const subParam = searchParams.get("sub");
-  const validTabs = [
+  const validTabs: StudioTab[] = [
+    "table_editor",
     "schema",
     "catalog_items",
     "apps",
@@ -1666,6 +1678,7 @@ function StudioContent() {
 
   const getModuleBadgeCount = (modId: StudioTab) => {
     switch (modId) {
+      case "table_editor":
       case "schema":
         return tables.length;
       case "acls":
@@ -1962,6 +1975,11 @@ function StudioContent() {
                 </button>
               )}
             </div>
+
+        {/* ==================================================== */}
+        {/* TAB 0: UNIVERSAL TABLE DATA EDITOR (Excel-Style Grid) */}
+        {/* ==================================================== */}
+        {activeTab === "table_editor" && <TableDataEditorTab />}
 
         {/* ==================================================== */}
         {/* TAB 1: SCHEMA & DATA DICTIONARY                      */}

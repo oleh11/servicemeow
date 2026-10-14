@@ -490,4 +490,48 @@ export const TABLE_METADATA: Record<string, TableDescriptor> = {
       cmdb_ci_id: "cmdb_ci",
     },
   },
+  rm_story: {
+    name: "rm_story",
+    label: "Agile Story",
+    superClass: "task",
+    displayField: "number",
+    numberPrefix: "STRY",
+    referenceFields: {
+      opened_by: "sys_user",
+      assigned_to: "sys_user",
+      assignment_group: "sys_user_group",
+      cmdb_ci_id: "cmdb_ci",
+    },
+  },
+  rm_epic: {
+    name: "rm_epic",
+    label: "Agile Epic",
+    superClass: "task",
+    displayField: "number",
+    numberPrefix: "EPIC",
+    referenceFields: {
+      opened_by: "sys_user",
+      assigned_to: "sys_user",
+      assignment_group: "sys_user_group",
+    },
+  },
+  rm_sprint: {
+    name: "rm_sprint",
+    label: "Agile Sprint",
+    superClass: "rm_sprint",
+    displayField: "number",
+    numberPrefix: "SPNT",
+    referenceFields: {},
+  },
+  rm_project: {
+    name: "rm_project",
+    label: "Agile Project / Release",
+    superClass: "task",
+    displayField: "number",
+    numberPrefix: "PRJ",
+    referenceFields: {
+      opened_by: "sys_user",
+      assigned_to: "sys_user",
+    },
+  },
 };

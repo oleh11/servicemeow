@@ -32,7 +32,19 @@ export async function GET(
       return NextResponse.json({ error: aclCheck.reason }, { status: 403 });
     }
 
-    if (table === "incident" || table === "task" || table === "change_request" || table === "problem") {
+    if (
+      table === "incident" ||
+      table === "task" ||
+      table === "change_request" ||
+      table === "problem" ||
+      table === "sc_task" ||
+      table === "sc_request" ||
+      table === "sc_req_item" ||
+      table === "change_task" ||
+      table === "rm_story" ||
+      table === "rm_epic" ||
+      table === "rm_project"
+    ) {
       const task = await db.task.findUnique({
         where: { id },
         include: {

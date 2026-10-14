@@ -210,6 +210,16 @@ export function Sidebar() {
       ],
     },
     {
+      title: "Agile Management",
+      icon: Kanban,
+      items: [
+        { label: "Agile Sprint Board", href: "/workspace/agile", icon: Kanban, badge: "New" },
+        { label: "User Stories (rm_story)", href: "/workspace/rm_story" },
+        { label: "Sprints (rm_sprint)", href: "/workspace/rm_sprint" },
+        { label: "Epics (rm_epic)", href: "/workspace/rm_epic" },
+      ],
+    },
+    {
       title: "Incident Management",
       icon: AlertCircle,
       items: [

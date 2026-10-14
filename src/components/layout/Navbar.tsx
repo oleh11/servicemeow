@@ -27,6 +27,10 @@ import {
   Ticket,
   BookOpen,
   ShieldCheck,
+  Kanban,
+  Database,
+  Layers,
+  ArrowRight,
 } from "lucide-react";
 import { ProfilePictureModal } from "@/components/common/ProfilePictureModal";
 import { UpdateSetPicker } from "./UpdateSetPicker";
@@ -55,7 +59,11 @@ export function Navbar() {
   const isEmployee = currentUser.role === "employee";
   const isAdmin = currentUser.role === "admin";
 
-  const navLinks = isEmployee
+  const isPortalSurface = pathname.startsWith("/portal");
+  const isWorkspaceSurface = pathname.startsWith("/workspace");
+  const isStudioSurface = pathname.startsWith("/studio");
+
+  const navLinks = isEmployee || isPortalSurface
     ? [
         { label: "Employee Portal", href: "/portal", icon: Compass },
         { label: "Service Catalog", href: "/portal/catalog", icon: ShoppingBag },
@@ -64,13 +72,21 @@ export function Navbar() {
         { label: "Knowledge Base", href: "/portal/knowledge", icon: BookOpen },
         { label: "System Status", href: "/portal/status", icon: ShieldCheck },
       ]
+    : isStudioSurface
+    ? [
+        { label: "Table Data Editor", href: "/studio?tab=table_editor", icon: Database },
+        { label: "Schema Dictionary", href: "/studio?tab=schema", icon: Layers },
+        { label: "Server Automation", href: "/studio?tab=business_rules", icon: FileCode },
+        { label: "Workplace & Spaces", href: "/studio?tab=workplace", icon: Building2 },
+        { label: "Operations Workspace ↗", href: "/workspace", icon: LayoutDashboard },
+      ]
     : [
         { label: "Agent Workspace", href: "/workspace", icon: LayoutDashboard },
+        { label: "Agile Sprint Board", href: "/workspace/agile", icon: Kanban },
         { label: "Workplace & Reservations", href: "/workspace/reservations", icon: Building2 },
         { label: "CMDB Topology", href: "/workspace/cmdb", icon: Server },
-        { label: "Self-Service Portal", href: "/portal", icon: Compass },
         ...(isAdmin && !isImpersonating
-          ? [{ label: "Studio & Admin Center", href: "/studio", icon: FileCode }]
+          ? [{ label: "Studio Admin Center", href: "/studio", icon: FileCode }]
           : []),
       ];
 
@@ -126,6 +142,34 @@ export function Navbar() {
         </div>
       )}
 
+      {/* Privileged user viewing employee portal notification bar */}
+      {!isEmployee && isPortalSurface && !isImpersonating && (
+        <div className="w-full bg-slate-900/95 border-b border-slate-800 text-slate-300 px-4 sm:px-6 py-1.5 text-xs flex items-center justify-between z-30">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span>
+              You are previewing the <strong className="text-white">Employee Frontend Portal</strong>.
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/workspace"
+              className="px-2.5 py-0.5 rounded bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 font-semibold border border-sky-500/30 transition-colors"
+            >
+              Fulfiller Workspace &rarr;
+            </Link>
+            {isAdmin && (
+              <Link
+                href="/studio"
+                className="px-2.5 py-0.5 rounded bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-semibold border border-purple-500/30 transition-colors"
+              >
+                Admin Backend &rarr;
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main Full-Width Header Bar (M3 Top App Bar: 64px, Surface Container) */}
       <header
         className="sticky top-0 z-40 w-full border-b shadow-xs transition-colors"
@@ -161,13 +205,30 @@ export function Navbar() {
                   Service<span style={{ color: currentThemeDef.colors.primary }} className="font-extrabold">Meow</span>
                 </span>
                 <span
-                  className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: currentThemeDef.colors.sidebarActiveBg,
-                    color: currentThemeDef.colors.sidebarActiveText,
-                  }}
+                  className={`text-[9px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full border flex items-center gap-1.5 ${
+                    isStudioSurface
+                      ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
+                      : isWorkspaceSurface
+                      ? "bg-sky-500/20 text-sky-300 border-sky-500/40"
+                      : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                  }`}
                 >
-                  {isEmployee ? "PORTAL" : "ITSM"}
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      isStudioSurface
+                        ? "bg-purple-400"
+                        : isWorkspaceSurface
+                        ? "bg-sky-400"
+                        : "bg-emerald-400 animate-pulse"
+                    }`}
+                  />
+                  <span>
+                    {isStudioSurface
+                      ? "BACKEND ADMIN"
+                      : isWorkspaceSurface
+                      ? "OPERATIONS"
+                      : "FRONTEND PORTAL"}
+                  </span>
                 </span>
               </div>
             </Link>
@@ -179,6 +240,8 @@ export function Navbar() {
                 const isActive =
                   item.href === "/portal"
                     ? pathname === "/portal"
+                    : item.href === "/workspace/agile"
+                    ? pathname.startsWith("/workspace/agile")
                     : item.href === "/workspace/reservations"
                     ? pathname.startsWith("/workspace/reservations")
                     : item.href === "/portal/reservations"
@@ -188,6 +251,7 @@ export function Navbar() {
                     : item.href === "/workspace"
                     ? pathname.startsWith("/workspace") &&
                       pathname !== "/workspace/cmdb" &&
+                      !pathname.startsWith("/workspace/agile") &&
                       !pathname.startsWith("/workspace/reservations") &&
                       !pathname.startsWith("/workspace/spaces")
                     : pathname.startsWith(item.href);
@@ -216,6 +280,51 @@ export function Navbar() {
 
           {/* Right: Global Search & User Profile */}
           <div className="flex items-center space-x-3 shrink-0">
+            {/* 3-Surface Segmented Context Switcher (Frontend Portal / Operations Workspace / Admin Backend) */}
+            {!isEmployee && (
+              <div className="hidden xl:flex items-center bg-black/10 dark:bg-white/5 p-1 rounded-full border border-black/10 dark:border-white/10 text-xs font-semibold">
+                <Link
+                  href="/portal"
+                  className={`px-3 py-1 rounded-full flex items-center gap-1.5 transition-all ${
+                    isPortalSurface
+                      ? "bg-emerald-600 text-white shadow-xs font-bold"
+                      : "opacity-70 hover:opacity-100 hover:text-white"
+                  }`}
+                  title="Employee Frontend Portal"
+                >
+                  <Compass className="w-3.5 h-3.5" />
+                  <span>Frontend</span>
+                </Link>
+
+                <Link
+                  href="/workspace"
+                  className={`px-3 py-1 rounded-full flex items-center gap-1.5 transition-all ${
+                    isWorkspaceSurface
+                      ? "bg-sky-600 text-white shadow-xs font-bold"
+                      : "opacity-70 hover:opacity-100 hover:text-white"
+                  }`}
+                  title="Fulfiller Operations Workspace"
+                >
+                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <span>Operations</span>
+                </Link>
+
+                {isAdmin && (
+                  <Link
+                    href="/studio"
+                    className={`px-3 py-1 rounded-full flex items-center gap-1.5 transition-all ${
+                      isStudioSurface
+                        ? "bg-purple-600 text-white shadow-xs font-bold"
+                        : "opacity-70 hover:opacity-100 hover:text-white"
+                    }`}
+                    title="Platform Backend Admin Console"
+                  >
+                    <FileCode className="w-3.5 h-3.5" />
+                    <span>Backend</span>
+                  </Link>
+                )}
+              </div>
+            )}
             {/* Global Search Bar (M3 Pill Search Bar: 44px, Surface Container High) */}
             <div className="relative hidden lg:block w-72">
               <input

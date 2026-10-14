@@ -55,6 +55,10 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
     if (tableName === "cmn_reservation") prefix = "RES";
     else if (tableName === "sc_task" || tableName === "task") prefix = "TASK";
     else if (tableName === "change_task") prefix = "CTASK";
+    else if (tableName === "rm_story") prefix = "STRY";
+    else if (tableName === "rm_sprint") prefix = "SPNT";
+    else if (tableName === "rm_epic") prefix = "EPIC";
+    else if (tableName === "rm_project") prefix = "PRJ";
     else prefix = tableName.substring(0, 3).toUpperCase();
   }
   const digits = 7;
@@ -85,7 +89,10 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
         tableName === "sc_task" ||
         tableName === "sc_request" ||
         tableName === "sc_req_item" ||
-        tableName === "change_task"
+        tableName === "change_task" ||
+        tableName === "rm_story" ||
+        tableName === "rm_epic" ||
+        tableName === "rm_project"
       ) {
         const highest = await tx.task.findFirst({
           where: tableName !== "task" ? { sysClassName: tableName } : {},
