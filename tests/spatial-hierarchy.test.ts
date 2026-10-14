@@ -235,4 +235,61 @@ describe("Workplace Hub - 6-Tier Spatial Hierarchy", () => {
       },
     });
   });
+
+  it("creates, updates, and traverses dedicated cmn_state records with parent region and child campuses", async () => {
+    const americas = await db.cmnRegion.findFirst({ where: { code: "AMER" } });
+    expect(americas).toBeDefined();
+
+    // 1. Create a dedicated state record under Americas
+    const testState = await db.cmnState.create({
+      data: {
+        name: "Washington State Test",
+        code: "US-WA-TEST",
+        country: "United States",
+        regionId: americas!.id,
+      },
+      include: {
+        region: true,
+        campuses: true,
+      },
+    });
+
+    expect(testState.id).toBeDefined();
+    expect(testState.code).toBe("US-WA-TEST");
+    expect(testState.regionId).toBe(americas!.id);
+    expect(testState.region?.name).toBe("Americas");
+
+    // 2. Link a test campus to this state
+    const testCampus = await db.cmnCampus.create({
+      data: {
+        name: "Seattle Innovation Campus Test",
+        code: "SEA-CAMPUS-TEST",
+        stateId: testState.id,
+        city: "Seattle",
+        zipCode: "98101",
+      },
+    });
+
+    // 3. Verify state can load its child campus
+    const reloadedState = await db.cmnState.findUnique({
+      where: { id: testState.id },
+      include: {
+        campuses: true,
+        region: true,
+      },
+    });
+    expect(reloadedState?.campuses.length).toBe(1);
+    expect(reloadedState?.campuses[0].name).toBe("Seattle Innovation Campus Test");
+
+    // 4. Update state name
+    const updated = await db.cmnState.update({
+      where: { id: testState.id },
+      data: { name: "Washington State Test (Renamed)" },
+    });
+    expect(updated.name).toBe("Washington State Test (Renamed)");
+
+    // 5. Clean up test campus and test state
+    await db.cmnCampus.delete({ where: { id: testCampus.id } });
+    await db.cmnState.delete({ where: { id: testState.id } });
+  });
 });

@@ -593,12 +593,21 @@ export default function SpacesExplorerPage() {
                   <h3 className="font-semibold text-base">Space & Asset Inspection</h3>
                 </div>
                 {selectedSpace && (
-                  <Link
-                    href={`/workspace/cmn_space`}
-                    className="text-xs text-primary hover:underline flex items-center gap-1"
-                  >
-                    Open Table <ExternalLink className="w-3 h-3" />
-                  </Link>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/workspace/cmn_space/${selectedSpace.id}`}
+                      className="text-xs text-primary hover:underline flex items-center gap-1 font-medium"
+                    >
+                      Edit Space <ExternalLink className="w-3 h-3" />
+                    </Link>
+                    <span className="text-muted-foreground/40">&bull;</span>
+                    <Link
+                      href={`/workspace/cmn_space`}
+                      className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      Table
+                    </Link>
+                  </div>
                 )}
               </div>
 

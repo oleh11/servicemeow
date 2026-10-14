@@ -13,7 +13,7 @@
   <a href="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml"><img src="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml/badge.svg" alt="ServiceMeow CI" /></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-emerald.svg" alt="Node.js Version" /></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-16-blue.svg" alt="PostgreSQL" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-85%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-86%20passed-8b5cf6.svg" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
 </p>
 
@@ -189,6 +189,31 @@ A specialized, enterprise-grade interface for managing physical enterprise locat
 
 ---
 
+### 8. Dedicated Spatial Entity Record Forms (`/workspace/cmn_* / [id]`)
+
+ServiceMeow replaces generic ITIL task forms with tailored, context-aware spatial editors for all 6 tiers (`cmn_region`, `cmn_state`, `cmn_campus`, `cmn_building`, `cmn_floor`, `cmn_space`, `cmn_location`, `cmn_reservation`):
+
+#### 📝 Specialized State / Province & Spatial Entity Forms
+<p align="center">
+  <img src="docs/assets/cmn_state_new_form.png" alt="New State Form" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Context-Aware Fields by Spatial Tier**:
+  - **`cmn_state` (Tier 2)**: State/Province Name, Unique Code (`US-CA`, `US-WA`), Country, Parent Region dropdown selector (`cmn_region`).
+  - **`cmn_region` (Tier 1)**: Region Name, Region Code, Operational Description, Active status toggle.
+  - **`cmn_campus` (Tier 3)**: Campus Name, Code, State dropdown, Street Address, City, Zip Code, GPS Coordinates.
+  - **`cmn_building` (Tier 4)**: Building Name, Code, Campus dropdown, Building Type (`hospital`, `clinic`, `lab`, `office`, `datacenter`), Floors Count, Area Sq Ft.
+  - **`cmn_floor` (Tier 5)**: Floor Name, Code, Floor Level Number, Building dropdown, Area Sq Ft, CAD/SVG Drawing URL.
+  - **`cmn_space` (Tier 6)**: Room Name, Space Number, Floor dropdown, Space Type, Occupancy Status (`available`, `occupied`, `reserved`, `maintenance`), Capacity, Square Footage, Department, Amenity capability pills.
+- **Hierarchy Placement Card**: Dedicated right-hand rail displaying Tier classification, database table metadata, parent relationship links, and Connected Workplace Architecture notes.
+- **Related Child Assets & Deep Linkage**: Directly inspect and manage child assets (e.g. Campuses located within a State) with inline "+ Add New" actions.
+
+<p align="center">
+  <img src="docs/assets/cmn_state_saved_detail.png" alt="Saved State Detail View" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+---
+
 ## 🚀 Quick Start with Docker Compose
 
 Run ServiceMeow with PostgreSQL and the background scheduler daemon using Docker Compose:
@@ -254,7 +279,7 @@ npm run worker
 
 ## 🧪 Testing & Verification
 
-ServiceMeow includes a full Vitest test suite with **77 passing tests** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, and the 6-tier Workplace Hub spatial hierarchy.
+ServiceMeow includes a full Vitest test suite with **86 passing tests across 10 test suites** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, spatial entity operations, and the 6-tier Workplace Hub spatial hierarchy.
 
 ```bash
 # Run Vitest test suite once
