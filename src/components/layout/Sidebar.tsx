@@ -39,6 +39,8 @@ import {
   MapPin,
   Map,
   Calendar,
+  PanelLeftOpen,
+  PanelLeftClose,
 } from "lucide-react";
 
 import { useUser } from "@/lib/user-context";
@@ -90,12 +92,13 @@ function resolveIcon(name?: string, fallback: any = Layers) {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { layoutMode, currentThemeDef } = useTheme();
+  const { layoutMode, setLayoutMode, currentThemeDef } = useTheme();
   const { currentUser } = useUser();
   const isAdmin = currentUser.role === "admin";
   const [customTables, setCustomTables] = useState<any[]>([]);
   const [navApplications, setNavApplications] = useState<any[]>([]);
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [flyoutTop, setFlyoutTop] = useState<number>(0);
 
   useEffect(() => {
     fetch("/api/now/navigation/applications")
@@ -289,125 +292,179 @@ export function Sidebar() {
     ...(isAdmin ? [adminSection] : []),
   ];
 
-  // COMPACT RAIL MODE (M3 Navigation Rail with popover flyouts)
+  const getPrimaryHref = (section: SidebarSection) => {
+    if (section.title === "Admin Configuration Suite") return "/studio";
+    if (section.title === "Incident Management") return "/workspace/incident";
+    if (section.title === "Change Management") return "/workspace/change_request";
+    if (section.title === "Problem Management") return "/workspace/problem";
+    if (section.title === "Service Catalog Tasks") return "/workspace/sc_task";
+    if (section.title === "Configuration & CMDB") return "/workspace/cmdb";
+    if (section.title === "Connected Workplace") return "/workspace/reservations";
+    if (section.title === "Knowledge Management") return "/portal/knowledge";
+    if (section.title === "Agent Workspace") return "/workspace";
+    return section.items[0]?.href || "/workspace";
+  };
+
+  // COMPACT RAIL MODE (M3 Navigation Rail with unclipped fixed popover flyouts)
   if (layoutMode === "compact_rail") {
     return (
       <aside
-        className="w-20 border-r flex flex-col shrink-0 min-h-[calc(100vh-4rem)] items-center py-4 select-none relative z-30 transition-all"
+        className="w-20 border-r flex flex-col shrink-0 min-h-[calc(100vh-4rem)] items-center py-4 select-none relative z-30 transition-all justify-between"
         style={{
           backgroundColor: currentThemeDef.colors.sidebarBg,
           borderColor: currentThemeDef.colors.sidebarBorder,
           color: currentThemeDef.colors.sidebarText,
         }}
       >
-        <div
-          className="w-10 h-10 rounded-full flex items-center justify-center mb-5 font-bold shadow-xs transition-transform hover:scale-105"
-          style={{ backgroundColor: currentThemeDef.colors.primary, color: "#ffffff" }}
-          title="ServiceMeow Application Rail"
-        >
-          <Cat className="w-5 h-5 text-white" />
+        <div className="w-full flex flex-col items-center">
+          {/* Logo Button - Click to Home */}
+          <Link
+            href="/workspace"
+            className="w-10 h-10 rounded-full flex items-center justify-center mb-5 font-bold shadow-xs transition-transform hover:scale-105 cursor-pointer shrink-0"
+            style={{ backgroundColor: currentThemeDef.colors.primary, color: "#ffffff" }}
+            title="ServiceMeow Operations Center (Workspace Home)"
+          >
+            <Cat className="w-5 h-5 text-white" />
+          </Link>
+
+          {/* Navigation Icons List */}
+          <div className="w-full flex flex-col items-center space-y-2.5 px-1.5">
+            {sections.map((section) => {
+              const Icon = section.icon;
+              const primaryHref = getPrimaryHref(section);
+              const hasActiveChild = section.items.some((item) => {
+                const cleanItem = item.href.split("?")[0];
+                if (cleanItem === "/workspace") return pathname === "/workspace";
+                return pathname === item.href || (cleanItem !== "/" && pathname.startsWith(cleanItem));
+              });
+              const isHovered = hoveredSection === section.title;
+
+              return (
+                <div
+                  key={section.title}
+                  className="relative group w-full flex justify-center"
+                  onMouseEnter={(e) => {
+                    setHoveredSection(section.title);
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setFlyoutTop(rect.top);
+                  }}
+                  onMouseLeave={() => setHoveredSection(null)}
+                >
+                  <Link
+                    href={primaryHref}
+                    className={`w-12 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer ${
+                      hasActiveChild
+                        ? "shadow-sm ring-1 ring-white/10"
+                        : "opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10"
+                    }`}
+                    style={{
+                      backgroundColor: hasActiveChild ? currentThemeDef.colors.sidebarActiveBg : undefined,
+                      color: hasActiveChild ? currentThemeDef.colors.sidebarActiveText : currentThemeDef.colors.sidebarText,
+                    }}
+                    title={`${section.title} - Click to navigate`}
+                    onClick={() => setHoveredSection(null)}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                  </Link>
+
+                  {/* Floating Popout Flyout Menu (Unclipped, Fixed Viewport Position) */}
+                  {isHovered && (
+                    <div
+                      className="fixed left-20 w-64 rounded-[16px] shadow-2xl border p-2 z-50 animate-in fade-in slide-in-from-left-2 duration-100"
+                      style={{
+                        top: Math.max(68, Math.min(flyoutTop, typeof window !== "undefined" ? window.innerHeight - 340 : 100)),
+                        backgroundColor: "var(--md-sys-color-surface-container-low, #f7f2fa)",
+                        borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
+                        color: "var(--md-sys-color-on-surface, #1d1b20)",
+                      }}
+                      onMouseEnter={() => setHoveredSection(section.title)}
+                      onMouseLeave={() => setHoveredSection(null)}
+                    >
+                      <div
+                        className="px-3 py-1.5 text-[11px] font-bold border-b mb-1.5 flex items-center justify-between"
+                        style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
+                      >
+                        <Link
+                          href={primaryHref}
+                          className="flex items-center gap-1.5 hover:underline"
+                          style={{ color: currentThemeDef.colors.primary }}
+                          onClick={() => setHoveredSection(null)}
+                        >
+                          <Icon className="w-3.5 h-3.5" />
+                          <span>{section.title}</span>
+                        </Link>
+                        <span className="text-[9px] font-mono opacity-50 uppercase">Open &rarr;</span>
+                      </div>
+
+                      <div className="space-y-0.5 max-h-80 overflow-y-auto">
+                        {section.items.map((item) => {
+                          const isActive = pathname === item.href;
+                          const ItemIcon = item.icon;
+
+                          return (
+                            <Link
+                              key={item.href}
+                              href={item.href}
+                              onClick={() => setHoveredSection(null)}
+                              className={`flex items-center justify-between px-3 py-1.5 rounded-full text-xs transition-colors ${
+                                isActive
+                                  ? "font-semibold shadow-xs"
+                                  : "hover:bg-black/5 dark:hover:bg-white/5"
+                              }`}
+                              style={{
+                                backgroundColor: isActive ? currentThemeDef.colors.sidebarActiveBg : undefined,
+                                color: isActive ? currentThemeDef.colors.sidebarActiveText : undefined,
+                              }}
+                            >
+                              <div className="flex items-center space-x-2 truncate">
+                                {ItemIcon ? (
+                                  <ItemIcon className="w-3.5 h-3.5 shrink-0 opacity-70" />
+                                ) : (
+                                  <ChevronRight className="w-2.5 h-2.5 shrink-0 opacity-50" />
+                                )}
+                                <span className="truncate">{item.label}</span>
+                              </div>
+
+                              {item.badge ? (
+                                <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${item.badge}`}>
+                                  !
+                                </span>
+                              ) : item.count ? (
+                                <span
+                                  className="text-[10px] px-2 py-0.5 rounded-full font-mono"
+                                  style={{
+                                    backgroundColor: "var(--md-sys-color-surface-container-highest, #e6e0e9)",
+                                    color: "var(--md-sys-color-on-surface-variant, #49454f)",
+                                  }}
+                                >
+                                  {item.count}
+                                </span>
+                              ) : null}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="flex-1 w-full flex flex-col items-center space-y-3 overflow-y-auto px-1.5 scrollbar-none">
-          {sections.map((section) => {
-            const Icon = section.icon;
-            const hasActiveChild = section.items.some((item) => pathname === item.href);
-            const isHovered = hoveredSection === section.title;
-
-            return (
-              <div
-                key={section.title}
-                className="relative group w-full flex justify-center"
-                onMouseEnter={() => setHoveredSection(section.title)}
-                onMouseLeave={() => setHoveredSection(null)}
-              >
-                <button
-                  className={`w-12 h-8 rounded-full flex items-center justify-center transition-all ${
-                    hasActiveChild
-                      ? "shadow-xs"
-                      : "opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10"
-                  }`}
-                  style={{
-                    backgroundColor: hasActiveChild ? currentThemeDef.colors.sidebarActiveBg : undefined,
-                    color: hasActiveChild ? currentThemeDef.colors.sidebarActiveText : currentThemeDef.colors.sidebarText,
-                  }}
-                  title={section.title}
-                >
-                  <Icon className="w-4 h-4" />
-                </button>
-
-                {/* Floating Popout Flyout Menu (M3 Menu Card: rounded-[16px]) */}
-                {isHovered && (
-                  <div
-                    className="absolute left-16 top-0 w-64 rounded-[16px] shadow-xl border p-2 z-50 animate-in fade-in slide-in-from-left-2 duration-100"
-                    style={{
-                      backgroundColor: "var(--md-sys-color-surface-container-low, #f7f2fa)",
-                      borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-                      color: "var(--md-sys-color-on-surface, #1d1b20)",
-                    }}
-                  >
-                    <div
-                      className="px-3 py-1.5 text-[11px] font-bold border-b mb-1.5 flex items-center justify-between"
-                      style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
-                    >
-                      <span className="flex items-center gap-1.5">
-                        <Icon className="w-3.5 h-3.5" style={{ color: currentThemeDef.colors.primary }} />
-                        <span>{section.title}</span>
-                      </span>
-                    </div>
-
-                    <div className="space-y-0.5 max-h-80 overflow-y-auto">
-                      {section.items.map((item) => {
-                        const isActive = pathname === item.href;
-                        const ItemIcon = item.icon;
-
-                        return (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className={`flex items-center justify-between px-3 py-1.5 rounded-full text-xs transition-colors ${
-                              isActive
-                                ? "font-semibold shadow-xs"
-                                : "hover:bg-black/5 dark:hover:bg-white/5"
-                            }`}
-                            style={{
-                              backgroundColor: isActive ? currentThemeDef.colors.sidebarActiveBg : undefined,
-                              color: isActive ? currentThemeDef.colors.sidebarActiveText : undefined,
-                            }}
-                          >
-                            <div className="flex items-center space-x-2 truncate">
-                              {ItemIcon ? (
-                                <ItemIcon className="w-3.5 h-3.5 shrink-0 opacity-70" />
-                              ) : (
-                                <ChevronRight className="w-2.5 h-2.5 shrink-0 opacity-50" />
-                              )}
-                              <span className="truncate">{item.label}</span>
-                            </div>
-
-                            {item.badge ? (
-                              <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded-full ${item.badge}`}>
-                                !
-                              </span>
-                            ) : item.count ? (
-                              <span
-                                className="text-[10px] px-2 py-0.5 rounded-full font-mono"
-                                style={{
-                                  backgroundColor: "var(--md-sys-color-surface-container-highest, #e6e0e9)",
-                                  color: "var(--md-sys-color-on-surface-variant, #49454f)",
-                                }}
-                              >
-                                {item.count}
-                              </span>
-                            ) : null}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        {/* Bottom Rail Action: Expand to Full Sidebar */}
+        <div
+          className="w-full pt-3 pb-2 border-t flex flex-col items-center shrink-0 mt-auto"
+          style={{ borderColor: currentThemeDef.colors.sidebarBorder }}
+        >
+          <button
+            onClick={() => setLayoutMode("sidebar")}
+            className="w-10 h-10 rounded-full flex items-center justify-center opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-all cursor-pointer"
+            style={{ color: currentThemeDef.colors.sidebarText }}
+            title="Expand to Full Sidebar with Text Labels"
+          >
+            <PanelLeftOpen className="w-4 h-4" />
+          </button>
         </div>
       </aside>
     );
@@ -443,15 +500,25 @@ export function Sidebar() {
           <Cat className="w-4 h-4" style={{ color: currentThemeDef.colors.primary }} />
           <span>Application Navigator</span>
         </span>
-        <span
-          className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full"
-          style={{
-            backgroundColor: currentThemeDef.colors.sidebarActiveBg,
-            color: currentThemeDef.colors.sidebarActiveText,
-          }}
-        >
-          {isFloating ? "Floating Dock" : "ITIL"}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full"
+            style={{
+              backgroundColor: currentThemeDef.colors.sidebarActiveBg,
+              color: currentThemeDef.colors.sidebarActiveText,
+            }}
+          >
+            {isFloating ? "Floating Dock" : "ITIL"}
+          </span>
+          <button
+            onClick={() => setLayoutMode("compact_rail")}
+            className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors opacity-70 hover:opacity-100 cursor-pointer"
+            style={{ color: currentThemeDef.colors.sidebarText }}
+            title="Collapse to Compact Icon Rail"
+          >
+            <PanelLeftClose className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
 
       {/* Sections & Navigation Items (M3 Navigation Drawer: rounded-full pills) */}
