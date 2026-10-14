@@ -1,12 +1,12 @@
 # ServiceMeow 🐾
 
 <p align="center">
-  <img src="docs/assets/hero-banner.jpg" alt="ServiceMeow Banner" width="100%" style="border-radius: 12px; border: 1px solid #1e293b;" />
+  <img src="docs/assets/servicemeow-banner.png" alt="ServiceMeow Banner" width="100%" style="border-radius: 12px; border: 1px solid #1e293b;" />
 </p>
 
 <p align="center">
-  <strong>The Open-Source Enterprise Service Operations (ITIL) Platform &amp; Hermes Autonomous Agent</strong><br>
-  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Hermes Workflow Agent
+  <strong>The Open-Source Enterprise Service Operations (ITIL) Platform</strong><br>
+  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Workflow Agent
 </p>
 
 <p align="center">
