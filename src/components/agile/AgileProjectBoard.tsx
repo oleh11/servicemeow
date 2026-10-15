@@ -59,11 +59,11 @@ export interface AgileSprint {
 }
 
 const COLUMNS = [
-  { id: "1", label: "Backlog", color: "slate", accent: "border-slate-500/40 text-slate-300" },
-  { id: "2", label: "Sprint Ready", color: "sky", accent: "border-sky-500/40 text-sky-300" },
-  { id: "3", label: "In Progress", color: "amber", accent: "border-amber-500/40 text-amber-300" },
-  { id: "4", label: "Testing & QA", color: "purple", accent: "border-purple-500/40 text-purple-300" },
-  { id: "7", label: "Complete", color: "emerald", accent: "border-emerald-500/40 text-emerald-300" },
+  { id: "1", label: "Backlog", color: "neutral", dot: "bg-neutral-500" },
+  { id: "2", label: "Sprint Ready", color: "sky", dot: "bg-sky-600" },
+  { id: "3", label: "In Progress", color: "amber", dot: "bg-amber-600" },
+  { id: "4", label: "Testing & QA", color: "purple", dot: "bg-purple-600" },
+  { id: "7", label: "Complete", color: "emerald", dot: "bg-emerald-600" },
 ] as const;
 
 const FIBONACCI_POINTS = [1, 2, 3, 5, 8, 13, 21];
@@ -84,6 +84,8 @@ export function AgileProjectBoard() {
 
   // Modals & Panels
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createSprintModalOpen, setCreateSprintModalOpen] = useState(false);
+  const [createEpicModalOpen, setCreateEpicModalOpen] = useState(false);
   const [selectedStory, setSelectedStory] = useState<AgileStory | null>(null);
   const [storyDetailModalOpen, setStoryDetailModalOpen] = useState(false);
 
@@ -98,78 +100,124 @@ export function AgileProjectBoard() {
   const [newCriteria, setNewCriteria] = useState("");
   const [creatingStory, setCreatingStory] = useState(false);
 
-  // Fetch Data
-  const fetchData = useCallback(async () => {
+  // Form State for New Sprint
+  const [newSprintName, setNewSprintName] = useState("");
+  const [newSprintState, setNewSprintState] = useState<"planning" | "active" | "closed">("planning");
+  const [newSprintStart, setNewSprintStart] = useState(new Date().toISOString().split("T")[0]);
+  const [newSprintEnd, setNewSprintEnd] = useState(
+    new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0]
+  );
+  const [newSprintCapacity, setNewSprintCapacity] = useState<number>(45);
+  const [newSprintGoal, setNewSprintGoal] = useState("");
+  const [creatingSprint, setCreatingSprint] = useState(false);
+
+  // Form State for New Epic
+  const [newEpicTitle, setNewEpicTitle] = useState("");
+  const [newEpicPriority, setNewEpicPriority] = useState("2");
+  const [newEpicDesc, setNewEpicDesc] = useState("");
+  const [epics, setEpics] = useState<any[]>([]);
+  const [creatingEpic, setCreatingEpic] = useState(false);
+
+  // Fetch Board Data
+  const loadBoardData = useCallback(async () => {
     try {
-      setError(null);
-      const [storyRes, sprintRes] = await Promise.all([
-        fetch("/api/now/table/rm_story"),
-        fetch("/api/now/table/rm_sprint"),
+      const [storyRes, sprintRes, epicRes] = await Promise.all([
+        fetch("/api/now/table/rm_story?sysparm_limit=200"),
+        fetch("/api/now/table/rm_sprint?sysparm_limit=50"),
+        fetch("/api/now/table/rm_epic?sysparm_limit=50"),
       ]);
 
-      if (!storyRes.ok) throw new Error("Failed to load agile stories");
+      const [storyData, sprintData, epicData] = await Promise.all([
+        storyRes.json().catch(() => ({ result: [] })),
+        sprintRes.json().catch(() => ({ result: [] })),
+        epicRes.json().catch(() => ({ result: [] })),
+      ]);
 
-      const storyData = await storyRes.json();
-      const sprintData = await sprintRes.json();
+      if (storyData.result) {
+        setStories(
+          storyData.result.map((s: any) => ({
+            id: s.id || s.sys_id,
+            number: s.number || "STRY0000",
+            short_description: s.short_description || s.shortDescription || "Untitled Story",
+            description: s.description || "",
+            state: String(s.state || "1"),
+            priority: String(s.priority || "3"),
+            assigned_to: s.assigned_to || s.assignedTo?.display_value || "",
+            story_points: s.story_points ? Number(s.story_points) : (s.storyPoints ? Number(s.storyPoints) : 3),
+            sprint_id: s.sprint_id || "",
+            sprint_name: s.sprint_name || "",
+            epic_name: s.epic_name || "",
+            acceptance_criteria: s.acceptance_criteria || "",
+            created_at: s.sys_created_on || s.createdAt,
+            updated_at: s.sys_updated_on || s.updatedAt,
+          }))
+        );
+      }
 
-      setStories(storyData.result || []);
-      setSprints(sprintData.result || []);
+      if (sprintData.result) {
+        setSprints(
+          sprintData.result.map((sp: any) => ({
+            id: sp.id || sp.sys_id,
+            number: sp.number || "",
+            name: sp.name || "Sprint",
+            state: sp.state || "planning",
+            start_date: sp.start_date || sp.startDate || "",
+            end_date: sp.end_date || sp.endDate || "",
+            capacity_points: sp.capacity_points || sp.capacityPoints || 40,
+            goal: sp.goal || "",
+          }))
+        );
+      }
 
-      // If active sprint exists and no sprint selected, default to active sprint
-      if (sprintData.result && sprintData.result.length > 0 && selectedSprint === "all") {
-        const active = sprintData.result.find((s: AgileSprint) => s.state === "active");
-        if (active) setSelectedSprint(active.number);
+      if (epicData.result) {
+        setEpics(epicData.result);
       }
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Failed to load agile data");
+      setError(err.message || "Failed to load agile workspace");
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [selectedSprint]);
+  }, []);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    loadBoardData();
+  }, [loadBoardData]);
 
-  // Handle manual refresh
-  const handleRefresh = async () => {
+  const handleRefresh = () => {
     setRefreshing(true);
-    await fetchData();
+    loadBoardData();
   };
 
-  // State Transitions (Move Card)
-  const handleMoveStory = async (story: AgileStory, direction: "prev" | "next") => {
+  // State Transition Engine for Kanban
+  const handleMoveStory = async (story: AgileStory, direction: "next" | "prev") => {
     const colOrder = ["1", "2", "3", "4", "7"];
     const currentIndex = colOrder.indexOf(story.state);
     if (currentIndex === -1) return;
 
-    const nextIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
-    if (nextIndex < 0 || nextIndex >= colOrder.length) return;
+    let targetIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
+    if (targetIndex < 0 || targetIndex >= colOrder.length) return;
 
-    const targetState = colOrder[nextIndex];
+    const nextState = colOrder[targetIndex];
 
     // Optimistic UI update
     setStories((prev) =>
-      prev.map((s) => (s.id === story.id ? { ...s, state: targetState } : s))
+      prev.map((s) => (s.id === story.id ? { ...s, state: nextState } : s))
     );
 
     try {
       const res = await fetch(`/api/now/table/rm_story/${story.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ state: targetState }),
+        body: JSON.stringify({ state: nextState }),
       });
       if (!res.ok) {
-        // Rollback on error
+        // Rollback on network failure
         setStories((prev) =>
           prev.map((s) => (s.id === story.id ? { ...s, state: story.state } : s))
         );
       }
-    } catch (err) {
-      console.error(err);
-      // Rollback
+    } catch {
       setStories((prev) =>
         prev.map((s) => (s.id === story.id ? { ...s, state: story.state } : s))
       );
@@ -179,54 +227,149 @@ export function AgileProjectBoard() {
   // Create Story Handler
   const handleCreateStory = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle.trim() || creatingStory) return;
+    if (!newTitle.trim()) return;
 
     setCreatingStory(true);
+    const sprintObj = sprints.find((s) => s.number === newSprint);
+
+    const payload = {
+      short_description: newTitle.trim(),
+      description: newDesc.trim(),
+      story_points: newPoints,
+      priority: newPriority,
+      state: "1", // Starts in Backlog
+      sprint_id: newSprint || null,
+      sprint_name: sprintObj ? sprintObj.name : null,
+      epic_name: newEpic || null,
+      assigned_to: newAssignee || null,
+      acceptance_criteria: newCriteria.trim(),
+    };
+
     try {
-      const sprintObj = sprints.find((s) => s.number === newSprint);
-
-      const payload = {
-        short_description: newTitle.trim(),
-        description: newDesc.trim(),
-        priority: newPriority,
-        state: newSprint ? "2" : "1", // Backlog if no sprint, Ready if sprint assigned
-        assigned_to: newAssignee,
-        story_points: Number(newPoints),
-        sprint_id: newSprint || null,
-        sprint_name: sprintObj ? sprintObj.name : null,
-        epic_name: newEpic || null,
-        acceptance_criteria: newCriteria.trim(),
-      };
-
       const res = await fetch("/api/now/table/rm_story", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to create story");
-      }
-
-      const data = await res.json();
-      if (data.result) {
-        setStories((prev) => [data.result, ...prev]);
+      if (res.ok) {
+        const data = await res.json();
+        const created = data.result;
+        setStories((prev) => [
+          {
+            id: created.sys_id || created.id,
+            number: created.number,
+            short_description: created.short_description,
+            description: created.description,
+            state: created.state,
+            priority: created.priority,
+            assigned_to: created.assigned_to,
+            story_points: created.story_points,
+            sprint_id: created.sprint_id,
+            sprint_name: created.sprint_name,
+            epic_name: created.epic_name,
+            acceptance_criteria: created.acceptance_criteria,
+          },
+          ...prev,
+        ]);
         setCreateModalOpen(false);
-        // Reset form
         setNewTitle("");
         setNewDesc("");
-        setNewPoints(3);
         setNewCriteria("");
       }
-    } catch (err: any) {
-      alert(err.message || "Error creating story");
+    } catch (err) {
+      console.error(err);
     } finally {
       setCreatingStory(false);
     }
   };
 
-  // Delete Story Handler
+  // Create Sprint Handler
+  const handleCreateSprint = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSprintName.trim()) return;
+
+    setCreatingSprint(true);
+    const payload = {
+      name: newSprintName.trim(),
+      state: newSprintState,
+      start_date: newSprintStart,
+      end_date: newSprintEnd,
+      capacity_points: newSprintCapacity,
+      goal: newSprintGoal.trim(),
+    };
+
+    try {
+      const res = await fetch("/api/now/table/rm_sprint", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const sp = data.result;
+        setSprints((prev) => [
+          ...prev,
+          {
+            id: sp.sys_id || sp.id,
+            number: sp.number,
+            name: sp.name,
+            state: sp.state,
+            start_date: sp.startDate || sp.start_date,
+            end_date: sp.endDate || sp.end_date,
+            capacity_points: sp.capacityPoints || sp.capacity_points,
+            goal: sp.goal,
+          },
+        ]);
+        setSelectedSprint(sp.number);
+        setCreateSprintModalOpen(false);
+        setNewSprintName("");
+        setNewSprintGoal("");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCreatingSprint(false);
+    }
+  };
+
+  // Create Epic Handler
+  const handleCreateEpic = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEpicTitle.trim()) return;
+
+    setCreatingEpic(true);
+    const payload = {
+      short_description: newEpicTitle.trim(),
+      priority: newEpicPriority,
+      description: newEpicDesc.trim(),
+      state: "1",
+    };
+
+    try {
+      const res = await fetch("/api/now/table/rm_epic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setEpics((prev) => [data.result, ...prev]);
+        setNewEpic(`${data.result.number}: ${data.result.short_description}`);
+        setCreateEpicModalOpen(false);
+        setNewEpicTitle("");
+        setNewEpicDesc("");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setCreatingEpic(false);
+    }
+  };
+
+  // Delete Story
   const handleDeleteStory = async (storyId: string) => {
     if (!confirm("Are you sure you want to delete this story?")) return;
 
@@ -326,7 +469,7 @@ export function AgileProjectBoard() {
     };
   }, [filteredStories]);
 
-  // Unique assignees for filter
+  // Assignee list for filter dropdown
   const assignees = useMemo(() => {
     const set = new Set<string>();
     stories.forEach((s) => {
@@ -340,49 +483,69 @@ export function AgileProjectBoard() {
   }, [sprints, selectedSprint]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans text-black">
       {/* Top Banner & Control Bar */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl backdrop-blur-md">
+      <div className="border-2 border-black bg-white p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Header Title */}
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-500 text-white flex items-center justify-center shadow-lg shadow-sky-500/20 border border-sky-400/30">
-              <Kanban className="w-6 h-6" />
+            <div className="flex h-12 w-12 items-center justify-center border-2 border-black bg-black text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+              <Kanban className="h-6 w-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold text-white tracking-tight">
+                <h1 className="font-mono text-lg font-black uppercase tracking-tight text-black">
                   Agile Board & Sprint Hub
                 </h1>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/30 uppercase tracking-wider">
-                  ServiceNow Agile 2.0
+                <span className="border-2 border-black bg-[#eb0029] px-2 py-0.5 font-mono text-[10px] font-black uppercase text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                  ServiceMeow Agile 2.0
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Manage user stories, sprint backlogs, Fibonacci story points and velocity across Agile releases.
+              <p className="font-mono text-xs text-neutral-600 mt-0.5">
+                Manage user stories, sprint backlogs, Fibonacci story points and release velocity.
               </p>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2.5 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               type="button"
               onClick={handleRefresh}
               disabled={refreshing}
-              className="p-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700/80 transition-all cursor-pointer"
+              className="flex h-9 w-9 items-center justify-center border-2 border-black bg-white text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-neutral-100 transition-all cursor-pointer"
               title="Refresh Agile Board"
             >
-              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin text-sky-400" : ""}`} />
+              <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin text-[#eb0029]" : ""}`} />
             </button>
 
             <Link
               href="/studio?tab=table_editor"
-              className="px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 flex items-center gap-1.5 transition-colors"
+              className="flex h-9 items-center gap-1.5 border-2 border-black bg-white px-3 font-mono text-xs font-bold uppercase text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-neutral-100 transition-all"
             >
-              <Layers className="w-3.5 h-3.5 text-sky-400" />
-              <span>Table Data Editor</span>
+              <Layers className="h-3.5 w-3.5" />
+              <span>Table Editor</span>
             </Link>
+
+            {/* Create Sprint Button */}
+            <button
+              type="button"
+              onClick={() => setCreateSprintModalOpen(true)}
+              className="flex h-9 items-center gap-1.5 border-2 border-black bg-white px-3 font-mono text-xs font-bold uppercase text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-neutral-100 transition-all cursor-pointer"
+            >
+              <Calendar className="h-3.5 w-3.5" />
+              <span>+ Sprint</span>
+            </button>
+
+            {/* Create Epic Button */}
+            <button
+              type="button"
+              onClick={() => setCreateEpicModalOpen(true)}
+              className="flex h-9 items-center gap-1.5 border-2 border-black bg-white px-3 font-mono text-xs font-bold uppercase text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-neutral-100 transition-all cursor-pointer"
+            >
+              <Target className="h-3.5 w-3.5" />
+              <span>+ Epic</span>
+            </button>
 
             <button
               type="button"
@@ -390,25 +553,25 @@ export function AgileProjectBoard() {
                 setNewSprint(selectedSprint !== "all" && selectedSprint !== "backlog" ? selectedSprint : "");
                 setCreateModalOpen(true);
               }}
-              className="px-4 py-2 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-sky-950/40 transition-all hover:scale-[1.02] cursor-pointer"
+              className="flex h-9 items-center gap-2 border-2 border-black bg-black px-4 font-mono text-xs font-bold uppercase text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-[#eb0029] hover:text-white transition-all cursor-pointer"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="h-4 w-4" />
               <span>Create User Story</span>
             </button>
           </div>
         </div>
 
         {/* Sprint Selector & Velocity Progress Bar */}
-        <div className="mt-5 pt-4 border-t border-slate-800/80 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <div className="mt-5 pt-4 border-t-2 border-black grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
           {/* Sprint Tabs */}
           <div className="md:col-span-2 flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
             <button
               type="button"
               onClick={() => setSelectedSprint("all")}
-              className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all cursor-pointer border ${
+              className={`px-3 py-1.5 font-mono text-xs font-bold uppercase border-2 border-black whitespace-nowrap transition-all cursor-pointer shadow-[2px_2px_0px_rgba(0,0,0,1)] ${
                 selectedSprint === "all"
-                  ? "bg-sky-500/20 text-sky-300 border-sky-500/50 shadow-xs"
-                  : "bg-slate-950 text-slate-400 hover:text-slate-200 border-slate-800"
+                  ? "bg-black text-white"
+                  : "bg-white text-black hover:bg-neutral-100"
               }`}
             >
               All Stories ({stories.length})
@@ -419,15 +582,15 @@ export function AgileProjectBoard() {
                 key={sp.id || sp.number}
                 type="button"
                 onClick={() => setSelectedSprint(sp.number)}
-                className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer border ${
+                className={`px-3 py-1.5 font-mono text-xs font-bold uppercase border-2 border-black whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer shadow-[2px_2px_0px_rgba(0,0,0,1)] ${
                   selectedSprint === sp.number
-                    ? "bg-sky-500/20 text-sky-300 border-sky-500/50 shadow-xs"
-                    : "bg-slate-950 text-slate-400 hover:text-slate-200 border-slate-800"
+                    ? "bg-black text-white"
+                    : "bg-white text-black hover:bg-neutral-100"
                 }`}
               >
                 <span>{sp.name}</span>
                 {sp.state === "active" && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 )}
               </button>
             ))}
@@ -435,34 +598,34 @@ export function AgileProjectBoard() {
             <button
               type="button"
               onClick={() => setSelectedSprint("backlog")}
-              className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all cursor-pointer border ${
+              className={`px-3 py-1.5 font-mono text-xs font-bold uppercase border-2 border-black whitespace-nowrap transition-all cursor-pointer shadow-[2px_2px_0px_rgba(0,0,0,1)] ${
                 selectedSprint === "backlog"
-                  ? "bg-sky-500/20 text-sky-300 border-sky-500/50 shadow-xs"
-                  : "bg-slate-950 text-slate-400 hover:text-slate-200 border-slate-800"
+                  ? "bg-black text-white"
+                  : "bg-white text-black hover:bg-neutral-100"
               }`}
             >
               Backlog (Unassigned)
             </button>
           </div>
 
-          {/* Velocity & Burn-up Mini Bar */}
-          <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3 flex flex-col justify-between">
+          {/* Velocity Progress Bar */}
+          <div className="border-2 border-black bg-neutral-100 p-3 shadow-[2px_2px_0px_rgba(0,0,0,1)] flex flex-col justify-between">
             <div className="flex items-center justify-between text-xs mb-1.5">
-              <span className="text-slate-400 flex items-center gap-1 font-medium">
-                <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
-                <span>Sprint Velocity Progress</span>
+              <span className="font-mono text-xs font-bold uppercase text-black flex items-center gap-1">
+                <TrendingUp className="w-3.5 h-3.5 text-black" />
+                <span>Sprint Velocity</span>
               </span>
-              <span className="font-mono font-bold text-white tabular-nums">
+              <span className="font-mono font-black text-black tabular-nums">
                 {metrics.completedPoints} / {metrics.totalPoints} pts ({metrics.progressPct}%)
               </span>
             </div>
-            <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden flex">
+            <div className="w-full bg-white border-2 border-black h-3 overflow-hidden flex">
               <div
                 className="bg-emerald-500 h-full transition-all duration-500"
                 style={{ width: `${metrics.progressPct}%` }}
               />
               <div
-                className="bg-amber-500/60 h-full transition-all duration-500"
+                className="bg-amber-400 h-full transition-all duration-500"
                 style={{
                   width: `${
                     metrics.totalPoints > 0
@@ -477,15 +640,15 @@ export function AgileProjectBoard() {
 
         {/* Sprint Goal Banner if single sprint selected */}
         {activeSprintObj && (
-          <div className="mt-3 px-3 py-2 rounded-xl bg-sky-950/30 border border-sky-900/50 text-xs flex items-center justify-between text-sky-200/90">
-            <div className="flex items-center gap-2">
-              <Target className="w-4 h-4 text-sky-400 shrink-0" />
+          <div className="mt-4 border-2 border-black bg-neutral-50 p-3 text-xs flex items-center justify-between shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center gap-2 font-mono">
+              <Target className="w-4 h-4 text-black shrink-0" />
               <span>
-                <strong>Sprint Goal:</strong> {activeSprintObj.goal || "Achieve sprint commitment and resolve prioritized stories."}
+                <strong className="uppercase">Sprint Goal:</strong> {activeSprintObj.goal || "Achieve sprint commitment and resolve prioritized stories."}
               </span>
             </div>
             {activeSprintObj.start_date && (
-              <span className="text-[11px] font-mono text-sky-400 shrink-0">
+              <span className="font-mono text-[11px] font-bold text-neutral-600 shrink-0">
                 {activeSprintObj.start_date} → {activeSprintObj.end_date}
               </span>
             )}
@@ -494,27 +657,27 @@ export function AgileProjectBoard() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/60 border border-slate-800/80 rounded-xl p-3">
-        <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-2 border-black bg-white p-3 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search stories, STRY#, epic, assignee..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 transition-colors"
+            className="w-full border-2 border-black bg-white pl-9 pr-3 py-1.5 font-mono text-xs text-black placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-black transition-colors"
           />
         </div>
 
         <div className="flex items-center gap-2.5 w-full sm:w-auto overflow-x-auto">
           {/* Priority Filter */}
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 shrink-0">
+          <div className="flex items-center gap-1.5 font-mono text-xs font-bold uppercase text-black shrink-0">
             <Filter className="w-3.5 h-3.5" />
             <span>Priority:</span>
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-sky-500"
+              className="border-2 border-black bg-white px-2 py-1 font-mono text-xs text-black outline-none focus:ring-2 focus:ring-black"
             >
               <option value="all">All Priorities</option>
               <option value="1">P1 - Critical</option>
@@ -525,13 +688,13 @@ export function AgileProjectBoard() {
           </div>
 
           {/* Assignee Filter */}
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 shrink-0">
+          <div className="flex items-center gap-1.5 font-mono text-xs font-bold uppercase text-black shrink-0">
             <User className="w-3.5 h-3.5" />
             <span>Assignee:</span>
             <select
               value={assigneeFilter}
               onChange={(e) => setAssigneeFilter(e.target.value)}
-              className="bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-sky-500 max-w-[160px] truncate"
+              className="border-2 border-black bg-white px-2 py-1 font-mono text-xs text-black outline-none focus:ring-2 focus:ring-black max-w-[160px] truncate"
             >
               <option value="all">All Assignees</option>
               {assignees.map((user) => (
@@ -547,8 +710,8 @@ export function AgileProjectBoard() {
       {/* Kanban Board 5 Columns */}
       {loading ? (
         <div className="py-24 text-center">
-          <RefreshCw className="w-8 h-8 text-sky-400 animate-spin mx-auto mb-3" />
-          <p className="text-sm text-slate-400">Loading agile board...</p>
+          <RefreshCw className="w-8 h-8 text-black animate-spin mx-auto mb-3" />
+          <p className="font-mono text-xs font-bold uppercase text-black">Loading agile board...</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-start">
@@ -562,23 +725,23 @@ export function AgileProjectBoard() {
             return (
               <div
                 key={col.id}
-                className="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3 min-h-[580px] flex flex-col justify-between shadow-md"
+                className="border-2 border-black bg-white p-3 min-h-[580px] flex flex-col justify-between shadow-[4px_4px_0px_rgba(0,0,0,1)]"
               >
                 {/* Column Header */}
                 <div>
-                  <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/80">
+                  <div className="flex items-center justify-between pb-3 mb-3 border-b-2 border-black">
                     <div className="flex items-center gap-2">
-                      <span className={`w-2.5 h-2.5 rounded-full ${col.id === "7" ? "bg-emerald-400" : col.id === "3" ? "bg-amber-400" : col.id === "4" ? "bg-purple-400" : col.id === "2" ? "bg-sky-400" : "bg-slate-500"}`} />
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+                      <span className={`w-2.5 h-2.5 border border-black ${col.dot}`} />
+                      <h3 className="font-mono text-xs font-black uppercase tracking-wider text-black">
                         {col.label}
                       </h3>
                     </div>
 
                     <div className="flex items-center gap-1.5 font-mono text-[11px] tabular-nums">
-                      <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-bold border border-slate-700">
+                      <span className="border-2 border-black bg-neutral-100 px-1.5 py-0.2 font-bold text-black">
                         {colStories.length}
                       </span>
-                      <span className="px-1.5 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-800/40">
+                      <span className="border-2 border-black bg-black px-1.5 py-0.2 font-bold text-white">
                         {colPoints} pts
                       </span>
                     </div>
@@ -587,43 +750,41 @@ export function AgileProjectBoard() {
                   {/* Stories List */}
                   <div className="space-y-3">
                     {colStories.length === 0 ? (
-                      <div className="py-12 text-center text-xs text-slate-600 border border-dashed border-slate-800/80 rounded-xl">
+                      <div className="py-12 text-center font-mono text-xs font-bold uppercase text-neutral-400 border-2 border-dashed border-neutral-300">
                         No stories in {col.label}
                       </div>
                     ) : (
                       colStories.map((story) => (
                         <div
                           key={story.id}
-                          className="bg-slate-950/90 hover:bg-slate-900 border border-slate-800/90 hover:border-slate-700 rounded-xl p-3.5 transition-all shadow-sm hover:shadow-md group relative flex flex-col justify-between"
+                          className="border-2 border-black bg-white p-3.5 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0px_rgba(0,0,0,1)] transition-all group relative flex flex-col justify-between"
                         >
                           <div>
-                            {/* Card Top: Number + Priority Pill + Epic */}
+                            {/* Card Top: Number + Priority Pill */}
                             <div className="flex items-center justify-between gap-1 mb-2">
-                              <span className="text-[11px] font-mono font-bold text-sky-400">
+                              <span className="font-mono text-[11px] font-black text-black">
                                 {story.number}
                               </span>
 
                               <div className="flex items-center gap-1">
                                 {story.priority === "1" ? (
-                                  <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                                  <span className="border border-black bg-[#eb0029] px-1.5 py-0.2 font-mono text-[9px] font-black uppercase text-white">
                                     P1 Crit
                                   </span>
                                 ) : story.priority === "2" ? (
-                                  <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                                  <span className="border border-black bg-amber-400 px-1.5 py-0.2 font-mono text-[9px] font-black uppercase text-black">
                                     P2 High
                                   </span>
                                 ) : (
-                                  <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                                  <span className="border border-black bg-neutral-100 px-1.5 py-0.2 font-mono text-[9px] font-bold uppercase text-black">
                                     P{story.priority || "3"}
                                   </span>
                                 )}
 
                                 {/* Fibonacci Points Badge */}
-                                <div className="group/pts relative">
-                                  <span className="text-[10px] font-mono font-extrabold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 tabular-nums">
-                                    {story.story_points || 0} pts
-                                  </span>
-                                </div>
+                                <span className="border border-black bg-neutral-200 px-1.5 py-0.2 font-mono text-[10px] font-black text-black tabular-nums">
+                                  {story.story_points || 0} pts
+                                </span>
                               </div>
                             </div>
 
@@ -633,24 +794,24 @@ export function AgileProjectBoard() {
                                 setSelectedStory(story);
                                 setStoryDetailModalOpen(true);
                               }}
-                              className="text-xs font-semibold text-slate-200 group-hover:text-sky-300 cursor-pointer line-clamp-2 leading-snug transition-colors"
+                              className="font-sans text-xs font-bold text-black group-hover:text-[#eb0029] cursor-pointer line-clamp-2 leading-snug transition-colors"
                             >
                               {story.short_description}
                             </h4>
 
-                            {/* Epic or Sprint Badge */}
+                            {/* Epic Badge */}
                             {story.epic_name && (
-                              <div className="mt-2 flex items-center gap-1 text-[10px] text-slate-400 font-mono truncate">
-                                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+                              <div className="mt-2 flex items-center gap-1 font-mono text-[10px] text-neutral-600 truncate">
+                                <span className="w-1.5 h-1.5 bg-black shrink-0" />
                                 <span className="truncate">{story.epic_name}</span>
                               </div>
                             )}
                           </div>
 
                           {/* Card Footer: Assignee + Move Controls */}
-                          <div className="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-1.5 text-slate-400 text-[11px] truncate max-w-[120px]">
-                              <User className="w-3 h-3 text-slate-500 shrink-0" />
+                          <div className="mt-3 pt-2.5 border-t-2 border-black flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1.5 font-mono text-[10px] text-neutral-600 truncate max-w-[120px]">
+                              <User className="w-3 h-3 text-black shrink-0" />
                               <span className="truncate">{story.assigned_to || "Unassigned"}</span>
                             </div>
 
@@ -660,7 +821,7 @@ export function AgileProjectBoard() {
                                 <button
                                   type="button"
                                   onClick={() => handleMoveStory(story, "prev")}
-                                  className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                                  className="flex h-6 w-6 items-center justify-center border border-black bg-white text-black hover:bg-neutral-100 transition-colors cursor-pointer"
                                   title="Move to Previous Column"
                                 >
                                   <ChevronLeft className="w-3 h-3" />
@@ -670,7 +831,7 @@ export function AgileProjectBoard() {
                                 <button
                                   type="button"
                                   onClick={() => handleMoveStory(story, "next")}
-                                  className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                                  className="flex h-6 w-6 items-center justify-center border border-black bg-white text-black hover:bg-neutral-100 transition-colors cursor-pointer"
                                   title="Move to Next Column"
                                 >
                                   <ChevronRight className="w-3 h-3" />
@@ -691,7 +852,7 @@ export function AgileProjectBoard() {
                     setNewSprint(selectedSprint !== "all" && selectedSprint !== "backlog" ? selectedSprint : "");
                     setCreateModalOpen(true);
                   }}
-                  className="mt-3 w-full py-2 rounded-xl border border-dashed border-slate-800 hover:border-slate-700 hover:bg-slate-800/40 text-slate-500 hover:text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  className="mt-3 w-full py-2 border-2 border-dashed border-black hover:bg-neutral-100 font-mono text-xs font-bold uppercase text-black flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Story</span>
@@ -704,26 +865,26 @@ export function AgileProjectBoard() {
 
       {/* CREATE STORY MODAL */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="border-2 border-black bg-white max-w-xl w-full p-6 space-y-4 shadow-[8px_8px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center justify-between border-b-2 border-black pb-3">
               <div className="flex items-center gap-2">
-                <Kanban className="w-5 h-5 text-sky-400" />
-                <h3 className="font-bold text-sm text-white">Create New Agile User Story</h3>
+                <Kanban className="w-5 h-5 text-black" />
+                <h3 className="font-mono text-sm font-black uppercase text-black">Create New User Story</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setCreateModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1"
+                className="flex h-7 w-7 items-center justify-center border-2 border-black text-black hover:bg-neutral-100"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateStory} className="space-y-4 text-xs">
+            <form onSubmit={handleCreateStory} className="space-y-4 text-xs font-mono">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">
-                  Story Title / Short Description <span className="text-rose-400">*</span>
+                <label className="block font-bold uppercase text-black mb-1">
+                  Story Title / Short Description *
                 </label>
                 <input
                   type="text"
@@ -731,24 +892,24 @@ export function AgileProjectBoard() {
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="As a fulfiller, I need..."
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
+                  className="w-full border-2 border-black bg-white px-3 py-2 text-black placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-black"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Description</label>
+                <label className="block font-bold uppercase text-black mb-1">Description</label>
                 <textarea
                   rows={2}
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Technical background, user context, and architectural notes..."
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
+                  className="w-full border-2 border-black bg-white px-3 py-2 text-black placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-black"
                 />
               </div>
 
               {/* Fibonacci Story Points Selector */}
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">
+                <label className="block font-bold uppercase text-black mb-1">
                   Fibonacci Story Points
                 </label>
                 <div className="flex items-center gap-2">
@@ -757,10 +918,10 @@ export function AgileProjectBoard() {
                       key={pts}
                       type="button"
                       onClick={() => setNewPoints(pts)}
-                      className={`flex-1 py-1.5 rounded-lg font-mono font-bold text-xs transition-all cursor-pointer border ${
+                      className={`flex-1 py-1.5 border-2 border-black font-mono font-bold text-xs transition-all cursor-pointer shadow-[2px_2px_0px_rgba(0,0,0,1)] ${
                         newPoints === pts
-                          ? "bg-indigo-600 text-white border-indigo-400 shadow-md shadow-indigo-950"
-                          : "bg-slate-900 text-slate-400 hover:text-white border-slate-800"
+                          ? "bg-black text-white"
+                          : "bg-white text-black hover:bg-neutral-100"
                       }`}
                     >
                       {pts}
@@ -771,11 +932,11 @@ export function AgileProjectBoard() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Sprint</label>
+                  <label className="block font-bold uppercase text-black mb-1">Sprint</label>
                   <select
                     value={newSprint}
                     onChange={(e) => setNewSprint(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-sky-500"
+                    className="w-full border-2 border-black bg-white px-3 py-1.5 text-black outline-none focus:ring-2 focus:ring-black"
                   >
                     <option value="">-- Product Backlog (Unassigned) --</option>
                     {sprints.map((s) => (
@@ -787,11 +948,11 @@ export function AgileProjectBoard() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Priority</label>
+                  <label className="block font-bold uppercase text-black mb-1">Priority</label>
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-sky-500"
+                    className="w-full border-2 border-black bg-white px-3 py-1.5 text-black outline-none focus:ring-2 focus:ring-black"
                   >
                     <option value="1">1 - Critical</option>
                     <option value="2">2 - High</option>
@@ -803,49 +964,59 @@ export function AgileProjectBoard() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Epic</label>
+                  <label className="block font-bold uppercase text-black mb-1">Epic</label>
                   <input
                     type="text"
+                    list="epic-list"
                     value={newEpic}
                     onChange={(e) => setNewEpic(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-sky-500"
+                    placeholder="Select or enter Epic..."
+                    className="w-full border-2 border-black bg-white px-3 py-1.5 text-black outline-none focus:ring-2 focus:ring-black"
                   />
+                  <datalist id="epic-list">
+                    {epics.map((ep) => (
+                      <option
+                        key={ep.id || ep.number}
+                        value={`${ep.number}: ${ep.short_description || ep.shortDescription || ep.name || ""}`}
+                      />
+                    ))}
+                  </datalist>
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Assignee</label>
+                  <label className="block font-bold uppercase text-black mb-1">Assignee</label>
                   <input
                     type="text"
                     value={newAssignee}
                     onChange={(e) => setNewAssignee(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white focus:outline-none focus:border-sky-500"
+                    className="w-full border-2 border-black bg-white px-3 py-1.5 text-black outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Acceptance Criteria</label>
+                <label className="block font-bold uppercase text-black mb-1">Acceptance Criteria</label>
                 <textarea
                   rows={2}
                   value={newCriteria}
                   onChange={(e) => setNewCriteria(e.target.value)}
                   placeholder="GIVEN [context], WHEN [action], THEN [outcome]..."
-                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 font-mono text-[11px]"
+                  className="w-full border-2 border-black bg-white px-3 py-2 text-black placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-black font-mono text-[11px]"
                 />
               </div>
 
-              <div className="border-t border-slate-800 pt-3 flex justify-end gap-2">
+              <div className="border-t-2 border-black pt-3 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setCreateModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-slate-300 cursor-pointer"
+                  className="px-4 py-2 border-2 border-black bg-white hover:bg-neutral-100 font-mono text-xs font-bold uppercase text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creatingStory}
-                  className="px-5 py-2 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-md disabled:opacity-50 cursor-pointer"
+                  className="px-5 py-2 border-2 border-black bg-black hover:bg-[#eb0029] hover:text-white text-white font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 cursor-pointer"
                 >
                   {creatingStory ? "Creating..." : "Create User Story"}
                 </button>
@@ -855,79 +1026,268 @@ export function AgileProjectBoard() {
         </div>
       )}
 
+      {/* CREATE SPRINT MODAL */}
+      {createSprintModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="border-2 border-black bg-white max-w-md w-full p-6 space-y-4 shadow-[8px_8px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center justify-between border-b-2 border-black pb-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-black" />
+                <h3 className="font-mono text-base font-black uppercase text-black">Create Agile Sprint</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCreateSprintModalOpen(false)}
+                className="flex h-7 w-7 items-center justify-center border-2 border-black text-black hover:bg-neutral-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateSprint} className="space-y-3 text-xs font-mono">
+              <div>
+                <label className="block font-bold uppercase text-black mb-1">Sprint Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Sprint 24 - Orion Release"
+                  value={newSprintName}
+                  onChange={(e) => setNewSprintName(e.target.value)}
+                  className="w-full border-2 border-black bg-white px-3 py-2 text-black placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-black"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold uppercase text-black mb-1">State</label>
+                  <select
+                    value={newSprintState}
+                    onChange={(e) => setNewSprintState(e.target.value as any)}
+                    className="w-full border-2 border-black bg-white px-3 py-1.5 text-black outline-none focus:ring-2 focus:ring-black"
+                  >
+                    <option value="planning">Planning</option>
+                    <option value="active">Active (Current)</option>
+                    <option value="closed">Closed / Completed</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold uppercase text-black mb-1">Capacity (Pts)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="500"
+                    value={newSprintCapacity}
+                    onChange={(e) => setNewSprintCapacity(Number(e.target.value))}
+                    className="w-full border-2 border-black bg-white px-3 py-1.5 text-black outline-none focus:ring-2 focus:ring-black"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold uppercase text-black mb-1">Start Date</label>
+                  <input
+                    type="date"
+                    value={newSprintStart}
+                    onChange={(e) => setNewSprintStart(e.target.value)}
+                    className="w-full border-2 border-black bg-white px-3 py-1.5 text-black outline-none focus:ring-2 focus:ring-black"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold uppercase text-black mb-1">End Date</label>
+                  <input
+                    type="date"
+                    value={newSprintEnd}
+                    onChange={(e) => setNewSprintEnd(e.target.value)}
+                    className="w-full border-2 border-black bg-white px-3 py-1.5 text-black outline-none focus:ring-2 focus:ring-black"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold uppercase text-black mb-1">Sprint Goal</label>
+                <textarea
+                  rows={2}
+                  value={newSprintGoal}
+                  onChange={(e) => setNewSprintGoal(e.target.value)}
+                  placeholder="Key milestones or commitments for this sprint cadence..."
+                  className="w-full border-2 border-black bg-white px-3 py-2 text-black placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-black"
+                />
+              </div>
+
+              <div className="border-t-2 border-black pt-3 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCreateSprintModalOpen(false)}
+                  className="px-4 py-2 border-2 border-black bg-white hover:bg-neutral-100 font-mono text-xs font-bold uppercase text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingSprint}
+                  className="px-5 py-2 border-2 border-black bg-black hover:bg-[#eb0029] hover:text-white text-white font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 cursor-pointer"
+                >
+                  {creatingSprint ? "Creating..." : "Create Sprint"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE EPIC MODAL */}
+      {createEpicModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="border-2 border-black bg-white max-w-md w-full p-6 space-y-4 shadow-[8px_8px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center justify-between border-b-2 border-black pb-3">
+              <div className="flex items-center gap-2">
+                <Target className="w-5 h-5 text-black" />
+                <h3 className="font-mono text-base font-black uppercase text-black">Create Agile Epic</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCreateEpicModalOpen(false)}
+                className="flex h-7 w-7 items-center justify-center border-2 border-black text-black hover:bg-neutral-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateEpic} className="space-y-3 text-xs font-mono">
+              <div>
+                <label className="block font-bold uppercase text-black mb-1">Epic Title *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Next-Gen Incident Management Automation"
+                  value={newEpicTitle}
+                  onChange={(e) => setNewEpicTitle(e.target.value)}
+                  className="w-full border-2 border-black bg-white px-3 py-2 text-black placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-black"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold uppercase text-black mb-1">Priority</label>
+                <select
+                  value={newEpicPriority}
+                  onChange={(e) => setNewEpicPriority(e.target.value)}
+                  className="w-full border-2 border-black bg-white px-3 py-1.5 text-black outline-none focus:ring-2 focus:ring-black"
+                >
+                  <option value="1">1 - Critical Strategic Initiative</option>
+                  <option value="2">2 - High Value / High Impact</option>
+                  <option value="3">3 - Medium Priority</option>
+                  <option value="4">4 - Low / Nice to Have</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold uppercase text-black mb-1">Business Objective / Description</label>
+                <textarea
+                  rows={3}
+                  value={newEpicDesc}
+                  onChange={(e) => setNewEpicDesc(e.target.value)}
+                  placeholder="Describe the business outcomes, scope, and high-level architectural goals..."
+                  className="w-full border-2 border-black bg-white px-3 py-2 text-black placeholder:text-neutral-400 outline-none focus:ring-2 focus:ring-black"
+                />
+              </div>
+
+              <div className="border-t-2 border-black pt-3 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCreateEpicModalOpen(false)}
+                  className="px-4 py-2 border-2 border-black bg-white hover:bg-neutral-100 font-mono text-xs font-bold uppercase text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingEpic}
+                  className="px-5 py-2 border-2 border-black bg-black hover:bg-[#eb0029] hover:text-white text-white font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 cursor-pointer"
+                >
+                  {creatingEpic ? "Creating..." : "Create Epic"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* STORY DETAIL & EDIT MODAL */}
       {storyDetailModalOpen && selectedStory && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="border-2 border-black bg-white max-w-xl w-full p-6 space-y-4 shadow-[8px_8px_0px_rgba(0,0,0,1)]">
+            <div className="flex items-center justify-between border-b-2 border-black pb-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/30">
+                <span className="border-2 border-black bg-black px-2 py-0.5 font-mono text-xs font-black text-white">
                   {selectedStory.number}
                 </span>
-                <h3 className="font-bold text-sm text-white truncate max-w-sm">
+                <h3 className="font-mono text-sm font-black uppercase text-black truncate max-w-sm">
                   {selectedStory.short_description}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setStoryDetailModalOpen(false)}
-                className="text-slate-400 hover:text-white p-1"
+                className="flex h-7 w-7 items-center justify-center border-2 border-black text-black hover:bg-neutral-100"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-3 text-xs font-mono">
               <div>
-                <span className="text-slate-400 block font-semibold mb-1">Description</span>
-                <p className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-slate-200 leading-relaxed">
+                <span className="font-bold uppercase text-black block mb-1">Description</span>
+                <p className="p-3 bg-neutral-100 border-2 border-black text-black leading-relaxed">
                   {selectedStory.description || "No detailed description provided."}
                 </p>
               </div>
 
               {selectedStory.acceptance_criteria && (
                 <div>
-                  <span className="text-slate-400 block font-semibold mb-1">Acceptance Criteria</span>
-                  <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-slate-300 font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
+                  <span className="font-bold uppercase text-black block mb-1">Acceptance Criteria</span>
+                  <div className="p-3 bg-neutral-100 border-2 border-black text-black font-mono text-[11px] leading-relaxed whitespace-pre-wrap">
                     {selectedStory.acceptance_criteria}
                   </div>
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
-                  <span className="text-[10px] uppercase font-mono text-slate-400 block">Epic</span>
-                  <span className="font-semibold text-slate-200 mt-0.5 block truncate">
+                <div className="p-2.5 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                  <span className="text-[10px] uppercase font-mono font-bold text-neutral-500 block">Epic</span>
+                  <span className="font-bold text-black mt-0.5 block truncate">
                     {selectedStory.epic_name || "None"}
                   </span>
                 </div>
 
-                <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
-                  <span className="text-[10px] uppercase font-mono text-slate-400 block">Sprint</span>
-                  <span className="font-semibold text-slate-200 mt-0.5 block truncate">
+                <div className="p-2.5 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                  <span className="text-[10px] uppercase font-mono font-bold text-neutral-500 block">Sprint</span>
+                  <span className="font-bold text-black mt-0.5 block truncate">
                     {selectedStory.sprint_name || "Product Backlog"}
                   </span>
                 </div>
 
-                <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
-                  <span className="text-[10px] uppercase font-mono text-slate-400 block">Assignee</span>
-                  <span className="font-semibold text-slate-200 mt-0.5 block truncate">
+                <div className="p-2.5 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                  <span className="text-[10px] uppercase font-mono font-bold text-neutral-500 block">Assignee</span>
+                  <span className="font-bold text-black mt-0.5 block truncate">
                     {selectedStory.assigned_to || "Unassigned"}
                   </span>
                 </div>
 
-                <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800">
-                  <span className="text-[10px] uppercase font-mono text-slate-400 block">Story Points</span>
+                <div className="p-2.5 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                  <span className="text-[10px] uppercase font-mono font-bold text-neutral-500 block">Story Points</span>
                   <div className="flex items-center gap-1.5 mt-1">
                     {FIBONACCI_POINTS.map((pts) => (
                       <button
                         key={pts}
                         type="button"
                         onClick={() => handleUpdatePoints(selectedStory, pts)}
-                        className={`px-2 py-0.5 rounded font-mono text-xs font-bold cursor-pointer transition-colors ${
+                        className={`px-2 py-0.5 border border-black font-mono text-xs font-bold cursor-pointer transition-colors ${
                           Number(selectedStory.story_points) === pts
-                            ? "bg-indigo-600 text-white"
-                            : "bg-slate-800 text-slate-400 hover:text-white"
+                            ? "bg-black text-white"
+                            : "bg-white text-black hover:bg-neutral-100"
                         }`}
                       >
                         {pts}
@@ -938,11 +1298,11 @@ export function AgileProjectBoard() {
               </div>
             </div>
 
-            <div className="border-t border-slate-800 pt-3 flex items-center justify-between">
+            <div className="border-t-2 border-black pt-3 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => handleDeleteStory(selectedStory.id)}
-                className="px-3 py-1.5 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+                className="px-3 py-1.5 border-2 border-black bg-white hover:bg-red-50 text-red-600 font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete Story</span>
@@ -951,7 +1311,7 @@ export function AgileProjectBoard() {
               <button
                 type="button"
                 onClick={() => setStoryDetailModalOpen(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold cursor-pointer"
+                className="px-4 py-2 border-2 border-black bg-black hover:bg-neutral-800 text-white font-mono text-xs font-bold uppercase shadow-[2px_2px_0px_rgba(0,0,0,1)] cursor-pointer"
               >
                 Close
               </button>

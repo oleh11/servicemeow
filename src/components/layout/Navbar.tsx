@@ -33,6 +33,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { ProfilePictureModal } from "@/components/common/ProfilePictureModal";
+import { CommandPaletteModal } from "@/components/common/CommandPaletteModal";
+import { KeyboardShortcutsModal } from "@/components/common/KeyboardShortcutsModal";
 import { UpdateSetPicker } from "./UpdateSetPicker";
 
 export function Navbar() {
@@ -53,6 +55,8 @@ export function Navbar() {
   const [avatarDropdownOpen, setAvatarDropdownOpen] = useState(false);
   const [impersonateModalOpen, setImpersonateModalOpen] = useState(false);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [shortcutsModalOpen, setShortcutsModalOpen] = useState(false);
   const [impersonateSearch, setImpersonateSearch] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -68,22 +72,25 @@ export function Navbar() {
         { label: "Employee Portal", href: "/portal", icon: Compass },
         { label: "Service Catalog", href: "/portal/catalog", icon: ShoppingBag },
         { label: "Book Room or Desk", href: "/portal/reservations", icon: Building2 },
+        { label: "Floorplan & Spaces", href: "/portal/reservations?view=floorplan", icon: Layers },
         { label: "Track Requests", href: "/portal/my-tickets", icon: Ticket },
         { label: "Knowledge Base", href: "/portal/knowledge", icon: BookOpen },
         { label: "System Status", href: "/portal/status", icon: ShieldCheck },
       ]
     : isStudioSurface
     ? [
+        { label: "Studio Workbench", href: "/studio", icon: FileCode },
+        { label: "Space Console & CAD", href: "/studio?tab=workplace", icon: Compass },
         { label: "Table Data Editor", href: "/studio?tab=table_editor", icon: Database },
         { label: "Schema Dictionary", href: "/studio?tab=schema", icon: Layers },
         { label: "Server Automation", href: "/studio?tab=business_rules", icon: FileCode },
-        { label: "Workplace & Spaces", href: "/studio?tab=workplace", icon: Building2 },
         { label: "Operations Workspace ↗", href: "/workspace", icon: LayoutDashboard },
       ]
     : [
         { label: "Agent Workspace", href: "/workspace", icon: LayoutDashboard },
-        { label: "Agile Sprint Board", href: "/workspace/agile", icon: Kanban },
+        { label: "Space Console (CAD)", href: "/workspace/spaces", icon: Compass },
         { label: "Workplace & Reservations", href: "/workspace/reservations", icon: Building2 },
+        { label: "Agile Sprint Board", href: "/workspace/agile", icon: Kanban },
         { label: "CMDB Topology", href: "/workspace/cmdb", icon: Server },
         ...(isAdmin && !isImpersonating
           ? [{ label: "Studio Admin Center", href: "/studio", icon: FileCode }]
@@ -99,6 +106,34 @@ export function Navbar() {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Global Keyboard Shortcuts (Cmd+K for Command Palette, ? for Shortcuts Cheatsheet)
+  useEffect(() => {
+    function handleGlobalKeyDown(e: KeyboardEvent) {
+      // Cmd/Ctrl + K opens Spotlight / Command Palette
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+
+      // ? opens Shortcuts Guide if not currently in an active input
+      const target = e.target as HTMLElement | null;
+      const isInput =
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable);
+
+      if (e.key === "?" && !isInput && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setShortcutsModalOpen(true);
+      }
+    }
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
   }, []);
 
   const handleLogout = () => {
@@ -170,213 +205,144 @@ export function Navbar() {
         </div>
       )}
 
-      {/* Main Full-Width Header Bar (M3 Top App Bar: 64px, Surface Container) */}
+      {/* Main Full-Width Header Bar (Swiss Grid Architectural Bar: 64px, Stark Hairline Border) */}
       <header
-        className="sticky top-0 z-40 w-full border-b shadow-xs transition-colors"
-        style={{
-          backgroundColor: currentThemeDef.colors.headerBg,
-          borderColor: currentThemeDef.colors.headerBorder,
-          color: currentThemeDef.colors.headerText,
-        }}
+        className="sticky top-0 z-40 w-full border-b border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md text-neutral-900 dark:text-white transition-colors"
       >
         <div className="w-full px-4 sm:px-6 flex items-center justify-between h-16">
-          {/* Left: Brand & Navigation */}
+          {/* Left: Swiss Brand & Navigation */}
           <div className="flex items-center space-x-4 lg:space-x-6 min-w-0">
             {/* Logo */}
             <Link
               href={isEmployee ? "/portal" : "/workspace"}
-              className="flex items-center space-x-3 group shrink-0"
+              className="flex items-center space-x-2.5 group shrink-0"
               title={isEmployee ? "ServiceMeow Employee Service Center" : "ServiceMeow Enterprise Management"}
             >
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center font-bold shadow-xs transition-all hover:scale-105"
-                style={{
-                  backgroundColor: currentThemeDef.colors.primary,
-                  color: "#ffffff",
-                }}
-              >
-                <Cat className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 flex items-center justify-center font-black shadow-xs">
+                <Cat className="w-4 h-4 text-white dark:text-neutral-950" />
               </div>
-              <div className="flex items-center space-x-2">
-                <span
-                  className="font-bold text-sm tracking-tight flex items-center gap-0.5"
-                  style={{ color: currentThemeDef.colors.headerText }}
-                >
-                  Service<span style={{ color: currentThemeDef.colors.primary }} className="font-extrabold">Meow</span>
+              <div className="flex items-baseline gap-1">
+                <span className="font-black text-sm tracking-tight uppercase">
+                  ServiceMeow
                 </span>
-                <span
-                  className={`text-[9px] uppercase font-mono font-bold tracking-wider px-2 py-0.5 rounded-full border flex items-center gap-1.5 ${
-                    isStudioSurface
-                      ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
-                      : isWorkspaceSurface
-                      ? "bg-sky-500/20 text-sky-300 border-sky-500/40"
-                      : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                  }`}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      isStudioSurface
-                        ? "bg-purple-400"
-                        : isWorkspaceSurface
-                        ? "bg-sky-400"
-                        : "bg-emerald-400 animate-pulse"
-                    }`}
-                  />
-                  <span>
-                    {isStudioSurface
-                      ? "BACKEND ADMIN"
-                      : isWorkspaceSurface
-                      ? "OPERATIONS"
-                      : "FRONTEND PORTAL"}
-                  </span>
-                </span>
+                <span className="w-1.5 h-1.5 bg-[#eb0029] inline-block" />
               </div>
             </Link>
 
-            {/* Navigation Tabs (M3 Navigation Bar Pills) */}
-            <nav className="hidden md:flex items-center space-x-1.5">
-              {navLinks.map((item) => {
-                const Icon = item.icon;
-                const isActive =
-                  item.href === "/portal"
-                    ? pathname === "/portal"
-                    : item.href === "/workspace/agile"
-                    ? pathname.startsWith("/workspace/agile")
-                    : item.href === "/workspace/reservations"
-                    ? pathname.startsWith("/workspace/reservations")
-                    : item.href === "/portal/reservations"
-                    ? pathname.startsWith("/portal/reservations")
-                    : item.href === "/workspace/cmdb"
-                    ? pathname === "/workspace/cmdb"
-                    : item.href === "/workspace"
-                    ? pathname.startsWith("/workspace") &&
-                      pathname !== "/workspace/cmdb" &&
-                      !pathname.startsWith("/workspace/agile") &&
-                      !pathname.startsWith("/workspace/reservations") &&
-                      !pathname.startsWith("/workspace/spaces")
-                    : pathname.startsWith(item.href);
+            {/* Swiss Numbered Section Switcher */}
+            <div className="hidden lg:flex items-center border-l border-neutral-200 dark:border-neutral-800 pl-4 space-x-1">
+              <Link
+                href="/portal"
+                className={`px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase transition-colors ${
+                  isPortalSurface
+                    ? "bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs"
+                    : "text-neutral-500 hover:text-neutral-950 dark:hover:text-white"
+                }`}
+              >
+                01 / PORTAL
+              </Link>
 
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex items-center space-x-2 px-3.5 py-1.5 text-xs rounded-full transition-all ${
-                      isActive
-                        ? "font-semibold shadow-xs"
-                        : "opacity-80 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10"
-                    }`}
-                    style={{
-                      backgroundColor: isActive ? currentThemeDef.colors.sidebarActiveBg : undefined,
-                      color: isActive ? currentThemeDef.colors.sidebarActiveText : currentThemeDef.colors.headerText,
-                    }}
-                  >
-                    <Icon className="w-3.5 h-3.5 shrink-0" />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
+              {!isEmployee && (
+                <Link
+                  href="/workspace"
+                  className={`px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase transition-colors ${
+                    isWorkspaceSurface
+                      ? "bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs"
+                      : "text-neutral-500 hover:text-neutral-950 dark:hover:text-white"
+                  }`}
+                >
+                  02 / OPERATIONS
+                </Link>
+              )}
+
+              {isAdmin && (
+                <Link
+                  href="/studio"
+                  className={`px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase transition-colors ${
+                    isStudioSurface
+                      ? "bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs"
+                      : "text-neutral-500 hover:text-neutral-950 dark:hover:text-white"
+                  }`}
+                >
+                  03 / STUDIO
+                </Link>
+              )}
+            </div>
+
+            {/* Navigation Tabs (Portal surface only - Workspace and Studio have dedicated Sidebars) */}
+            {isPortalSurface && (
+              <nav className="hidden 2xl:flex items-center space-x-1 border-l border-neutral-200 dark:border-neutral-800 pl-4">
+                {navLinks.map((item) => {
+                  const Icon = item.icon;
+                  const isActive =
+                    item.href === "/portal"
+                      ? pathname === "/portal"
+                      : pathname.startsWith(item.href.split("?")[0]);
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center space-x-1.5 px-2.5 py-1 text-xs font-medium transition-all ${
+                        isActive
+                          ? "font-bold border-b-2 border-neutral-950 dark:border-white text-neutral-950 dark:text-white"
+                          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            )}
           </div>
 
           {/* Right: Global Search & User Profile */}
           <div className="flex items-center space-x-3 shrink-0">
-            {/* 3-Surface Segmented Context Switcher (Frontend Portal / Operations Workspace / Admin Backend) */}
-            {!isEmployee && (
-              <div className="hidden xl:flex items-center bg-black/10 dark:bg-white/5 p-1 rounded-full border border-black/10 dark:border-white/10 text-xs font-semibold">
-                <Link
-                  href="/portal"
-                  className={`px-3 py-1 rounded-full flex items-center gap-1.5 transition-all ${
-                    isPortalSurface
-                      ? "bg-emerald-600 text-white shadow-xs font-bold"
-                      : "opacity-70 hover:opacity-100 hover:text-white"
-                  }`}
-                  title="Employee Frontend Portal"
-                >
-                  <Compass className="w-3.5 h-3.5" />
-                  <span>Frontend</span>
-                </Link>
-
-                <Link
-                  href="/workspace"
-                  className={`px-3 py-1 rounded-full flex items-center gap-1.5 transition-all ${
-                    isWorkspaceSurface
-                      ? "bg-sky-600 text-white shadow-xs font-bold"
-                      : "opacity-70 hover:opacity-100 hover:text-white"
-                  }`}
-                  title="Fulfiller Operations Workspace"
-                >
-                  <LayoutDashboard className="w-3.5 h-3.5" />
-                  <span>Operations</span>
-                </Link>
-
-                {isAdmin && (
-                  <Link
-                    href="/studio"
-                    className={`px-3 py-1 rounded-full flex items-center gap-1.5 transition-all ${
-                      isStudioSurface
-                        ? "bg-purple-600 text-white shadow-xs font-bold"
-                        : "opacity-70 hover:opacity-100 hover:text-white"
-                    }`}
-                    title="Platform Backend Admin Console"
-                  >
-                    <FileCode className="w-3.5 h-3.5" />
-                    <span>Backend</span>
-                  </Link>
-                )}
-              </div>
-            )}
-            {/* Global Search Bar (M3 Pill Search Bar: 44px, Surface Container High) */}
-            <div className="relative hidden lg:block w-72">
+            {/* Global Search Bar (Swiss High-Contrast Input) */}
+            <div
+              onClick={() => setCommandPaletteOpen(true)}
+              className="relative hidden md:block w-64 lg:w-72 cursor-pointer group"
+            >
               <input
                 type="text"
-                placeholder={
-                  isEmployee
-                    ? "Search services, book desks, articles..."
-                    : "Search tickets, CIs, articles (e.g. INC*)..."
-                }
-                className="w-full rounded-full py-2 pl-9 pr-12 text-xs transition-all border outline-none focus:ring-2"
-                style={{
-                  backgroundColor: "var(--md-sys-color-surface-container-high, #ece6f0)",
-                  borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-                  color: "var(--md-sys-color-on-surface, #1d1b20)",
-                }}
+                readOnly
+                placeholder="Search (Cmd+K)..."
+                className="w-full h-9 rounded-none py-1.5 pl-8 pr-12 text-xs transition-all border border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white outline-none cursor-pointer group-hover:border-neutral-950 dark:group-hover:border-white"
               />
               <Search
-                className="w-3.5 h-3.5 absolute left-3 top-2.5"
-                style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
+                className="w-3.5 h-3.5 absolute left-2.5 top-3 text-neutral-400 group-hover:text-neutral-950 dark:group-hover:text-white"
               />
               <div
-                className="absolute right-2.5 top-2 flex items-center gap-0.5 text-[10px] font-mono px-2 py-0.5 rounded-full"
-                style={{
-                  backgroundColor: "var(--md-sys-color-surface-container-highest, #e6e0e9)",
-                  color: "var(--md-sys-color-on-surface-variant, #49454f)",
-                }}
+                className="absolute right-2 top-2 flex items-center gap-0.5 text-[10px] font-mono px-1.5 py-0.5 bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border border-neutral-300 dark:border-neutral-700"
               >
                 <Command className="w-2.5 h-2.5" /> K
               </div>
             </div>
 
-            {/* ServiceMeow Update Set & Application Scope Picker */}
-            <UpdateSetPicker />
+            {/* Mobile / Tablet Spotlight Search Icon Button */}
+            <button
+              onClick={() => setCommandPaletteOpen(true)}
+              className="p-2 md:hidden border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+              title="Open Spotlight Search (Cmd+K)"
+              aria-label="Open Spotlight Search"
+            >
+              <Search className="w-4 h-4" />
+            </button>
 
-            {/* Theme & Layout Customizer Button (M3 Tonal Chip / Pill) */}
+            {/* ServiceMeow Update Set: ONLY shown to Admins in Studio */}
+            {isAdmin && isStudioSurface && <UpdateSetPicker />}
+
+            {/* Theme & Layout Customizer Button */}
             <button
               onClick={() => setThemePickerOpen(true)}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:shadow-xs shrink-0 border"
-              style={{
-                backgroundColor: currentThemeDef.colors.sidebarActiveBg,
-                borderColor: currentThemeDef.colors.primary,
-                color: currentThemeDef.colors.sidebarActiveText,
-              }}
-              title="Theme & Page Layout Customizer"
-              aria-label="Theme & Page Layout Customizer"
+              className="flex items-center space-x-1.5 px-2.5 py-1 text-xs font-mono font-bold uppercase transition-all border border-neutral-300 dark:border-neutral-700 hover:border-neutral-950 dark:hover:border-white shrink-0"
+              title="Theme & Layout Settings"
+              aria-label="Theme & Layout Settings"
             >
               <Palette className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Theme</span>
-              <span
-                className="w-2 h-2 rounded-full inline-block ml-0.5"
-                style={{ backgroundColor: currentThemeDef.colors.primary }}
-              />
             </button>
 
             {/* User Profile Menu (Avatar + Name only, M3 circular state layer) */}
@@ -779,6 +745,19 @@ export function Navbar() {
       <ProfilePictureModal
         isOpen={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}
+      />
+
+      {/* Universal Command Palette / Spotlight Search (Cmd+K) */}
+      <CommandPaletteModal
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        isEmployee={isEmployee}
+      />
+
+      {/* Global Keyboard Shortcuts Guide Modal (?) */}
+      <KeyboardShortcutsModal
+        isOpen={shortcutsModalOpen}
+        onClose={() => setShortcutsModalOpen(false)}
       />
     </>
   );

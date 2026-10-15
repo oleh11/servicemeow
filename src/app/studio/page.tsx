@@ -348,8 +348,31 @@ function StudioContent() {
     "agent",
   ];
 
+  const userRoles = currentUser.effectiveRoles || [currentUser.role];
+  const isPlatformAdmin = userRoles.includes("admin");
+  const isWorkplaceAdminUser = userRoles.includes("workplace_admin");
+  const isCatalogAdminUser = userRoles.includes("catalog_admin");
+  const isItilAdminUser = userRoles.includes("itil_admin");
+  const isCmdbAdminUser = userRoles.includes("cmdb_admin");
+  const isKnowledgeAdminUser = userRoles.includes("knowledge_admin");
+  const isDelegatedAdmin =
+    isPlatformAdmin ||
+    isWorkplaceAdminUser ||
+    isCatalogAdminUser ||
+    isItilAdminUser ||
+    isCmdbAdminUser ||
+    isKnowledgeAdminUser;
+
+  const defaultTabForRole: StudioTab = isPlatformAdmin
+    ? "schema"
+    : isWorkplaceAdminUser
+    ? "workplace"
+    : isCatalogAdminUser
+    ? "catalog_items"
+    : "table_editor";
+
   const [activeTab, setActiveTab] = useState<StudioTab>(
-    tabParam && validTabs.includes(tabParam) ? tabParam : "schema"
+    tabParam && validTabs.includes(tabParam) ? tabParam : defaultTabForRole
   );
   const [userSubTab, setUserSubTab] = useState<"users" | "groups" | "roles">(
     subParam === "groups" ? "groups" : subParam === "roles" ? "roles" : "users"
@@ -1564,8 +1587,8 @@ function StudioContent() {
     }
   };
 
-  // Security Enforcement Gate: Non-admin personas cannot access Admin Studio
-  if (currentUser.role !== "admin") {
+  // Security Enforcement Gate: Non-admin and non-delegated admin personas cannot access Admin Studio
+  if (!isDelegatedAdmin) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
         <Navbar />
@@ -1584,7 +1607,7 @@ function StudioContent() {
             Administrator Privileges Required
           </h1>
           <p className="text-slate-400 text-sm max-w-lg mb-8">
-            The ServiceMeow <span className="text-slate-200 font-semibold">Studio & Admin Center</span> is strictly restricted to platform administrators (<code className="text-rose-300 bg-slate-900 px-1.5 py-0.5 rounded font-mono text-xs">admin</code> role).
+            The ServiceMeow <span className="text-slate-200 font-semibold">Studio &amp; Admin Center</span> is restricted to platform administrators (<code className="text-rose-300 bg-slate-900 px-1.5 py-0.5 rounded font-mono text-xs">admin</code>) and delegated module administrators (<code className="text-indigo-300 bg-slate-900 px-1.5 py-0.5 rounded font-mono text-xs">workplace_admin</code>, <code className="text-cyan-300 bg-slate-900 px-1.5 py-0.5 rounded font-mono text-xs">catalog_admin</code>, etc.).
           </p>
 
           {/* Current Persona Security Context Card */}
@@ -1663,7 +1686,33 @@ function StudioContent() {
     );
   }
 
-  const filteredModules = STUDIO_MODULES.filter((mod) => {
+  const isModulePermitted = (modId: StudioTab): boolean => {
+    if (isPlatformAdmin) return true;
+    switch (modId) {
+      case "workplace":
+        return isWorkplaceAdminUser;
+      case "catalog_items":
+      case "record_producers":
+        return isCatalogAdminUser;
+      case "table_editor":
+        return (
+          isWorkplaceAdminUser ||
+          isCatalogAdminUser ||
+          isItilAdminUser ||
+          isCmdbAdminUser ||
+          isKnowledgeAdminUser
+        );
+      case "notifications":
+      case "schedules":
+        return isItilAdminUser;
+      default:
+        return false;
+    }
+  };
+
+  const authorizedModules = STUDIO_MODULES.filter((mod) => isModulePermitted(mod.id));
+
+  const filteredModules = authorizedModules.filter((mod) => {
     const matchesCategory = selectedCategory === "all" || mod.category === selectedCategory;
     if (!searchQuery.trim()) return matchesCategory;
     const q = searchQuery.toLowerCase();
@@ -1674,7 +1723,7 @@ function StudioContent() {
       mod.category.toLowerCase().includes(q)
     );
   });
-  const activeModuleMeta = STUDIO_MODULES.find((m) => m.id === activeTab) || STUDIO_MODULES[0];
+  const activeModuleMeta = authorizedModules.find((m) => m.id === activeTab) || authorizedModules[0] || STUDIO_MODULES[0];
 
   const getModuleBadgeCount = (modId: StudioTab) => {
     switch (modId) {
@@ -1735,6 +1784,11 @@ function StudioContent() {
                 <code className="text-[10px] font-mono text-slate-400 bg-slate-800/80 border border-slate-700/60 px-1.5 py-0.5 rounded hidden lg:inline shrink-0">
                   {activeModuleMeta.tableCode}
                 </code>
+                {!isPlatformAdmin && (
+                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
+                    Delegated: {currentUser.role}
+                  </span>
+                )}
               </div>
             </div>
           </div>

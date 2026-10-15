@@ -78,31 +78,95 @@ async function main() {
   }
 
   try {
-    // 1. Fulfiller Workspace (Real Incident & Tabs)
+    // 1. Fulfiller Workspace (Real Incident & Multi-Record Tabs)
     await capture('/workspace/incident', 'workspace-showcase.png', { waitMs: 2500 });
 
     // 2. Studio IDE Workbench (Real Studio with Studio Explorer & Modules)
     await capture('/studio', 'studio-showcase.png', { waitMs: 2500 });
 
-    // 3. Self-Service Portal (Real Employee Portal)
+    // 3. Self-Service Portal (Swiss Grid Employee Portal)
     await capture('/portal', 'portal-showcase.png', { waitMs: 2500 });
 
-    // 4. Workplace Hub: Reservations (Real Room & Desk Booking with Floorplan)
-    await capture('/portal/reservations', 'workplace-showcase.png', { waitMs: 2500 });
+    // 4. Workplace Hub: Reservations (Catalog View)
+    await capture('/portal/reservations', 'workplace-showcase.png', {
+      waitMs: 2500,
+      action: async (p) => {
+        await p.evaluate(() => {
+          const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent && b.textContent.includes('01 / Room List'));
+          if (btn) btn.click();
+        });
+      }
+    });
     fs.copyFileSync(
       path.join(ASSETS_DIR, 'workplace-showcase.png'),
       path.join(ASSETS_DIR, 'connected-workplace-showcase.png')
     );
 
-    // 5. Workplace Spatial Hierarchy (Real 6-Tier Spatial Tree)
+    // 5. Workplace Hub: Calendar Schedule View
+    await capture('/portal/reservations', 'calendar-view-showcase.png', {
+      waitMs: 2000,
+      action: async (p) => {
+        await p.evaluate(() => {
+          const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent && b.textContent.includes('02 / Calendar'));
+          if (btn) btn.click();
+        });
+      }
+    });
+    fs.copyFileSync(
+      path.join(ASSETS_DIR, 'calendar-view-showcase.png'),
+      path.join(ASSETS_DIR, 'calendar-view.png')
+    );
+
+    // 6. Workplace Hub: Architectural CAD Floor Plan View
+    await capture('/portal/reservations', 'cad-drawing-showcase.png', {
+      waitMs: 2000,
+      action: async (p) => {
+        await p.evaluate(() => {
+          const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent && b.textContent.includes('03 / Floor Plan'));
+          if (btn) btn.click();
+        });
+      }
+    });
+    fs.copyFileSync(
+      path.join(ASSETS_DIR, 'cad-drawing-showcase.png'),
+      path.join(ASSETS_DIR, 'cad-drawing-view.png')
+    );
+
+    // 7. Space Console: Enterprise Architectural CAD & Floor Sheets
+    await capture('/workspace/spaces', 'spatial-hierarchy-cad-showcase.png', { waitMs: 3000 });
+
+    // 8. Workplace Spatial Hierarchy: Employee Portal Spaces
     await capture('/portal/spaces', 'spaces-showcase.png', { waitMs: 2500 });
 
-    // 6. Real Hero Banner (Crisp capture of the Studio / Workspace Command Center)
-    await capture('/workspace', 'hero-banner.png', { waitMs: 2500 });
+    // 9. Unified Locations & Spatial Hierarchy
+    await capture('/workspace/locations', 'unified_locations_editable_list.png', { waitMs: 2500 });
+    fs.copyFileSync(
+      path.join(ASSETS_DIR, 'unified_locations_editable_list.png'),
+      path.join(ASSETS_DIR, 'unified_locations_split_explorer.png')
+    );
+    fs.copyFileSync(
+      path.join(ASSETS_DIR, 'unified_locations_editable_list.png'),
+      path.join(ASSETS_DIR, 'unified_locations_tree_builder.png')
+    );
+
+    // 10. Real Hero Banner (Crisp capture of the Space Console & Architectural Blueprint)
+    await capture('/workspace/spaces', 'hero-banner.png', { waitMs: 3000 });
     fs.copyFileSync(
       path.join(ASSETS_DIR, 'hero-banner.png'),
       path.join(ASSETS_DIR, 'hero-banner.jpg')
     );
+
+    // 11. Agile Sprint Board (Swiss Grid 5-Column Kanban)
+    await capture('/workspace/agile', 'agile-board-showcase.png', { waitMs: 2500 });
+
+    // 12. Problem Management & Known Error Database (KEDB)
+    await capture('/workspace/problem/new', 'problem-management-showcase.png', { waitMs: 2500 });
+
+    // 13. CMDB Configuration Items & Datacenter Rackmount Spec
+    await capture('/workspace/cmdb_ci/new', 'cmdb-ci-showcase.png', { waitMs: 2500 });
+
+    // 14. Knowledge Management & Markdown Editor
+    await capture('/workspace/kb_knowledge/new', 'knowledge-showcase.png', { waitMs: 2500 });
 
     console.log('[capture] ALL REAL SCREENSHOTS CAPTURED SUCCESSFULLY!');
   } finally {

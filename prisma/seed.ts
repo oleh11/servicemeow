@@ -1,6 +1,22 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+
+if (!process.env.DATABASE_URL) {
+  const envPath = path.resolve(process.cwd(), ".env");
+  if (fs.existsSync(envPath)) {
+    try {
+      const match = fs.readFileSync(envPath, "utf8").match(/^DATABASE_URL=["']?([^"'\r\n]+)/m);
+      if (match) process.env.DATABASE_URL = match[1];
+    } catch {}
+  }
+  if (!process.env.DATABASE_URL) {
+    const dbPath = path.resolve(process.cwd(), "prisma/dev.db");
+    process.env.DATABASE_URL = `file:${dbPath}`;
+  }
+}
 
 // Seed passwords come from the environment; if unset, a random one is generated and
 // printed once. There are no shared, hardcoded default passwords.
@@ -18,6 +34,7 @@ async function main() {
   console.log("Seeding ServiceMeow Database (Purr-fect Enterprise ITIL)...");
 
   // Clear existing data
+  await prisma.sysCustomRecord.deleteMany();
   await prisma.sysHubFlowExecution.deleteMany();
   await prisma.sysHubFlow.deleteMany();
   await prisma.sysUiPolicyAction.deleteMany();
@@ -220,6 +237,32 @@ async function main() {
     },
   });
 
+  const workplaceUser = await prisma.user.create({
+    data: {
+      userName: "workplace.admin",
+      email: "workplace.admin@servicemeow.io",
+      name: "Morgan 'Blueprint' Reed",
+      title: "Director of Real Estate & Workplace Technology",
+      department: "Global Workplace Hub",
+      role: "workplace_admin",
+      passwordHash: defaultPasswordHash,
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=128&h=128&fit=crop&crop=faces",
+    },
+  });
+
+  const catalogUser = await prisma.user.create({
+    data: {
+      userName: "catalog.admin",
+      email: "catalog.admin@servicemeow.io",
+      name: "Chloe 'Spec' Montgomery",
+      title: "Principal Service Catalog Architect",
+      department: "IT Service Catalog",
+      role: "catalog_admin",
+      passwordHash: defaultPasswordHash,
+      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=128&h=128&fit=crop&crop=faces",
+    },
+  });
+
   const callerAlex = await prisma.user.create({
     data: {
       userName: "alex.chen",
@@ -283,6 +326,24 @@ async function main() {
     },
   });
 
+  const groupWorkplace = await prisma.group.create({
+    data: {
+      name: "Workplace & Real Estate Operations",
+      description: "Connected Workplace facility planning, spatial hierarchy, CAD blueprints, and room reservation governance",
+      roles: "workplace_admin",
+      managerId: workplaceUser.id,
+    },
+  });
+
+  const groupCatalog = await prisma.group.create({
+    data: {
+      name: "Service Catalog Operations",
+      description: "Catalog item authoring, record producers, variable mapping, and checkout workflows",
+      roles: "catalog_admin",
+      managerId: catalogUser.id,
+    },
+  });
+
   // Add memberships
   await prisma.userGroupMember.createMany({
     data: [
@@ -290,6 +351,8 @@ async function main() {
       { userId: itilUser.id, groupId: groupSRE.id },
       { userId: cabUser.id, groupId: groupCAB.id },
       { userId: adminUser.id, groupId: groupDBA.id },
+      { userId: workplaceUser.id, groupId: groupWorkplace.id },
+      { userId: catalogUser.id, groupId: groupCatalog.id },
     ],
   });
 
@@ -444,6 +507,74 @@ async function main() {
       floorplanSvgUrl: "/floorplans/tech_tower_l4.svg",
       floorplanImageUrl: "/floorplans/tech_tower_l4.svg",
       areaSqFt: 32000,
+    },
+  });
+
+  // Enterprise Benchmark Building: World Technology Headquarters (HQ)
+  const bldgHQ = await prisma.cmnBuilding.create({
+    data: {
+      name: "Corporate Headquarters Tower (HQ)",
+      code: "HQ",
+      campusId: campusSV.id,
+      buildingType: "Corporate Office Complex",
+      floorsCount: 20,
+      totalAreaSqFt: 320000,
+    },
+  });
+
+  const flHQ15 = await prisma.cmnFloor.create({
+    data: {
+      name: "Floor 15 - Engineering Operations",
+      floorNumber: 15,
+      code: "HQ15",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 5373.24,
+    },
+  });
+
+  const flHQ17 = await prisma.cmnFloor.create({
+    data: {
+      name: "Floor 17 - Systems & Hardware Architecture",
+      floorNumber: 17,
+      code: "HQ17",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 5287.06,
+    },
+  });
+
+  const flHQ18 = await prisma.cmnFloor.create({
+    data: {
+      name: "Floor 18 - Electronic Systems & Executive Wing",
+      floorNumber: 18,
+      code: "HQ18",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      floorplanImageUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 5136.79,
+    },
+  });
+
+  const flHQ19 = await prisma.cmnFloor.create({
+    data: {
+      name: "Floor 19 - Product Strategy & Leadership",
+      floorNumber: 19,
+      code: "HQ19",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 5447.06,
+    },
+  });
+
+  const flHQB1 = await prisma.cmnFloor.create({
+    data: {
+      name: "Basement Level 1 - Central Logistics & Data Vault",
+      floorNumber: -1,
+      code: "HQB1",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 6428.73,
     },
   });
 
@@ -746,7 +877,339 @@ async function main() {
     },
   });
 
+  // ==============================================================
+  // Enterprise Spatial Benchmark: 21 Spaces for HQ Floor 18 (Electronic Systems & Executive)
+  // ==============================================================
+  const hq18Spaces = [
+    {
+      name: "Electronic Systems Engineering Suite 101",
+      spaceNumber: "101",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 6,
+      squareFeet: 420,
+      department: "Electronic Systems",
+      svgElementId: "room-101",
+      floorplanX: 13.5,
+      floorplanY: 17.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 14.5,
+    },
+    {
+      name: "Electronic Systems Engineering Suite 102",
+      spaceNumber: "102",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 6,
+      squareFeet: 430,
+      department: "Electronic Systems",
+      svgElementId: "room-102",
+      floorplanX: 23.0,
+      floorplanY: 11.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 15.0,
+    },
+    {
+      name: "Electronic Systems Engineering Suite 103",
+      spaceNumber: "103",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 6,
+      squareFeet: 430,
+      department: "Electronic Systems",
+      svgElementId: "room-103",
+      floorplanX: 36.0,
+      floorplanY: 11.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 15.0,
+    },
+    {
+      name: "Agile Collaboration Suite 104",
+      spaceNumber: "104",
+      spaceType: "Meeting",
+      status: "available",
+      capacity: 8,
+      squareFeet: 450,
+      department: "Electronic Systems",
+      svgElementId: "room-104",
+      floorplanX: 49.5,
+      floorplanY: 11.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 15.0,
+    },
+    {
+      name: "Strategy Conference Room 105",
+      spaceNumber: "105",
+      spaceType: "Meeting",
+      status: "available",
+      capacity: 10,
+      squareFeet: 480,
+      department: "Electronic Systems",
+      svgElementId: "room-105",
+      floorplanX: 63.0,
+      floorplanY: 17.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 14.5,
+    },
+    {
+      name: "Electronic Systems Development 110",
+      spaceNumber: "110",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 360,
+      department: "Electronic Systems",
+      svgElementId: "room-110",
+      floorplanX: 63.5,
+      floorplanY: 50.5,
+      floorplanWidth: 11.5,
+      floorplanHeight: 14.5,
+    },
+    {
+      name: "Hardware Systems Verification Lab 111",
+      spaceNumber: "111",
+      spaceType: "Lab",
+      status: "available",
+      capacity: 8,
+      squareFeet: 520,
+      department: "Electronic Systems",
+      svgElementId: "room-111",
+      floorplanX: 63.5,
+      floorplanY: 67.0,
+      floorplanWidth: 11.5,
+      floorplanHeight: 15.5,
+    },
+    {
+      name: "Executive Vice President Suite 112",
+      spaceNumber: "112",
+      spaceType: "Executive",
+      status: "available",
+      capacity: 8,
+      squareFeet: 680,
+      department: "Executive Leadership",
+      svgElementId: "room-112",
+      floorplanX: 76.5,
+      floorplanY: 67.0,
+      floorplanWidth: 13.5,
+      floorplanHeight: 16.5,
+    },
+    {
+      name: "Electronic Systems Integration Bay 113",
+      spaceNumber: "113",
+      spaceType: "Workstation",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 280,
+      department: "Electronic Systems",
+      svgElementId: "room-113",
+      floorplanX: 54.0,
+      floorplanY: 71.0,
+      floorplanWidth: 8.5,
+      floorplanHeight: 13.0,
+    },
+    {
+      name: "Electronic Systems Integration Bay 114",
+      spaceNumber: "114",
+      spaceType: "Workstation",
+      status: "available",
+      capacity: 4,
+      squareFeet: 280,
+      department: "Electronic Systems",
+      svgElementId: "room-114",
+      floorplanX: 54.0,
+      floorplanY: 84.5,
+      floorplanWidth: 8.5,
+      floorplanHeight: 10.0,
+    },
+    {
+      name: "Electronic Systems Integration Bay 115",
+      spaceNumber: "115",
+      spaceType: "Workstation",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 280,
+      department: "Electronic Systems",
+      svgElementId: "room-115",
+      floorplanX: 44.5,
+      floorplanY: 71.0,
+      floorplanWidth: 8.5,
+      floorplanHeight: 13.0,
+    },
+    {
+      name: "Electronic Systems Integration Bay 116",
+      spaceNumber: "116",
+      spaceType: "Workstation",
+      status: "available",
+      capacity: 4,
+      squareFeet: 280,
+      department: "Electronic Systems",
+      svgElementId: "room-116",
+      floorplanX: 44.5,
+      floorplanY: 84.5,
+      floorplanWidth: 8.5,
+      floorplanHeight: 10.0,
+    },
+    {
+      name: "Agile Team Pod 117",
+      spaceNumber: "117",
+      spaceType: "Open Plan",
+      status: "occupied",
+      capacity: 10,
+      squareFeet: 580,
+      department: "Product Engineering",
+      svgElementId: "room-117",
+      floorplanX: 24.5,
+      floorplanY: 69.5,
+      floorplanWidth: 15.5,
+      floorplanHeight: 16.0,
+    },
+    {
+      name: "Software Systems Lab 118",
+      spaceNumber: "118",
+      spaceType: "Lab",
+      status: "available",
+      capacity: 8,
+      squareFeet: 620,
+      department: "Product Engineering",
+      svgElementId: "room-118",
+      floorplanX: 9.5,
+      floorplanY: 62.5,
+      floorplanWidth: 14.0,
+      floorplanHeight: 19.5,
+    },
+    {
+      name: "Electronic Systems Ops 120",
+      spaceNumber: "120",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 310,
+      department: "Electronic Systems",
+      svgElementId: "room-120",
+      floorplanX: 45.0,
+      floorplanY: 39.0,
+      floorplanWidth: 9.0,
+      floorplanHeight: 10.0,
+    },
+    {
+      name: "Restroom Facility Core 121",
+      spaceNumber: "121",
+      spaceType: "Service Area",
+      status: "available",
+      capacity: 12,
+      squareFeet: 650,
+      department: "Facilities",
+      svgElementId: "room-121",
+      floorplanX: 9.5,
+      floorplanY: 38.0,
+      floorplanWidth: 15.0,
+      floorplanHeight: 20.0,
+    },
+    {
+      name: "Executive Suite 130",
+      spaceNumber: "130",
+      spaceType: "Executive",
+      status: "occupied",
+      capacity: 6,
+      squareFeet: 550,
+      department: "Executive Leadership",
+      svgElementId: "room-130",
+      floorplanX: 76.5,
+      floorplanY: 48.0,
+      floorplanWidth: 13.5,
+      floorplanHeight: 17.0,
+    },
+    {
+      name: "Electronic Systems Office 135",
+      spaceNumber: "135",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 360,
+      department: "Electronic Systems",
+      svgElementId: "room-135",
+      floorplanX: 63.5,
+      floorplanY: 33.5,
+      floorplanWidth: 11.5,
+      floorplanHeight: 15.0,
+    },
+    {
+      name: "Executive Boardroom 136",
+      spaceNumber: "136",
+      spaceType: "Executive",
+      status: "available",
+      capacity: 14,
+      squareFeet: 720,
+      department: "Executive Leadership",
+      svgElementId: "room-136",
+      floorplanX: 76.5,
+      floorplanY: 30.0,
+      floorplanWidth: 13.5,
+      floorplanHeight: 16.5,
+    },
+    {
+      name: "Chief Executive Office 137",
+      spaceNumber: "137",
+      spaceType: "Executive",
+      status: "occupied",
+      capacity: 8,
+      squareFeet: 750,
+      department: "Executive Leadership",
+      svgElementId: "room-137",
+      floorplanX: 76.5,
+      floorplanY: 11.5,
+      floorplanWidth: 13.5,
+      floorplanHeight: 16.5,
+    },
+    {
+      name: "Primary Circulation Atrium 160",
+      spaceNumber: "160",
+      spaceType: "Primary Circulation Area",
+      status: "available",
+      capacity: 30,
+      squareFeet: 2800,
+      department: "Facilities",
+      svgElementId: "room-160",
+      floorplanX: 30.0,
+      floorplanY: 29.0,
+      floorplanWidth: 32.0,
+      floorplanHeight: 28.0,
+    },
+  ];
+
+  for (const spData of hq18Spaces) {
+    await prisma.cmnSpace.create({
+      data: {
+        ...spData,
+        floorId: flHQ18.id,
+        capabilities: JSON.stringify(["teams", "zoom", "whiteboard", "high_speed_wifi"]),
+      },
+    });
+  }
+
   // Cross-compatibility Unified CmnLocation records
+  const locAmericas = await prisma.cmnLocation.create({
+    data: {
+      name: "Americas",
+      locationType: "region",
+      regionId: regionAmer.id,
+      fullPath: "Americas",
+    },
+  });
+
+  const locCalifornia = await prisma.cmnLocation.create({
+    data: {
+      name: "California",
+      state: "CA",
+      country: "United States",
+      locationType: "state",
+      parentId: locAmericas.id,
+      regionId: regionAmer.id,
+      stateRefId: stateCA.id,
+      fullPath: "Americas / California",
+    },
+  });
+
   const locSFMed = await prisma.cmnLocation.create({
     data: {
       name: "San Francisco Mission Bay Medical Center",
@@ -754,6 +1217,7 @@ async function main() {
       state: "CA",
       country: "United States",
       locationType: "campus",
+      parentId: locCalifornia.id,
       regionId: regionAmer.id,
       stateRefId: stateCA.id,
       campusId: campusSFMed.id,
@@ -1486,7 +1950,7 @@ This article provides step-by-step instructions for connecting to the corporate 
         title: "Developer Guide: Requesting Temporary Elevated Cloud Access via AWS IAM",
         category: "Cloud Services",
         content: `### Policy Summary
-Production cloud access requires zero-standing-privilege (ZSP) enforcement. All write permissions to production AWS accounts must be requested through OpenNow Service Catalog.
+Production cloud access requires zero-standing-privilege (ZSP) enforcement. All write permissions to production AWS accounts must be requested through ServiceMeow Service Catalog.
 
 ### Approval Requirements
 - **Sandbox**: Auto-approved within 5 minutes.
@@ -1765,6 +2229,261 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
         attendeesCount: 55,
         capabilitiesNeeded: JSON.stringify(["teams", "zoom", "telepresence", "4k_projector", "microphones"]),
         notes: "Global live broadcast with dual telepresence feed.",
+      },
+    ],
+  });
+
+  // 18. Seed Knowledge Bases (kb_knowledge_base in sysCustomRecord)
+  console.log("Seeding Knowledge Bases (kb_knowledge_base)...");
+  await prisma.sysCustomRecord.createMany({
+    data: [
+      {
+        tableName: "kb_knowledge_base",
+        dataJson: JSON.stringify({
+          number: "KB0001",
+          name: "IT Operations & Cloud Infrastructure Runbooks",
+          description: "Curated operational guides, deployment procedures, incident resolution runbooks, and SRE best practices.",
+          owner: "Alex Chen",
+          active: true,
+        }),
+      },
+      {
+        tableName: "kb_knowledge_base",
+        dataJson: JSON.stringify({
+          number: "KB0002",
+          name: "Employee Workplace & Facilities Self-Service",
+          description: "Workplace guidelines, floor directory guides, desk booking policies, and office services intake.",
+          owner: "Sarah Connor",
+          active: true,
+        }),
+      },
+      {
+        tableName: "kb_knowledge_base",
+        dataJson: JSON.stringify({
+          number: "KB0003",
+          name: "Corporate Security & Access Compliance",
+          description: "Security protocols, VPN & Wi-Fi certificates, identity verification, and data handling requirements.",
+          owner: "Marcus Vance",
+          active: true,
+        }),
+      },
+    ],
+  });
+
+  // 19. Seed Agile Sprints (rm_sprint in sysCustomRecord)
+  console.log("Seeding Agile Sprints (rm_sprint)...");
+  const sprintStart = new Date(Date.now() - 5 * 86400000).toISOString().split("T")[0];
+  const sprintEnd = new Date(Date.now() + 9 * 86400000).toISOString().split("T")[0];
+  const nextSprintStart = new Date(Date.now() + 10 * 86400000).toISOString().split("T")[0];
+  const nextSprintEnd = new Date(Date.now() + 24 * 86400000).toISOString().split("T")[0];
+
+  await prisma.sysCustomRecord.createMany({
+    data: [
+      {
+        tableName: "rm_sprint",
+        dataJson: JSON.stringify({
+          number: "SPNT0001001",
+          name: "Sprint 42 - Core ITIL & Platform Parity",
+          state: "active",
+          startDate: sprintStart,
+          endDate: sprintEnd,
+          capacityPoints: 45,
+          goal: "Complete Swiss Grid forms and full parity for ESM modules.",
+        }),
+      },
+      {
+        tableName: "rm_sprint",
+        dataJson: JSON.stringify({
+          number: "SPNT0001002",
+          name: "Sprint 43 - CAD Space Planning & Automation",
+          state: "planning",
+          startDate: nextSprintStart,
+          endDate: nextSprintEnd,
+          capacityPoints: 50,
+          goal: "Enhance CAD drag-and-drop floorplan visual tools and automated batch reservations.",
+        }),
+      },
+    ],
+  });
+
+  // 20. Seed Agile Epics (rm_epic in task)
+  console.log("Seeding Agile Epics (rm_epic)...");
+  await prisma.task.createMany({
+    data: [
+      {
+        number: "EPIC0001001",
+        sysClassName: "rm_epic",
+        shortDescription: "ITIL Core Engine Modernization",
+        description: "Deliver comprehensive Incident, Problem, Change, and CMDB CI workflows with zero legacy lock-in.",
+        priority: 1,
+        state: 2,
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          owner: "Product Director",
+          target_date: "Q4 2026",
+        }),
+      },
+      {
+        number: "EPIC0001002",
+        sysClassName: "rm_epic",
+        shortDescription: "Enterprise Workplace & CAD Spatial Integration",
+        description: "6-tier spatial model with interactive CAD floorplans, live room state matrix, and reservations.",
+        priority: 2,
+        state: 2,
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupWorkplace.id,
+        dynamicFields: JSON.stringify({
+          owner: "Head of Real Estate",
+          target_date: "Q4 2026",
+        }),
+      },
+      {
+        number: "EPIC0001003",
+        sysClassName: "rm_epic",
+        shortDescription: "Unified Self-Service Portal & Knowledge Expansion",
+        description: "Intuitive self-service catalog, 90-day uptime monitoring, and searchable knowledge bases.",
+        priority: 2,
+        state: 1,
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          owner: "Customer Experience Lead",
+          target_date: "Q1 2027",
+        }),
+      },
+    ],
+  });
+
+  // 21. Seed Agile User Stories (rm_story in task)
+  console.log("Seeding Agile Stories (rm_story)...");
+  await prisma.task.createMany({
+    data: [
+      {
+        number: "STRY0001001",
+        sysClassName: "rm_story",
+        shortDescription: "Implement Swiss Grid UI across all Workspace forms",
+        description: "Standardize all ITIL and Agile workspace forms using brutalist Swiss Grid design with high-contrast typography.",
+        priority: 1,
+        state: 7, // Complete
+        assignedToId: itilUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          story_points: 8,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001001: ITIL Core Engine Modernization",
+          assigned_to: "Alex Chen",
+          acceptance_criteria: "Given any fulfiller, when they open any form in workspace, it renders in clean Swiss Grid styling.",
+        }),
+      },
+      {
+        number: "STRY0001002",
+        sysClassName: "rm_story",
+        shortDescription: "Refactor CAD floorplan drag-and-drop room layout engine",
+        description: "Enable fulfillers and workspace managers to intuitively drag, resize, and position spaces directly on architectural SVG floorplans.",
+        priority: 2,
+        state: 3, // In Progress
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupWorkplace.id,
+        dynamicFields: JSON.stringify({
+          story_points: 5,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001002: Enterprise Workplace & CAD Spatial Integration",
+          assigned_to: "Sarah Connor",
+          acceptance_criteria: "Users can drag, resize, and reshape rooms directly in the SVG CAD canvas.",
+        }),
+      },
+      {
+        number: "STRY0001003",
+        sysClassName: "rm_story",
+        shortDescription: "Build real-time KEDB known error search in Incident resolution",
+        description: "Automatically suggest verified workarounds from the Known Error Database when an engineer troubleshoots a recurring incident.",
+        priority: 2,
+        state: 3, // In Progress
+        assignedToId: itilUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          story_points: 5,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001001: ITIL Core Engine Modernization",
+          assigned_to: "David Miller",
+          acceptance_criteria: "Known error database articles populate dynamically when searching incident symptoms.",
+        }),
+      },
+      {
+        number: "STRY0001004",
+        sysClassName: "rm_story",
+        shortDescription: "Enhance CMDB CI dependency tree visualization",
+        description: "Provide an interactive node graph displaying upstream and downstream relationships for enterprise configuration items.",
+        priority: 3,
+        state: 4, // Testing & QA
+        assignedToId: itilUser.id,
+        assignmentGroupId: groupSRE.id,
+        dynamicFields: JSON.stringify({
+          story_points: 3,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001001: ITIL Core Engine Modernization",
+          assigned_to: "Alex Chen",
+          acceptance_criteria: "CI relationships (Depends on / Hosted on) render in an interactive relationship graph.",
+        }),
+      },
+      {
+        number: "STRY0001005",
+        sysClassName: "rm_story",
+        shortDescription: "Enable multi-zone room reservation conflict resolution",
+        description: "Detect calendar collision on meeting rooms and recommend the closest available conference space on the same floor level.",
+        priority: 2,
+        state: 2, // Sprint Ready
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupWorkplace.id,
+        dynamicFields: JSON.stringify({
+          story_points: 5,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001002: Enterprise Workplace & CAD Spatial Integration",
+          assigned_to: "Elena Rostova",
+          acceptance_criteria: "System prevents overlapping reservations and suggests nearest alternative conference rooms.",
+        }),
+      },
+      {
+        number: "STRY0001006",
+        sysClassName: "rm_story",
+        shortDescription: "Automate P1 Major Incident Cat-Swarm dispatch notifications",
+        description: "Trigger automated PagerDuty and Slack alerts to on-call commanders whenever an incident is flagged with Priority 1.",
+        priority: 1,
+        state: 1, // Backlog
+        assignedToId: itilUser.id,
+        assignmentGroupId: groupSRE.id,
+        dynamicFields: JSON.stringify({
+          story_points: 8,
+          sprint_id: null,
+          sprint_name: null,
+          epic_name: "EPIC0001001: ITIL Core Engine Modernization",
+          assigned_to: "Marcus Vance",
+          acceptance_criteria: "High-priority incidents immediately trigger automated webhook broadcasts to on-call squads.",
+        }),
+      },
+      {
+        number: "STRY0001007",
+        sysClassName: "rm_story",
+        shortDescription: "Publish Employee Workplace onboarding knowledge articles",
+        description: "Add step-by-step documentation for badge activation, desk booking, and workplace ergonomics on the employee self-service portal.",
+        priority: 3,
+        state: 1, // Backlog
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          story_points: 3,
+          sprint_id: null,
+          sprint_name: null,
+          epic_name: "EPIC0001003: Unified Self-Service Portal & Knowledge Expansion",
+          assigned_to: "Rachel Adams",
+          acceptance_criteria: "New hires can search and read workplace guides directly from the self-service portal.",
+        }),
       },
     ],
   });

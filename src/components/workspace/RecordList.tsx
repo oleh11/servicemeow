@@ -25,6 +25,10 @@ import {
   ArrowDownAZ,
   ArrowUpAZ,
   Check,
+  Download,
+  FileSpreadsheet,
+  FileJson,
+  ListFilter,
 } from "lucide-react";
 
 interface RecordListProps {
@@ -39,6 +43,8 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterQuery, setFilterQuery] = useState("");
+  const [activePreset, setActivePreset] = useState<string>("all");
+  const [exportDropdownOpen, setExportDropdownOpen] = useState(false);
 
   // Context Menu State
   const [contextMenu, setContextMenu] = useState<{
@@ -62,6 +68,91 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(""), 2500);
+  };
+
+  // Export to CSV
+  const handleExportCSV = () => {
+    if (!records || records.length === 0) {
+      showToast("No records available to export");
+      return;
+    }
+    const sample = records[0];
+    const columns = Object.keys(sample).filter(
+      (k) => typeof sample[k] !== "object" || sample[k] === null
+    );
+
+    const csvLines = [
+      columns.join(","),
+      ...records.map((row) =>
+        columns
+          .map((col) => {
+            const val = row[col];
+            if (val === null || val === undefined) return '""';
+            const str = String(val).replace(/"/g, '""');
+            return `"${str}"`;
+          })
+          .join(",")
+      ),
+    ];
+
+    const blob = new Blob([csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${tableName}_export_${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setExportDropdownOpen(false);
+    showToast(`Exported ${records.length} records as CSV`);
+  };
+
+  // Export to JSON
+  const handleExportJSON = () => {
+    if (!records || records.length === 0) {
+      showToast("No records available to export");
+      return;
+    }
+    const blob = new Blob([JSON.stringify(records, null, 2)], {
+      type: "application/json;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${tableName}_export_${new Date().toISOString().split("T")[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setExportDropdownOpen(false);
+    showToast(`Exported ${records.length} records as JSON`);
+  };
+
+  // Copy Data to Clipboard
+  const handleCopyData = () => {
+    if (!records || records.length === 0) {
+      showToast("No records available to copy");
+      return;
+    }
+    navigator.clipboard.writeText(JSON.stringify(records, null, 2));
+    setExportDropdownOpen(false);
+    showToast(`Copied ${records.length} records JSON to clipboard`);
+  };
+
+  // Handle Preset Quick Filter Selection
+  const handlePresetSelect = (presetId: string) => {
+    setActivePreset(presetId);
+    let q = "";
+    if (presetId === "my") {
+      q = `assigned_to=${currentUser.id}`;
+    } else if (presetId === "unassigned") {
+      q = `assigned_toISEMPTY`;
+    } else if (presetId === "critical") {
+      q = `priority=1^ORpriority=2`;
+    } else if (presetId === "active") {
+      q = `state=1^ORstate=2`;
+    } else if (presetId === "resolved") {
+      q = `state=6^ORstate=7`;
+    }
+    setFilterQuery(q);
+    fetchRecords(q);
   };
 
   const fetchRecords = async (query = filterQuery) => {
@@ -461,6 +552,54 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
             />
           </button>
 
+          {/* Export Dropdown Button */}
+          <div className="relative">
+            <button
+              onClick={() => setExportDropdownOpen((prev) => !prev)}
+              className="p-2 border rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1"
+              style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
+              title="Export Table Data (CSV / JSON)"
+            >
+              <Download
+                className="w-4 h-4"
+                style={{ color: "var(--md-sys-color-on-surface, #1d1b20)" }}
+              />
+            </button>
+
+            {exportDropdownOpen && (
+              <div
+                className="absolute right-0 mt-1 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  Export Options
+                </div>
+                <button
+                  onClick={handleExportCSV}
+                  className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300"
+                >
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Export as CSV</span>
+                </button>
+                <button
+                  onClick={handleExportJSON}
+                  className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300"
+                >
+                  <FileJson className="w-3.5 h-3.5 text-sky-600" />
+                  <span>Export as JSON</span>
+                </button>
+                <div className="border-t my-1 border-slate-100 dark:border-slate-800" />
+                <button
+                  onClick={handleCopyData}
+                  className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300"
+                >
+                  <Copy className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Copy to Clipboard</span>
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* New Record Button (M3 Filled Button: rounded-full, 40px) */}
           <Link
             href={`/workspace/${tableName}/new`}
@@ -474,6 +613,37 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
             <span>New</span>
           </Link>
         </div>
+      </div>
+
+      {/* Quick Filter Presets Toolbar */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs select-none">
+        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1 mr-1 shrink-0">
+          <ListFilter className="w-3.5 h-3.5" />
+          <span>Presets:</span>
+        </span>
+        {[
+          { id: "all", label: "All Records" },
+          { id: "my", label: "Assigned to Me" },
+          { id: "unassigned", label: "Unassigned" },
+          { id: "critical", label: "Critical P1/P2" },
+          { id: "active", label: "In Progress" },
+          { id: "resolved", label: "Resolved / Closed" },
+        ].map((preset) => {
+          const isActive = activePreset === preset.id;
+          return (
+            <button
+              key={preset.id}
+              onClick={() => handlePresetSelect(preset.id)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-all shrink-0 border ${
+                isActive
+                  ? "bg-sky-500 text-white border-sky-600 shadow-xs font-bold"
+                  : "bg-white/80 dark:bg-slate-800/80 hover:bg-black/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+              }`}
+            >
+              {preset.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Filter / Condition Breadcrumb */}

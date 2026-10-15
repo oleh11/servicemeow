@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useUser } from "@/lib/user-context";
-import { MessageSquare, Lock, Send, Clock, User } from "lucide-react";
+import { MessageSquare, Lock, Send, Clock, User, Sparkles } from "lucide-react";
 
 interface Note {
   id: string;
@@ -23,12 +23,30 @@ interface ActivityStreamProps {
   onAddNote?: (noteType: "work_note" | "customer_comment", content: string) => Promise<void>;
 }
 
+const CANNED_WORK_NOTES = [
+  { label: "🛠️ Diagnostic Complete", text: "Diagnostic & Network Trace completed. No packet loss observed on core gateway." },
+  { label: "🔄 Service Restarted", text: "Restarted application daemon and verified service port responsiveness." },
+  { label: "📞 Escalated Tier 3", text: "Escalated to Tier 3 Engineering on-call lead for kernel log review." },
+  { label: "⏳ Awaiting Vendor", text: "Awaiting vendor security patch release for upstream library." },
+];
+
+const CANNED_CUSTOMER_COMMENTS = [
+  { label: "ℹ️ Request Info", text: "Hello, could you please provide a screenshot of the error message and the exact time it occurred?" },
+  { label: "🔧 Investigating", text: "We are actively investigating this issue and will update you within 30 minutes." },
+  { label: "✅ Fix Deployed", text: "The fix has been deployed to production. Please verify if the issue is resolved on your end." },
+  { label: "📅 Maintenance Concluded", text: "Scheduled maintenance has concluded. All systems are operational." },
+];
+
 export function ActivityStream({ taskId, initialNotes, onAddNote }: ActivityStreamProps) {
   const { currentUser } = useUser();
   const [activeTab, setActiveTab] = useState<"work_note" | "customer_comment">("work_note");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notes, setNotes] = useState<Note[]>(initialNotes);
+
+  const handleApplyMacro = (macroText: string) => {
+    setContent((prev) => (prev ? `${prev}\n\n${macroText}` : macroText));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,6 +128,31 @@ export function ActivityStream({ taskId, initialNotes, onAddNote }: ActivityStre
 
         {/* Text Input Area */}
         <form onSubmit={handleSubmit} className="p-3 space-y-2">
+          {/* Canned Response Macro Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px]">
+            <span className="font-semibold text-slate-400 flex items-center gap-1 shrink-0">
+              <Sparkles className="w-3 h-3 text-amber-500" />
+              <span>Macros:</span>
+            </span>
+            {(activeTab === "work_note" ? CANNED_WORK_NOTES : CANNED_CUSTOMER_COMMENTS).map(
+              (macro, mi) => (
+                <button
+                  key={mi}
+                  type="button"
+                  onClick={() => handleApplyMacro(macro.text)}
+                  className={`px-2.5 py-0.5 rounded-full border text-[11px] font-medium transition-colors shrink-0 ${
+                    activeTab === "work_note"
+                      ? "bg-amber-50/70 hover:bg-amber-100 text-amber-800 border-amber-200"
+                      : "bg-purple-50/70 hover:bg-purple-100 text-purple-800 border-purple-200"
+                  }`}
+                  title={macro.text}
+                >
+                  {macro.label}
+                </button>
+              )
+            )}
+          </div>
+
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}

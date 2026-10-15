@@ -91,14 +91,26 @@ export async function GET(
         } catch {}
       }
 
-      return NextResponse.json({ result: { ...task, ...custom } });
+      return NextResponse.json({
+        result: {
+          ...task,
+          ...custom,
+          sys_id: task.id,
+          id: task.id,
+          root_cause: task.problem?.rootCause || undefined,
+          workaround: task.problem?.workaround || undefined,
+          is_known_error: task.problem ? task.problem.isKnownError : undefined,
+        },
+      });
     }
 
     if (table === "cmdb_ci") {
       const ci = await db.configurationItem.findUnique({
         where: { id },
         include: {
-          location: { select: { id: true, name: true } },
+          location: { select: { id: true, name: true, fullPath: true } },
+          space: { select: { id: true, name: true, spaceNumber: true } },
+          rack: { select: { id: true, name: true, site: true } },
           parentRelations: { include: { childCi: true } },
           childRelations: { include: { parentCi: true } },
           incidents: { include: { task: true } },
@@ -106,7 +118,76 @@ export async function GET(
         },
       });
       if (!ci) return NextResponse.json({ error: "CI not found" }, { status: 404 });
-      return NextResponse.json({ result: ci });
+      return NextResponse.json({ result: { ...ci, sys_id: ci.id, id: ci.id } });
+    }
+
+    if (table === "kb_knowledge") {
+      const article = await db.knowledgeArticle.findUnique({
+        where: { id },
+        include: { author: { select: { id: true, name: true, email: true } } },
+      });
+      if (!article) return NextResponse.json({ error: "Article not found" }, { status: 404 });
+      return NextResponse.json({
+        result: {
+          sys_id: article.id,
+          id: article.id,
+          number: article.number,
+          title: article.title,
+          short_description: article.title,
+          content: article.content,
+          category: article.category,
+          author_id: article.authorId,
+          author: article.author ? { value: article.author.id, display_value: article.author.name } : null,
+          views: article.views,
+          helpful_votes: article.helpfulVotes,
+          is_published: article.isPublished,
+          published_at: article.publishedAt.toISOString(),
+          sys_created_on: article.createdAt.toISOString(),
+        },
+      });
+    }
+
+    if (table === "kb_knowledge_base") {
+      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      if (!rec) return NextResponse.json({ error: "Knowledge Base not found" }, { status: 404 });
+      let parsed: any = {};
+      try {
+        parsed = JSON.parse(rec.dataJson);
+      } catch {}
+      return NextResponse.json({
+        result: {
+          sys_id: rec.id,
+          id: rec.id,
+          sys_created_on: rec.createdAt.toISOString(),
+          sys_updated_on: rec.updatedAt.toISOString(),
+          ...parsed,
+        },
+      });
+    }
+
+    if (table === "rm_sprint") {
+      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      if (!rec) return NextResponse.json({ error: "Sprint not found" }, { status: 404 });
+      let parsed: any = {};
+      try {
+        parsed = JSON.parse(rec.dataJson);
+      } catch {}
+      return NextResponse.json({
+        result: {
+          sys_id: rec.id,
+          id: rec.id,
+          number: parsed.number || "",
+          name: parsed.name || "",
+          state: parsed.state || "planning",
+          start_date: parsed.startDate || parsed.start_date || "",
+          end_date: parsed.endDate || parsed.end_date || "",
+          capacity_points: parsed.capacityPoints || parsed.capacity_points || 0,
+          goal: parsed.goal || "",
+          sys_created_on: rec.createdAt.toISOString(),
+          sys_updated_on: rec.updatedAt.toISOString(),
+          ...parsed,
+        },
+      });
     }
 
     if (table === "sys_user") {
@@ -636,9 +717,90 @@ export async function PATCH(
           owner: body.owner !== undefined ? body.owner : undefined,
           locationId: body.location_id !== undefined ? (body.location_id || null) : (body.locationId !== undefined ? (body.locationId || null) : undefined),
           spaceId: body.space_id !== undefined ? (body.space_id || null) : (body.spaceId !== undefined ? (body.spaceId || null) : undefined),
+          rackId: body.rack_id !== undefined ? (body.rack_id || null) : (body.rackId !== undefined ? (body.rackId || null) : undefined),
+          rackUnitStart: body.rack_unit_start !== undefined ? (body.rack_unit_start ? parseInt(body.rack_unit_start, 10) : null) : (body.rackUnitStart !== undefined ? (body.rackUnitStart ? parseInt(body.rackUnitStart, 10) : null) : undefined),
+          rackUnitHeight: body.rack_unit_height !== undefined ? (body.rack_unit_height ? parseInt(body.rack_unit_height, 10) : 1) : (body.rackUnitHeight !== undefined ? (body.rackUnitHeight ? parseInt(body.rackUnitHeight, 10) : 1) : undefined),
         },
       });
-      return NextResponse.json({ result: updated });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id, id: updated.id } });
+    }
+
+    if (table === "kb_knowledge") {
+      const article = await db.knowledgeArticle.findUnique({ where: { id } });
+      if (!article) return NextResponse.json({ error: "Article not found" }, { status: 404 });
+      const updated = await db.knowledgeArticle.update({
+        where: { id },
+        data: {
+          title: body.title !== undefined ? body.title : (body.short_description !== undefined ? body.short_description : undefined),
+          content: body.content !== undefined ? body.content : undefined,
+          category: body.category !== undefined ? body.category : undefined,
+          isPublished: body.is_published !== undefined ? Boolean(body.is_published) : (body.isPublished !== undefined ? Boolean(body.isPublished) : undefined),
+          views: body.views !== undefined ? Number(body.views) : undefined,
+          helpfulVotes: body.helpful_votes !== undefined ? Number(body.helpful_votes) : (body.helpfulVotes !== undefined ? Number(body.helpfulVotes) : undefined),
+        },
+        include: { author: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({
+        result: {
+          sys_id: updated.id,
+          id: updated.id,
+          number: updated.number,
+          title: updated.title,
+          short_description: updated.title,
+          content: updated.content,
+          category: updated.category,
+          author_id: updated.authorId,
+          author: updated.author ? { value: updated.author.id, display_value: updated.author.name } : null,
+          is_published: updated.isPublished,
+          views: updated.views,
+          helpful_votes: updated.helpfulVotes,
+          sys_updated_on: updated.createdAt.toISOString(),
+        },
+      });
+    }
+
+    if (table === "kb_knowledge_base") {
+      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      if (!rec) return NextResponse.json({ error: "Knowledge base not found" }, { status: 404 });
+      let currentData: any = {};
+      try {
+        currentData = JSON.parse(rec.dataJson);
+      } catch {}
+      const merged = { ...currentData, ...body };
+      const updated = await db.sysCustomRecord.update({
+        where: { id },
+        data: { dataJson: JSON.stringify(merged) },
+      });
+      return NextResponse.json({
+        result: {
+          sys_id: updated.id,
+          id: updated.id,
+          sys_updated_on: updated.updatedAt.toISOString(),
+          ...merged,
+        },
+      });
+    }
+
+    if (table === "rm_sprint") {
+      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      if (!rec) return NextResponse.json({ error: "Sprint not found" }, { status: 404 });
+      let currentData: any = {};
+      try {
+        currentData = JSON.parse(rec.dataJson);
+      } catch {}
+      const merged = { ...currentData, ...body };
+      const updated = await db.sysCustomRecord.update({
+        where: { id },
+        data: { dataJson: JSON.stringify(merged) },
+      });
+      return NextResponse.json({
+        result: {
+          sys_id: updated.id,
+          id: updated.id,
+          sys_updated_on: updated.updatedAt.toISOString(),
+          ...merged,
+        },
+      });
     }
 
     if (table === "sys_user") {
@@ -842,12 +1004,22 @@ export async function PATCH(
     }
 
     // Update problem specific fields if present
-    if (existingTask.problem && (body.root_cause !== undefined || body.rootCause !== undefined || body.workaround !== undefined)) {
-      await db.problem.update({
+    if (table === "problem" || existingTask.problem || body.root_cause !== undefined || body.rootCause !== undefined || body.workaround !== undefined || body.is_known_error !== undefined || body.isKnownError !== undefined) {
+      const rootCause = body.root_cause !== undefined ? body.root_cause : (body.rootCause !== undefined ? body.rootCause : undefined);
+      const workaround = body.workaround !== undefined ? body.workaround : undefined;
+      const isKnownError = body.is_known_error !== undefined ? Boolean(body.is_known_error) : (body.isKnownError !== undefined ? Boolean(body.isKnownError) : undefined);
+      await db.problem.upsert({
         where: { taskId: id },
-        data: {
-          rootCause: body.root_cause !== undefined ? body.root_cause : (body.rootCause !== undefined ? body.rootCause : undefined),
-          workaround: body.workaround !== undefined ? body.workaround : undefined,
+        update: {
+          rootCause: rootCause !== undefined ? rootCause : undefined,
+          workaround: workaround !== undefined ? workaround : undefined,
+          isKnownError: isKnownError !== undefined ? isKnownError : undefined,
+        },
+        create: {
+          taskId: id,
+          rootCause: rootCause || "",
+          workaround: workaround || "",
+          isKnownError: isKnownError || false,
         },
       });
     }
@@ -1055,6 +1227,16 @@ export async function DELETE(
 
     if (table === "cmdb_ci") {
       await db.configurationItem.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "kb_knowledge") {
+      await db.knowledgeArticle.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "kb_knowledge_base" || table === "rm_sprint") {
+      await db.sysCustomRecord.delete({ where: { id } });
       return NextResponse.json({ result: { status: "deleted", sys_id: id } });
     }
 

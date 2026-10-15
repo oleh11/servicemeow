@@ -81,6 +81,37 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
             initialNumber = parseInt(match[0], 10) + 1;
           }
         }
+      } else if (tableName === "kb_knowledge") {
+        const highest = await tx.knowledgeArticle.findFirst({
+          orderBy: { number: "desc" },
+        });
+        if (highest?.number) {
+          const match = highest.number.match(/\d+$/);
+          if (match) {
+            initialNumber = parseInt(match[0], 10) + 1;
+          }
+        }
+      } else if (tableName === "kb_knowledge_base" || tableName === "rm_sprint" || tableName.startsWith("u_")) {
+        const records = await tx.sysCustomRecord.findMany({
+          where: { tableName },
+          select: { dataJson: true },
+        });
+        let maxNum = 1000;
+        for (const r of records) {
+          try {
+            const data = JSON.parse(r.dataJson);
+            if (data.number) {
+              const m = String(data.number).match(/\d+$/);
+              if (m) {
+                const n = parseInt(m[0], 10);
+                if (n > maxNum) maxNum = n;
+              }
+            }
+          } catch {}
+        }
+        if (maxNum >= 1001) {
+          initialNumber = maxNum + 1;
+        }
       } else if (
         tableName === "incident" ||
         tableName === "task" ||
@@ -119,6 +150,66 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
       let nextNum = sysNum.currentNumber + 1;
       if (tableName === "cmn_reservation") {
         const highest = await tx.cmnReservation.findFirst({
+          orderBy: { number: "desc" },
+        });
+        if (highest?.number) {
+          const match = highest.number.match(/\d+$/);
+          if (match) {
+            const highestNum = parseInt(match[0], 10);
+            if (nextNum <= highestNum) {
+              nextNum = highestNum + 1;
+            }
+          }
+        }
+      } else if (tableName === "kb_knowledge") {
+        const highest = await tx.knowledgeArticle.findFirst({
+          orderBy: { number: "desc" },
+        });
+        if (highest?.number) {
+          const match = highest.number.match(/\d+$/);
+          if (match) {
+            const highestNum = parseInt(match[0], 10);
+            if (nextNum <= highestNum) {
+              nextNum = highestNum + 1;
+            }
+          }
+        }
+      } else if (tableName === "kb_knowledge_base" || tableName === "rm_sprint" || tableName.startsWith("u_")) {
+        const records = await tx.sysCustomRecord.findMany({
+          where: { tableName },
+          select: { dataJson: true },
+        });
+        let maxNum = 0;
+        for (const r of records) {
+          try {
+            const data = JSON.parse(r.dataJson);
+            if (data.number) {
+              const m = String(data.number).match(/\d+$/);
+              if (m) {
+                const n = parseInt(m[0], 10);
+                if (n > maxNum) maxNum = n;
+              }
+            }
+          } catch {}
+        }
+        if (nextNum <= maxNum) {
+          nextNum = maxNum + 1;
+        }
+      } else if (
+        tableName === "incident" ||
+        tableName === "task" ||
+        tableName === "change_request" ||
+        tableName === "problem" ||
+        tableName === "sc_task" ||
+        tableName === "sc_request" ||
+        tableName === "sc_req_item" ||
+        tableName === "change_task" ||
+        tableName === "rm_story" ||
+        tableName === "rm_epic" ||
+        tableName === "rm_project"
+      ) {
+        const highest = await tx.task.findFirst({
+          where: tableName !== "task" ? { sysClassName: tableName } : {},
           orderBy: { number: "desc" },
         });
         if (highest?.number) {

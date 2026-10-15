@@ -215,44 +215,41 @@ export default function PortalSpacesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+      {/* Swiss Header */}
+      <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 border-b-2 border-black pb-5">
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-300 border border-cyan-200/60 dark:border-cyan-800/50 shadow-xs">
-              <Compass className="w-6 h-6" />
-            </span>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
+          <div className="flex items-baseline gap-3">
+            <span className="font-mono text-sm font-bold text-emerald-600">03 /</span>
+            <h1 className="text-3xl font-extrabold tracking-tight uppercase text-black">
               Campus Maps &amp; Space Directory
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1.5">
-            Explore corporate campuses, office levels, conference rooms, video collaboration suites, and ergonomic desks.
+          <p className="text-xs sm:text-sm text-neutral-600 mt-1 max-w-2xl">
+            Explore corporate campuses, office levels, conference rooms, video collaboration suites, and ergonomic desks across 6 tiers.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             href="/portal"
-            className="px-3.5 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors shadow-xs"
+            className="px-4 py-2 border border-black text-xs font-mono uppercase font-bold text-black hover:bg-neutral-100 transition-colors"
           >
-            &larr; Employee Portal
+            &larr; Back to Home
           </Link>
           <Link
             href="/portal/reservations"
-            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white text-xs font-bold shadow-xs hover:shadow-md transition-all flex items-center gap-1.5"
+            className="px-4 py-2 bg-black hover:bg-neutral-800 text-white text-xs font-mono uppercase font-bold transition-colors flex items-center gap-1.5"
           >
             <CalendarCheck2 className="w-4 h-4" />
-            <span>Book a Space</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span>Book a Space &rarr;</span>
           </Link>
         </div>
       </div>
 
       {/* 6-Tier Hierarchy Breadcrumb Navigator */}
-      <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs flex flex-wrap items-center gap-2.5 text-sm">
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mr-1 flex items-center gap-1.5">
-          <Compass className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" /> Spatial Navigator:
+      <div className="p-4 border-2 border-black bg-white flex flex-wrap items-center gap-2.5 text-sm">
+        <span className="text-xs font-mono font-bold uppercase tracking-wider text-black mr-1 flex items-center gap-1.5">
+          <Compass className="w-3.5 h-3.5 text-black" /> Spatial Navigator:
         </span>
 
         {/* Region */}

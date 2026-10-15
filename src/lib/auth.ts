@@ -21,14 +21,50 @@ export {
   type SessionTokenPayload,
 };
 
+// Modular Administrator Roles for delegated enterprise self-management
+export const MODULAR_ADMIN_ROLES = [
+  "admin",
+  "workplace_admin",
+  "itil_admin",
+  "catalog_admin",
+  "cmdb_admin",
+  "knowledge_admin",
+] as const;
+
+export type ModularAdminRole = (typeof MODULAR_ADMIN_ROLES)[number];
+
 // Role hierarchy for automatic inheritance
 export const ROLE_HIERARCHY: Record<string, string[]> = {
-  admin: ["admin", "itil", "cab_approver", "employee", "public"],
+  admin: [
+    "admin",
+    "workplace_admin",
+    "itil_admin",
+    "catalog_admin",
+    "cmdb_admin",
+    "knowledge_admin",
+    "itil",
+    "cab_approver",
+    "employee",
+    "public",
+  ],
+  workplace_admin: ["workplace_admin", "employee", "public"],
+  itil_admin: ["itil_admin", "itil", "employee", "public"],
+  catalog_admin: ["catalog_admin", "employee", "public"],
+  cmdb_admin: ["cmdb_admin", "itil", "employee", "public"],
+  knowledge_admin: ["knowledge_admin", "employee", "public"],
   itil: ["itil", "employee", "public"],
   cab_approver: ["cab_approver", "employee", "public"],
   employee: ["employee", "public"],
   public: ["public"],
 };
+
+export function isModularAdmin(role?: string, roles?: string[]): boolean {
+  if (!role && (!roles || roles.length === 0)) return false;
+  const all = new Set<string>();
+  if (role) all.add(role.toLowerCase().trim());
+  if (roles) roles.forEach((r) => all.add(r.toLowerCase().trim()));
+  return MODULAR_ADMIN_ROLES.some((modRole) => all.has(modRole));
+}
 
 // ------------------------------------------------------------------
 // Password Hashing (bcrypt)
@@ -370,6 +406,41 @@ export async function requireAdmin(req: Request): Promise<SessionContext> {
   const session = await requireAuth(req);
   if (!session.isAdmin) {
     throw new AuthError("Administrative privileges required to access this resource", 403, "FORBIDDEN");
+  }
+  return session;
+}
+
+/**
+ * Requires an active session with any modular admin privilege (admin, workplace_admin, catalog_admin, etc.).
+ */
+export async function requireModularAdmin(req: Request): Promise<SessionContext> {
+  const session = await requireAuth(req);
+  if (!session.isAdmin && !isModularAdmin(session.primaryRole, session.roles)) {
+    throw new AuthError("Modular or System Administrator privileges required to access this resource", 403, "FORBIDDEN");
+  }
+  return session;
+}
+
+/**
+ * Requires an active session with workplace_admin or admin role.
+ */
+export async function requireWorkplaceAdmin(req: Request): Promise<SessionContext> {
+  const session = await requireAuth(req);
+  const isAuthorized = session.isAdmin || session.hasRole("workplace_admin");
+  if (!isAuthorized) {
+    throw new AuthError("Workplace Administrator privileges required for Connected Workplace management", 403, "FORBIDDEN");
+  }
+  return session;
+}
+
+/**
+ * Requires an active session with catalog_admin or admin role.
+ */
+export async function requireCatalogAdmin(req: Request): Promise<SessionContext> {
+  const session = await requireAuth(req);
+  const isAuthorized = session.isAdmin || session.hasRole("catalog_admin");
+  if (!isAuthorized) {
+    throw new AuthError("Service Catalog Administrator privileges required for catalog management", 403, "FORBIDDEN");
   }
   return session;
 }

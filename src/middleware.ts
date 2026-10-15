@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "./lib/auth";
+import { getServerSession, isModularAdmin } from "./lib/auth";
 
 // Runs on the Node.js runtime (stable since Next 15.5) so every request is
 // checked against the session table and the user's *current* DB roles —
@@ -40,7 +40,7 @@ const ADMIN_API_PREFIXES = [
 ];
 
 // Readable by any authenticated user (portal/catalog needs them), but only
-// admins may create/modify/delete. Record producers carry server-side scripts.
+// admins or delegated catalog administrators may create/modify/delete. Record producers carry server-side scripts.
 const ADMIN_WRITE_PREFIXES = [
   "/api/now/producers",
   "/api/now/catalog/item",
@@ -70,8 +70,12 @@ export async function middleware(req: NextRequest) {
   const session = await getServerSession(req);
   const isAuthenticated = !!session;
   const role = session?.primaryRole || "public";
+  const userRoles = session?.roles || (session?.primaryRole ? [session.primaryRole] : []);
   const isImpersonating = !!session?.isImpersonating;
   const isAdmin = !!session?.isAdmin && !isImpersonating;
+  const hasModularAdminRole = !isImpersonating && (isAdmin || isModularAdmin(session?.primaryRole, userRoles));
+  const isCatalogAdmin = !isImpersonating && (isAdmin || userRoles.includes("catalog_admin"));
+  const isWorkplaceAdmin = !isImpersonating && (isAdmin || userRoles.includes("workplace_admin"));
 
   // 2. API Route Guard (/api/*)
   if (pathname.startsWith("/api/")) {
@@ -86,6 +90,10 @@ export async function middleware(req: NextRequest) {
       }
 
       if (!isAdmin) {
+        // Allow delegated catalog admins to write to catalog item and variable routes
+        const isCatalogWrite = isCatalogAdmin && pathname.startsWith("/api/now/catalog/item");
+        const isProducerWrite = isCatalogAdmin && pathname.startsWith("/api/now/producers");
+
         if (ADMIN_API_PREFIXES.some((p) => matchesPrefix(pathname, p))) {
           return forbidden("Administrative privileges required to access this endpoint");
         }
@@ -94,12 +102,14 @@ export async function middleware(req: NextRequest) {
         if (
           isWrite &&
           ADMIN_WRITE_PREFIXES.some((p) => matchesPrefix(pathname, p)) &&
-          !NON_ADMIN_WRITE_ALLOWED.some((re) => re.test(pathname))
+          !NON_ADMIN_WRITE_ALLOWED.some((re) => re.test(pathname)) &&
+          !isCatalogWrite &&
+          !isProducerWrite
         ) {
           return forbidden("Administrative privileges required to modify this resource");
         }
 
-        // User management: only admins can create users
+        // User management: only full admins can create users or alter roles
         if (matchesPrefix(pathname, "/api/now/users") && req.method === "POST") {
           return forbidden("Only administrators can create users or alter roles");
         }
@@ -110,13 +120,13 @@ export async function middleware(req: NextRequest) {
   // 3. Route Guard: /login
   if (pathname === "/login") {
     if (isAuthenticated) {
-      const redirectUrl = role === "employee" ? "/portal" : "/workspace";
+      const redirectUrl = role === "employee" && !hasModularAdminRole ? "/portal" : "/workspace";
       return NextResponse.redirect(new URL(redirectUrl, req.url));
     }
     return NextResponse.next();
   }
 
-  // 4. Route Guard: /studio (Admin Center - strictly restricted to actual admins)
+  // 4. Route Guard: /studio (Admin Center - restricted to admins and delegated modular admins)
   if (pathname.startsWith("/studio")) {
     if (!isAuthenticated) {
       const loginUrl = new URL("/login", req.url);
@@ -124,14 +134,14 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    if (!isAdmin) {
+    if (!hasModularAdminRole) {
       const accessDeniedUrl = new URL("/workspace", req.url);
       accessDeniedUrl.searchParams.set("error", "studio_admin_required");
       return NextResponse.redirect(accessDeniedUrl);
     }
   }
 
-  // 5. Route Guard: /workspace (Agent Workspace - requires itil/admin/etc.)
+  // 5. Route Guard: /workspace (Agent Workspace - requires itil/admin/modular admins)
   if (pathname.startsWith("/workspace")) {
     if (!isAuthenticated) {
       const loginUrl = new URL("/login", req.url);
@@ -139,7 +149,7 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    if (role === "employee") {
+    if (role === "employee" && !hasModularAdminRole) {
       return NextResponse.redirect(new URL("/portal", req.url));
     }
   }

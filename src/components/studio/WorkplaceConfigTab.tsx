@@ -32,7 +32,10 @@ import {
   AlertCircle,
   FileText,
   SlidersHorizontal,
+  Square,
 } from "lucide-react";
+import { CadFloorplanEditor } from "@/components/workplace/CadFloorplanEditor";
+import { SpaceConsole } from "@/components/workplace/SpaceConsole";
 import { TimeFormat, formatDateTimeSlot } from "@/lib/time-format";
 
 interface SpaceItem {
@@ -135,7 +138,8 @@ const SPACE_TYPES = [
 ];
 
 export function WorkplaceConfigTab() {
-  const [subTab, setSubTab] = useState<"spaces" | "floors" | "hierarchy" | "reservations">("spaces");
+  const [subTab, setSubTab] = useState<"spaces" | "floors" | "hierarchy" | "reservations" | "cad_mapper" | "space_console">("space_console");
+  const [targetFloorForCad, setTargetFloorForCad] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -242,10 +246,19 @@ export function WorkplaceConfigTab() {
       const treeRes = await fetch("/api/now/spatial/tree?include_assets=false");
       if (treeRes.ok) {
         const data = await treeRes.json();
-        setTreeData(data.result || []);
+        const regionsList: any[] = Array.isArray(data.result?.tree)
+          ? data.result.tree
+          : Array.isArray(data.result)
+          ? data.result
+          : Array.isArray(data.tree)
+          ? data.tree
+          : [];
+
+        setTreeData(regionsList);
+
         // Extract flat floors
         const flatFloors: FloorItem[] = [];
-        (data.result || []).forEach((reg: any) => {
+        regionsList.forEach((reg: any) => {
           (reg.states || []).forEach((st: any) => {
             (st.campuses || []).forEach((camp: any) => {
               (camp.buildings || []).forEach((bld: any) => {
@@ -507,16 +520,17 @@ export function WorkplaceConfigTab() {
   });
 
   // Calculate Spatial Hierarchy Counts
+  const regionsArray = Array.isArray(treeData) ? treeData : [];
   const hierarchyCounts = {
-    regions: treeData.length,
-    states: treeData.reduce((acc, r) => acc + (r.states?.length || 0), 0),
-    campuses: treeData.reduce(
+    regions: regionsArray.length,
+    states: regionsArray.reduce((acc, r) => acc + (r.states?.length || 0), 0),
+    campuses: regionsArray.reduce(
       (acc, r) =>
         acc +
         (r.states || []).reduce((sAcc: number, s: any) => sAcc + (s.campuses?.length || 0), 0),
       0
     ),
-    buildings: treeData.reduce(
+    buildings: regionsArray.reduce(
       (acc, r) =>
         acc +
         (r.states || []).reduce(
@@ -598,6 +612,21 @@ export function WorkplaceConfigTab() {
       {/* Navigation Sub-Tabs */}
       <div className="flex items-center gap-2 border-b border-slate-800/80 pb-2 overflow-x-auto scrollbar-none">
         <button
+          onClick={() => setSubTab("space_console")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            subTab === "space_console"
+              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-xs"
+              : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+          }`}
+        >
+          <Compass className="w-4 h-4 text-emerald-400" />
+          <span>Space Console</span>
+          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-500/30 text-emerald-200 font-mono">
+            CAD Vectors
+          </span>
+        </button>
+
+        <button
           onClick={() => setSubTab("spaces")}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
             subTab === "spaces"
@@ -653,7 +682,31 @@ export function WorkplaceConfigTab() {
             {reservations.length}
           </span>
         </button>
+
+        <button
+          onClick={() => setSubTab("cad_mapper")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+            subTab === "cad_mapper"
+              ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-xs"
+              : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+          }`}
+        >
+          <Square className="w-4 h-4 text-cyan-400" />
+          <span>CAD Drawing &amp; Room Mapper</span>
+          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-cyan-500/30 text-cyan-200 font-mono">
+            Visual CAD
+          </span>
+        </button>
       </div>
+
+      {/* ========================================================================= */}
+      {/* SUB-TAB 0: SERVICE MEOW SPACE CONSOLE & CAD BLUEPRINT ENGINE              */}
+      {/* ========================================================================= */}
+      {subTab === "space_console" && (
+        <div className="space-y-4">
+          <SpaceConsole className="rounded-2xl border border-slate-800 shadow-xl overflow-hidden" />
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* SUB-TAB 1: SPACES & ROOM CAPABILITIES                                      */}
@@ -920,17 +973,28 @@ export function WorkplaceConfigTab() {
                   <div className="flex items-center gap-2 pt-2 border-t border-slate-800/60">
                     <button
                       onClick={() => setPreviewFloor(floor)}
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors flex items-center justify-center gap-1.5"
+                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors flex items-center justify-center gap-1"
                     >
                       <Eye className="w-3.5 h-3.5" />
-                      <span>Preview SVG</span>
+                      <span>Preview</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setTargetFloorForCad(floor.id);
+                        setSubTab("cad_mapper");
+                      }}
+                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-colors flex items-center justify-center gap-1"
+                      title="Draw and Map Room Hotspots on CAD Drawing"
+                    >
+                      <Square className="w-3.5 h-3.5" />
+                      <span>CAD Mapper</span>
                     </button>
                     <button
                       onClick={() => handleOpenFloorModal(floor)}
-                      className="flex-1 px-3 py-1.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-semibold shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-semibold shadow-xs transition-colors flex items-center justify-center gap-1"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
-                      <span>Configure</span>
+                      <span>Edit</span>
                     </button>
                   </div>
                 </div>
@@ -998,7 +1062,7 @@ export function WorkplaceConfigTab() {
             </div>
 
             <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
-              {treeData.map((region) => (
+              {(Array.isArray(treeData) ? treeData : []).map((region) => (
                 <div key={region.id} className="border border-slate-800 rounded-xl bg-slate-950/40 p-3.5 space-y-2">
                   <div className="flex items-center justify-between font-bold text-xs text-rose-300">
                     <span className="flex items-center gap-2">
@@ -1292,6 +1356,16 @@ export function WorkplaceConfigTab() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SUB-TAB 5: INTERACTIVE CAD DRAWING & ROOM HOTSPOT MAPPER                  */}
+      {/* ========================================================================= */}
+      {subTab === "cad_mapper" && (
+        <CadFloorplanEditor
+          initialFloorId={targetFloorForCad}
+          onSaved={loadAllWorkplaceData}
+        />
       )}
 
       {/* ========================================================================= */}

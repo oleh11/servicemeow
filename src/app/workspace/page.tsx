@@ -5,12 +5,11 @@ import { SlaBadge } from "@/components/workspace/SlaBadge";
 import {
   AlertCircle,
   GitPullRequest,
-  CheckCircle,
-  Activity,
   Server,
   Clock,
   ArrowRight,
-  TrendingUp,
+  Plus,
+  ShieldAlert,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +24,7 @@ export default async function WorkspaceDashboard() {
         slaInstances: { include: { slaDefinition: true } },
       },
       orderBy: { priority: "asc" },
-      take: 5,
+      take: 6,
     }),
     db.task.findMany({
       where: {
@@ -36,7 +35,7 @@ export default async function WorkspaceDashboard() {
         assignedTo: true,
         changeRequest: true,
       },
-      take: 5,
+      take: 6,
     }),
     db.configurationItem.count(),
     db.slaInstance.count({ where: { state: "in_progress" } }),
@@ -45,299 +44,229 @@ export default async function WorkspaceDashboard() {
   const p1Count = openIncidents.filter((i) => i.priority === 1).length;
 
   return (
-    <div
-      className="p-6 space-y-6"
-      style={{
-        backgroundColor: "var(--theme-page-bg, #f8f9fa)",
-        color: "var(--theme-text-primary, #1f1f1f)",
-      }}
-    >
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="p-6 md:p-8 space-y-8 bg-neutral-100 min-h-screen text-black">
+      {/* Swiss Header Bar */}
+      <div className="border-b-2 border-black pb-6 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-mono text-xs uppercase font-extrabold px-2 py-0.5 bg-black text-white">
+              OPERATIONS
+            </span>
+            <span className="font-mono text-xs uppercase font-bold text-neutral-500">
+              ITIL Fulfiller Console
+            </span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase text-black">
             Agent Operations Center
           </h1>
-          <p
-            className="text-xs mt-0.5"
-            style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
-          >
-            Live ITIL Service Desk triage and operational performance dashboard
+          <p className="text-xs sm:text-sm text-neutral-600 mt-1 max-w-2xl">
+            Live incident response, CAB authorization board, and service level agreement monitoring.
           </p>
         </div>
-        <div className="flex items-center space-x-2.5">
+
+        <div className="flex items-center gap-3">
           <Link
             href="/workspace/incident/new"
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-medium shadow-[var(--md-sys-elevation-1)] hover:shadow-[var(--md-sys-elevation-2)] transition-all"
-            style={{
-              backgroundColor: "var(--md-sys-color-primary, #0b57d0)",
-              color: "var(--md-sys-color-on-primary, #ffffff)",
-            }}
+            className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
           >
-            + Create Incident
+            <Plus className="w-4 h-4" />
+            <span>New Incident</span>
           </Link>
           <Link
             href="/workspace/change_request/new"
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-medium border transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-            style={{
-              borderColor: "var(--md-sys-color-outline, #79747e)",
-              color: "var(--md-sys-color-on-surface, #1d1b20)",
-            }}
+            className="px-5 py-3 border-2 border-black hover:bg-black hover:text-white text-black font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
           >
-            + Create Change
+            <Plus className="w-4 h-4" />
+            <span>New Change</span>
           </Link>
         </div>
       </div>
 
-      {/* KPI Stats Grid (M3 Outlined Cards: rounded-[16px]) */}
+      {/* Swiss 4-Quadrant Metric Matrix */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* P1 Critical Metric */}
-        <div
-          className="p-5 rounded-[16px] border shadow-[var(--md-sys-elevation-1)] flex items-center justify-between"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
+        {/* Metric 01: P1 Incidents */}
+        <div className="border-2 border-red-600 bg-white p-5 flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs font-bold text-red-600">01 / INCIDENT TRIAGE</span>
+            <AlertCircle className="w-5 h-5 text-red-600" />
+          </div>
           <div>
-            <span
-              className="text-xs font-semibold uppercase tracking-wider"
-              style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
-            >
-              Critical P1 Incidents
-            </span>
-            <div className="text-2xl font-extrabold text-rose-600 dark:text-rose-400 mt-1 flex items-baseline gap-2">
-              {p1Count}
-              <span className="text-xs font-medium text-rose-500 animate-pulse">● Active triage</span>
+            <div className="text-3xl font-extrabold font-mono text-red-600">{p1Count}</div>
+            <div className="text-xs font-bold uppercase tracking-tight text-black mt-1">
+              Critical P1 Incidents Active
             </div>
           </div>
-          <div className="w-11 h-11 rounded-full bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-            <AlertCircle className="w-5 h-5" />
+          <div className="text-[11px] font-mono text-neutral-500 border-t border-neutral-200 pt-2">
+            Target SLA: 1 Hour Response
           </div>
         </div>
 
-        {/* CAB Approvals Pending */}
-        <div
-          className="p-5 rounded-[16px] border shadow-[var(--md-sys-elevation-1)] flex items-center justify-between"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
+        {/* Metric 02: CAB Reviews */}
+        <div className="border-2 border-amber-600 bg-white p-5 flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs font-bold text-amber-600">02 / GOVERNANCE</span>
+            <GitPullRequest className="w-5 h-5 text-amber-600" />
+          </div>
           <div>
-            <span
-              className="text-xs font-semibold uppercase tracking-wider"
-              style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
-            >
-              Pending CAB Reviews
-            </span>
-            <div className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">
-              {cabChanges.length}
+            <div className="text-3xl font-extrabold font-mono text-black">{cabChanges.length}</div>
+            <div className="text-xs font-bold uppercase tracking-tight text-black mt-1">
+              Pending CAB Authorizations
             </div>
           </div>
-          <div className="w-11 h-11 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-            <GitPullRequest className="w-5 h-5" />
+          <div className="text-[11px] font-mono text-neutral-500 border-t border-neutral-200 pt-2">
+            Next CAB Window: Thursday 14:00
           </div>
         </div>
 
-        {/* Active SLAs */}
-        <div
-          className="p-5 rounded-[16px] border shadow-[var(--md-sys-elevation-1)] flex items-center justify-between"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
+        {/* Metric 03: Active SLAs */}
+        <div className="border-2 border-blue-600 bg-white p-5 flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs font-bold text-blue-600">03 / SERVICE LEVELS</span>
+            <Clock className="w-5 h-5 text-blue-600" />
+          </div>
           <div>
-            <span
-              className="text-xs font-semibold uppercase tracking-wider"
-              style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
-            >
-              Active SLA Timers
-            </span>
-            <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
-              {slaCount}
+            <div className="text-3xl font-extrabold font-mono text-black">{slaCount}</div>
+            <div className="text-xs font-bold uppercase tracking-tight text-black mt-1">
+              Active SLA Timers Running
             </div>
           </div>
-          <div className="w-11 h-11 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-            <Clock className="w-5 h-5" />
+          <div className="text-[11px] font-mono text-neutral-500 border-t border-neutral-200 pt-2">
+            100% Breached Warning System
           </div>
         </div>
 
-        {/* Managed CIs */}
-        <div
-          className="p-5 rounded-[16px] border shadow-[var(--md-sys-elevation-1)] flex items-center justify-between"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
+        {/* Metric 04: CMDB Assets */}
+        <div className="border-2 border-black bg-white p-5 flex flex-col justify-between space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs font-bold text-neutral-500">04 / ARCHITECTURE</span>
+            <Server className="w-5 h-5 text-black" />
+          </div>
           <div>
-            <span
-              className="text-xs font-semibold uppercase tracking-wider"
-              style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
-            >
-              CMDB Assets
-            </span>
-            <div className="text-2xl font-extrabold mt-1">
-              {cis}
+            <div className="text-3xl font-extrabold font-mono text-black">{cis}</div>
+            <div className="text-xs font-bold uppercase tracking-tight text-black mt-1">
+              CMDB Configuration Items
             </div>
           </div>
-          <div
-            className="w-11 h-11 rounded-full flex items-center justify-center"
-            style={{
-              backgroundColor: "var(--md-sys-color-surface-container-highest, #e6e0e9)",
-              color: "var(--md-sys-color-on-surface-variant, #49454f)",
-            }}
-          >
-            <Server className="w-5 h-5" />
+          <div className="text-[11px] font-mono text-neutral-500 border-t border-neutral-200 pt-2">
+            Mapped Across 6 Tiers
           </div>
         </div>
       </div>
 
-      {/* Main Grid: Priority Incidents & Pending CAB Changes */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Active Priority Incidents */}
-        <div
-          className="p-5 rounded-[16px] border shadow-[var(--md-sys-elevation-1)] space-y-4"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
-          <div
-            className="flex items-center justify-between border-b pb-3"
-            style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
-          >
-            <div className="flex items-center space-x-2">
-              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
-              <h2 className="text-sm font-bold">Highest Priority Active Incidents</h2>
+      {/* Main 2-Column Split: Active Incidents vs CAB Approvals */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column: Highest Priority Incidents */}
+        <div className="border-2 border-black bg-white p-6 space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-black pb-3">
+            <div className="flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 text-red-600" />
+              <h2 className="text-base font-extrabold uppercase tracking-tight text-black">
+                Active Priority Incidents
+              </h2>
             </div>
             <Link
               href="/workspace/incident"
-              className="text-xs font-semibold flex items-center gap-1 hover:underline"
-              style={{ color: "var(--md-sys-color-primary, #0b57d0)" }}
+              className="text-xs font-mono uppercase font-bold text-neutral-600 hover:text-black flex items-center gap-1"
             >
-              View All <ArrowRight className="w-3 h-3" />
+              <span>View Queue &rarr;</span>
             </Link>
           </div>
 
           <div className="space-y-3">
-            {openIncidents.map((inc) => (
-              <div
-                key={inc.id}
-                className="p-3.5 rounded-[12px] border transition-colors space-y-2 hover:shadow-xs"
-                style={{
-                  backgroundColor: "var(--md-sys-color-surface-container-low, #f7f2fa)",
-                  borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Link
-                      href={`/workspace/incident/${inc.id}`}
-                      className="font-mono text-xs font-bold hover:underline"
-                      style={{ color: "var(--md-sys-color-primary, #0b57d0)" }}
-                    >
-                      {inc.number}
-                    </Link>
-                    <span
-                      className={`text-[11px] font-medium px-2.5 py-0.5 rounded-[8px] ${
-                        inc.priority === 1
-                          ? "bg-[var(--md-sys-color-p1-bg,#fee2e2)] text-[var(--md-sys-color-p1-fg,#991b1b)] border border-red-300"
-                          : "bg-[var(--md-sys-color-p2-bg,#ffedd5)] text-[var(--md-sys-color-p2-fg,#9a3412)] border border-amber-300"
-                      }`}
-                    >
-                      P{inc.priority}
+            {openIncidents.length === 0 ? (
+              <div className="p-8 text-center text-xs font-mono text-neutral-500">
+                No active priority incidents currently open.
+              </div>
+            ) : (
+              openIncidents.map((inc) => (
+                <div
+                  key={inc.id}
+                  className="p-4 border border-neutral-300 hover:border-black transition-colors space-y-2 bg-neutral-50/50"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Link
+                        href={`/workspace/incident/${inc.id}`}
+                        className="font-mono text-xs font-extrabold text-black hover:underline"
+                      >
+                        {inc.number}
+                      </Link>
+                      <span
+                        className={`text-[10px] font-mono font-bold px-2 py-0.5 border ${
+                          inc.priority === 1
+                            ? "bg-red-50 border-red-600 text-red-700"
+                            : "bg-amber-50 border-amber-600 text-amber-800"
+                        }`}
+                      >
+                        P{inc.priority} {inc.priority === 1 ? "CRITICAL" : "HIGH"}
+                      </span>
+                    </div>
+                    <span className="text-xs font-mono text-neutral-500">
+                      {inc.assignedTo?.name || "Unassigned"}
                     </span>
                   </div>
-                  <span
-                    className="text-[11px] font-mono"
-                    style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
-                  >
-                    {inc.assignedTo?.name || "Unassigned"}
-                  </span>
+
+                  <p className="text-xs font-bold text-black line-clamp-1">
+                    {inc.shortDescription}
+                  </p>
+
+                  {inc.slaInstances[0] && (
+                    <div className="pt-1">
+                      <SlaBadge slaInstance={inc.slaInstances[0]} />
+                    </div>
+                  )}
                 </div>
-
-                <p className="text-xs font-semibold line-clamp-1">
-                  {inc.shortDescription}
-                </p>
-
-                {inc.slaInstances[0] && (
-                  <div className="pt-1">
-                    <SlaBadge slaInstance={inc.slaInstances[0]} />
-                  </div>
-                )}
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
-        {/* Change Management Approvals */}
-        <div
-          className="p-5 rounded-[16px] border shadow-[var(--md-sys-elevation-1)] space-y-4"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
-          <div
-            className="flex items-center justify-between border-b pb-3"
-            style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
-          >
-            <div className="flex items-center space-x-2">
-              <GitPullRequest className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-              <h2 className="text-sm font-bold">Changes Awaiting CAB Authorization</h2>
+        {/* Right Column: Changes Awaiting CAB Authorization */}
+        <div className="border-2 border-black bg-white p-6 space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-black pb-3">
+            <div className="flex items-center gap-2">
+              <GitPullRequest className="w-5 h-5 text-amber-600" />
+              <h2 className="text-base font-extrabold uppercase tracking-tight text-black">
+                Changes Awaiting CAB Approval
+              </h2>
             </div>
             <Link
               href="/workspace/change_request"
-              className="text-xs font-semibold flex items-center gap-1 hover:underline"
-              style={{ color: "var(--md-sys-color-primary, #0b57d0)" }}
+              className="text-xs font-mono uppercase font-bold text-neutral-600 hover:text-black flex items-center gap-1"
             >
-              View All <ArrowRight className="w-3 h-3" />
+              <span>View Queue &rarr;</span>
             </Link>
           </div>
 
           <div className="space-y-3">
             {cabChanges.length === 0 ? (
-              <p
-                className="text-xs italic py-8 text-center"
-                style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
-              >
-                No changes pending CAB approval.
-              </p>
+              <div className="p-8 text-center text-xs font-mono text-neutral-500">
+                No change requests currently pending CAB authorization.
+              </div>
             ) : (
               cabChanges.map((chg) => (
                 <div
                   key={chg.id}
-                  className="p-3.5 rounded-[12px] border transition-colors space-y-2 hover:shadow-xs"
-                  style={{
-                    backgroundColor: "var(--md-sys-color-surface-container-low, #f7f2fa)",
-                    borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-                  }}
+                  className="p-4 border border-neutral-300 hover:border-black transition-colors space-y-2 bg-neutral-50/50"
                 >
                   <div className="flex items-center justify-between">
                     <Link
                       href={`/workspace/change_request/${chg.id}`}
-                      className="font-mono text-xs font-bold hover:underline text-amber-700 dark:text-amber-400"
+                      className="font-mono text-xs font-extrabold text-black hover:underline"
                     >
                       {chg.number}
                     </Link>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 uppercase">
-                      CAB Review
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 border border-amber-600 bg-amber-50 text-amber-800 uppercase">
+                      CAB REVIEW
                     </span>
                   </div>
-                  <p className="text-xs font-semibold line-clamp-2">
+
+                  <p className="text-xs font-bold text-black line-clamp-2">
                     {chg.shortDescription}
                   </p>
-                  <div
-                    className="flex items-center justify-between text-[11px] pt-1.5 border-t"
-                    style={{
-                      borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-                      color: "var(--md-sys-color-on-surface-variant, #49454f)",
-                    }}
-                  >
-                    <span>Risk: <strong className="uppercase">{chg.changeRequest?.risk}</strong></span>
+
+                  <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 pt-2 border-t border-neutral-200">
+                    <span>Risk: <strong className="text-black uppercase">{chg.changeRequest?.risk || "Moderate"}</strong></span>
                     <span>Lead: {chg.assignedTo?.name || "Governance"}</span>
                   </div>
                 </div>

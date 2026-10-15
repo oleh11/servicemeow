@@ -23,6 +23,7 @@ import {
   ShieldCheck,
   Building,
 } from "lucide-react";
+import { SpaceConsole } from "@/components/workplace/SpaceConsole";
 
 interface CIItem {
   id: string;
@@ -122,6 +123,7 @@ export default function SpacesExplorerPage() {
   const [selectedSpace, setSelectedSpace] = useState<SpaceItem | null>(null);
 
   // Filter & Search
+  const [viewMode, setViewMode] = useState<"console" | "hierarchy">("console");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -220,43 +222,86 @@ export default function SpacesExplorerPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl w-full mx-auto">
-      {/* Top Header & Quick Actions */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="p-2 rounded-lg bg-primary/10 text-primary">
-                <Compass className="w-6 h-6" />
-              </span>
-              <h1 className="text-2xl font-bold tracking-tight">Workplace Hub &amp; Spatial Explorer</h1>
-            </div>
-            <p className="text-sm text-muted-foreground mt-1">
-              Enterprise 6-Tier Spatial Hierarchy: Region &rarr; State &rarr; Campus &rarr; Building &rarr; Floor &rarr; Space / Room
-            </p>
+    <div className={`p-6 md:p-8 space-y-8 w-full mx-auto transition-all ${viewMode === "console" ? "max-w-[1700px]" : "max-w-7xl"} bg-neutral-100 min-h-screen text-black`}>
+      {/* Swiss Header & Quick Actions */}
+      <div className="border-b-2 border-black pb-6 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-mono text-xs uppercase font-extrabold px-2 py-0.5 bg-black text-white">
+              WORKPLACE
+            </span>
+            <span className="font-mono text-xs uppercase font-bold text-neutral-500">
+              03 / Spatial Architecture
+            </span>
           </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={fetchTree}
-              disabled={loading}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm font-medium hover:bg-muted transition"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-              Refresh
-            </button>
-            <Link
-              href="/workspace/cmn_space"
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition shadow-xs"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Manage All Spaces
-            </Link>
-          </div>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase text-black">
+            Spatial Operations Console
+          </h1>
+          <p className="text-xs sm:text-sm text-neutral-600 mt-1 max-w-3xl">
+            Unified 6-Tier Spatial Tree: Region &rarr; State &rarr; Campus &rarr; Building &rarr; Floor &rarr; Space / Room
+          </p>
         </div>
 
-        {/* Executive Stats KPIs */}
-        {data?.stats && (
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={fetchTree}
+            disabled={loading}
+            className="px-4 py-2 border border-black hover:bg-neutral-200 text-black text-xs font-mono uppercase font-bold flex items-center gap-2 transition-colors cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+            <span>Refresh</span>
+          </button>
+          <Link
+            href="/workspace/cmn_space"
+            className="px-5 py-2.5 bg-black hover:bg-neutral-800 text-white text-xs font-mono uppercase font-bold flex items-center gap-2 transition-colors"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span>Manage All Spaces &rarr;</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Surface View Switcher: Space Console vs 6-Tier Hierarchy Tree */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-300 pb-4">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setViewMode("console")}
+            className={`flex items-center gap-2 px-5 py-2.5 text-xs font-mono uppercase font-bold transition-all border cursor-pointer ${
+              viewMode === "console"
+                ? "bg-black text-white border-black"
+                : "bg-white text-neutral-700 border-neutral-300 hover:border-black"
+            }`}
+          >
+            <Compass className="w-4 h-4" />
+            <span>01 / Space Console &amp; CAD Stage</span>
+          </button>
+
+          <button
+            onClick={() => setViewMode("hierarchy")}
+            className={`flex items-center gap-2 px-5 py-2.5 text-xs font-mono uppercase font-bold transition-all border cursor-pointer ${
+              viewMode === "hierarchy"
+                ? "bg-black text-white border-black"
+                : "bg-white text-neutral-700 border-neutral-300 hover:border-black"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            <span>02 / 6-Tier Hierarchy &amp; Assets ({data?.stats?.totalSpaces || 0})</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs font-mono uppercase text-neutral-500">
+          <span className="w-2.5 h-2.5 bg-emerald-600" />
+          <span>Interactive CAD Blueprint &amp; Spatial Operations</span>
+        </div>
+      </div>
+
+      {viewMode === "console" ? (
+        <SpaceConsole />
+      ) : (
+        <>
+          {/* Executive Stats KPIs */}
+          {data?.stats && (
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
             <div className="p-4 rounded-xl border bg-card/60 backdrop-blur-xs shadow-xs">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Regions / States</span>
               <div className="text-2xl font-bold mt-1 text-foreground">
@@ -695,6 +740,8 @@ export default function SpacesExplorerPage() {
             </div>
           </div>
         </div>
-      </div>
-    );
-  }
+        </>
+      )}
+    </div>
+  );
+}

@@ -2,9 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
 let currentSession: any = null;
-vi.mock("../src/lib/auth", () => ({
-  getServerSession: vi.fn(async () => currentSession),
-}));
+vi.mock("../src/lib/auth", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../src/lib/auth")>();
+  return {
+    ...actual,
+    getServerSession: vi.fn(async () => currentSession),
+  };
+});
 
 import { middleware } from "../src/middleware";
 
@@ -129,6 +133,28 @@ describe("middleware API guard", () => {
       currentSession = sessionFor("employee");
       const res = await call("GET", "/portal/reservations");
       expect(res.status).toBe(200);
+    });
+
+    it("allows workplace_admin to access /studio and /workspace", async () => {
+      currentSession = sessionFor("workplace_admin");
+      const studioRes = await call("GET", "/studio");
+      expect(studioRes.status).toBe(200);
+
+      const workspaceRes = await call("GET", "/workspace");
+      expect(workspaceRes.status).toBe(200);
+    });
+
+    it("allows catalog_admin to write to catalog item APIs", async () => {
+      currentSession = sessionFor("catalog_admin");
+      const res = await call("POST", "/api/now/catalog/item");
+      expect(res.status).toBe(200);
+    });
+
+    it("blocks standard employee without modular admin from accessing /studio", async () => {
+      currentSession = sessionFor("employee");
+      const res = await call("GET", "/studio");
+      expect(res.status).toBe(307);
+      expect(res.headers.get("location")).toContain("studio_admin_required");
     });
   });
 });

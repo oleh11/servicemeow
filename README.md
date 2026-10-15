@@ -13,7 +13,7 @@
   <a href="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml"><img src="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml/badge.svg" alt="ServiceMeow CI" /></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-emerald.svg" alt="Node.js Version" /></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-16-blue.svg" alt="PostgreSQL" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-86%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-131%20passed-8b5cf6.svg" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
 </p>
 
@@ -214,6 +214,95 @@ ServiceMeow replaces generic ITIL task forms with tailored, context-aware spatia
 
 ---
 
+### 9. Agile Project Management & Sprint Hub (`/workspace/agile`)
+
+A Swiss Grid Kanban workspace designed for engineering velocity, sprint planning, and release governance:
+- **5-Column Kanban Board**: *Backlog*, *Sprint Ready*, *In Progress*, *Testing & QA*, and *Done* with single-click card transitions.
+- **Fibonacci Story Point Estimates**: Instant 1, 2, 3, 5, 8, 13, 21 sizing selectors with automated sprint velocity rollups.
+- **Sprint Hub & Capacity Planning**: Define multi-week timeboxes (`rm_sprint`), track commitment burn-up, and enforce sprint goals.
+- **Strategic Epics & Story Management**: Direct linkage to strategic epics (`rm_epic`) and full Table API parity for stories (`rm_story`) with Gherkin acceptance criteria.
+
+<p align="center">
+  <img src="docs/assets/agile-board-showcase.png" alt="Agile Sprint Board Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+---
+
+### 10. Problem Management & Known Error Database (KEDB) (`/workspace/problem`)
+
+Enterprise-grade ITIL Problem Management designed to eliminate recurring incidents, investigate root causes, and publish authoritative workarounds:
+
+<p align="center">
+  <img src="docs/assets/problem-management-showcase.png" alt="Problem Management & KEDB Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Formal 6-Stage ITIL Problem Lifecycle**:
+  $$\text{1 - New} \longrightarrow \text{2 - Assessing / RCA} \longrightarrow \text{3 - Workaround Established} \longrightarrow \text{4 - Known Error (KEDB)} \longrightarrow \text{6 - Resolved} \longrightarrow \text{7 - Closed}$$
+- **Root Cause Analysis (RCA) & Permanent Fix Documentation**: Dedicated investigation blocks tracking technical triggers, architectural remediations, and deployment milestones.
+- **Known Error Database (KEDB) Publishing**: Toggle any problem directly into the platform KEDB with verified temporary workarounds to expedite first-call incident resolution.
+- **Bi-Directional Incident & CI Linkage**: Associate multiple child incidents with a parent problem and pinpoint affected Configuration Items (`cmdb_ci`) for automated blast-radius assessment.
+- **Dynamic Priority Engine**: Real-time 3x3 Impact × Urgency matrix computing standard ITIL priority (P1 Critical through P4 Low).
+
+---
+
+### 11. Enterprise CMDB Hardware & Datacenter Rackmount Topology (`/workspace/cmdb_ci`)
+
+A robust Configuration Management Database (CMDB) linking physical infrastructure, virtual assets, and datacenter rackmount geometry:
+
+<p align="center">
+  <img src="docs/assets/cmdb-ci-showcase.png" alt="Enterprise CMDB Hardware Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Datacenter 42U Rack Elevation Spec**: Specify rack positions (`rack_id`, `rack_units`, `rack_unit_start`, `rack_unit_end`) for physical servers, network switches, and storage arrays with datacenter visualization (`/workspace/cmdb/racks`).
+- **Complete Hardware Asset Attributes**: Serial numbers, asset tags, MAC addresses, primary IP addresses, manufacturers, and model numbers.
+- **6-Tier Spatial Location Binding**: Physical hardware is directly mapped to the enterprise spatial hierarchy (Region $\longrightarrow$ State $\longrightarrow$ Campus $\longrightarrow$ Building $\longrightarrow$ Floor $\longrightarrow$ Space/Room).
+- **Upstream & Downstream Dependency Topology (`ci_rel`)**: Track service dependencies, network linkages, and parent/child cluster relationships to accelerate change impact analysis.
+
+---
+
+### 12. Knowledge Management & Curated Self-Service Intake (`/workspace/kb_knowledge`)
+
+Empower both support fulfillers and end-users with unified, version-controlled knowledge bases:
+
+<p align="center">
+  <img src="docs/assets/knowledge-showcase.png" alt="Knowledge Management Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Multi-Repository Knowledge Governance (`kb_knowledge_base`)**: Scoped knowledge repositories (IT Support, HR Benefits, Facilities Engineering, Developer Guides) with role-based access.
+- **Split-Screen Markdown Authoring**: Write technical runbooks in Markdown with live preview, header navigation, and code syntax highlighting.
+- **Publication Lifecycle State Machine**: Manage articles across *Draft*, *Review*, *Published*, and *Retired* states with scheduled expiration dates and public portal publication toggles.
+- **Employee Portal Integration (`/portal/knowledge`)**: Fast self-service intake with instantaneous keyword search, category navigation, helpfulness ratings, and view tracking.
+
+---
+
+### 13. Space Console & Interactive CAD Floorplan Blueprint (`/workspace/spaces`)
+
+An enterprise architectural space console bridging facilities management, occupancy tracking, and resource allocation:
+
+<p align="center">
+  <img src="docs/assets/spatial-hierarchy-cad-showcase.png" alt="Space Console CAD Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Interactive CAD Floorplan Editor**: Drag-and-drop room repositioning, interactive corner resize handles, and instant coordinate updates.
+- **Occupancy & Capacity Metrics**: Live visual occupancy status (*Vacant*, *Occupied*, *Reserved*, *Maintenance*) with capacity percentage gauges across wings and floors.
+- **Integrated Workplace Reservation Linkage**: Seamless synchronization with `/portal/reservations` and `/workspace/reservations`.
+- **Architectural Vector Schematics**: Standard 1:100 scale blueprint exports (SVG / PDF) for emergency egress planning and facility briefings.
+
+---
+
+### 14. Universal Command Palette (`Cmd+K`) & Swiss Grid Design System
+
+ServiceMeow features a stark, high-contrast user interface built on the principles of the **Swiss International Typographic Style**:
+
+- **Swiss Grid Design Architecture**: 2px solid black borders, hard drop-shadows (`shadow-[4px_4px_0px_rgba(0,0,0,1)]`), sharp non-rounded geometry (`rounded-none`), high-contrast grotesque and monospace typography, and international `#eb0029` red accents.
+- **Global Command Palette (`Cmd+K` / `Ctrl+K`)**: Instant spotlight navigation across all system records—Incidents, Problems, Changes, CMDB CIs, Knowledge Articles, Spaces, and Sprints.
+- **Prefix-Ranked Search API**: Ticket numbers (e.g. `INC0001001`, `PRB0001001`) are automatically prioritized ahead of substring body matches for instantaneous search resolution.
+- **Keyboard Shortcut Overlay (`?`)**: Quick help drawer for rapid navigation without touching the mouse.
+- **Modular Admin Roles**: Fine-grained administrative delegation (`user_admin`, `catalog_admin`, `cmdb_admin`, `workflow_admin`, `space_admin`) preventing over-privileged access.
+- **Hydration Extension Guard**: Immune to third-party browser extension DOM mutations (`grammarly`, `lastpass`, etc.) ensuring React 19 SSR / hydration stability.
+
+---
+
 ## 🚀 Quick Start with Docker Compose
 
 Run ServiceMeow with PostgreSQL and the background scheduler daemon using Docker Compose:
@@ -279,7 +368,7 @@ npm run worker
 
 ## 🧪 Testing & Verification
 
-ServiceMeow includes a full Vitest test suite with **86 passing tests across 10 test suites** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, spatial entity operations, and the 6-tier Workplace Hub spatial hierarchy.
+ServiceMeow includes a full Vitest test suite with **131 passing tests across 16 test suites** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, spatial entity operations, the 6-tier Workplace Hub spatial hierarchy, CAD floorplan manipulation, modular administrator roles, search ranking, and agile / CMDB / knowledge entity integrity.
 
 ```bash
 # Run Vitest test suite once

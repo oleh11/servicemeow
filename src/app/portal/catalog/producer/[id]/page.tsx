@@ -188,45 +188,40 @@ export default function RecordProducerPage() {
 
       {/* Success Confirmation Modal / Card */}
       {submitResult ? (
-        <div
-          className="p-8 rounded-[24px] border shadow-xl text-center space-y-5 animate-in zoom-in-95 duration-200"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-            <CheckCircle2 className="w-8 h-8" />
+        <div className="p-8 border-2 border-black bg-white space-y-6">
+          <div className="flex items-center gap-3 text-emerald-700">
+            <CheckCircle2 className="w-8 h-8 shrink-0" />
+            <span className="font-mono text-sm uppercase tracking-widest font-bold">Request Dispatched</span>
           </div>
 
           <div className="space-y-1">
-            <h2 className="text-xl font-bold tracking-tight text-slate-900">
-              Request Successfully Dispatched!
+            <h2 className="text-3xl font-extrabold tracking-tight uppercase text-black">
+              Request Dispatched Successfully!
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-sm text-neutral-600">
               Target enterprise record generated and processed via Record Producer sandbox engine.
             </p>
           </div>
 
-          <div className="inline-flex flex-col items-center gap-1 p-4 rounded-2xl bg-slate-50 border font-mono">
-            <span className="text-[10px] uppercase font-bold text-slate-400">
+          <div className="border border-black p-4 bg-neutral-50 inline-block font-mono">
+            <span className="text-[10px] uppercase font-bold text-neutral-500 block">
               Created {submitResult.targetTable.toUpperCase()} Record
             </span>
-            <span className="text-lg font-black text-blue-600">
+            <span className="text-2xl font-black text-black">
               {submitResult.recordNumber || submitResult.recordId}
             </span>
           </div>
 
-          <div className="flex items-center justify-center gap-3 pt-4">
+          <div className="flex items-center gap-3 pt-4 border-t border-neutral-200">
             <Link
               href={submitResult.redirectUrl || `/workspace/${submitResult.targetTable}/${submitResult.recordId}`}
-              className="px-6 py-2.5 rounded-full text-xs font-semibold bg-[var(--md-sys-color-primary,#0b57d0)] text-white shadow-xs hover:opacity-95 transition-all"
+              className="px-6 py-3 bg-black text-white text-xs font-mono uppercase font-bold tracking-wider hover:bg-neutral-800 transition-colors"
             >
-              View Generated Record
+              View Generated Record &rarr;
             </Link>
             <Link
               href="/portal/catalog"
-              className="px-6 py-2.5 rounded-full text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50 transition-all"
+              className="px-6 py-3 border border-black text-black text-xs font-mono uppercase font-bold tracking-wider hover:bg-neutral-100 transition-colors"
             >
               Back to Catalog
             </Link>
@@ -234,33 +229,21 @@ export default function RecordProducerPage() {
         </div>
       ) : (
         /* Form Card */
-        <div
-          className="rounded-[24px] border shadow-[var(--md-sys-elevation-1)] overflow-hidden"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
+        <div className="border-2 border-black bg-white space-y-6">
           {/* Header Banner */}
-          <div
-            className="p-6 border-b flex flex-col md:flex-row md:items-center justify-between gap-4"
-            style={{
-              backgroundColor: "var(--md-sys-color-surface-container-low, #f7f2fa)",
-              borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-            }}
-          >
+          <div className="p-6 border-b-2 border-black flex flex-col md:flex-row md:items-center justify-between gap-4 bg-neutral-50">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-[var(--md-sys-color-primary,#0b57d0)]" />
-                <h1 className="text-lg font-bold text-slate-900">{producer.name}</h1>
-                <span className="text-[10px] font-mono uppercase bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full font-bold">
+                <Sparkles className="w-5 h-5 text-black" />
+                <h1 className="text-xl font-extrabold uppercase tracking-tight text-black">{producer.name}</h1>
+                <span className="text-[10px] font-mono uppercase border border-black bg-white text-black px-2 py-0.5 font-bold">
                   Target: {producer.targetTable}
                 </span>
               </div>
-              <p className="text-xs text-slate-500">{producer.shortDescription || producer.description}</p>
+              <p className="text-xs text-neutral-600">{producer.shortDescription || producer.description}</p>
             </div>
 
-            <span className="text-[11px] font-mono px-3 py-1 bg-slate-200/60 text-slate-700 rounded-full font-semibold">
+            <span className="text-[11px] font-mono px-2 py-1 border border-neutral-400 bg-white text-neutral-700 font-bold uppercase">
               sc_cat_item_producer
             </span>
           </div>
@@ -411,16 +394,16 @@ export default function RecordProducerPage() {
             <div className="flex items-center justify-end gap-3 pt-4 border-t">
               <Link
                 href="/portal/catalog"
-                className="px-5 py-2.5 rounded-full text-xs font-semibold border text-slate-600 hover:bg-slate-50 transition-colors"
+                className="px-6 py-3 border border-black text-xs font-mono uppercase font-bold text-black hover:bg-neutral-100 transition-colors"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-semibold bg-[var(--md-sys-color-primary,#0b57d0)] text-white hover:opacity-95 shadow-xs transition-all"
+                className="flex items-center gap-2 px-8 py-4 bg-black text-white text-xs font-mono uppercase font-bold hover:bg-neutral-800 transition-all cursor-pointer"
               >
-                <Send className="w-3.5 h-3.5" />
+                <Send className="w-4 h-4" />
                 <span>{submitting ? "Submitting Request..." : "Submit Request"}</span>
               </button>
             </div>

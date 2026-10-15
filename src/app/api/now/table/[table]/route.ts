@@ -130,6 +130,7 @@ export async function GET(
         }
         return {
           sys_id: t.id,
+          id: t.id,
           number: t.number,
           sys_class_name: t.sysClassName,
           short_description: t.shortDescription,
@@ -148,6 +149,9 @@ export async function GET(
           incident: t.incident,
           change_request: t.changeRequest,
           problem: t.problem,
+          root_cause: t.problem?.rootCause || undefined,
+          workaround: t.problem?.workaround || undefined,
+          is_known_error: t.problem ? t.problem.isKnownError : undefined,
           sla_instances: t.slaInstances,
           ...custom,
         };
@@ -162,12 +166,115 @@ export async function GET(
         skip: offset,
         orderBy: { name: "asc" },
         include: {
-          location: { select: { id: true, name: true } },
+          location: { select: { id: true, name: true, fullPath: true } },
+          space: { select: { id: true, name: true, spaceNumber: true } },
+          rack: { select: { id: true, name: true } },
           incidents: { select: { id: true } },
           changes: { select: { id: true } },
         },
       });
-      return NextResponse.json({ result: cis });
+      const formatted = cis.map((ci) => ({
+        ...ci,
+        sys_id: ci.id,
+        id: ci.id,
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "kb_knowledge") {
+      const where: any = {};
+      for (const cond of parsedQuery.conditions) {
+        if (cond.field === "category") where.category = cond.value;
+        if (cond.field === "is_published" || cond.field === "isPublished") where.isPublished = cond.value === "true";
+        if (cond.field === "number") where.number = cond.value;
+      }
+      const search = searchParams.get("search");
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: "insensitive" } },
+          { content: { contains: search, mode: "insensitive" } },
+          { category: { contains: search, mode: "insensitive" } },
+        ];
+      }
+      const articles = await db.knowledgeArticle.findMany({
+        where,
+        take: limit,
+        skip: offset,
+        orderBy: { createdAt: "desc" },
+        include: {
+          author: { select: { id: true, name: true, email: true } },
+        },
+      });
+      const formatted = articles.map((a) => ({
+        sys_id: a.id,
+        id: a.id,
+        number: a.number,
+        title: a.title,
+        short_description: a.title,
+        content: a.content,
+        category: a.category,
+        author_id: a.authorId,
+        author: a.author ? { value: a.author.id, display_value: a.author.name } : null,
+        views: a.views,
+        helpful_votes: a.helpfulVotes,
+        is_published: a.isPublished,
+        published_at: a.publishedAt.toISOString(),
+        sys_created_on: a.createdAt.toISOString(),
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "kb_knowledge_base") {
+      const records = await db.sysCustomRecord.findMany({
+        where: { tableName: "kb_knowledge_base" },
+        take: limit,
+        skip: offset,
+        orderBy: { createdAt: "desc" },
+      });
+      const formatted = records.map((r) => {
+        let parsed: any = {};
+        try {
+          parsed = JSON.parse(r.dataJson);
+        } catch {}
+        return {
+          sys_id: r.id,
+          id: r.id,
+          sys_created_on: r.createdAt.toISOString(),
+          sys_updated_on: r.updatedAt.toISOString(),
+          ...parsed,
+        };
+      });
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "rm_sprint") {
+      const records = await db.sysCustomRecord.findMany({
+        where: { tableName: "rm_sprint" },
+        take: limit,
+        skip: offset,
+        orderBy: { createdAt: "desc" },
+      });
+      const formatted = records.map((r) => {
+        let parsed: any = {};
+        try {
+          parsed = JSON.parse(r.dataJson);
+        } catch {}
+        return {
+          sys_id: r.id,
+          id: r.id,
+          number: parsed.number || "",
+          name: parsed.name || "",
+          state: parsed.state || "planning",
+          start_date: parsed.startDate || parsed.start_date || "",
+          end_date: parsed.endDate || parsed.end_date || "",
+          capacity_points: parsed.capacityPoints || parsed.capacity_points || 0,
+          goal: parsed.goal || "",
+          sys_created_on: r.createdAt.toISOString(),
+          sys_updated_on: r.updatedAt.toISOString(),
+          ...parsed,
+        };
+      });
+      return NextResponse.json({ result: formatted });
     }
 
     if (table === "sys_user") {
@@ -765,6 +872,60 @@ export async function POST(
       );
     }
 
+    if (table === "problem") {
+      const number = await getNextNumber("PRB");
+      const impact = parseInt(body.impact || "2", 10);
+      const urgency = parseInt(body.urgency || "2", 10);
+      const priority = body.priority ? parseInt(body.priority, 10) : calculatePriority(impact, urgency);
+
+      const task = await db.task.create({
+        data: {
+          number,
+          sysClassName: "problem",
+          shortDescription: body.short_description || body.shortDescription || "New Problem",
+          description: body.description || "",
+          priority,
+          impact,
+          urgency,
+          state: parseInt(body.state || "1", 10),
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+          assignmentGroupId: body.assignment_group_id || body.assignmentGroupId || null,
+          openedById: body.opened_by_id || body.openedById || callerUserId || null,
+          cmdbCiId: body.cmdb_ci_id || body.cmdbCiId || null,
+        },
+      });
+
+      const problem = await db.problem.create({
+        data: {
+          taskId: task.id,
+          rootCause: body.root_cause || body.rootCause || "",
+          workaround: body.workaround || "",
+          isKnownError: body.is_known_error !== undefined ? Boolean(body.is_known_error) : (body.isKnownError !== undefined ? Boolean(body.isKnownError) : false),
+        },
+      });
+
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: task.id,
+            id: task.id,
+            number: task.number,
+            short_description: task.shortDescription,
+            description: task.description,
+            state: task.state,
+            priority: task.priority,
+            impact: task.impact,
+            urgency: task.urgency,
+            root_cause: problem.rootCause,
+            workaround: problem.workaround,
+            is_known_error: problem.isKnownError,
+            problem_id: problem.id,
+          },
+        },
+        { status: 201 }
+      );
+    }
+
     if (table === "cmn_location") {
       const loc = await db.cmnLocation.create({
         data: {
@@ -776,7 +937,7 @@ export async function POST(
           parentId: body.parent_id || body.parentId || null,
         },
       });
-      return NextResponse.json({ result: { sys_id: loc.id, ...loc } }, { status: 201 });
+      return NextResponse.json({ result: { ...loc, sys_id: loc.id, id: loc.id } }, { status: 201 });
     }
 
     if (table === "cmdb_ci") {
@@ -794,9 +955,196 @@ export async function POST(
           tier: body.tier || null,
           owner: body.owner || null,
           locationId: body.location_id || body.locationId || null,
+          spaceId: body.space_id || body.spaceId || null,
+          rackId: body.rack_id || body.rackId || null,
+          rackUnitStart: body.rack_unit_start ? parseInt(body.rack_unit_start, 10) : (body.rackUnitStart ? parseInt(body.rackUnitStart, 10) : null),
+          rackUnitHeight: body.rack_unit_height ? parseInt(body.rack_unit_height, 10) : (body.rackUnitHeight ? parseInt(body.rackUnitHeight, 10) : 1),
         },
       });
-      return NextResponse.json({ result: { sys_id: ci.id, ...ci } }, { status: 201 });
+      return NextResponse.json({ result: { ...ci, sys_id: ci.id, id: ci.id } }, { status: 201 });
+    }
+
+    if (table === "kb_knowledge") {
+      const number = await getNextNumber("KB");
+      let authorId = body.author_id || body.authorId || callerUserId;
+      if (!authorId) {
+        const fallbackUser = await db.user.findFirst();
+        authorId = fallbackUser?.id || null;
+      }
+      if (!authorId) {
+        return NextResponse.json({ error: "Author is required to create a knowledge article." }, { status: 400 });
+      }
+
+      const article = await db.knowledgeArticle.create({
+        data: {
+          number,
+          title: body.title || body.short_description || "Untitled Article",
+          content: body.content || "",
+          category: body.category || "General",
+          authorId,
+          isPublished: body.is_published !== undefined ? Boolean(body.is_published) : (body.isPublished !== undefined ? Boolean(body.isPublished) : true),
+          views: 0,
+          helpfulVotes: 0,
+        },
+        include: {
+          author: { select: { id: true, name: true, email: true } },
+        },
+      });
+
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: article.id,
+            id: article.id,
+            number: article.number,
+            title: article.title,
+            short_description: article.title,
+            content: article.content,
+            category: article.category,
+            author_id: article.authorId,
+            author: article.author ? { value: article.author.id, display_value: article.author.name } : null,
+            is_published: article.isPublished,
+            views: article.views,
+            helpful_votes: article.helpfulVotes,
+            published_at: article.publishedAt.toISOString(),
+            sys_created_on: article.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "kb_knowledge_base") {
+      const number = await getNextNumber("KBB");
+      const kbData = {
+        number,
+        name: body.name || "Enterprise Knowledge Base",
+        description: body.description || "",
+        owner: body.owner || callerUserId || "System Administrator",
+        active: body.active !== undefined ? Boolean(body.active) : true,
+      };
+      const record = await db.sysCustomRecord.create({
+        data: {
+          tableName: "kb_knowledge_base",
+          dataJson: JSON.stringify(kbData),
+        },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: record.id,
+            id: record.id,
+            ...kbData,
+            sys_created_on: record.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "rm_story") {
+      const number = await getNextNumber("STRY");
+      const customAttrs = {
+        story_points: body.story_points !== undefined ? Number(body.story_points) : 3,
+        sprint_id: body.sprint_id || null,
+        sprint_name: body.sprint_name || null,
+        epic_name: body.epic_name || null,
+        acceptance_criteria: body.acceptance_criteria || "",
+      };
+      const task = await db.task.create({
+        data: {
+          number,
+          sysClassName: "rm_story",
+          shortDescription: body.short_description || body.shortDescription || "New Agile Story",
+          description: body.description || "",
+          priority: parseInt(body.priority || "3", 10),
+          state: parseInt(body.state || "1", 10),
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+          assignmentGroupId: body.assignment_group_id || body.assignmentGroupId || null,
+          dynamicFields: JSON.stringify(customAttrs),
+        },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: task.id,
+            id: task.id,
+            number: task.number,
+            short_description: task.shortDescription,
+            description: task.description,
+            state: String(task.state),
+            priority: String(task.priority),
+            assigned_to: body.assigned_to || null,
+            ...customAttrs,
+            sys_created_on: task.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "rm_sprint") {
+      const number = await getNextNumber("SPNT");
+      const sprintData = {
+        number,
+        name: body.name || `Sprint ${number}`,
+        state: body.state || "planning",
+        startDate: body.start_date || body.startDate || new Date().toISOString().split("T")[0],
+        endDate: body.end_date || body.endDate || new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
+        capacityPoints: body.capacity_points ? Number(body.capacity_points) : (body.capacityPoints ? Number(body.capacityPoints) : 40),
+        goal: body.goal || "",
+      };
+      const record = await db.sysCustomRecord.create({
+        data: {
+          tableName: "rm_sprint",
+          dataJson: JSON.stringify(sprintData),
+        },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: record.id,
+            id: record.id,
+            ...sprintData,
+            sys_created_on: record.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "rm_epic") {
+      const number = await getNextNumber("EPIC");
+      const task = await db.task.create({
+        data: {
+          number,
+          sysClassName: "rm_epic",
+          shortDescription: body.short_description || body.shortDescription || body.name || "New Epic",
+          description: body.description || "",
+          priority: parseInt(body.priority || "2", 10),
+          state: parseInt(body.state || "1", 10),
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+          dynamicFields: JSON.stringify({
+            owner: body.owner || body.assigned_to || null,
+            target_date: body.target_date || null,
+          }),
+        },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: task.id,
+            id: task.id,
+            number: task.number,
+            short_description: task.shortDescription,
+            description: task.description,
+            state: String(task.state),
+            priority: String(task.priority),
+            sys_created_on: task.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
     }
 
     if (table === "sys_user") {
