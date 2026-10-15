@@ -303,6 +303,36 @@ ServiceMeow features a stark, high-contrast user interface built on the principl
 
 ---
 
+### 15. Universal Excel-Style Table Data Editor (`/studio?tab=table_editor`)
+
+A high-productivity, spreadsheet-grade administrative data grid providing platform admins complete control over all system and operational tables (`incident`, `change_request`, `sys_user`, `cmdb_ci`, `rm_story`, `cmn_location`, `sc_task`, etc.):
+
+<p align="center">
+  <img src="docs/assets/table-editor-showcase.png" alt="Universal Excel-Style Table Data Editor" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Inline Cell Editing & Auto-Save**: Double-click or click any cell to edit fields directly in place with real-time feedback and immediate PATCH persistence.
+- **Admin View Customizer**: Toggle column visibility, reorder columns, and personalize grid density with preferences saved permanently to `localStorage` per table.
+- **Batch Operations & Record Creation**: Add new rows via quick inline insert or structured modal form; multi-select rows for bulk deletion with atomic confirmation safeguards.
+- **Instant Sorting, Filtering & CSV Export**: Column header sort toggles, multi-field regex text search, pagination size selection (15, 25, 50, 100), and 1-click client-side CSV spreadsheet export.
+
+---
+
+### 16. Employee Table & Spatial Location Explorer with End-of-Day Data Extraction (`/portal/data-explorer`)
+
+A dedicated, theme-harmonized open data explorer giving employees and staff instant visibility and extraction capabilities across 25+ system and spatial tables:
+
+<p align="center">
+  <img src="docs/assets/data-explorer-showcase.png" alt="Employee Table & Spatial Data Explorer with End-of-Day CSV Extract" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Dedicated Explorers for All Spatial Tiers**: Direct exploration across the full spatial hierarchy—`cmn_region`, `cmn_state`, `cmn_campus`, `cmn_building`, `cmn_floor`, `cmn_space`, `cmn_location`, and `cmn_reservation`.
+- **Collapsible Table Directory Sidebar**: Browse tables organized intuitively into Workplace & Spatial, Agile Project Management, ITIL Operations, CMDB, Knowledge, and User Directory categories.
+- **Direct Bookmarkable URLs**: Synchronized URL parameters (`/portal/data-explorer?table=cmn_space`) enabling direct links to any specific table explorer.
+- **End-of-Day CSV Extraction**: One-click instant **Export CSV** download with automated timestamped filenames for daily auditing, compliance reporting, and external data warehousing.
+
+---
+
 ## 🚀 Quick Start with Docker Compose
 
 Run ServiceMeow with PostgreSQL and the background scheduler daemon using Docker Compose:
