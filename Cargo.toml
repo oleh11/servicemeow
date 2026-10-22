@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "crates/servicemeow-core-engine",
+]
+resolver = "2"

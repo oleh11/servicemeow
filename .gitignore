@@ -47,7 +47,8 @@ yarn-error.log*
 *.sln
 *.sw?
 .lazycodex/
-.omo/
-.verify-creds
-*.creds
+# Rust Build Output
+target/
+**/*.rs.bk
+Cargo.lock.backup
 

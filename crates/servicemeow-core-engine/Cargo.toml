@@ -1,0 +1,25 @@
+[package]
+name = "servicemeow-core-engine"
+version = "0.1.0"
+edition = "2024"
+authors = ["ServiceMeow Engineering <ops@servicemeow.io>"]
+description = "High-performance Rust micro-engine for ServiceMeow: CAD vector decomposition, spatial polygon calculation, and audit telemetry stream ingestion."
+license = "MIT"
+
+[dependencies]
+tokio = { version = "1.43", features = ["full"] }
+axum = { version = "0.8", features = ["json", "tokio"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "timeout"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+quick-xml = { version = "0.37", features = ["serialize"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.13", features = ["v4", "serde"] }
+
+[dev-dependencies]
+reqwest = { version = "0.12", features = ["json"] }
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"

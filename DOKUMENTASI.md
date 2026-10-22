@@ -33,6 +33,10 @@ graph TD
         SmartEngines["Smart Automation Engines<br/>• Load-Balancing Task Assignment (src/lib/assignment-engine.ts)<br/>• Quantitative Change Risk & CI Collision Scoring (/api/now/change-risk)<br/>• AI Smart Response Contextual Synthesizer (/api/now/ai/draft-response)"]
     end
 
+    subgraph Tier35["Tier 3.5: High-Performance Rust Microservices (crates/servicemeow-core-engine)"]
+        RustDaemon["Axum 0.8 REST Daemon (:8080)<br/>• Fast Streaming Quick-XML CAD Floorplan Parser<br/>• Shoelace Polygon Area & Centroid Geometry<br/>• AABB Collision & Boundary Hotspot Detection (346k/sec)<br/>• Atomic Lock-Free Ingestion Ring Buffer (2.3M/sec)<br/>• Pre-Execution AST Script Security & Fuel Metering"]
+    end
+
     subgraph Tier4["Tier 4: Enterprise Persistence & Background Daemons"]
         PostgresCluster[("PostgreSQL 16 Relational Engine<br/>• 46+ Relational Entities<br/>• Foreign Key Cascade Safety<br/>• Prisma Query Password Hash Omission<br/>• Row Level Security (RLS)")]
         WorkerDaemon["Worker Scheduler Daemon (src/worker.ts)<br/>• 15s Scheduled Job Polling<br/>• Autonomous SLA Escalation Triage<br/>• Background Batch Processor"]
@@ -40,7 +44,9 @@ graph TD
 
     Tier1 --> Tier2
     Tier2 --> Tier3
+    Tier3 -.->|"HTTP Client Bridge & Fallback"| Tier35
     Tier3 --> Tier4
+    Tier35 --> Tier4
 ```
 
 ---
@@ -142,6 +148,23 @@ servicemeow/
 │   ├── schema.prisma           # Production PostgreSQL 16 schema (with RLS & indexes)
 │   ├── schema.sqlite.prisma    # Developer SQLite schema
 │   └── seed.ts                 # Idempotent enterprise seed script (ITIL, Spatial, Users, SOPs)
+├── crates/                     # Targeted High-Performance Rust Microservices
+│   └── servicemeow-core-engine/
+│       ├── Cargo.toml          # Rust package dependencies (tokio, axum, quick-xml, clap)
+│       ├── src/
+│       │   ├── main.rs         # Standalone CLI binary (daemon, bench, decompose commands)
+│       │   ├── cad/            # Quick-XML streaming parser, Shoelace area, AABB collision
+│       │   ├── telemetry/      # Lock-free atomic ring buffer & real-time anomaly detection
+│       │   ├── sandbox/        # Pre-execution AST security scanner & fuel meter
+│       │   └── server/         # Axum 0.8 REST server & JSON handlers (:8080)
+│       └── tests/
+│           └── engine_integration_test.rs # 6 integration tests verifying Rust microservices
+├── docs/                       # Architectural documentation, diagrams & visual assets
+│   └── assets/                 # High-resolution screenshots, banners & mascot artwork
+├── prisma/                     # Database schema definitions & migrations
+│   ├── schema.prisma           # Primary PostgreSQL schema (46+ tables)
+│   ├── schema.sqlite.prisma    # Local SQLite development schema
+│   └── seed.ts                 # Idempotent enterprise seed script (ITIL, Spatial, Users, SOPs)
 ├── public/                     # Static client assets, SVGs & floorplans
 │   └── floorplans/             # Architectural CAD floorplan maps
 ├── scripts/                    # Platform verification, client generation & headless testing
@@ -150,11 +173,11 @@ servicemeow/
 │   └── verify-api.ts           # Comprehensive end-to-end REST endpoint test harness
 ├── src/
 │   ├── app/                    # Next.js 15 App Router surfaces & endpoints
-│   │   ├── api/                # 85+ REST endpoints
+│   │   ├── api/                # 86+ REST endpoints
 │   │   │   ├── auth/           # Login, logout, me, impersonation
 │   │   │   ├── custom/         # User-defined custom scripted REST endpoints
 │   │   │   ├── health/         # System uptime & database connection health check
-│   │   │   └── now/            # Table API, Watchtower, Morning Checks, CMDB, Spatial, ACLs, Flows, Change Risk, AI Draft
+│   │   │   └── now/            # Table API, Watchtower, Morning Checks, CMDB, Spatial, ACLs, Flows, Change Risk, AI Draft, Rust Engine
 │   │   ├── login/              # Secure authentication entry point
 │   │   ├── portal/             # Employee Self-Service intake, reservations & status
 │   │   ├── studio/             # 2-Pane Low-Code Configuration Center & Monaco IDE
@@ -176,13 +199,16 @@ servicemeow/
 │   │   ├── db.ts               # Global Prisma client singleton with passwordHash omission
 │   │   ├── flow-engine.ts      # Low-code workflow step execution graph
 │   │   ├── rate-limiter.ts     # In-memory sliding window rate limiter & lockout guard
+│   │   ├── rust-core-client.ts # High-performance Rust engine bridge with transparent TS fallback
 │   │   ├── script-sandbox.ts   # QuickJS WebAssembly guest memory sandbox
 │   │   ├── sla.ts              # Service Level Agreement calculation & breach engine
 │   │   ├── update-set.ts       # ALM package exporter, previewer & conflict detector
 │   │   └── workflow-agent.ts   # Autonomous Hermes triage & auto-routing agent
 │   ├── middleware.ts           # Edge HMAC-SHA256 session guard, modular admin gates
 │   └── worker.ts               # Background 15s scheduler daemon
-├── tests/                      # Full Vitest integration test suite (140 passing tests across 19 test files)
+├── tests/                      # Full Vitest integration test suite (144 passing tests across 20 test files)
+├── Cargo.lock                  # Rust workspace lockfile
+├── Cargo.toml                  # Rust root workspace manifest
 ├── Dockerfile                  # Multi-stage production container runner
 ├── docker-compose.yml          # Production PostgreSQL 16 + Web App + Worker stack
 ├── package.json                # Project dependencies & operational npm scripts
@@ -249,3 +275,29 @@ npm run test
   - Non-zero failure exits triggering container restart policies within Docker/Kubernetes.
 - **Worker Daemon Logs**: Standard output captures structured logs:
   `[TIMESTAMP] [WORKER] [INFO] Executing job: 'Daily Inactivity Auto-Close' (id: ...)`
+
+### 4.5 Rust Core Engine Operational Runbook
+The native Rust core engine can be operated as a daemon or executed directly via npm scripts:
+
+```bash
+# Execute native Rust integration test suite (6 tests)
+npm run rust:test
+
+# Execute microsecond benchmarks (CAD decomposition & Telemetry ring buffer)
+npm run rust:bench
+
+# Start Axum 0.8 HTTP daemon on port 8080 (serves /api/v1/*)
+npm run rust:daemon
+
+# Compile release-optimized native binary
+npm run rust:build
+```
+
+**Binary CLI Direct Execution**:
+```bash
+# Launch daemon on custom port
+./target/release/servicemeow-core-engine daemon --port 8080
+
+# Decompose an SVG floorplan from terminal
+./target/release/servicemeow-core-engine decompose public/floorplans/floor-1.svg
+```

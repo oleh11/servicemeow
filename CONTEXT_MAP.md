@@ -314,6 +314,45 @@ export interface SmartDraftResult {
   tone: "empathetic" | "professional" | "technical" | "concise";
   evidenceUsed: number;
 }
+
+// Rust Core Engine & Microservices Contracts
+export interface RustEngineHealth {
+  status: "ok" | "degraded";
+  version: string;
+  uptime_seconds: number;
+  memory_allocated_bytes: number;
+}
+
+export interface RustNormalizedHotspot {
+  id: string;
+  label: string;
+  layer: string;
+  category: "MEETING" | "OFFICE" | "WKSTN" | "OPENPLAN" | "SERV" | "VERT";
+  x: number;      // 0.0 - 100.0%
+  y: number;      // 0.0 - 100.0%
+  width: number;  // 0.0 - 100.0%
+  height: number; // 0.0 - 100.0%
+  area_sq_ft: number;
+}
+
+export interface RustCadDecomposeResponse {
+  view_box: { min_x: number; min_y: number; width: number; height: number };
+  hotspots: RustNormalizedHotspot[];
+  total_area_sq_ft: number;
+  execution_micro_seconds: number;
+}
+
+export interface RustTelemetryStats {
+  events_ingested_total: number;
+  active_anomalies: number;
+  ring_buffer_utilization: number;
+}
+
+export interface RustScriptValidationResult {
+  is_safe: boolean;
+  violations: string[];
+  estimated_fuel_cost: number;
+}
 ```
 
 ---
@@ -343,6 +382,7 @@ export interface SmartDraftResult {
 | `/api/now/morning-checks/:id` | `PATCH` | `{ status, notes, escalateToIncident, incidentPayload }` | `{ check: CmnMorningCheckRecord, incident?: any }` | `itil` or `admin` |
 | `/api/now/ai/assist` | `POST` | `{ taskId, contextNotes }` | `{ summary: string, recommendations: string[] }` | `itil` or `admin` |
 | `/api/now/script-includes/execute` | `POST` | `{ scriptIncludeId, params }` | `{ success: true, output: unknown }` | `admin` |
+| `/api/now/rust-engine` | `GET` | None | `{ healthy: boolean, mode: "native_rust_daemon" \| "fallback_typescript", stats: RustTelemetryStats }` | `itil` or `admin` |
 | `/api/health` | `GET` | None | `{ status: "ok", database: "connected" }` | Public |
 
 ---
@@ -354,3 +394,4 @@ export interface SmartDraftResult {
 3. **System Table Isolation**: Under no circumstances allow client mutations directly against `sys_db_object`, `sys_dictionary`, `sys_security_acl`, or `sys_user` without validating `session.role === 'admin'`.
 4. **Dual-Schema Sync**: Any modification to `prisma/schema.prisma` (PostgreSQL) MUST be mirrored into `prisma/schema.sqlite.prisma` (SQLite) to maintain 100% CI and local test parity.
 5. **Sandboxed Code Execution**: Never invoke `eval()` or `vm.runInContext()` directly. Always execute untrusted or user-supplied code via `runInSecureSandbox()` in `src/lib/script-sandbox.ts`.
+6. **Rust Native Micro-Engine Fallback**: When invoking `rustCoreClient` methods (`decomposeCad`, `ingestTelemetry`, `validateScript`), the client bridge automatically falls back to native TypeScript implementations if the Rust daemon is offline. Downstream code will never throw or crash when the daemon is unreachable.

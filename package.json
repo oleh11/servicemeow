@@ -14,7 +14,11 @@
     "prisma:push": "prisma db push",
     "prisma:seed": "tsx prisma/seed.ts",
     "db:setup": "prisma db push && tsx prisma/seed.ts",
-    "capture:screenshots": "node scripts/capture-real-screenshots.js"
+    "capture:screenshots": "node scripts/capture-real-screenshots.js",
+    "rust:test": "cargo test --manifest-path crates/servicemeow-core-engine/Cargo.toml",
+    "rust:bench": "cargo run --release --manifest-path crates/servicemeow-core-engine/Cargo.toml -- bench",
+    "rust:daemon": "cargo run --release --manifest-path crates/servicemeow-core-engine/Cargo.toml -- daemon",
+    "rust:build": "cargo build --release --manifest-path crates/servicemeow-core-engine/Cargo.toml"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",
