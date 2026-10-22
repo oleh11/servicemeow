@@ -51,6 +51,13 @@ erDiagram
     RequestedItem ||--o{ CatalogTask : "fulfills"
     
     SysUpdateSet ||--o{ SysUpdateXml : "contains changes"
+
+    Task ||--o{ TaskChecklistItem : "enforces SOP"
+    Task ||--o{ TaskEvidence : "supported by"
+    User ||--o{ TaskChecklistItem : "completed by"
+    User ||--o{ TaskEvidence : "decided by"
+    User ||--o{ CmnMorningCheck : "inspected by"
+    CmnMorningCheck ||--o| Incident : "escalates to"
 ```
 
 ---
@@ -97,6 +104,11 @@ erDiagram
 - **`CmnSpaceCategory` (`cmn_space_category`)**: Standard architectural space classifications (`MEETING`, `OFFICE`, `OPENPLAN`, `PRIMCIRC`, `SECONDCIRC`, `SERV`, `SUPPORT`, `VERT`, `WKSTN`) with legend color hex, description, and standard capacity.
 - **`CmnDepartment` (`cmn_department`)**: Corporate divisions and organizational business units (e.g. `Electronic Systems`, `Executive Leadership`, `Cloud Infrastructure`) with cost centers and headcount.
 - **`CmnDrawing` (`cmn_drawing`)**: Architectural CAD drawing sheets (e.g. `hq18`, `tt_l4`, `offcen01`) with vector layer metadata, drawing title, total gross square footage, and floor linkages.
+
+### 2.7 Operational Assurance & Diagnostic Evidence Domain (v3.2.0)
+- **`TaskChecklistItem` (`task_checklist_item`)**: Standard Operating Procedure steps attached to tasks. Defines `isMandatory` validation flags, completion state, completed-by user attribution, and ordering.
+- **`TaskEvidence` (`task_evidence`)**: Concrete diagnostic facts (`log.stacktrace`, `ci.ping_failure`, `git.commit_hash`, `monitor.alert`, `crm.thread_reply`) preventing AI or operator hallucination. Includes decisive flags, confidence scores, and operator review lifecycle (`proposed`, `accepted`, `rejected`).
+- **`CmnMorningCheck` (`cmn_morning_check`)**: Shift-based recurring operational rounds across infrastructure categories (`datacenter`, `backup`, `network`, `database`, `security`, `application`). Supports tri-state status (`PASS`, `DEGRADED`, `FAIL`, `PENDING`), inspector attribution, and 1-click critical incident escalation.
 
 ---
 
@@ -385,6 +397,67 @@ CREATE TABLE IF NOT EXISTS cmn_drawing (
 );
 
 CREATE INDEX idx_drawing_floor ON cmn_drawing(floor_id);
+
+-- ==============================================================================
+-- 7. Operational Assurance & Diagnostic Evidence (v3.2.0)
+-- ==============================================================================
+
+CREATE TABLE IF NOT EXISTS task_checklist_item (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    task_id VARCHAR(36) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    is_mandatory BOOLEAN DEFAULT FALSE NOT NULL,
+    is_completed BOOLEAN DEFAULT FALSE NOT NULL,
+    completed_by_id VARCHAR(36),
+    completed_at TIMESTAMP WITH TIME ZONE,
+    sort_order INTEGER DEFAULT 0 NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT fk_checklist_task FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE,
+    CONSTRAINT fk_checklist_user FOREIGN KEY (completed_by_id) REFERENCES sys_user(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_checklist_task_gate ON task_checklist_item(task_id, is_mandatory, is_completed);
+
+CREATE TABLE IF NOT EXISTS task_evidence (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    task_id VARCHAR(36) NOT NULL,
+    claim_field VARCHAR(100) NOT NULL,
+    claim_value TEXT NOT NULL,
+    evidence_kind VARCHAR(50) NOT NULL,
+    is_decisive BOOLEAN DEFAULT FALSE NOT NULL,
+    raw_observation TEXT NOT NULL,
+    source_url VARCHAR(500),
+    status VARCHAR(20) DEFAULT 'proposed' NOT NULL,
+    decided_by_id VARCHAR(36),
+    decided_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT fk_evidence_task FOREIGN KEY (task_id) REFERENCES task(id) ON DELETE CASCADE,
+    CONSTRAINT fk_evidence_user FOREIGN KEY (decided_by_id) REFERENCES sys_user(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_evidence_task_status ON task_evidence(task_id, status);
+
+CREATE TABLE IF NOT EXISTS cmn_morning_check (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    title VARCHAR(255) NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    target_system VARCHAR(100) NOT NULL,
+    shift VARCHAR(20) DEFAULT 'morning' NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending' NOT NULL,
+    notes TEXT,
+    checked_by_id VARCHAR(36),
+    checked_at TIMESTAMP WITH TIME ZONE,
+    incident_id VARCHAR(36),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT fk_morning_check_user FOREIGN KEY (checked_by_id) REFERENCES sys_user(id) ON DELETE SET NULL,
+    CONSTRAINT fk_morning_check_incident FOREIGN KEY (incident_id) REFERENCES incident(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_morning_check_cat_status ON cmn_morning_check(category, status, created_at);
 ```
 
 ---
@@ -399,6 +472,9 @@ ALTER TABLE task ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sys_user ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sys_user_session ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cmn_reservation ENABLE ROW LEVEL SECURITY;
+ALTER TABLE task_checklist_item ENABLE ROW LEVEL SECURITY;
+ALTER TABLE task_evidence ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cmn_morning_check ENABLE ROW LEVEL SECURITY;
 
 -- 1. Session & Identity Policy: Users can only inspect their own session records (admins see all)
 CREATE POLICY user_session_isolation ON sys_user_session
@@ -433,5 +509,32 @@ CREATE POLICY reservation_mutation_guard ON cmn_reservation
     USING (
         current_setting('request.jwt.claim.role', true) = 'admin'
         OR reserved_by_id = current_setting('request.jwt.claim.sub', true)
+    );
+
+-- 5. Checklist Policy: Fulfillers mutate; callers can read items for their tickets
+CREATE POLICY checklist_select ON task_checklist_item
+    FOR SELECT
+    USING (
+        current_setting('request.jwt.claim.role', true) IN ('admin', 'itil', 'cab_approver')
+        OR EXISTS (SELECT 1 FROM task WHERE task.id = task_checklist_item.task_id AND task.opened_by_id = current_setting('request.jwt.claim.sub', true))
+    );
+
+CREATE POLICY checklist_mutation_guard ON task_checklist_item
+    FOR ALL
+    USING (
+        current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
+    );
+
+-- 6. Evidence & Morning Checks Policy: Restricted to ITIL operations and administrators
+CREATE POLICY evidence_access_guard ON task_evidence
+    FOR ALL
+    USING (
+        current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
+    );
+
+CREATE POLICY morning_checks_guard ON cmn_morning_check
+    FOR ALL
+    USING (
+        current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
     );
 ```

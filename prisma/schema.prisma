@@ -84,6 +84,9 @@ model User {
   sessions             SysUserSession[]  @relation("UserSessions")
   impersonatedSessions SysUserSession[]  @relation("ImpersonatedSessionUser")
   reservations         CmnReservation[]
+  checklistItemsCompleted TaskChecklistItem[] @relation("ChecklistCompletedBy")
+  evidenceDecided         TaskEvidence[]      @relation("EvidenceDecidedBy")
+  morningChecksInspected  CmnMorningCheck[]   @relation("MorningCheckInspector")
 }
 
 model Group {
@@ -351,6 +354,8 @@ model Task {
   slaInstances      SlaInstance[]
   approvals         ApprovalRecord[]
   changeTask        ChangeTask?
+  checklistItems    TaskChecklistItem[]
+  evidenceItems     TaskEvidence[]
 
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -645,6 +650,62 @@ model ApprovalRecord {
   approvalType String   @default("cab") // "cab", "manager"
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model TaskChecklistItem {
+  id            String    @id @default(cuid())
+  taskId        String
+  task          Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  isMandatory   Boolean   @default(false)
+  isCompleted   Boolean   @default(false)
+  completedById String?
+  completedBy   User?     @relation("ChecklistCompletedBy", fields: [completedById], references: [id])
+  completedAt   DateTime?
+  sortOrder     Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([taskId, isMandatory, isCompleted])
+}
+
+model TaskEvidence {
+  id             String    @id @default(cuid())
+  taskId         String
+  task           Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  claimField     String    // e.g. "root_cause", "workaround", "cmdb_ci_id", "assigned_to_id"
+  claimValue     String    // e.g. "Memory leak in auth microservice", "ci_123"
+  evidenceKind   String    // "log.stacktrace", "ci.ping_failure", "git.commit_hash", "monitor.alert", "crm.thread_reply"
+  isDecisive     Boolean   @default(false) // Primary decisive evidence vs supporting
+  rawObservation String    // Concrete observation details from logs or agents
+  sourceUrl      String?
+  status         String    @default("proposed") // "proposed", "accepted", "rejected"
+  decidedById    String?
+  decidedBy      User?     @relation("EvidenceDecidedBy", fields: [decidedById], references: [id])
+  decidedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([taskId, status])
+}
+
+model CmnMorningCheck {
+  id           String    @id @default(cuid())
+  title        String    // e.g. "Primary SAN Storage Capacity", "Offsite Backup Verification"
+  category     String    // "backup", "network", "datacenter", "database", "security", "application"
+  targetSystem String    // e.g. "SAN-Cluster-01", "PostgreSQL-Replica-02"
+  shift        String    @default("morning") // "morning", "evening", "night"
+  status       String    @default("pending") // "pass", "degraded", "fail", "pending"
+  notes        String?
+  checkedById  String?
+  checkedBy    User?     @relation("MorningCheckInspector", fields: [checkedById], references: [id])
+  checkedAt    DateTime?
+  incidentId   String?   // Linked Incident ID if escalated
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([category, status, createdAt])
 }
 
 // ----------------------------------------------------

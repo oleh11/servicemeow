@@ -307,6 +307,65 @@ export async function GET(
       return NextResponse.json({ result: groups });
     }
 
+    if (table === "task_checklist_item" || table === "task_checklist") {
+      let taskId = searchParams.get("task_id") || searchParams.get("taskId");
+      if (!taskId) {
+        const cond = parsedQuery.conditions.find((c) => c.field === "task_id" || c.field === "taskId");
+        if (cond) taskId = cond.value;
+      }
+      const items = await db.taskChecklistItem.findMany({
+        where: taskId ? { taskId } : {},
+        include: { completedBy: { select: { id: true, name: true, email: true } } },
+        orderBy: { sortOrder: "asc" },
+      });
+      const formatted = items.map((i) => ({
+        ...i,
+        sys_id: i.id,
+        order: i.sortOrder,
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "task_evidence") {
+      let taskId = searchParams.get("task_id") || searchParams.get("taskId");
+      if (!taskId) {
+        const cond = parsedQuery.conditions.find((c) => c.field === "task_id" || c.field === "taskId");
+        if (cond) taskId = cond.value;
+      }
+      const items = await db.taskEvidence.findMany({
+        where: taskId ? { taskId } : {},
+        include: { decidedBy: { select: { id: true, name: true, email: true } } },
+        orderBy: { createdAt: "desc" },
+      });
+      const formatted = items.map((e) => ({
+        ...e,
+        sys_id: e.id,
+        isAccepted: e.status === "accepted" ? true : e.status === "rejected" ? false : null,
+        is_accepted: e.status === "accepted" ? true : e.status === "rejected" ? false : null,
+        observationSummary: e.rawObservation,
+        observation_summary: e.rawObservation,
+        proposedFactField: e.claimField,
+        proposed_fact_field: e.claimField,
+        proposedFactValue: e.claimValue,
+        proposed_fact_value: e.claimValue,
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "cmn_morning_check") {
+      const shift = searchParams.get("shift");
+      const category = searchParams.get("category");
+      const where: any = {};
+      if (shift) where.shift = shift;
+      if (category) where.category = category;
+      const items = await db.cmnMorningCheck.findMany({
+        where,
+        include: { checkedBy: { select: { id: true, name: true, email: true } } },
+        orderBy: { createdAt: "desc" },
+      });
+      return NextResponse.json({ result: items });
+    }
+
     if (table === "cmn_location") {
       const locLimit = Math.min(500, parseInt(searchParams.get("sysparm_limit") || "100", 10));
       const where: any = {};
@@ -926,18 +985,157 @@ export async function POST(
       );
     }
 
+    if (table === "task_checklist_item" || table === "task_checklist") {
+      const taskId = body.task_id || body.taskId;
+      if (!taskId) {
+        return NextResponse.json({ error: "task_id is required" }, { status: 400 });
+      }
+      const item = await db.taskChecklistItem.create({
+        data: {
+          taskId,
+          title: body.title || "Checklist Step",
+          description: body.description || null,
+          isMandatory: Boolean(body.is_mandatory ?? body.isMandatory ?? false),
+          isCompleted: Boolean(body.is_completed ?? body.isCompleted ?? false),
+          sortOrder:
+            body.sort_order !== undefined
+              ? parseInt(body.sort_order, 10)
+              : body.order !== undefined
+              ? parseInt(body.order, 10)
+              : (body.sortOrder || 0),
+          completedById: body.completed_by_id || body.completedById || (body.is_completed || body.isCompleted ? callerUserId : null),
+          completedAt: body.is_completed || body.isCompleted ? new Date() : null,
+        },
+        include: { completedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            ...item,
+            sys_id: item.id,
+            order: item.sortOrder,
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "task_evidence") {
+      const taskId = body.task_id || body.taskId;
+      if (!taskId) {
+        return NextResponse.json({ error: "task_id is required" }, { status: 400 });
+      }
+      const claimField =
+        body.claim_field ||
+        body.claimField ||
+        body.proposed_fact_field ||
+        body.proposedFactField ||
+        "general";
+      const claimValue =
+        body.claim_value ||
+        body.claimValue ||
+        body.proposed_fact_value ||
+        body.proposedFactValue ||
+        "";
+      const isAccepted = body.is_accepted === true || body.status === "accepted";
+      const isRejected = body.is_accepted === false || body.status === "rejected";
+      const status =
+        body.status ||
+        (isAccepted
+          ? "accepted"
+          : isRejected
+          ? "rejected"
+          : "proposed");
+
+      const item = await db.taskEvidence.create({
+        data: {
+          taskId,
+          claimField,
+          claimValue,
+          evidenceKind: body.evidence_kind || body.evidenceKind || "log.stacktrace",
+          isDecisive: Boolean(body.is_decisive ?? body.isDecisive ?? false),
+          rawObservation:
+            body.raw_observation ||
+            body.rawObservation ||
+            body.observation_summary ||
+            body.observationSummary ||
+            body.raw_evidence_payload ||
+            body.rawEvidencePayload ||
+            "Diagnostic observation recorded",
+          sourceUrl: body.source_url || body.sourceUrl || null,
+          status,
+          decidedById:
+            body.decided_by_id ||
+            body.decidedById ||
+            (isAccepted || isRejected ? callerUserId : null),
+          decidedAt: isAccepted || isRejected ? new Date() : null,
+        },
+        include: { decidedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            ...item,
+            sys_id: item.id,
+            evidenceKind: item.evidenceKind,
+            isDecisive: item.isDecisive,
+            isAccepted: item.status === "accepted",
+            is_accepted: item.status === "accepted",
+            proposedFactField: item.claimField,
+            proposedFactValue: item.claimValue,
+            observationSummary: item.rawObservation,
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "cmn_morning_check") {
+      if (!body.title) {
+        return NextResponse.json({ error: "title is required" }, { status: 400 });
+      }
+      const targetSystem =
+        body.target_system || body.targetSystem || body.title || "Core-Infrastructure";
+      const shift = (body.shift || "morning").toLowerCase();
+      const status = (body.status || "pending").toLowerCase();
+      const category = (body.category || "datacenter").toLowerCase();
+
+      const check = await db.cmnMorningCheck.create({
+        data: {
+          title: body.title,
+          category,
+          targetSystem,
+          shift,
+          status,
+          notes: body.notes || null,
+          checkedById: body.checked_by_id || body.checkedById || callerUserId || null,
+          checkedAt: status !== "pending" ? new Date() : null,
+        },
+        include: { checkedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({ result: { ...check, sys_id: check.id } }, { status: 201 });
+    }
+
     if (table === "cmn_location") {
       const loc = await db.cmnLocation.create({
         data: {
           name: body.name,
+          locationType: body.location_type || body.locationType || null,
           street: body.street || null,
           city: body.city || null,
           state: body.state || null,
           country: body.country || null,
+          fullPath: body.full_path || body.fullPath || null,
           parentId: body.parent_id || body.parentId || null,
+          regionId: body.region_id || body.regionId || null,
+          stateRefId: body.state_ref_id || body.stateRefId || null,
+          campusId: body.campus_id || body.campusId || null,
+          buildingId: body.building_id || body.buildingId || null,
+          floorId: body.floor_id || body.floorId || null,
+          spaceId: body.space_id || body.spaceId || null,
         },
       });
-      return NextResponse.json({ result: { ...loc, sys_id: loc.id, id: loc.id } }, { status: 201 });
+      return NextResponse.json({ result: { sys_id: loc.id, ...loc } }, { status: 201 });
     }
 
     if (table === "cmdb_ci") {
@@ -1383,29 +1581,6 @@ export async function POST(
       return NextResponse.json({ result: { sys_id: reservation.id, ...reservation } }, { status: 201 });
     }
 
-    if (table === "cmn_location") {
-      const loc = await db.cmnLocation.create({
-        data: {
-          name: body.name,
-          locationType: body.location_type || body.locationType || null,
-          street: body.street || null,
-          city: body.city || null,
-          state: body.state || null,
-          country: body.country || null,
-          fullPath: body.full_path || body.fullPath || null,
-          parentId: body.parent_id || body.parentId || null,
-          regionId: body.region_id || body.regionId || null,
-          stateRefId: body.state_ref_id || body.stateRefId || null,
-          campusId: body.campus_id || body.campusId || null,
-          buildingId: body.building_id || body.buildingId || null,
-          floorId: body.floor_id || body.floorId || null,
-          spaceId: body.space_id || body.spaceId || null,
-        },
-      });
-      return NextResponse.json({ result: { sys_id: loc.id, ...loc } }, { status: 201 });
-    }
-
-    // Dynamic Creation Handler for Any Custom Table
     const tableMeta = await db.sysDbObject.findUnique({
       where: { name: table },
     });

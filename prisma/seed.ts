@@ -2488,6 +2488,125 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
     ],
   });
 
+  // Seed Checklist SOP Items on INC0001001
+  console.log("Seeding Mandatory Checklist Items & SOP Gatekeeper...");
+  await prisma.taskChecklistItem.createMany({
+    data: [
+      {
+        taskId: task1.id,
+        title: "Verify BGP edge route peering status on border gateway",
+        description: "Execute 'show ip bgp summary' and confirm zero flap count over past 1 hour.",
+        isMandatory: true,
+        isCompleted: true,
+        completedById: itilUser.id,
+        completedAt: new Date(Date.now() - 20 * 60 * 1000),
+        sortOrder: 1,
+      },
+      {
+        taskId: task1.id,
+        title: "Inspect interface packet drop counters & MTU trunk alignment",
+        description: "Ensure MTU 1500 matches switchport trunk configuration on vpn-gw-east.",
+        isMandatory: true,
+        isCompleted: false,
+        sortOrder: 2,
+      },
+      {
+        taskId: task1.id,
+        title: "Notify on-call Network Operations Commander & publish bulletin",
+        description: "Post initial disruption announcement to Status page and Slack #incident-room.",
+        isMandatory: false,
+        isCompleted: true,
+        completedById: itilUser.id,
+        completedAt: new Date(Date.now() - 30 * 60 * 1000),
+        sortOrder: 3,
+      },
+    ],
+  });
+
+  // Seed Hermes AI Anti-Hallucination Evidence Ledger on INC0001001
+  console.log("Seeding Hermes AI Evidence Ledger...");
+  await prisma.taskEvidence.createMany({
+    data: [
+      {
+        taskId: task1.id,
+        claimField: "root_cause",
+        claimValue: "Interface MTU mismatch on vpn-gw-east.corp.internal border trunk",
+        evidenceKind: "log.stacktrace",
+        isDecisive: true,
+        rawObservation: "Syslog captured fragmented packets dropped on interface eth0/1 with MTU 1400 vs router MTU 1500.",
+        status: "proposed",
+      },
+      {
+        taskId: task1.id,
+        claimField: "assigned_to_id",
+        claimValue: itilUser.id,
+        evidenceKind: "crm.thread_reply",
+        isDecisive: false,
+        rawObservation: "Sarah Jenkins replied with acknowledgement to initial PagerDuty escalation alert.",
+        status: "accepted",
+        decidedById: itilUser.id,
+        decidedAt: new Date(Date.now() - 25 * 60 * 1000),
+      },
+    ],
+  });
+
+  // Seed Daily Morning Checks (Operational Rounds)
+  console.log("Seeding Daily Infrastructure Morning Checks...");
+  await prisma.cmnMorningCheck.createMany({
+    data: [
+      {
+        title: "Primary SAN Storage Array Capacity & IOPS",
+        category: "datacenter",
+        targetSystem: "SAN-Pure-Cluster-01",
+        shift: "morning",
+        status: "pass",
+        notes: "Capacity at 62%, deduplication ratio 3.8:1, latency nominal under 1.2ms.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+      {
+        title: "Offsite Immutable Backup Replication Snapshot",
+        category: "backup",
+        targetSystem: "Veeam-B&R-Offsite",
+        shift: "morning",
+        status: "pass",
+        notes: "Nightly snapshot completed with zero CRC warnings; SHA-256 integrity verified.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+      {
+        title: "PostgreSQL Production Read-Replica Replication Lag",
+        category: "database",
+        targetSystem: "pg-read-replica-02",
+        shift: "morning",
+        status: "degraded",
+        notes: "Replica lag spiked to 480ms during automated index maintenance. Catch-up in progress.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+      {
+        title: "Corporate Dual-Fiber BGP & SD-WAN Border Uplinks",
+        category: "network",
+        targetSystem: "Cisco-Catalyst-Border-GW",
+        shift: "morning",
+        status: "pass",
+        notes: "Both 10Gbps fiber circuits online; packet loss 0.00% across synthetic probes.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+      {
+        title: "Workplace CAD & Room Booking Sync Daemon",
+        category: "application",
+        targetSystem: "ServiceMeow-Daemon-Worker",
+        shift: "morning",
+        status: "pass",
+        notes: "Daemon heartbeat verified, 15s scheduled queue tick cadence nominal.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+    ],
+  });
+
   console.log("ServiceMeow Seed completed successfully!");
 }
 

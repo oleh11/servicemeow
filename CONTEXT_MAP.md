@@ -144,6 +144,72 @@ export interface CadDrawingSheet {
   layers: string[];          // ["walls", "columns", "doors", "workstations", "stairs_elevators", "plumbing"]
 }
 
+// Operational Assurance & Evidence Context (v3.2.0)
+export interface TaskChecklistItemRecord {
+  id: string;
+  taskId: string;
+  title: string;
+  description?: string | null;
+  isMandatory: boolean;
+  isCompleted: boolean;
+  completedById?: string | null;
+  completedAt?: string | null;
+  sortOrder: number;
+}
+
+export type EvidenceKind = 
+  | "log.stacktrace" 
+  | "ci.ping_failure" 
+  | "git.commit_hash" 
+  | "monitor.alert" 
+  | "crm.thread_reply";
+
+export interface TaskEvidenceRecord {
+  id: string;
+  taskId: string;
+  claimField: string;
+  claimValue: string;
+  evidenceKind: EvidenceKind;
+  isDecisive: boolean;
+  rawObservation: string;
+  sourceUrl?: string | null;
+  status: "proposed" | "accepted" | "rejected";
+  decidedById?: string | null;
+  decidedAt?: string | null;
+}
+
+export interface CmnMorningCheckRecord {
+  id: string;
+  title: string;
+  category: "datacenter" | "backup" | "network" | "database" | "security" | "application";
+  targetSystem: string;
+  shift: "morning" | "evening" | "night";
+  status: "pass" | "degraded" | "fail" | "pending";
+  notes?: string | null;
+  checkedById?: string | null;
+  checkedAt?: string | null;
+  incidentId?: string | null;
+}
+
+export interface WatchtowerAttentionStreams {
+  criticalIncidents: TaskRecord[];
+  breachingSlas: any[];
+  pendingApprovals: any[];
+  activeProblems: any[];
+  degradedCis: any[];
+  failingMorningChecks: CmnMorningCheckRecord[];
+}
+
+export interface WatchtowerMetrics {
+  healthScore: number;       // 0 - 100
+  criticalIncidentsCount: number;
+  breachingSlasCount: number;
+  pendingApprovalsCount: number;
+  activeProblemsCount: number;
+  degradedCisCount: number;
+  failingChecksCount: number;
+}
+
 // Swiss Grid Design System Tokens & Contracts
 export interface SwissGridActionCard {
   number: "01" | "02" | "03" | "04";
@@ -188,6 +254,10 @@ export interface ScriptSandboxResult {
 | `/api/now/table/cmn_floor/:id` | `PATCH` | `{ area_sq_ft, name, code, floor_number }` | `{ result: CmnFloor }` | `workplace_admin` or `admin` |
 | `/api/now/table/cmn_building/:id` | `PATCH` | `{ total_area_sq_ft, floors_count, name, code, building_type }` | `{ result: CmnBuilding }` | `workplace_admin` or `admin` |
 | `/api/now/reservations` | `POST` | `{ spaceId, startTime, endTime, purpose }` | `{ result: CmnReservation }` | Conflict-Free Validation |
+| `/api/now/watchtower` | `GET` | None | `{ metrics: WatchtowerMetrics, attentionStreams }` | `itil` or `admin` |
+| `/api/now/morning-checks` | `GET` | `date`, `shift`, `category` | `{ checks: CmnMorningCheckRecord[] }` | `itil` or `admin` |
+| `/api/now/morning-checks` | `POST` | `{ title, category, shift, checkDate, status, notes }` | `{ check: CmnMorningCheckRecord }` | `itil` or `admin` |
+| `/api/now/morning-checks/:id` | `PATCH` | `{ status, notes, escalateToIncident, incidentPayload }` | `{ check: CmnMorningCheckRecord, incident?: any }` | `itil` or `admin` |
 | `/api/now/ai/assist` | `POST` | `{ taskId, contextNotes }` | `{ summary: string, recommendations: string[] }` | `itil` or `admin` |
 | `/api/now/script-includes/execute` | `POST` | `{ scriptIncludeId, params }` | `{ success: true, output: unknown }` | `admin` |
 | `/api/health` | `GET` | None | `{ status: "ok", database: "connected" }` | Public |
@@ -197,6 +267,7 @@ export interface ScriptSandboxResult {
 ## 3. Downstream Execution Invariants
 
 1. **Password Safety**: Never modify `omit: { user: { passwordHash: true } }` in `src/lib/db.ts`. If an authentication endpoint requires the hash for comparison, it must explicitly specify `omit: { passwordHash: false }`.
-2. **System Table Isolation**: Under no circumstances allow client mutations directly against `sys_db_object`, `sys_dictionary`, `sys_security_acl`, or `sys_user` without validating `session.role === 'admin'`.
-3. **Dual-Schema Sync**: Any modification to `prisma/schema.prisma` (PostgreSQL) MUST be mirrored into `prisma/schema.sqlite.prisma` (SQLite) to maintain 100% CI and local test parity.
-4. **Sandboxed Code Execution**: Never invoke `eval()` or `vm.runInContext()` directly. Always execute untrusted or user-supplied code via `runInSecureSandbox()` in `src/lib/script-sandbox.ts`.
+2. **SOP Gatekeeper Enforcement**: State transition of any task to `6` (Resolved) or `7` (Closed) MUST verify that all `isMandatory: true` checklist items are complete. If incomplete, halt with `422 Unprocessable Entity` and return `{ error: "MANDATORY_CHECKLIST_INCOMPLETE", incomplete_items: string[] }`.
+3. **System Table Isolation**: Under no circumstances allow client mutations directly against `sys_db_object`, `sys_dictionary`, `sys_security_acl`, or `sys_user` without validating `session.role === 'admin'`.
+4. **Dual-Schema Sync**: Any modification to `prisma/schema.prisma` (PostgreSQL) MUST be mirrored into `prisma/schema.sqlite.prisma` (SQLite) to maintain 100% CI and local test parity.
+5. **Sandboxed Code Execution**: Never invoke `eval()` or `vm.runInContext()` directly. Always execute untrusted or user-supplied code via `runInSecureSandbox()` in `src/lib/script-sandbox.ts`.

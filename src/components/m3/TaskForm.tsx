@@ -19,12 +19,15 @@ import {
   Server,
   UserCheck,
   Paperclip,
+  ListChecks,
 } from "lucide-react";
 import { AttachmentZone } from "@/components/common/AttachmentZone";
 import { ReferenceField } from "./ReferenceField";
 import { M3OutlinedTextField } from "./M3OutlinedTextField";
 import { ReferenceValue } from "@/lib/schema";
 import { useUser } from "@/lib/user-context";
+import { TaskChecklist } from "@/components/workspace/TaskChecklist";
+import { TaskEvidenceLedger } from "@/components/workspace/TaskEvidenceLedger";
 
 export interface TaskFormProps {
   tableName?: string; // defaults to "incident"
@@ -43,7 +46,8 @@ export function TaskForm({
 
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"details" | "stream" | "related" | "attachments">("details");
+  const [activeTab, setActiveTab] = useState<"details" | "stream" | "related" | "attachments" | "checklist" | "evidence">("details");
+  const [incompleteMandatoryCount, setIncompleteMandatoryCount] = useState<number>(0);
   const [toastMsg, setToastMsg] = useState("");
   const [formError, setFormError] = useState("");
 
@@ -243,6 +247,14 @@ export function TaskForm({
 
       if (!res.ok) {
         const errJson = await res.json();
+        if (res.status === 422 && errJson.incomplete_items) {
+          setActiveTab("checklist");
+          throw new Error(
+            `SOP Gatekeeper Blocked Resolution: Incomplete mandatory steps: ${errJson.incomplete_items.join(
+              ", "
+            )}`
+          );
+        }
         throw new Error(errJson.error || "Failed to save record");
       }
 
@@ -260,6 +272,17 @@ export function TaskForm({
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleFactAccepted = (field: string, value: string) => {
+    if (field === "close_notes" || field === "closeNotes") {
+      setCloseNotes(value);
+    } else if (field === "close_code" || field === "closeCode") {
+      setCloseCode(value);
+    } else if (field === "description") {
+      setDescription((prev) => (prev ? `${prev}\n\n[Hermes Fact]: ${value}` : value));
+    }
+    showToast(`Incorporated verified Hermes fact into ${field}`);
   };
 
   // Add Activity Note
@@ -578,6 +601,43 @@ export function TaskForm({
             <Paperclip className="w-4 h-4" />
             Attachments
             {activeTab === "attachments" && (
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--md-sys-color-primary)] rounded-t-full" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("checklist")}
+            className={`relative py-3.5 text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === "checklist"
+                ? "text-[var(--md-sys-color-primary)] font-semibold"
+                : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
+            }`}
+          >
+            <ListChecks className="w-4 h-4" />
+            SOP Checklist
+            {incompleteMandatoryCount > 0 ? (
+              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-red-600 text-white font-mono font-bold">
+                {incompleteMandatoryCount}
+              </span>
+            ) : null}
+            {activeTab === "checklist" && (
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--md-sys-color-primary)] rounded-t-full" />
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("evidence")}
+            className={`relative py-3.5 text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              activeTab === "evidence"
+                ? "text-[var(--md-sys-color-primary)] font-semibold"
+                : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-purple-600" />
+            Hermes Evidence
+            {activeTab === "evidence" && (
               <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--md-sys-color-primary)] rounded-t-full" />
             )}
           </button>
@@ -1006,6 +1066,26 @@ export function TaskForm({
         {activeTab === "attachments" && (
           <div className="space-y-4">
             <AttachmentZone tableName={tableName} recordId={recordId} />
+          </div>
+        )}
+
+        {activeTab === "checklist" && (
+          <div className="space-y-6">
+            <TaskChecklist
+              taskId={recordId}
+              isNew={isNew}
+              onIncompleteMandatoryChange={setIncompleteMandatoryCount}
+            />
+          </div>
+        )}
+
+        {activeTab === "evidence" && (
+          <div className="space-y-6">
+            <TaskEvidenceLedger
+              taskId={recordId}
+              isNew={isNew}
+              onFactAccepted={handleFactAccepted}
+            />
           </div>
         )}
       </main>

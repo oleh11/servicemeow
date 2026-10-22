@@ -21,6 +21,8 @@ import {
   Check,
 } from "lucide-react";
 import { useUser } from "@/lib/user-context";
+import { TaskChecklist } from "@/components/workspace/TaskChecklist";
+import { TaskEvidenceLedger } from "@/components/workspace/TaskEvidenceLedger";
 
 interface ProblemFormProps {
   recordId: string; // "new" or cuid
@@ -172,6 +174,13 @@ export function ProblemForm({ recordId }: ProblemFormProps) {
 
       if (!res.ok) {
         const err = await res.json();
+        if (res.status === 422 && err.incomplete_items) {
+          throw new Error(
+            `SOP Gatekeeper Blocked Resolution: Incomplete mandatory steps: ${err.incomplete_items.join(
+              ", "
+            )}`
+          );
+        }
         throw new Error(err.error || "Failed to save Problem");
       }
 
@@ -186,6 +195,17 @@ export function ProblemForm({ recordId }: ProblemFormProps) {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleFactAccepted = (field: string, value: string) => {
+    if (field === "workaround") {
+      setWorkaround(value);
+    } else if (field === "root_cause" || field === "rootCause") {
+      setRootCause(value);
+    } else if (field === "description") {
+      setDescription((prev) => (prev ? `${prev}\n\n[Hermes Fact]: ${value}` : value));
+    }
+    showToast(`Incorporated verified Hermes fact into ${field}`);
   };
 
   const handleAddNote = async (e: React.FormEvent) => {
@@ -607,6 +627,31 @@ export function ProblemForm({ recordId }: ProblemFormProps) {
                     ))}
                   </ul>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* Section 4: SOP Gatekeeper Checklist & Hermes Diagnostic Ledger */}
+          {!isNew && (
+            <div className="space-y-6 pt-4">
+              <div className="border-t-2 border-black pt-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="font-mono text-xs uppercase font-extrabold bg-black text-white px-2 py-0.5">
+                    SECTION 04
+                  </span>
+                  <span className="font-mono text-xs font-bold text-neutral-500 uppercase">
+                    Verification Criteria & Diagnostic Ledger
+                  </span>
+                </div>
+
+                <div className="space-y-6">
+                  <TaskChecklist taskId={recordId} isNew={isNew} />
+                  <TaskEvidenceLedger
+                    taskId={recordId}
+                    isNew={isNew}
+                    onFactAccepted={handleFactAccepted}
+                  />
+                </div>
               </div>
             </div>
           )}

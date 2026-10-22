@@ -19,8 +19,10 @@ import {
   ExternalLink,
   ShieldCheck,
   RefreshCw,
+  QrCode,
 } from "lucide-react";
 import { useUser } from "@/lib/user-context";
+import { AssetQrLabelModal } from "./AssetQrLabelModal";
 
 interface CmdbCiFormProps {
   recordId: string; // "new" or cuid
@@ -67,6 +69,7 @@ export function CmdbCiForm({ recordId }: CmdbCiFormProps) {
   const [saving, setSaving] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [qrModalOpen, setQrModalOpen] = useState(false);
 
   // Form State
   const [name, setName] = useState("");
@@ -250,14 +253,25 @@ export function CmdbCiForm({ recordId }: CmdbCiFormProps) {
 
         <div className="flex items-center gap-2">
           {!isNew && (
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="flex h-9 items-center gap-1.5 border-2 border-black bg-white px-3 font-mono text-xs font-bold uppercase text-red-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-red-50 transition-all"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span>Delete</span>
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => setQrModalOpen(true)}
+                className="flex h-9 items-center gap-1.5 border-2 border-black bg-white px-3 font-mono text-xs font-bold uppercase text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-neutral-100 transition-all cursor-pointer"
+              >
+                <QrCode className="h-3.5 w-3.5" />
+                <span>QR Label &amp; Handover</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="flex h-9 items-center gap-1.5 border-2 border-black bg-white px-3 font-mono text-xs font-bold uppercase text-red-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-red-50 transition-all cursor-pointer"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Delete</span>
+              </button>
+            </>
           )}
 
           <button
@@ -626,6 +640,27 @@ export function CmdbCiForm({ recordId }: CmdbCiFormProps) {
           )}
         </form>
       </main>
+
+      {/* Printable QR Asset Label & Custody Handover Document Modal */}
+      {!isNew && (
+        <AssetQrLabelModal
+          isOpen={qrModalOpen}
+          onClose={() => setQrModalOpen(false)}
+          ci={{
+            id: recordId,
+            name,
+            ciClass,
+            assetTag,
+            ipAddress,
+            hostName,
+            environment,
+            tier,
+            locationName: locations.find((l) => l.id === locationId)?.name || null,
+            spaceName: spaces.find((s) => s.id === spaceId)?.name || null,
+            owner,
+          }}
+        />
+      )}
     </div>
   );
 }

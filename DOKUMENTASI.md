@@ -11,10 +11,12 @@
 ```mermaid
 graph TD
     subgraph Tier1["Tier 1: Client Surfaces (Next.js 15 + React 19)"]
-        FulfillerWS["Fulfiller Workspace (/workspace)<br/>• Dockable Multi-Record Tabs<br/>• ITIL Polymorphic Forms<br/>• CMDB Visual Racks<br/>• Purr-Assist AI Panel"]
+        FulfillerWS["Fulfiller Workspace (/workspace)<br/>• Dockable Multi-Record Tabs<br/>• ITIL Polymorphic Forms<br/>• CMDB Visual Racks<br/>• Purr-Assist AI Panel<br/>• SOP Checklist & Gatekeeper UI<br/>• Hermes Diagnostic Evidence Ledger"]
         StudioIDE["Studio Low-Code IDE (/studio)<br/>• Monaco Code Editor<br/>• Schema Builder (sys_db_object)<br/>• Update Set ALM Engine<br/>• Modular Admin Dynamic Explorer Filtering"]
         SelfService["Self-Service Portal (/portal)<br/>• Service Catalog & Cart<br/>• 6-Tier CAD Workplace Reservations<br/>• 90-Day Uptime Status"]
         SpaceConsole["ServiceMeow Space Console (/workspace/spaces, /studio?tab=workplace)<br/>• 3-Zone Master-Detail Split Console<br/>• Multi-Level Floor Sheet Grid (HQ15-HQ19)<br/>• Room Categories & Organizational Legends<br/>• Layer Highlights & Complex Architectural CAD Stage"]
+        WatchtowerCockpit["Watchtower Attention Cockpit (/workspace/watchtower)<br/>• Operational Health Index (0-100)<br/>• 6 High-Urgency Attention Streams<br/>• Critical P1/P2 Incidents & Breaching SLAs"]
+        MorningChecks["Morning Checks Console (/workspace/morning-checks)<br/>• Shift Operational Rounds (Morning/Evening/Night)<br/>• Pass/Degraded/Fail Inspection Toggles<br/>• 1-Click P1/P2 Critical Incident Escalation"]
     end
 
     subgraph Tier2["Tier 2: Edge Session & Route Guard (middleware.ts)"]
@@ -22,14 +24,15 @@ graph TD
     end
 
     subgraph Tier3["Tier 3: Core ITIL Application Services & Sandboxing"]
-        TableAPI["Table REST API (/api/now/table/[table])<br/>• Encoded Query Parser<br/>• Dynamic Reference Resolver<br/>• Audit Delta Logger (sys_audit)<br/>• Delegated Domain Table Bypass"]
+        TableAPI["Table REST API (/api/now/table/[table])<br/>• Encoded Query Parser & Filter Builder<br/>• Mandatory SOP Checklist Gatekeeper (HTTP 422)<br/>• Hermes Diagnostic Evidence Ledger Ingestion<br/>• Dynamic Reference Resolver<br/>• Audit Delta Logger (sys_audit)<br/>• Delegated Domain Table Bypass"]
         ScriptEngine["QuickJS WASM Script Sandbox<br/>• Isolated Guest Memory (32MB Heap)<br/>• Prototype Pollution Defense<br/>• 1000ms Hard Execution Timeout"]
         FlowEngine["Hermes Workflow Engine<br/>• Trigger Evaluator<br/>• Step Action Runner<br/>• Execution Audit Trail"]
         SpatialService["Connected Workplace Engine<br/>• 6-Tier Hierarchy Traverser<br/>• Architectural CAD Layer Engine (Walls, Columns, Door Swings, Workstations)<br/>• Room Category & Division Allocation Engine<br/>• Double-Booking Conflict Detector"]
+        WatchtowerService["Watchtower Intelligence Engine (/api/now/watchtower)<br/>• Multi-Stream Risk Aggregator<br/>• Health Index Algorithm<br/>• Shift Inspection Management (/api/now/morning-checks)"]
     end
 
     subgraph Tier4["Tier 4: Enterprise Persistence & Background Daemons"]
-        PostgresCluster[("PostgreSQL 16 Relational Engine<br/>• 40+ Relational Entities<br/>• Foreign Key Cascade Safety<br/>• Prisma Query Password Hash Omission<br/>• Row Level Security (RLS)")]
+        PostgresCluster[("PostgreSQL 16 Relational Engine<br/>• 43+ Relational Entities<br/>• Foreign Key Cascade Safety<br/>• Prisma Query Password Hash Omission<br/>• Row Level Security (RLS)")]
         WorkerDaemon["Worker Scheduler Daemon (src/worker.ts)<br/>• 15s Scheduled Job Polling<br/>• Autonomous SLA Escalation Triage<br/>• Background Batch Processor"]
     end
 
@@ -88,8 +91,17 @@ classDiagram
         RackLayout
     }
 
+    class OperationalAssuranceContext {
+        <<Bounded Context>>
+        TaskChecklistItem
+        TaskEvidence
+        CmnMorningCheck
+    }
+
     IdentityAccessContext ..> ITILOperationsContext : assigns & approves
     SystemMetaContext ..> ITILOperationsContext : metadata & schema
+    OperationalAssuranceContext ..> ITILOperationsContext : enforces SOP & logs diagnostic evidence
+    OperationalAssuranceContext ..> IdentityAccessContext : inspectors & approvers
     ConnectedWorkplaceContext ..> CMDBTopologyContext : physical location
     ConnectedWorkplaceContext ..> ITILOperationsContext : affected facility
     CMDBTopologyContext ..> ITILOperationsContext : impacted CI
@@ -99,8 +111,9 @@ classDiagram
 1. **System Meta Context**: Encapsulates dynamic table definitions and Application Lifecycle Management (ALM). Mutation of `sys_db_object` or `sys_dictionary` triggers cached schema invalidation.
 2. **Identity & Access Context**: Sole authority for credential hashing (bcrypt) and session cryptographic signing (HMAC-SHA256). Password hashes are never leaked to external contexts.
 3. **ITIL Operations Context**: Manages polymorphic task state machines. All task mutations emit audit deltas (`sys_audit`) and evaluate business rule triggers (`sys_script`).
-4. **Connected Workplace Context**: Maintains strict 6-tier spatial invariant. A Space cannot exist without an enclosing Floor, Building, Campus, State, and Region.
-5. **CMDB Topology Context**: Tracks CI lifecycle status and bidirectional graph dependencies (`cmdb_rel_ci`) with cycle detection.
+4. **Operational Assurance Context**: Enforces strict SOP compliance before incident resolution. Mandatory checklist verification halts early closure with HTTP 422. Diagnostic evidence provides tamper-evident audit facts.
+5. **Connected Workplace Context**: Maintains strict 6-tier spatial invariant. A Space cannot exist without an enclosing Floor, Building, Campus, State, and Region.
+6. **CMDB Topology Context**: Tracks CI lifecycle status and bidirectional graph dependencies (`cmdb_rel_ci`) with cycle detection.
 
 ---
 
@@ -116,7 +129,7 @@ servicemeow/
 │   ├── dev.db                  # Local zero-dependency SQLite dev database
 │   ├── schema.prisma           # Production PostgreSQL 16 schema (with RLS & indexes)
 │   ├── schema.sqlite.prisma    # Developer SQLite schema
-│   └── seed.ts                 # Idempotent enterprise seed script (ITIL, Spatial, Users)
+│   └── seed.ts                 # Idempotent enterprise seed script (ITIL, Spatial, Users, SOPs)
 ├── public/                     # Static client assets, SVGs & floorplans
 │   └── floorplans/             # Architectural CAD floorplan maps
 ├── scripts/                    # Platform verification, client generation & headless testing
@@ -125,15 +138,15 @@ servicemeow/
 │   └── verify-api.ts           # Comprehensive end-to-end REST endpoint test harness
 ├── src/
 │   ├── app/                    # Next.js 15 App Router surfaces & endpoints
-│   │   ├── api/                # 80+ REST endpoints
+│   │   ├── api/                # 85+ REST endpoints
 │   │   │   ├── auth/           # Login, logout, me, impersonation
 │   │   │   ├── custom/         # User-defined custom scripted REST endpoints
 │   │   │   ├── health/         # System uptime & database connection health check
-│   │   │   └── now/            # Enterprise Table API, CMDB, Spatial, ACLs, Flows
+│   │   │   └── now/            # Table API, Watchtower, Morning Checks, CMDB, Spatial, ACLs, Flows
 │   │   ├── login/              # Secure authentication entry point
 │   │   ├── portal/             # Employee Self-Service intake, reservations & status
 │   │   ├── studio/             # 2-Pane Low-Code Configuration Center & Monaco IDE
-│   │   ├── workspace/          # Multi-record dockable fulfiller workspace
+│   │   ├── workspace/          # Multi-record dockable fulfiller workspace, Watchtower, Morning Checks
 │   │   └── layout.tsx          # Root platform shell with theme & identity context
 │   ├── components/             # Reusable UI component libraries
 │   │   ├── agile/              # Visual sprint & Kanban board components
@@ -141,7 +154,7 @@ servicemeow/
 │   │   ├── common/             # Accessible dialogs, buttons, dropdowns & badges
 │   │   ├── studio/             # Monaco editor workbench, schema builder, update sets
 │   │   ├── workplace/          # 3-View reservation engine, SpaceConsole, CadFloorplanEditor & FloorBuildingDimensionsModal
-│   │   └── workspace/          # Dockable tab bar, SLA meters, Purr-Assist AI drawer
+│   │   └── workspace/          # Dockable tab bar, WatchtowerCockpit, MorningChecksConsole, TaskChecklist, TaskEvidenceLedger, AssetQrLabelModal, FilterBuilder
 │   ├── lib/                    # Core business logic engines & security infrastructure
 │   │   ├── acl-engine.ts       # Granular RBAC, modular admin domain bypass & table ACLs
 │   │   ├── auth.ts             # Session management, modular admin verification & passwords
@@ -155,7 +168,7 @@ servicemeow/
 │   │   └── workflow-agent.ts   # Autonomous Hermes triage & auto-routing agent
 │   ├── middleware.ts           # Edge HMAC-SHA256 session guard, modular admin gates
 │   └── worker.ts               # Background 15s scheduler daemon
-├── tests/                      # Full Vitest integration test suite (126 passing tests across 15 test files)
+├── tests/                      # Full Vitest integration test suite (136 passing tests across 18 test files)
 ├── Dockerfile                  # Multi-stage production container runner
 ├── docker-compose.yml          # Production PostgreSQL 16 + Web App + Worker stack
 ├── package.json                # Project dependencies & operational npm scripts

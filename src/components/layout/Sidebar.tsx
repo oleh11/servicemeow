@@ -41,6 +41,7 @@ import {
   Calendar,
   PanelLeftOpen,
   PanelLeftClose,
+  Flame,
 } from "lucide-react";
 
 import { useUser } from "@/lib/user-context";
@@ -67,6 +68,7 @@ const ICON_LOOKUP: Record<string, any> = {
   CheckCircle2,
   AlertCircle,
   PlusCircle,
+  Flame,
   GitPullRequest,
   HelpCircle,
   CheckSquare,
@@ -202,6 +204,8 @@ export function Sidebar() {
       title: "Agent Workspace",
       icon: LayoutDashboard,
       items: [
+        { label: "Watchtower Cockpit", href: "/workspace/watchtower", icon: Flame, badge: "Live" },
+        { label: "Morning Checks Rounds", href: "/workspace/morning-checks", icon: Activity },
         { label: "Executive Dashboards", href: "/workspace/dashboard", icon: BarChart3 },
         { label: "Operations Center", href: "/workspace", icon: Activity },
         { label: "Visual Task Board (VTB)", href: "/workspace/task-board", icon: Kanban },

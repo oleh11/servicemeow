@@ -77,6 +77,14 @@ export async function GET(
           approvals: {
             include: { approver: true },
           },
+          checklistItems: {
+            include: { completedBy: { select: { id: true, name: true, email: true } } },
+            orderBy: { sortOrder: "asc" },
+          },
+          evidenceItems: {
+            include: { decidedBy: { select: { id: true, name: true, email: true } } },
+            orderBy: { createdAt: "desc" },
+          },
         },
       });
 
@@ -635,6 +643,76 @@ export async function PATCH(
       return NextResponse.json({ result: updated });
     }
 
+    if (table === "task_checklist_item" || table === "task_checklist") {
+      const updateData: any = {};
+      if (body.title !== undefined) updateData.title = body.title;
+      if (body.description !== undefined) updateData.description = body.description;
+      if (body.is_mandatory !== undefined) updateData.isMandatory = Boolean(body.is_mandatory);
+      if (body.isMandatory !== undefined) updateData.isMandatory = Boolean(body.isMandatory);
+      if (body.is_completed !== undefined || body.isCompleted !== undefined) {
+        const completed = Boolean(body.is_completed ?? body.isCompleted);
+        updateData.isCompleted = completed;
+        updateData.completedAt = completed ? new Date() : null;
+        updateData.completedById = completed ? callerUserId : null;
+      }
+      if (body.sort_order !== undefined) updateData.sortOrder = parseInt(body.sort_order, 10);
+      if (body.sortOrder !== undefined) updateData.sortOrder = parseInt(body.sortOrder, 10);
+
+      const updated = await db.taskChecklistItem.update({
+        where: { id },
+        data: updateData,
+        include: { completedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
+    }
+
+    if (table === "task_evidence") {
+      const updateData: any = {};
+      if (body.status !== undefined) {
+        updateData.status = body.status;
+        updateData.decidedAt = new Date();
+        updateData.decidedById = body.decided_by_id || body.decidedById || callerUserId;
+      }
+      if (body.is_accepted !== undefined || body.isAccepted !== undefined) {
+        const accepted = Boolean(body.is_accepted ?? body.isAccepted);
+        updateData.status = accepted ? "accepted" : "rejected";
+        updateData.decidedAt = new Date();
+        updateData.decidedById = body.decided_by_id || body.decidedById || callerUserId;
+      }
+      const updated = await db.taskEvidence.update({
+        where: { id },
+        data: updateData,
+        include: { decidedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({
+        result: {
+          ...updated,
+          sys_id: updated.id,
+          isAccepted: updated.status === "accepted",
+          is_accepted: updated.status === "accepted",
+        },
+      });
+    }
+
+    if (table === "cmn_morning_check") {
+      const updateData: any = {};
+      if (body.status !== undefined) {
+        updateData.status = body.status;
+        updateData.checkedAt = new Date();
+        updateData.checkedById = callerUserId;
+      }
+      if (body.notes !== undefined) updateData.notes = body.notes;
+      if (body.incident_id !== undefined) updateData.incidentId = body.incident_id;
+      if (body.incidentId !== undefined) updateData.incidentId = body.incidentId;
+
+      const updated = await db.cmnMorningCheck.update({
+        where: { id },
+        data: updateData,
+        include: { checkedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
+    }
+
     if (table === "cmn_location") {
       const existing = await db.cmnLocation.findUnique({ where: { id } });
       if (!existing) {
@@ -923,6 +1001,29 @@ export async function PATCH(
 
       // State 6: Resolved, 7: Closed -> Achieve SLA
       if (newState === 6 || newState === 7) {
+        // Enforce Checklist SOP Gatekeeper: Cannot resolve/close if mandatory checklist items are incomplete
+        const incompleteMandatory = await db.taskChecklistItem.findMany({
+          where: {
+            taskId: id,
+            isMandatory: true,
+            isCompleted: false,
+          },
+        });
+
+        if (incompleteMandatory.length > 0) {
+          const itemNames = incompleteMandatory.map((i) => `"${i.title}"`).join(", ");
+          return NextResponse.json(
+            {
+              error: "MANDATORY_CHECKLIST_INCOMPLETE",
+              message: `Cannot resolve or close record: mandatory checklist item(s) ${itemNames} must be completed first.`,
+              code: "MANDATORY_CHECKLIST_INCOMPLETE",
+              incomplete_items: incompleteMandatory.map((i) => i.title),
+              incompleteItems: incompleteMandatory,
+            },
+            { status: 422 }
+          );
+        }
+
         taskUpdateData.closedAt = new Date();
         await db.slaInstance.updateMany({
           where: { taskId: id, state: "in_progress" },
@@ -1222,6 +1323,21 @@ export async function DELETE(
 
     if (table === "cmn_location") {
       await db.cmnLocation.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "task_checklist_item" || table === "task_checklist") {
+      await db.taskChecklistItem.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "task_evidence") {
+      await db.taskEvidence.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "cmn_morning_check") {
+      await db.cmnMorningCheck.delete({ where: { id } });
       return NextResponse.json({ result: { status: "deleted", sys_id: id } });
     }
 

@@ -31,6 +31,8 @@ import {
   Database,
   Layers,
   ArrowRight,
+  Flame,
+  Activity,
 } from "lucide-react";
 import { ProfilePictureModal } from "@/components/common/ProfilePictureModal";
 import { CommandPaletteModal } from "@/components/common/CommandPaletteModal";
@@ -88,6 +90,8 @@ export function Navbar() {
       ]
     : [
         { label: "Agent Workspace", href: "/workspace", icon: LayoutDashboard },
+        { label: "Watchtower", href: "/workspace/watchtower", icon: Flame },
+        { label: "Morning Checks", href: "/workspace/morning-checks", icon: Activity },
         { label: "Space Console (CAD)", href: "/workspace/spaces", icon: Compass },
         { label: "Workplace & Reservations", href: "/workspace/reservations", icon: Building2 },
         { label: "Agile Sprint Board", href: "/workspace/agile", icon: Kanban },

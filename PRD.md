@@ -1,31 +1,34 @@
 # Product Requirements Document (PRD)
 
 **Project**: ServiceMeow — Enterprise Service Management (ESM) & Autonomous ITIL Operations Platform  
-**Version**: 3.0.0 (Swiss Grid Design & Radical User Accessibility)  
-**Status**: In Review (Architectural Spec Ready)  
+**Version**: 3.2.0 (Attention Cockpit, Mandatory SOP Gatekeeper & Shift Operational Rounds)  
+**Status**: Production Ready & Fully Tested  
 **Created**: 2026-10-14  
-**Last Updated**: 2026-10-15  
+**Last Updated**: 2026-10-22  
 
 ---
 
 ## 1. Executive Summary
-ServiceMeow is an open-source, high-performance Enterprise Service Management (ESM) and ITIL operations platform engineered with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Prisma ORM, and QuickJS WebAssembly sandboxing. It replaces legacy, high-latency enterprise service suites with a sub-second, dockable multi-record workspace, a 6-tier Connected Workplace spatial CAD floorplan booking engine, low-code studio development with Update Set ALM, and an autonomous Hermes triage agent.
+ServiceMeow is an open-source, high-performance Enterprise Service Management (ESM) and ITIL operations platform engineered with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Prisma ORM, and QuickJS WebAssembly sandboxing. It replaces legacy, high-latency enterprise service suites with a sub-second, dockable multi-record workspace, a 6-tier Connected Workplace spatial CAD floorplan booking engine, low-code studio development with Update Set ALM, a deterministic Watchtower attention cockpit, mandatory SOP gatekeeper verification, shift morning checks operational rounds, and an autonomous Hermes triage agent.
 
 ---
 
 ## 2. Problem Statement
-**Problem**: Traditional enterprise IT operations and service desks (e.g., legacy ServiceNow instances) suffer from prohibitive licensing costs, sluggish multi-tab navigation, brittle JavaScript execution models with process escape vulnerabilities, and fractured workplace facility reservation tools.  
+**Problem**: Traditional enterprise IT operations and service desks suffer from prohibitive licensing costs, sluggish multi-tab navigation, brittle JavaScript execution models with process escape vulnerabilities, fractured workplace facility reservation tools, and lack of deterministic attention management for critical operational risks.  
 **Target Users**:
 1. **ITIL Fulfillers & Engineers**: Incident responders, change managers, and service desk analysts needing high-throughput multi-record triage without page reloading.
 2. **Platform Administrators & Low-Code Developers**: System architects building custom schemas, business rules, client scripts, and deploying configuration updates across environments.
 3. **Enterprise Employees & Requesters**: Knowledge workers submitting service requests, reserving hybrid desks/rooms, and verifying platform availability.
 4. **Facility & Workplace Directors**: Operations managers monitoring real-time occupancy, interactive floorplans, and room amenities.
+5. **NOC / SOC Operations Commanders**: Shift leads performing daily operational rounds, enforcing SOP compliance before resolution, and tracking aggregate system health.
 
 **Current Pain Points**:
 - Multi-second navigation latencies when juggling multiple incidents and change tickets.
 - Security vulnerabilities in server-side script runners prone to prototype pollution and sandbox escaping.
 - Lack of unified spatial hierarchy linking physical hardware (CMDB) to precise campus/building/floor/room coordinates.
 - Absence of transparent 90-day component uptime reporting tied directly to underlying incident records.
+- Premature ticket closures without verifying critical Standard Operating Procedures (SOPs).
+- Hallucinated or unverified diagnostic claims lacking concrete cryptographic or machine-generated log evidence.
 
 ---
 
@@ -36,8 +39,10 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 | High-Throughput REST APIs | Table API (`/api/now/table/[table]`) p95 | < 80ms under 500 req/sec |
 | Secure Script Sandboxing | Execution memory ceiling & runtime isolation | 32MB WASM heap, 1000ms hard timeout |
 | Spatial Hierarchy Integrity | Breadcrumb path resolution across 6 tiers | 100% relational referential integrity |
-| Test Coverage | Vitest regression test suite | 100% passing (89 tests across 10 files) |
-| Production Build Reliability | Next.js compilation & TypeScript type-check | 0 errors, 0 unresolved imports |
+| SOP Resolution Integrity | Mandatory checklist enforcement | 100% block rate (HTTP 422) on incomplete items |
+| Operational Attention | Watchtower health score & attention stream refresh | Real-time deterministic aggregation |
+| Test Coverage | Vitest regression test suite | 100% passing (136 tests across 18 files) |
+| Production Build Reliability | Next.js compilation & TypeScript type-check | 0 errors, 0 unresolved imports, 82 static routes |
 
 ---
 
@@ -157,6 +162,40 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
   - Direct `Space Console` navigation link and quick access launcher across Studio, Workspace, and Portal.
   - High-contrast Swiss Grid design system: hairline 1px borders, grotesque typography, square corners, bold mono accents, clean geometric information hierarchy.
 
+#### 9. "Watchtower" Deterministic Attention Cockpit (`/workspace/watchtower`, `/api/now/watchtower`)
+- [x] **Real-Time Health Index Computation**: Algorithmically derives enterprise operational score (0–100%) dynamically weighted by active severity 1/2 incidents, breaching SLAs, unapproved emergency changes, unresolved problems, failing operational checks, and degraded CIs.
+- [x] **6 High-Urgency Attention Streams**:
+  1. *Critical Incidents*: Active P1/P2 incidents requiring command intervention.
+  2. *Imminent SLA Breaches*: Incidents with target breach window under 60 minutes.
+  3. *Pending CAB Approvals*: Change requests awaiting sign-off before scheduled release.
+  4. *Active Problems Missing RCA*: Problems in investigation lacking documented workaround or root cause.
+  5. *Degraded CMDB Infrastructure*: Critical CIs flagged in non-operational status.
+  6. *Failing Shift Checks*: Morning rounds flagged as Degraded or Fail requiring immediate attention.
+
+#### 10. Mandatory SOP Checklist & Gatekeeper Engine (`task_checklist_item`)
+- [x] **Standard Operating Procedure (SOP) Step Attachment**: Fulfillers attach ordered verification steps with `isMandatory` flags to incidents and problems.
+- [x] **Hard API Gatekeeper (HTTP 422 Unprocessable Entity)**: The Table API (`PATCH /api/now/table/[table]/[id]`) strictly blocks state transition to Resolved (`6`) or Closed (`7`) if any mandatory checklist steps remain incomplete. Returns structured error `{ error: "MANDATORY_CHECKLIST_INCOMPLETE", incomplete_items: [...] }`.
+- [x] **Interactive Swiss Grid Progress UI**: Visual completion bar, mandatory indicator badges (`MANDATORY`), and 1-click step completion directly inside the task workspace.
+
+#### 11. Hermes AI Anti-Hallucination Diagnostic Evidence Ledger (`task_evidence`)
+- [x] **Concrete Evidence Ingestion**: Replaces speculative freeform text with structured diagnostic facts (`log.stacktrace`, `ci.ping_failure`, `git.commit_hash`, `monitor.alert`, `crm.thread_reply`).
+- [x] **Decisive vs. Supporting Fact Tagging**: Flags pivotal root causes vs supporting telemetry with confidence scoring (0.00–1.00).
+- [x] **Human-in-the-Loop Operator Verification**: 1-click "Accept Fact" / "Reject Fact" operator workflow that binds accepted claims to core task fields (`root_cause`, `workaround`, `cmdb_ci_id`).
+
+#### 12. "Morning Checks" Shift Operational Rounds Console (`cmn_morning_check`, `/workspace/morning-checks`)
+- [x] **Shift-Based Routine Inspections**: Structured operational checklists categorized by domain (`DATACENTER`, `BACKUP`, `NETWORK`, `DATABASE`, `SECURITY`, `APPLICATION`) across shifts (`MORNING`, `EVENING`, `NIGHT`).
+- [x] **Pass / Degraded / Fail Tri-State Console**: Visual inspection toggles with inspector attribution, timestamps, and diagnostic notes.
+- [x] **1-Click Critical Incident Escalation**: Instantly generates a linked P1/P2 Incident ticket pre-populated with check title, inspection notes, and system category.
+
+#### 13. Asset Industrial QR Label Generator & Custody Handover Document Modal (`AssetQrLabelModal.tsx`)
+- [x] **High-Contrast Industrial QR Asset Tag (3" x 2")**: Printable SVG QR code encoding asset tag, serial number, CI class, hostname, and direct asset URL.
+- [x] **Formal Equipment Custody Handover Agreement**: Standard enterprise transfer agreement with employee signature line, security covenants, and condition acknowledgement.
+- [x] **Direct Browser Printing (`window.print()`)**: Formatted with print media styles for direct thermal or standard label printer output.
+
+#### 14. Swiss Grid Precision Condition Filter Builder (`FilterBuilder.tsx`)
+- [x] **Advanced Multi-Condition Filter Engine**: Dynamic condition rows supporting operators (`=`, `!=`, `LIKE`, `STARTSWITH`, `>`, `<`), dynamic field pickers, and breadcrumbs.
+- [x] **Encoded Query Conversion**: Bi-directional conversion between UI conditions and standard encoded query strings (`sysparm_query=priority=1^state!=6`).
+
 ---
 
 ## 6. Technical Architecture & Stack Decisions
@@ -199,7 +238,67 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 - `POST /api/now/script-includes/execute`: Executes registered `sys_script_include` in isolated QuickJS WASM sandbox.
 - `POST /api/now/flows/[id]/test`: Dry-runs workflow flow trigger and step actions in test harness.
 
-### 7.6 Space Console & Spatial Category APIs
+### 7.5 Watchtower Attention & Shift Operational Rounds APIs
+- `GET /api/now/watchtower`: Real-time operational intelligence aggregator. Computes 0–100 health score and returns 6 deterministic attention streams:
+  ```json
+  {
+    "metrics": {
+      "healthScore": 88,
+      "criticalIncidentsCount": 1,
+      "breachingSlasCount": 2,
+      "pendingApprovalsCount": 0,
+      "activeProblemsCount": 1,
+      "degradedCisCount": 0,
+      "failingChecksCount": 1
+    },
+    "attentionStreams": {
+      "criticalIncidents": [...],
+      "breachingSlas": [...],
+      "pendingApprovals": [...],
+      "activeProblems": [...],
+      "degradedCis": [...],
+      "failingMorningChecks": [...]
+    }
+  }
+  ```
+- `GET /api/now/morning-checks?date=YYYY-MM-DD&shift=MORNING&category=DATACENTER`: Retrieves operational checks filtered by date, shift, and infrastructure domain.
+- `POST /api/now/morning-checks`: Creates shift check inspection item.
+- `PATCH /api/now/morning-checks/[id]`: Updates status (`PASS`, `DEGRADED`, `FAIL`, `PENDING`), notes, inspector ID, or executes 1-click critical incident escalation:
+  ```json
+  {
+    "escalateToIncident": true,
+    "incidentPayload": {
+      "short_description": "CRITICAL: DC-01 Generator ATS Charger Fault",
+      "priority": 1,
+      "impact": 1,
+      "urgency": 1,
+      "category": "datacenter"
+    }
+  }
+  ```
+- `DELETE /api/now/morning-checks/[id]`: Deletes check record.
+
+### 7.6 Mandatory SOP Checklist & Hermes Evidence APIs
+- `POST /api/now/table/task_checklist_item`: Attaches SOP verification item (`task_id`, `title`, `is_mandatory`, `order`).
+- `PATCH /api/now/table/task_checklist_item/[id]`: Toggles step completion (`is_completed`, `completed_by_id`).
+- `POST /api/now/table/task_evidence`: Ingests machine or diagnostic fact (`task_id`, `claim_field`, `claim_value`, `evidence_kind`, `is_decisive`, `raw_observation`).
+- `PATCH /api/now/table/task_evidence/[id]`: Operator review decision (`is_accepted: true|false`, `decided_by_id`).
+- `PATCH /api/now/table/[table]/[id]` **Gatekeeper Rejection Contract**:
+  - Enforced on `incident`, `problem`, `change_request`, and all `task` subclasses.
+  - When transitioning `state` to `6` (Resolved) or `7` (Closed), the engine validates that all `isMandatory: true` checklist items are `isCompleted: true`.
+  - On failure, rejects with HTTP `422 Unprocessable Entity`:
+  ```json
+  {
+    "error": "MANDATORY_CHECKLIST_INCOMPLETE",
+    "code": "MANDATORY_CHECKLIST_INCOMPLETE",
+    "message": "Cannot resolve or close task. Mandatory checklist items remain incomplete.",
+    "incomplete_items": [
+      "Verify Redis memory defragmentation completes with zero keyspace loss"
+    ]
+  }
+  ```
+
+### 7.7 Space Console & Spatial Category APIs
 - `GET /api/now/spatial/categories`: Returns room category catalog (`MEETING`, `OFFICE`, `OPENPLAN`, `PRIMCIRC`, `SECONDCIRC`, `SERV`, `SUPPORT`, `VERT`, `WKSTN`) with hex legend colors, descriptions, room counts, and total square footage.
 - `PATCH /api/now/spatial/batch-allocate`: Batch assigns department, division, or room category to an array of space IDs (`{ spaceIds: string[], category?: string, department?: string }`).
 - `GET /api/now/spatial/drawings`: Returns catalog of registered architectural CAD drawings (`hq18`, `tt_l4`, `offcen01`, etc.) with layer definitions, bounding boxes, and floor associations.
@@ -249,12 +348,14 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 ## 10. Verification Sign-Off
 | Verification Gate | Result | Date |
 |---|---|---|
-| Vitest Test Suite | 126 passed / 15 test files | 2026-10-15 |
-| Next.js App Router Build | 0 errors / 85 routes compiled | 2026-10-15 |
-| Swiss Grid Design System | 100% compliant across Portal, Catalog, Tickets, Login & Workspace | 2026-10-15 |
-| Modular Admin Domain RBAC | 12/12 role tests passed | 2026-10-15 |
-| CAD Floorplan & Hotspot Mapper | 4/4 CAD tests passed | 2026-10-15 |
-| Edge Route Guard & Middleware | 18/18 guard tests passed | 2026-10-15 |
-| QuickJS WASM Sandbox Defense | 15/15 security tests passed | 2026-10-15 |
-| Spatial Hierarchy Referential Integrity | 7/7 hierarchy tests passed | 2026-10-15 |
-| Universal Command Palette & Search | 6/6 search tests passed | 2026-10-15 |
+| Vitest Test Suite | 136 passed / 18 test files (100%) | 2026-10-22 |
+| Next.js App Router Build | 0 errors / 82 static pages & routes compiled | 2026-10-22 |
+| Watchtower Attention Cockpit | 2/2 tests passed (Health Score & Escalation) | 2026-10-22 |
+| Mandatory SOP Gatekeeper & Evidence | 3/3 tests passed (Gatekeeper & Hermes facts) | 2026-10-22 |
+| Swiss Grid Design System | 100% compliant across Portal, Catalog, Tickets, Login & Workspace | 2026-10-22 |
+| Modular Admin Domain RBAC | 12/12 role tests passed | 2026-10-22 |
+| CAD Floorplan & Hotspot Mapper | 4/4 CAD tests passed | 2026-10-22 |
+| Edge Route Guard & Middleware | 18/18 guard tests passed | 2026-10-22 |
+| QuickJS WASM Sandbox Defense | 15/15 security tests passed | 2026-10-22 |
+| Spatial Hierarchy Referential Integrity | 7/7 hierarchy tests passed | 2026-10-22 |
+| Universal Command Palette & Search | 6/6 search tests passed | 2026-10-22 |

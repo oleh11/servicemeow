@@ -13,7 +13,7 @@
   <a href="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml"><img src="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml/badge.svg" alt="ServiceMeow CI" /></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-emerald.svg" alt="Node.js Version" /></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-16-blue.svg" alt="PostgreSQL" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-131%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-136%20passed-8b5cf6.svg" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
 </p>
 
@@ -333,6 +333,72 @@ A dedicated, theme-harmonized open data explorer giving employees and staff inst
 
 ---
 
+### 17. "Watchtower" Unified Attention Cockpit (`/workspace/watchtower`)
+
+A mission-critical operational cockpit consolidating enterprise risk and operational metrics into a single high-density Swiss Grid view:
+
+- **Algorithmic Operational Health Score (0–100)**: Real-time health index penalized by active P1/P2 incidents, imminent SLA breaches, emergency changes pending CAB review, unmitigated problems, degraded CMDB infrastructure, and failing morning operational rounds.
+- **6 Real-Time Attention Streams**: Instant filtered streams directing fulfiller attention to what matters most:
+  1. *Critical Incidents (P1/P2)* with live SLA timers.
+  2. *Imminent SLA Breaches* (< 60m remaining).
+  3. *Pending CAB Approvals* requiring governance sign-off.
+  4. *Active Problems Missing RCA / Workarounds*.
+  5. *Degraded CMDB CIs* flagged across datacenter or cloud tiers.
+  6. *Failing Shift Rounds* needing prompt triage.
+
+---
+
+### 18. Mandatory SOP Checklist & Gatekeeper Engine (`task_checklist_item`)
+
+Enforce rigorous Standard Operating Procedure (SOP) compliance on all task and incident resolutions:
+
+- **Checklist Step Attaching**: Attach granular, ordered verification steps with `isMandatory` flags directly to tasks.
+- **Hard API Gatekeeper (HTTP 422)**: When transitioning an incident or problem to Resolved (`6`) or Closed (`7`), the Table API (`PATCH /api/now/table/[table]/[id]`) validates completion. Incomplete mandatory items halt state transition with HTTP `422 Unprocessable Entity` and return `{ error: "MANDATORY_CHECKLIST_INCOMPLETE", incomplete_items: [...] }`.
+- **Interactive Workspace UI**: Visual completion progress bar, mandatory warning badges, and inline checklist additions directly within the record form.
+
+---
+
+### 19. Hermes AI Anti-Hallucination Diagnostic Evidence Ledger (`task_evidence`)
+
+Eliminate speculative, ungrounded diagnostic claims by grounding ticket resolution in immutable, structured facts:
+
+- **Diagnostic Fact Ingestion**: Records machine telemetry (`log.stacktrace`, `ci.ping_failure`, `git.commit_hash`, `monitor.alert`, `crm.thread_reply`).
+- **Decisive Root Cause Tagging**: Highlights primary decisive triggers vs. supporting contextual observations with confidence scoring (0.00–1.00).
+- **Human-in-the-Loop Operator Verification**: Single-click "Accept Fact" / "Reject Fact" operator workflow that binds accepted claims to core task fields (`root_cause`, `workaround`, `cmdb_ci_id`).
+
+---
+
+### 20. "Morning Checks" Shift Operational Rounds Console (`/workspace/morning-checks`)
+
+Shift-based infrastructure inspection console replacing ad-hoc runbooks with structured daily rounds:
+
+- **Multi-Category Inspections**: Pre-configured checks across *Datacenter*, *Backup*, *Network*, *Database*, *Security*, and *Application* domains.
+- **Shift Handover Organization**: Structured tracking for *Morning*, *Evening*, and *Night* shifts with inspector attribution and timestamped notes.
+- **Pass / Degraded / Fail Tri-State Console**: One-click toggles updating status with live color indicators.
+- **1-Click Critical Incident Escalation**: Instantly generate linked P1/P2 Incidents from failed checks with pre-populated diagnostic notes and assignment categories.
+
+---
+
+### 21. Industrial Asset QR Label Generator & Custody Handover Document Modal
+
+Printable physical hardware asset tags and formal equipment custody agreements launched directly from any CMDB CI form (`CmdbCiForm.tsx`):
+
+- **Industrial 3" x 2" QR Asset Tag**: High-contrast printable SVG QR code embedding asset tag, serial number, CI class, hostname, and direct asset URL.
+- **Formal Custody Handover Agreement**: Enterprise equipment transfer agreement with employee signature line, security covenants, and condition acknowledgement.
+- **Direct Thermal & Paper Printing (`window.print()`)**: Integrated `@media print` CSS for clean sticker and agreement printing.
+
+---
+
+### 22. Swiss Grid Precision Condition Filter Builder (`FilterBuilder.tsx`)
+
+Advanced condition builder for enterprise data lists:
+
+- **Multi-Condition Filtering**: Build composite filters using operators (`=`, `!=`, `LIKE`, `STARTSWITH`, `>`, `<`) across any table field.
+- **Bidirectional Encoded Queries**: Seamless conversion between visual condition rows and encoded query strings (`sysparm_query=priority=1^state!=6`).
+- **Interactive Breadcrumb Filter Bar**: Clickable breadcrumb pills for rapid filter exploration and removal.
+
+---
+
 ## 🚀 Quick Start with Docker Compose
 
 Run ServiceMeow with PostgreSQL and the background scheduler daemon using Docker Compose:
@@ -398,7 +464,7 @@ npm run worker
 
 ## 🧪 Testing & Verification
 
-ServiceMeow includes a full Vitest test suite with **131 passing tests across 16 test suites** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, spatial entity operations, the 6-tier Workplace Hub spatial hierarchy, CAD floorplan manipulation, modular administrator roles, search ranking, and agile / CMDB / knowledge entity integrity.
+ServiceMeow includes a full Vitest test suite with **136 passing tests across 18 test suites** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, spatial entity operations, the 6-tier Workplace Hub spatial hierarchy, CAD floorplan manipulation, modular administrator roles, search ranking, agile / CMDB / knowledge entity integrity, **Watchtower attention stream aggregation**, **Mandatory SOP Checklist Gatekeeper HTTP 422 enforcement**, and **Shift Morning Checks operational rounds with 1-click incident escalation**.
 
 ```bash
 # Run Vitest test suite once

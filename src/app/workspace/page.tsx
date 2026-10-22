@@ -10,6 +10,8 @@ import {
   ArrowRight,
   Plus,
   ShieldAlert,
+  Flame,
+  Activity,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -64,17 +66,31 @@ export default async function WorkspaceDashboard() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/workspace/watchtower"
+            className="px-4 py-3 bg-black hover:bg-neutral-800 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+          >
+            <Flame className="w-4 h-4 text-red-500" />
+            <span>Watchtower</span>
+          </Link>
+          <Link
+            href="/workspace/morning-checks"
+            className="px-4 py-3 border-2 border-black bg-white hover:bg-neutral-100 text-black font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+          >
+            <Activity className="w-4 h-4 text-emerald-600" />
+            <span>Morning Checks</span>
+          </Link>
           <Link
             href="/workspace/incident/new"
-            className="px-5 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
+            className="px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer shadow-[2px_2px_0px_rgba(0,0,0,1)]"
           >
             <Plus className="w-4 h-4" />
             <span>New Incident</span>
           </Link>
           <Link
             href="/workspace/change_request/new"
-            className="px-5 py-3 border-2 border-black hover:bg-black hover:text-white text-black font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer"
+            className="px-4 py-3 border-2 border-black hover:bg-black hover:text-white text-black font-mono font-bold text-xs uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer shadow-[2px_2px_0px_rgba(0,0,0,1)]"
           >
             <Plus className="w-4 h-4" />
             <span>New Change</span>
