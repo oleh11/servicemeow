@@ -17,6 +17,14 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
 </p>
 
+<p align="center">
+  <img src="docs/assets/roman-dog-halloween.svg" alt="ServiceMeow Halloween Special — Roman Dog Dressed as a Cat" width="100%" style="border-radius: 12px; border: 2px solid #eb0029;" />
+</p>
+
+<p align="center">
+  <em>🎃 <strong>Halloween Special Mascot</strong>: Operation <code>Felis Incognitus</code> — Roman Canis dressed as an Imperial Cat ("Bark? No citizen, definitely meow.")</em>
+</p>
+
 ---
 
 ## 📑 Overview

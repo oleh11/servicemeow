@@ -1,0 +1,401 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="nightSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#050510"/>
+      <stop offset="50%" stop-color="#120c24"/>
+      <stop offset="100%" stop-color="#211138"/>
+    </linearGradient>
+    <radialGradient id="fullMoon" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff8e7"/>
+      <stop offset="70%" stop-color="#ffdf88"/>
+      <stop offset="100%" stop-color="#d49228" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe270"/>
+      <stop offset="50%" stop-color="#d4af37"/>
+      <stop offset="100%" stop-color="#997215"/>
+    </linearGradient>
+    <linearGradient id="purpleImperial" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6b1d5c"/>
+      <stop offset="50%" stop-color="#4a1040"/>
+      <stop offset="100%" stop-color="#2a0526"/>
+    </linearGradient>
+    <linearGradient id="romanRed" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d32f2f"/>
+      <stop offset="100%" stop-color="#801010"/>
+    </linearGradient>
+    <linearGradient id="pumpkinOrange" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff8c00"/>
+      <stop offset="70%" stop-color="#e65100"/>
+      <stop offset="100%" stop-color="#bf360c"/>
+    </linearGradient>
+    <linearGradient id="pumpkinGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff59d"/>
+      <stop offset="100%" stop-color="#ffb300"/>
+    </linearGradient>
+    <linearGradient id="furGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d7a15c"/>
+      <stop offset="50%" stop-color="#b87d3b"/>
+      <stop offset="100%" stop-color="#8c5823"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- 1. Background Scene: Spooky Roman Forum at Midnight -->
+  <rect width="1200" height="675" fill="url(#nightSky)"/>
+
+  <!-- Stars -->
+  <g fill="#ffffff" opacity="0.6">
+    <circle cx="80" cy="90" r="1.5"/><circle cx="150" cy="40" r="1"/><circle cx="240" cy="110" r="2"/>
+    <circle cx="340" cy="60" r="1.5"/><circle cx="480" cy="130" r="1"/><circle cx="890" cy="70" r="2"/>
+    <circle cx="980" cy="120" r="1.5"/><circle cx="1060" cy="50" r="1"/><circle cx="1140" cy="100" r="2"/>
+    <circle cx="70" cy="220" r="1"/><circle cx="1120" cy="260" r="1.5"/><circle cx="210" cy="180" r="1.5"/>
+  </g>
+
+  <!-- Giant Harvest Moon -->
+  <circle cx="600" cy="200" r="160" fill="url(#fullMoon)" opacity="0.35"/>
+  <circle cx="600" cy="200" r="130" fill="#fff9db" opacity="0.85"/>
+  <!-- Moon Craters -->
+  <circle cx="560" cy="160" r="22" fill="#e8d99c" opacity="0.4"/>
+  <circle cx="630" cy="140" r="14" fill="#e8d99c" opacity="0.3"/>
+  <circle cx="640" cy="220" r="30" fill="#e8d99c" opacity="0.45"/>
+  <circle cx="540" cy="240" r="18" fill="#e8d99c" opacity="0.35"/>
+
+  <!-- Flying Bats -->
+  <path d="M 450 140 Q 465 130 475 140 Q 480 135 485 140 Q 495 130 510 140 Q 485 152 480 145 Q 475 152 450 140 Z" fill="#180f28"/>
+  <path d="M 720 110 Q 732 102 740 110 Q 744 106 748 110 Q 756 102 768 110 Q 748 120 744 114 Q 740 120 720 110 Z" fill="#180f28"/>
+  <path d="M 680 70 Q 690 64 696 70 Q 700 67 703 70 Q 710 64 720 70 Q 704 78 700 73 Q 696 78 680 70 Z" fill="#180f28"/>
+
+  <!-- Roman Architecture: Distant Aqueduct & Colosseum silhouette -->
+  <path d="M 0 380 L 1200 380 L 1200 675 L 0 675 Z" fill="#130b21"/>
+  <!-- Distant Roman arches -->
+  <g fill="#1b102e">
+    <rect x="0" y="320" width="320" height="60"/>
+    <path d="M 20 380 A 30 45 0 0 1 80 380 Z"/>
+    <path d="M 100 380 A 30 45 0 0 1 160 380 Z"/>
+    <path d="M 180 380 A 30 45 0 0 1 240 380 Z"/>
+    <path d="M 260 380 A 30 45 0 0 1 320 380 Z"/>
+    <rect x="880" y="320" width="320" height="60"/>
+    <path d="M 880 380 A 30 45 0 0 1 940 380 Z"/>
+    <path d="M 960 380 A 30 45 0 0 1 1020 380 Z"/>
+    <path d="M 1040 380 A 30 45 0 0 1 1100 380 Z"/>
+    <path d="M 1120 380 A 30 45 0 0 1 1180 380 Z"/>
+  </g>
+
+  <!-- Majestic Classical Roman Columns (Left and Right Foreground) -->
+  <g fill="#24173d" stroke="#36245c" stroke-width="2">
+    <!-- Left Column -->
+    <rect x="60" y="160" width="80" height="480"/>
+    <!-- Capital -->
+    <path d="M 40 160 L 160 160 L 150 190 L 50 190 Z" fill="url(#goldGrad)"/>
+    <circle cx="55" cy="185" r="16" fill="url(#goldGrad)"/>
+    <circle cx="145" cy="185" r="16" fill="url(#goldGrad)"/>
+    <!-- Column Flutes -->
+    <line x1="80" y1="190" x2="80" y2="640" stroke="#160e26" stroke-width="4"/>
+    <line x1="100" y1="190" x2="100" y2="640" stroke="#160e26" stroke-width="4"/>
+    <line x1="120" y1="190" x2="120" y2="640" stroke="#160e26" stroke-width="4"/>
+    <!-- Pedestal -->
+    <rect x="40" y="600" width="120" height="75" fill="#1b102e"/>
+
+    <!-- Right Column -->
+    <rect x="1060" y="160" width="80" height="480"/>
+    <path d="M 1040 160 L 1160 160 L 1150 190 L 1050 190 Z" fill="url(#goldGrad)"/>
+    <circle cx="1055" cy="185" r="16" fill="url(#goldGrad)"/>
+    <circle cx="1145" cy="185" r="16" fill="url(#goldGrad)"/>
+    <line x1="1080" y1="190" x2="1080" y2="640" stroke="#160e26" stroke-width="4"/>
+    <line x1="1100" y1="190" x2="1100" y2="640" stroke="#160e26" stroke-width="4"/>
+    <line x1="1120" y1="190" x2="1120" y2="640" stroke="#160e26" stroke-width="4"/>
+    <rect x="1040" y="600" width="120" height="75" fill="#1b102e"/>
+  </g>
+
+  <!-- Roman Floor Mosaic Tiles -->
+  <g stroke="#2d1c4a" stroke-width="1.5" fill="none" opacity="0.7">
+    <path d="M 0 620 L 1200 620"/>
+    <path d="M 0 645 L 1200 645"/>
+    <path d="M 0 670 L 1200 670"/>
+    <path d="M 200 600 L 100 675"/><path d="M 350 600 L 300 675"/>
+    <path d="M 500 600 L 480 675"/><path d="M 650 600 L 670 675"/>
+    <path d="M 800 600 L 840 675"/><path d="M 950 600 L 1020 675"/>
+  </g>
+
+  <!-- Left Pedestal Jack-o'-Lantern Pumpkin with Roman Laurel Wreath -->
+  <g transform="translate(100, 560)">
+    <!-- Pumpkin Body -->
+    <ellipse cx="0" cy="0" rx="46" ry="36" fill="url(#pumpkinOrange)"/>
+    <ellipse cx="-20" cy="0" rx="24" ry="34" fill="url(#pumpkinOrange)"/>
+    <ellipse cx="20" cy="0" rx="24" ry="34" fill="url(#pumpkinOrange)"/>
+    <path d="M -4 -35 Q 0 -48 10 -45 Q 8 -36 2 -35 Z" fill="#2e7d32"/>
+    <!-- Glowing Face (Cat Eyes & Meow mouth) -->
+    <polygon points="-22,-8 -12,-18 -10,-6" fill="url(#pumpkinGlow)" filter="url(#softGlow)"/>
+    <polygon points="22,-8 12,-18 10,-6" fill="url(#pumpkinGlow)" filter="url(#softGlow)"/>
+    <polygon points="0,-2 -4,3 4,3" fill="url(#pumpkinGlow)"/>
+    <path d="M -18 10 Q -8 22 0 14 Q 8 22 18 10 Q 0 25 -18 10 Z" fill="url(#pumpkinGlow)" filter="url(#softGlow)"/>
+    <!-- Roman Mini Laurel on Pumpkin -->
+    <path d="M -30 -20 Q -40 -35 -20 -38 Q -28 -28 -25 -20" fill="url(#goldGrad)"/>
+    <path d="M 30 -20 Q 40 -35 20 -38 Q 28 -28 25 -20" fill="url(#goldGrad)"/>
+  </g>
+
+  <!-- Right Pedestal Jack-o'-Lantern Pumpkin with Roman Centurion Crest -->
+  <g transform="translate(1100, 560)">
+    <ellipse cx="0" cy="0" rx="46" ry="36" fill="url(#pumpkinOrange)"/>
+    <ellipse cx="-20" cy="0" rx="24" ry="34" fill="url(#pumpkinOrange)"/>
+    <ellipse cx="20" cy="0" rx="24" ry="34" fill="url(#pumpkinOrange)"/>
+    <path d="M -4 -35 Q 0 -48 10 -45 Q 8 -36 2 -35 Z" fill="#2e7d32"/>
+    <!-- Carved "SPQD" on Pumpkin -->
+    <text x="0" y="8" font-family="'Cinzel', 'Trajan Pro', 'Georgia', serif" font-weight="900" font-size="16" fill="url(#pumpkinGlow)" text-anchor="middle" filter="url(#softGlow)">S P Q D</text>
+    <path d="M -16 20 Q 0 28 16 20 Z" fill="url(#pumpkinGlow)" filter="url(#softGlow)"/>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 2. THE HERO: NOBLE ROMAN DOG DRESSED AS A CAT FOR HALLOWEEN               -->
+  <!-- ========================================================================= -->
+
+  <g id="RomanDogHalloweenHero" transform="translate(600, 420)">
+    
+    <!-- Roman Legionary Armor / Torso -->
+    <!-- Red Imperial Cloak / Cape flowing behind -->
+    <path d="M -140 -40 Q -200 120 -150 255 L 150 255 Q 200 120 140 -40 Z" fill="url(#romanRed)" stroke="#500a0a" stroke-width="3"/>
+    
+    <!-- Imperial Purple Toga Sash with Gold Border -->
+    <path d="M -130 -10 Q -40 100 120 250 L 150 250 L 130 180 Q -10 60 -100 -25 Z" fill="url(#purpleImperial)" stroke="url(#goldGrad)" stroke-width="4"/>
+
+    <!-- Lorica Segmentata (Roman Armor Plates) -->
+    <path d="M -100 20 L 100 20 L 85 160 L -85 160 Z" fill="#9e6930" stroke="url(#goldGrad)" stroke-width="3"/>
+    <!-- Segmented brass horizontal strips -->
+    <line x1="-95" y1="50" x2="95" y2="50" stroke="url(#goldGrad)" stroke-width="3"/>
+    <line x1="-90" y1="85" x2="90" y2="85" stroke="url(#goldGrad)" stroke-width="3"/>
+    <line x1="-88" y1="120" x2="88" y2="120" stroke="url(#goldGrad)" stroke-width="3"/>
+    <!-- Roman Medallion (Phalera) with a CAT FACE in the center! -->
+    <circle cx="0" cy="85" r="28" fill="url(#goldGrad)" stroke="#664608" stroke-width="2"/>
+    <circle cx="0" cy="85" r="24" fill="#ffd54f"/>
+    <!-- Cat face emblem engraved on Roman armor medallion -->
+    <polygon points="-12,74 -6,64 -2,74" fill="#8c5823"/>
+    <polygon points="12,74 6,64 2,74" fill="#8c5823"/>
+    <circle cx="0" cy="86" r="12" fill="#8c5823"/>
+    <circle cx="-4" cy="84" r="2.5" fill="#fff"/>
+    <circle cx="4" cy="84" r="2.5" fill="#fff"/>
+    <polygon points="0,88 -2,91 2,91" fill="#ffb74d"/>
+
+    <!-- Roman Tunic Lower Pleats (Pteruges) -->
+    <g fill="#f5f5f0" stroke="#c2c2c2" stroke-width="1.5">
+      <rect x="-80" y="160" width="22" height="60" rx="3"/>
+      <rect x="-50" y="160" width="22" height="60" rx="3"/>
+      <rect x="-20" y="160" width="22" height="60" rx="3"/>
+      <rect x="10" y="160" width="22" height="60" rx="3"/>
+      <rect x="40" y="160" width="22" height="60" rx="3"/>
+      <rect x="65" y="160" width="20" height="60" rx="3"/>
+    </g>
+
+    <!-- Dog Neck & White Roman Ruff -->
+    <path d="M -60 -20 Q 0 10 60 -20 L 50 -70 L -50 -70 Z" fill="url(#furGrad)"/>
+    
+    <!-- Dog Head (Handsome Roman Mastiff / Hound) -->
+    <!-- Floppy Dog Ears (hanging under the cat ear costume headband!) -->
+    <!-- Left Dog Ear -->
+    <path d="M -80 -120 Q -135 -90 -115 -10 Q -95 10 -75 -40 Z" fill="#8c5823" stroke="#5a350e" stroke-width="2.5"/>
+    <!-- Right Dog Ear -->
+    <path d="M 80 -120 Q 135 -90 115 -10 Q 95 10 75 -40 Z" fill="#8c5823" stroke="#5a350e" stroke-width="2.5"/>
+
+    <!-- Dog Skull / Cheeks -->
+    <ellipse cx="0" cy="-90" rx="82" ry="72" fill="url(#furGrad)" stroke="#5a350e" stroke-width="2.5"/>
+
+    <!-- Dog Muzzle & Friendly Jowls -->
+    <path d="M -48 -95 Q 0 -110 48 -95 Q 60 -50 35 -30 Q 0 -15 -35 -30 Q -60 -50 -48 -95 Z" fill="#ebd0a7" stroke="#5a350e" stroke-width="2"/>
+    <ellipse cx="-20" cy="-45" rx="18" ry="16" fill="#f7e6ce"/>
+    <ellipse cx="20" cy="-45" rx="18" ry="16" fill="#f7e6ce"/>
+
+    <!-- Big Shiny Dog Nose -->
+    <path d="M -18 -68 Q 0 -76 18 -68 Q 14 -48 0 -45 Q -14 -48 -18 -68 Z" fill="#211812"/>
+    <ellipse cx="-5" cy="-63" rx="4" ry="2.5" fill="#ffffff" opacity="0.6"/>
+
+    <!-- Warm Dog Eyes (looking cute and mischievous) -->
+    <!-- Left Eye -->
+    <ellipse cx="-36" cy="-105" rx="15" ry="17" fill="#ffffff" stroke="#3b230f" stroke-width="2"/>
+    <circle cx="-34" cy="-104" r="10" fill="#543110"/>
+    <circle cx="-32" cy="-103" r="6" fill="#150b03"/>
+    <circle cx="-37" cy="-108" r="3.5" fill="#ffffff"/>
+    <!-- Right Eye -->
+    <ellipse cx="36" cy="-105" rx="15" ry="17" fill="#ffffff" stroke="#3b230f" stroke-width="2"/>
+    <circle cx="34" cy="-104" r="10" fill="#543110"/>
+    <circle cx="32" cy="-103" r="6" fill="#150b03"/>
+    <circle cx="29" cy="-108" r="3.5" fill="#ffffff"/>
+
+    <!-- Dog Tongue slightly poking out playfully (Blep!) -->
+    <path d="M -10 -30 Q 0 -15 12 -28 Q 16 -12 6 -8 Q -4 -5 -12 -18 Z" fill="#ff80ab" stroke="#c2185b" stroke-width="1.5"/>
+
+    <!-- ========================================================= -->
+    <!-- THE HALLOWEEN COSTUME: ROMAN DOG DRESSED AS A CAT!       -->
+    <!-- ========================================================= -->
+
+    <!-- 1. Drawn-on Black Cat Whiskers (Cosplay Makeup!) -->
+    <!-- Left Whiskers -->
+    <line x1="-35" y1="-50" x2="-85" y2="-62" stroke="#120c1f" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-38" y1="-44" x2="-90" y2="-45" stroke="#120c1f" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-35" y1="-38" x2="-82" y2="-28" stroke="#120c1f" stroke-width="3" stroke-linecap="round"/>
+    <!-- Right Whiskers -->
+    <line x1="35" y1="-50" x2="85" y2="-62" stroke="#120c1f" stroke-width="3" stroke-linecap="round"/>
+    <line x1="38" y1="-44" x2="90" y2="-45" stroke="#120c1f" stroke-width="3" stroke-linecap="round"/>
+    <line x1="35" y1="-38" x2="82" y2="-28" stroke="#120c1f" stroke-width="3" stroke-linecap="round"/>
+    <!-- Whiskers Freckle Dots -->
+    <circle cx="-28" cy="-48" r="2" fill="#120c1f"/><circle cx="-24" cy="-42" r="2" fill="#120c1f"/><circle cx="-30" cy="-38" r="2" fill="#120c1f"/>
+    <circle cx="28" cy="-48" r="2" fill="#120c1f"/><circle cx="24" cy="-42" r="2" fill="#120c1f"/><circle cx="30" cy="-38" r="2" fill="#120c1f"/>
+
+    <!-- 2. Pink Cat Nose Tip Painted on Nose -->
+    <polygon points="0,-48 -7,-55 7,-55" fill="#ff4081" opacity="0.85"/>
+
+    <!-- 3. Roman Laurel Wreath Headband (Imperial Gold) -->
+    <g fill="url(#goldGrad)" stroke="#7a550b" stroke-width="1.2">
+      <!-- Laurel Leaves curving along the forehead -->
+      <path d="M -70 -140 Q -50 -150 -35 -145 Q -55 -135 -70 -140 Z"/>
+      <path d="M -50 -152 Q -30 -162 -15 -155 Q -35 -145 -50 -152 Z"/>
+      <path d="M -30 -160 Q -10 -170 5 -162 Q -15 -152 -30 -160 Z"/>
+      <path d="M 70 -140 Q 50 -150 35 -145 Q 55 -135 70 -140 Z"/>
+      <path d="M 50 -152 Q 30 -162 15 -155 Q 35 -145 50 -152 Z"/>
+      <path d="M 30 -160 Q 10 -170 -5 -162 Q 15 -152 30 -160 Z"/>
+    </g>
+
+    <!-- 4. COMICAL FLUFFY PINK HALLOWEEN CAT EARS (Headband strapped to dog head!) -->
+    <!-- Headband Arch -->
+    <path d="M -65 -135 Q 0 -170 65 -135" fill="none" stroke="#212121" stroke-width="6" stroke-linecap="round"/>
+    
+    <!-- Left Cat Ear (Pointy & Fluffy) -->
+    <polygon points="-75,-140 -60,-225 -25,-155" fill="#2d2d2d" stroke="#111" stroke-width="3"/>
+    <polygon points="-68,-145 -58,-212 -33,-158" fill="#ff80ab"/>
+    <!-- White Fur Tufts inside cat ear -->
+    <path d="M -58 -180 L -45 -165 L -52 -160 Z" fill="#ffffff"/>
+    <path d="M -62 -170 L -48 -158 L -55 -153 Z" fill="#ffffff"/>
+
+    <!-- Right Cat Ear (Pointy & Fluffy) -->
+    <polygon points="75,-140 60,-225 25,-155" fill="#2d2d2d" stroke="#111" stroke-width="3"/>
+    <polygon points="68,-145 58,-212 33,-158" fill="#ff80ab"/>
+    <!-- White Fur Tufts inside cat ear -->
+    <path d="M 58 -180 L 45 -165 L 52 -160 Z" fill="#ffffff"/>
+    <path d="M 62 -170 L 48 -158 L 55 -153 Z" fill="#ffffff"/>
+
+    <!-- Little Halloween Spider dangling from right cat ear! -->
+    <line x1="60" y1="-215" x2="60" y2="-185" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="2 2"/>
+    <circle cx="60" cy="-182" r="5" fill="#111111"/>
+    <!-- Tiny spider legs -->
+    <path d="M 56 -184 L 52 -186 M 56 -181 L 50 -181 M 56 -178 L 52 -175" stroke="#111" stroke-width="1.2"/>
+    <path d="M 64 -184 L 68 -186 M 64 -181 L 70 -181 M 64 -178 L 68 -175" stroke="#111" stroke-width="1.2"/>
+
+    <!-- Paws holding Trick-or-Treat Candy Pail & Roman Banner -->
+    <!-- Left Paw holding the Roman Cat Standard -->
+    <g transform="translate(-150, 40)">
+      <!-- Standard Pole (Brass) -->
+      <rect x="18" y="-300" width="10" height="480" fill="url(#goldGrad)" stroke="#593c04" stroke-width="1.5"/>
+      <circle cx="23" cy="-305" r="14" fill="url(#goldGrad)"/>
+      <!-- Eagle / Paw Finial on top -->
+      <path d="M 15 -325 Q 23 -335 31 -325 Q 27 -315 23 -318 Q 19 -315 15 -325 Z" fill="url(#goldGrad)"/>
+
+      <!-- Hanging Roman Banner (Vexillum) -->
+      <rect x="-40" y="-280" width="126" height="175" fill="url(#purpleImperial)" stroke="url(#goldGrad)" stroke-width="4"/>
+      <!-- Gold Fringe on bottom -->
+      <path d="M -40 -105 L 86 -105 L 86 -90 L -40 -90 Z" fill="url(#goldGrad)"/>
+      <line x1="-30" y1="-90" x2="-30" y2="-75" stroke="url(#goldGrad)" stroke-width="3"/>
+      <line x1="-10" y1="-90" x2="-10" y2="-75" stroke="url(#goldGrad)" stroke-width="3"/>
+      <line x1="10" y1="-90" x2="10" y2="-75" stroke="url(#goldGrad)" stroke-width="3"/>
+      <line x1="30" y1="-90" x2="30" y2="-75" stroke="url(#goldGrad)" stroke-width="3"/>
+      <line x1="50" y1="-90" x2="50" y2="-75" stroke="url(#goldGrad)" stroke-width="3"/>
+      <line x1="70" y1="-90" x2="70" y2="-75" stroke="url(#goldGrad)" stroke-width="3"/>
+
+      <!-- Banner Text & Cat Paw Logo -->
+      <text x="23" y="-235" font-family="'Cinzel', 'Trajan Pro', 'Georgia', serif" font-weight="900" font-size="20" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">S P Q C</text>
+      <!-- Golden Cat Paw on Banner -->
+      <circle cx="23" cy="-185" r="14" fill="url(#goldGrad)"/>
+      <circle cx="10" cy="-203" r="6" fill="url(#goldGrad)"/>
+      <circle cx="19" cy="-208" r="6" fill="url(#goldGrad)"/>
+      <circle cx="28" cy="-208" r="6" fill="url(#goldGrad)"/>
+      <circle cx="37" cy="-203" r="6" fill="url(#goldGrad)"/>
+      <text x="23" y="-140" font-family="'Cinzel', 'Trajan Pro', 'Georgia', serif" font-weight="700" font-size="11" fill="#ffe270" text-anchor="middle">FELIS INCOGNITUS</text>
+      <text x="23" y="-122" font-family="'Courier New', monospace" font-weight="700" font-size="10" fill="#fff" text-anchor="middle">"TOTALLY A CAT"</text>
+    </g>
+
+    <!-- Dog's Left Paw gripping pole -->
+    <ellipse cx="-125" cy="50" rx="22" ry="16" fill="url(#furGrad)" stroke="#5a350e" stroke-width="2"/>
+    <circle cx="-135" cy="50" r="4" fill="#5a350e"/>
+    <circle cx="-125" cy="52" r="4" fill="#5a350e"/>
+    <circle cx="-115" cy="50" r="4" fill="#5a350e"/>
+
+    <!-- Right Paw holding Jack-o'-Lantern Candy Bucket -->
+    <g transform="translate(140, 60)">
+      <!-- Dog's Right Paw -->
+      <ellipse cx="0" cy="0" rx="22" ry="16" fill="url(#furGrad)" stroke="#5a350e" stroke-width="2"/>
+      <circle cx="-10" cy="0" r="4" fill="#5a350e"/>
+      <circle cx="0" cy="2" r="4" fill="#5a350e"/>
+      <circle cx="10" cy="0" r="4" fill="#5a350e"/>
+
+      <!-- Candy Bucket Handle -->
+      <path d="M -15 0 Q 0 -35 15 0" fill="none" stroke="#222" stroke-width="3"/>
+      <!-- Pumpkin Trick-or-Treat Pail -->
+      <g transform="translate(0, 45)">
+        <ellipse cx="0" cy="0" rx="34" ry="28" fill="url(#pumpkinOrange)" stroke="#bf360c" stroke-width="2"/>
+        <ellipse cx="-14" cy="0" rx="16" ry="26" fill="url(#pumpkinOrange)"/>
+        <ellipse cx="14" cy="0" rx="16" ry="26" fill="url(#pumpkinOrange)"/>
+        <!-- Jack-O-Lantern Cat Face cutout -->
+        <polygon points="-12,-6 -6,-14 -4,-4" fill="url(#pumpkinGlow)"/>
+        <polygon points="12,-6 6,-14 4,-4" fill="url(#pumpkinGlow)"/>
+        <path d="M -12 6 Q 0 16 12 6 Z" fill="url(#pumpkinGlow)"/>
+        <!-- Candies and fish bones sticking out of the pail! -->
+        <!-- Fish Bone treat -->
+        <line x1="-12" y1="-28" x2="6" y2="-38" stroke="#ffffff" stroke-width="3"/>
+        <polygon points="-16,-28 -12,-32 -12,-24" fill="#ffffff"/>
+        <!-- Wrapped Candy -->
+        <ellipse cx="12" cy="-30" rx="8" ry="6" fill="#e91e63" transform="rotate(20 12 -30)"/>
+        <polygon points="18,-35 24,-42 24,-30" fill="#e91e63"/>
+        <polygon points="6,-25 0,-18 0,-30" fill="#e91e63"/>
+      </g>
+    </g>
+
+    <!-- Comic Speech Bubble or Name Tag pinned to chest -->
+    <g transform="translate(45, 120)">
+      <!-- "HELLO MY NAME IS: A REAL CAT" nametag -->
+      <rect x="-70" y="-22" width="140" height="44" rx="4" fill="#ffffff" stroke="#eb0029" stroke-width="3"/>
+      <rect x="-70" y="-22" width="140" height="15" fill="#eb0029"/>
+      <text x="0" y="-11" font-family="'Helvetica Neue', 'Arial', sans-serif" font-weight="900" font-size="9" fill="#ffffff" text-anchor="middle" letter-spacing="1">HELLO MY NAME IS</text>
+      <text x="0" y="14" font-family="'Brush Script MT', 'Comic Sans MS', cursive" font-weight="bold" font-size="16" fill="#111111" text-anchor="middle">Felix (Meow!)</text>
+    </g>
+
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 3. TYPOGRAPHIC HEADER: SWISS GRID & CLASSICAL ROMAN HALLOWEEN HYBRID      -->
+  <!-- ========================================================================= -->
+
+  <g transform="translate(600, 68)">
+    <!-- Classical Gold Roman Main Title -->
+    <text x="0" y="0" font-family="'Cinzel', 'Trajan Pro', 'Georgia', serif" font-weight="900" font-size="42" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="6" filter="url(#glow)">SERVICEMEOW</text>
+    <text x="0" y="0" font-family="'Cinzel', 'Trajan Pro', 'Georgia', serif" font-weight="900" font-size="42" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="6">SERVICEMEOW</text>
+    
+    <!-- Subtitle Badge with Halloween international red accents -->
+    <g transform="translate(0, 24)">
+      <rect x="-240" y="0" width="480" height="28" fill="#eb0029" stroke="#ffffff" stroke-width="1.5"/>
+      <text x="0" y="19" font-family="'Helvetica Neue', 'Inter', monospace, sans-serif" font-weight="800" font-size="13" fill="#ffffff" text-anchor="middle" letter-spacing="3">🎃 HALLOWEEN SPECIAL: VENI • VIDI • MEOWI 🐾</text>
+    </g>
+  </g>
+
+  <!-- Bottom Classical Stone Arch Inscription Banner -->
+  <g transform="translate(600, 642)">
+    <rect x="-380" y="-18" width="760" height="34" fill="#0c0717" stroke="url(#goldGrad)" stroke-width="2"/>
+    <text x="0" y="4" font-family="'Cinzel', 'Georgia', serif" font-weight="700" font-size="14" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="3">
+      CANIS ROMANUS IN VESTE FELIS • "BARK? NO CITIZEN, DEFINITELY MEOW."
+    </text>
+  </g>
+
+  <!-- Corner Ornamental Swiss Grid Marks -->
+  <g stroke="#ffe270" stroke-width="2" opacity="0.8">
+    <path d="M 20 20 L 50 20 M 20 20 L 20 50"/>
+    <path d="M 1180 20 L 1150 20 M 1180 20 L 1180 50"/>
+    <path d="M 20 655 L 50 655 M 20 655 L 20 625"/>
+    <path d="M 1180 655 L 1150 655 M 1180 655 L 1180 625"/>
+  </g>
+
+</svg>
