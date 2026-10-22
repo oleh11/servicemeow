@@ -236,6 +236,84 @@ export interface ScriptSandboxResult {
   error?: string;
   durationMs: number;
 }
+
+// CRM & Customer 360 Ecosystem Context
+export interface CrmOrganizationRecord {
+  id: string;
+  name: string;
+  domain?: string | null;
+  industry?: string | null;
+  tier: "strategic" | "enterprise" | "mid_market" | "smb";
+  status: "active" | "prospect" | "churned";
+  healthScore: number;       // 0 - 100
+  assignedToId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmContactRecord {
+  id: string;
+  firstName: string;
+  lastName: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  title?: string | null;
+  isPrimary: boolean;
+  organizationId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CrmDealRecord {
+  id: string;
+  title: string;
+  amount: number;
+  stage: "lead" | "qualified" | "proposal" | "negotiation" | "won" | "lost";
+  probability: number;       // 0 - 100
+  expectedCloseDate?: string | null;
+  organizationId?: string | null;
+  contactId?: string | null;
+  assignedToId?: string | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Smart Automation Engines Context
+export interface AutoAssignResult {
+  assigned: boolean;
+  assignedToId?: string;
+  assignedToName?: string;
+  workload: number;
+  reason: string;
+}
+
+export interface ChangeRiskFactor {
+  factor: string;
+  weight: number;
+  detail: string;
+}
+
+export interface ChangeRiskEvaluation {
+  riskScore: number;         // 0 - 100
+  riskLevel: "low" | "moderate" | "high" | "very_high";
+  cabRecommended: boolean;
+  factors: ChangeRiskFactor[];
+  conflictingChanges: Array<{
+    id: string;
+    number: string;
+    plannedStart: string;
+    plannedEnd: string;
+    shortDescription: string;
+  }>;
+}
+
+export interface SmartDraftResult {
+  draft: string;
+  tone: "empathetic" | "professional" | "technical" | "concise";
+  evidenceUsed: number;
+}
 ```
 
 ---
@@ -249,6 +327,11 @@ export interface ScriptSandboxResult {
 | `/api/now/table/:table` | `GET` | `sysparm_query`, `sysparm_limit`, `sysparm_offset` | `{ result: TableRecord[] }` | Read ACL on table |
 | `/api/now/table/:table` | `POST` | `{ ...fieldValues }` | `{ result: TableRecord }` | Create ACL; Non-admin write blocked on `sys_*` |
 | `/api/now/table/:table/:id` | `PATCH` | `{ ...updatedFields }` | `{ result: TableRecord }` | Write ACL |
+| `/api/now/table/crm_organization` | `GET` / `POST` | Query / `{ name, tier, healthScore, industry }` | `{ result: CrmOrganizationRecord[] }` | `itil` or `admin` |
+| `/api/now/table/crm_contact` | `GET` / `POST` | Query / `{ firstName, lastName, email, organizationId }` | `{ result: CrmContactRecord[] }` | `itil` or `admin` |
+| `/api/now/table/crm_deal` | `GET` / `POST` | Query / `{ title, amount, stage, organizationId }` | `{ result: CrmDealRecord[] }` | `itil` or `admin` |
+| `/api/now/ai/draft-response` | `POST` | `{ taskId, tone }` | `{ result: SmartDraftResult }` | `itil` or `admin` |
+| `/api/now/change-risk` | `POST` | `{ changeType, cmdbCiId, plannedStart, plannedEnd }` | `{ result: ChangeRiskEvaluation }` | `itil` or `admin` |
 | `/api/now/spatial/tree` | `GET` | None | `{ tree: SpatialHierarchyNode[] }` | Authenticated |
 | `/api/now/spatial/floorplan-upload` | `POST` | FormData (`file`, `floorId`) or JSON (`floorId`, `imageUrl`) | `{ success: true, url: string, floor: CmnFloor }` | `workplace_admin` or `admin` |
 | `/api/now/table/cmn_floor/:id` | `PATCH` | `{ area_sq_ft, name, code, floor_number }` | `{ result: CmnFloor }` | `workplace_admin` or `admin` |

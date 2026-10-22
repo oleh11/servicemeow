@@ -43,6 +43,26 @@ export function ActivityStream({ taskId, initialNotes, onAddNote }: ActivityStre
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notes, setNotes] = useState<Note[]>(initialNotes);
+  const [isDraftingAi, setIsDraftingAi] = useState(false);
+
+  const handleAiDraft = async (tone: "empathetic" | "professional" | "technical" | "concise" = "empathetic") => {
+    setIsDraftingAi(true);
+    try {
+      const res = await fetch("/api/now/ai/draft-response", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskId, tone }),
+      });
+      const data = await res.json();
+      if (data.result?.draft) {
+        setContent(data.result.draft);
+      }
+    } catch (err) {
+      console.error("AI Draft error:", err);
+    } finally {
+      setIsDraftingAi(false);
+    }
+  };
 
   const handleApplyMacro = (macroText: string) => {
     setContent((prev) => (prev ? `${prev}\n\n${macroText}` : macroText));
@@ -151,6 +171,16 @@ export function ActivityStream({ taskId, initialNotes, onAddNote }: ActivityStre
                 </button>
               )
             )}
+            <button
+              type="button"
+              disabled={isDraftingAi}
+              onClick={() => handleAiDraft(activeTab === "customer_comment" ? "empathetic" : "technical")}
+              className="ml-auto px-2.5 py-0.5 rounded-full border border-purple-300 bg-gradient-to-r from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 text-purple-800 text-[11px] font-bold flex items-center gap-1 transition-all shrink-0 disabled:opacity-50"
+              title="Generate contextual customer reply using Hermes AI"
+            >
+              <Sparkles className="w-3 h-3 text-purple-600 animate-pulse" />
+              <span>{isDraftingAi ? "Drafting..." : "✨ AI Draft Response"}</span>
+            </button>
           </div>
 
           <textarea

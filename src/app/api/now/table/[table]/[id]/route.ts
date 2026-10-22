@@ -352,6 +352,72 @@ export async function GET(
       return NextResponse.json({ result: member });
     }
 
+    if (table === "crm_organization") {
+      const org = await db.crmOrganization.findUnique({
+        where: { id },
+        include: {
+          assignedTo: { select: { id: true, name: true, email: true } },
+          contacts: true,
+          deals: true,
+          tasks: { select: { id: true, number: true, shortDescription: true, priority: true, state: true } },
+        },
+      });
+      if (!org) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+      return NextResponse.json({
+        result: {
+          ...org,
+          sys_id: org.id,
+          assigned_to: org.assignedTo ? { value: org.assignedTo.id, display_value: org.assignedTo.name } : null,
+          sys_created_on: org.createdAt.toISOString(),
+          sys_updated_on: org.updatedAt.toISOString(),
+        },
+      });
+    }
+
+    if (table === "crm_contact") {
+      const contact = await db.crmContact.findUnique({
+        where: { id },
+        include: {
+          organization: true,
+          deals: true,
+          tasks: { select: { id: true, number: true, shortDescription: true, priority: true, state: true } },
+        },
+      });
+      if (!contact) return NextResponse.json({ error: "Contact not found" }, { status: 404 });
+      return NextResponse.json({
+        result: {
+          ...contact,
+          sys_id: contact.id,
+          organization: contact.organization ? { value: contact.organization.id, display_value: contact.organization.name } : null,
+          sys_created_on: contact.createdAt.toISOString(),
+          sys_updated_on: contact.updatedAt.toISOString(),
+        },
+      });
+    }
+
+    if (table === "crm_deal") {
+      const deal = await db.crmDeal.findUnique({
+        where: { id },
+        include: {
+          organization: true,
+          contact: true,
+          assignedTo: { select: { id: true, name: true, email: true } },
+        },
+      });
+      if (!deal) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
+      return NextResponse.json({
+        result: {
+          ...deal,
+          sys_id: deal.id,
+          organization: deal.organization ? { value: deal.organization.id, display_value: deal.organization.name } : null,
+          contact: deal.contact ? { value: deal.contact.id, display_value: deal.contact.name } : null,
+          assigned_to: deal.assignedTo ? { value: deal.assignedTo.id, display_value: deal.assignedTo.name } : null,
+          sys_created_on: deal.createdAt.toISOString(),
+          sys_updated_on: deal.updatedAt.toISOString(),
+        },
+      });
+    }
+
     // Dynamic table handling
     const tableMeta = await db.sysDbObject.findUnique({ where: { name: table } });
     if (tableMeta) {
@@ -881,6 +947,57 @@ export async function PATCH(
       });
     }
 
+    if (table === "crm_organization") {
+      const updated = await db.crmOrganization.update({
+        where: { id },
+        data: {
+          name: body.name !== undefined ? body.name : undefined,
+          domain: body.domain !== undefined ? body.domain : undefined,
+          industry: body.industry !== undefined ? body.industry : undefined,
+          tier: body.tier !== undefined ? body.tier : undefined,
+          status: body.status !== undefined ? body.status : undefined,
+          healthScore: body.health_score !== undefined ? Number(body.health_score) : (body.healthScore !== undefined ? Number(body.healthScore) : undefined),
+          assignedToId: body.assigned_to_id !== undefined ? (body.assigned_to_id || null) : (body.assignedToId !== undefined ? (body.assignedToId || null) : undefined),
+        },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
+    }
+
+    if (table === "crm_contact") {
+      const updated = await db.crmContact.update({
+        where: { id },
+        data: {
+          firstName: body.first_name !== undefined ? body.first_name : (body.firstName !== undefined ? body.firstName : undefined),
+          lastName: body.last_name !== undefined ? body.last_name : (body.lastName !== undefined ? body.lastName : undefined),
+          name: body.name !== undefined ? body.name : undefined,
+          email: body.email !== undefined ? body.email : undefined,
+          phone: body.phone !== undefined ? body.phone : undefined,
+          title: body.title !== undefined ? body.title : undefined,
+          isPrimary: body.is_primary !== undefined ? Boolean(body.is_primary) : (body.isPrimary !== undefined ? Boolean(body.isPrimary) : undefined),
+          organizationId: body.organization_id !== undefined ? (body.organization_id || null) : (body.organizationId !== undefined ? (body.organizationId || null) : undefined),
+        },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
+    }
+
+    if (table === "crm_deal") {
+      const updated = await db.crmDeal.update({
+        where: { id },
+        data: {
+          title: body.title !== undefined ? body.title : undefined,
+          amount: body.amount !== undefined ? Number(body.amount) : undefined,
+          stage: body.stage !== undefined ? body.stage : undefined,
+          probability: body.probability !== undefined ? Number(body.probability) : undefined,
+          expectedCloseDate: body.expected_close_date !== undefined ? (body.expected_close_date ? new Date(body.expected_close_date) : null) : (body.expectedCloseDate !== undefined ? (body.expectedCloseDate ? new Date(body.expectedCloseDate) : null) : undefined),
+          organizationId: body.organization_id !== undefined ? (body.organization_id || null) : (body.organizationId !== undefined ? (body.organizationId || null) : undefined),
+          contactId: body.contact_id !== undefined ? (body.contact_id || null) : (body.contactId !== undefined ? (body.contactId || null) : undefined),
+          assignedToId: body.assigned_to_id !== undefined ? (body.assigned_to_id || null) : (body.assignedToId !== undefined ? (body.assignedToId || null) : undefined),
+          notes: body.notes !== undefined ? body.notes : undefined,
+        },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
+    }
+
     if (table === "sys_user") {
       const updated = await db.user.update({
         where: { id },
@@ -1353,6 +1470,21 @@ export async function DELETE(
 
     if (table === "kb_knowledge_base" || table === "rm_sprint") {
       await db.sysCustomRecord.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "crm_organization") {
+      await db.crmOrganization.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "crm_contact") {
+      await db.crmContact.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "crm_deal") {
+      await db.crmDeal.delete({ where: { id } });
       return NextResponse.json({ result: { status: "deleted", sys_id: id } });
     }
 

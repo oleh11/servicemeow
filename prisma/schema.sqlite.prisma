@@ -87,6 +87,8 @@ model User {
   checklistItemsCompleted TaskChecklistItem[] @relation("ChecklistCompletedBy")
   evidenceDecided         TaskEvidence[]      @relation("EvidenceDecidedBy")
   morningChecksInspected  CmnMorningCheck[]   @relation("MorningCheckInspector")
+  managedOrganizations    CrmOrganization[]   @relation("OrgAccountManager")
+  managedDeals            CrmDeal[]           @relation("DealOwner")
 }
 
 model Group {
@@ -356,6 +358,10 @@ model Task {
   changeTask        ChangeTask?
   checklistItems    TaskChecklistItem[]
   evidenceItems     TaskEvidence[]
+  organizationId    String?
+  organization      CrmOrganization?  @relation("TaskOrganization", fields: [organizationId], references: [id], onDelete: SetNull)
+  contactId         String?
+  contact           CrmContact?       @relation("TaskContact", fields: [contactId], references: [id], onDelete: SetNull)
 
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -1207,5 +1213,58 @@ model SysWsOperation {
   @@unique([webServiceDefinitionId, httpMethod, uriTemplate])
 }
 
+// ----------------------------------------------------
+// Customer Service Management & CRM (Customer 360)
+// ----------------------------------------------------
 
+model CrmOrganization {
+  id           String       @id @default(cuid())
+  name         String       @unique
+  domain       String?
+  industry     String?      @default("technology")
+  tier         String       @default("enterprise") // "enterprise", "mid_market", "smb"
+  status       String       @default("active") // "active", "prospect", "churned"
+  healthScore  Int          @default(95) // 0-100
+  assignedToId String?
+  assignedTo   User?        @relation("OrgAccountManager", fields: [assignedToId], references: [id], onDelete: SetNull)
+  contacts     CrmContact[]
+  deals        CrmDeal[]
+  tasks        Task[]       @relation("TaskOrganization")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
 
+model CrmContact {
+  id             String           @id @default(cuid())
+  firstName      String
+  lastName       String
+  name           String           // Full name display
+  email          String           @unique
+  phone          String?
+  title          String?
+  isPrimary      Boolean          @default(false)
+  organizationId String?
+  organization   CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  deals          CrmDeal[]
+  tasks          Task[]           @relation("TaskContact")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model CrmDeal {
+  id                String           @id @default(cuid())
+  title             String
+  amount            Float            @default(0.0)
+  stage             String           @default("lead") // "lead", "qualified", "proposal", "negotiation", "won", "lost"
+  probability       Int              @default(20) // 0-100
+  expectedCloseDate DateTime?
+  organizationId    String?
+  organization      CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  contactId         String?
+  contact           CrmContact?      @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  assignedToId      String?
+  assignedTo        User?            @relation("DealOwner", fields: [assignedToId], references: [id], onDelete: SetNull)
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}

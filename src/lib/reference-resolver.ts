@@ -216,7 +216,7 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
           const match = highest.number.match(/\d+$/);
           if (match) {
             const highestNum = parseInt(match[0], 10);
-            if (nextNum <= highestNum) {
+            if (highestNum > 0 && highestNum < 2000000000 && nextNum <= highestNum) {
               nextNum = highestNum + 1;
             }
           }

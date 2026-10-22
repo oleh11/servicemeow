@@ -58,6 +58,13 @@ erDiagram
     User ||--o{ TaskEvidence : "decided by"
     User ||--o{ CmnMorningCheck : "inspected by"
     CmnMorningCheck ||--o| Incident : "escalates to"
+
+    CrmOrganization ||--o{ CrmContact : "employs"
+    CrmOrganization ||--o{ CrmDeal : "commercial opportunity"
+    CrmOrganization ||--o{ Task : "client account"
+    CrmContact ||--o{ Task : "contact person"
+    User ||--o{ CrmOrganization : "manages account"
+    User ||--o{ CrmDeal : "assigned to"
 ```
 
 ---
@@ -109,6 +116,11 @@ erDiagram
 - **`TaskChecklistItem` (`task_checklist_item`)**: Standard Operating Procedure steps attached to tasks. Defines `isMandatory` validation flags, completion state, completed-by user attribution, and ordering.
 - **`TaskEvidence` (`task_evidence`)**: Concrete diagnostic facts (`log.stacktrace`, `ci.ping_failure`, `git.commit_hash`, `monitor.alert`, `crm.thread_reply`) preventing AI or operator hallucination. Includes decisive flags, confidence scores, and operator review lifecycle (`proposed`, `accepted`, `rejected`).
 - **`CmnMorningCheck` (`cmn_morning_check`)**: Shift-based recurring operational rounds across infrastructure categories (`datacenter`, `backup`, `network`, `database`, `security`, `application`). Supports tri-state status (`PASS`, `DEGRADED`, `FAIL`, `PENDING`), inspector attribution, and 1-click critical incident escalation.
+
+### 2.8 CRM & Customer 360 Domain (v3.3.0)
+- **`CrmOrganization` (`crm_organization`)**: Enterprise client organizations and corporate accounts with domain, industry, customer tier (`enterprise`, `mid_market`, `smb`), operational health score (0–100), and designated account manager.
+- **`CrmContact` (`crm_contact`)**: Relational contact directory mapped to customer accounts. Supports primary contact flags, email, direct telephone, and job title.
+- **`CrmDeal` (`crm_deal`)**: Commercial and renewal deals tracked across pipeline stages (`lead`, `qualified`, `proposal`, `negotiation`, `won`, `lost`) with contract amounts, close probability percentages, and owner assignments.
 
 ---
 
@@ -458,6 +470,63 @@ CREATE TABLE IF NOT EXISTS cmn_morning_check (
 );
 
 CREATE INDEX idx_morning_check_cat_status ON cmn_morning_check(category, status, created_at);
+
+-- ==============================================================================
+-- 9. CRM & Customer 360 Ecosystem (v3.3.0)
+-- ==============================================================================
+
+CREATE TABLE IF NOT EXISTS crm_organization (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    domain VARCHAR(255),
+    industry VARCHAR(100) DEFAULT 'technology',
+    tier VARCHAR(50) DEFAULT 'enterprise' NOT NULL,
+    status VARCHAR(50) DEFAULT 'active' NOT NULL,
+    health_score INT DEFAULT 95 NOT NULL,
+    assigned_to_id VARCHAR(36),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT fk_crm_org_assigned_to FOREIGN KEY (assigned_to_id) REFERENCES sys_user(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_crm_org_tier_status ON crm_organization(tier, status);
+
+CREATE TABLE IF NOT EXISTS crm_contact (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    phone VARCHAR(50),
+    title VARCHAR(150),
+    is_primary BOOLEAN DEFAULT false NOT NULL,
+    organization_id VARCHAR(36),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT fk_crm_contact_org FOREIGN KEY (organization_id) REFERENCES crm_organization(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_crm_contact_org ON crm_contact(organization_id);
+
+CREATE TABLE IF NOT EXISTS crm_deal (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid()::text,
+    title VARCHAR(255) NOT NULL,
+    amount DOUBLE PRECISION DEFAULT 0.0 NOT NULL,
+    stage VARCHAR(50) DEFAULT 'lead' NOT NULL,
+    probability INT DEFAULT 20 NOT NULL,
+    expected_close_date TIMESTAMP WITH TIME ZONE,
+    organization_id VARCHAR(36),
+    contact_id VARCHAR(36),
+    assigned_to_id VARCHAR(36),
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT fk_crm_deal_org FOREIGN KEY (organization_id) REFERENCES crm_organization(id) ON DELETE SET NULL,
+    CONSTRAINT fk_crm_deal_contact FOREIGN KEY (contact_id) REFERENCES crm_contact(id) ON DELETE SET NULL,
+    CONSTRAINT fk_crm_deal_assigned_to FOREIGN KEY (assigned_to_id) REFERENCES sys_user(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_crm_deal_stage_org ON crm_deal(stage, organization_id);
 ```
 
 ---
@@ -475,6 +544,9 @@ ALTER TABLE cmn_reservation ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_checklist_item ENABLE ROW LEVEL SECURITY;
 ALTER TABLE task_evidence ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cmn_morning_check ENABLE ROW LEVEL SECURITY;
+ALTER TABLE crm_organization ENABLE ROW LEVEL SECURITY;
+ALTER TABLE crm_contact ENABLE ROW LEVEL SECURITY;
+ALTER TABLE crm_deal ENABLE ROW LEVEL SECURITY;
 
 -- 1. Session & Identity Policy: Users can only inspect their own session records (admins see all)
 CREATE POLICY user_session_isolation ON sys_user_session
@@ -533,6 +605,25 @@ CREATE POLICY evidence_access_guard ON task_evidence
     );
 
 CREATE POLICY morning_checks_guard ON cmn_morning_check
+    FOR ALL
+    USING (
+        current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
+    );
+
+-- 7. CRM Domain Policy: Fulfillers and admins manage accounts, contacts, and commercial deals
+CREATE POLICY crm_access_guard ON crm_organization
+    FOR ALL
+    USING (
+        current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
+    );
+
+CREATE POLICY crm_contact_guard ON crm_contact
+    FOR ALL
+    USING (
+        current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
+    );
+
+CREATE POLICY crm_deal_guard ON crm_deal
     FOR ALL
     USING (
         current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')

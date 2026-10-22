@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD)
 
 **Project**: ServiceMeow — Enterprise Service Management (ESM) & Autonomous ITIL Operations Platform  
-**Version**: 3.2.0 (Attention Cockpit, Mandatory SOP Gatekeeper & Shift Operational Rounds)  
+**Version**: 3.3.0 (CRM Customer 360, AI Auto-Drafting, Load-Balancing Assignment & Quantitative Change Risk Scoring)  
 **Status**: Production Ready & Fully Tested  
 **Created**: 2026-10-14  
 **Last Updated**: 2026-10-22  
@@ -9,18 +9,19 @@
 ---
 
 ## 1. Executive Summary
-ServiceMeow is an open-source, high-performance Enterprise Service Management (ESM) and ITIL operations platform engineered with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Prisma ORM, and QuickJS WebAssembly sandboxing. It replaces legacy, high-latency enterprise service suites with a sub-second, dockable multi-record workspace, a 6-tier Connected Workplace spatial CAD floorplan booking engine, low-code studio development with Update Set ALM, a deterministic Watchtower attention cockpit, mandatory SOP gatekeeper verification, shift morning checks operational rounds, and an autonomous Hermes triage agent.
+ServiceMeow is an open-source, high-performance Enterprise Service Management (ESM) and ITIL operations platform engineered with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Prisma ORM, and QuickJS WebAssembly sandboxing. It replaces legacy, high-latency enterprise service suites with a sub-second, dockable multi-record workspace, a 6-tier Connected Workplace spatial CAD floorplan booking engine, low-code studio development with Update Set ALM, a deterministic Watchtower attention cockpit, mandatory SOP gatekeeper verification, shift morning checks operational rounds, an autonomous Hermes triage agent, Customer 360 CRM accounts with deal pipelines, load-balancing task assignment, and quantitative change risk scoring.
 
 ---
 
 ## 2. Problem Statement
-**Problem**: Traditional enterprise IT operations and service desks suffer from prohibitive licensing costs, sluggish multi-tab navigation, brittle JavaScript execution models with process escape vulnerabilities, fractured workplace facility reservation tools, and lack of deterministic attention management for critical operational risks.  
+**Problem**: Traditional enterprise IT operations and service desks suffer from prohibitive licensing costs, sluggish multi-tab navigation, brittle JavaScript execution models with process escape vulnerabilities, fractured workplace facility reservation tools, siloed customer account information separated from service tickets, arbitrary unquantified change approvals, and lack of deterministic attention management for critical operational risks.  
 **Target Users**:
 1. **ITIL Fulfillers & Engineers**: Incident responders, change managers, and service desk analysts needing high-throughput multi-record triage without page reloading.
 2. **Platform Administrators & Low-Code Developers**: System architects building custom schemas, business rules, client scripts, and deploying configuration updates across environments.
 3. **Enterprise Employees & Requesters**: Knowledge workers submitting service requests, reserving hybrid desks/rooms, and verifying platform availability.
 4. **Facility & Workplace Directors**: Operations managers monitoring real-time occupancy, interactive floorplans, and room amenities.
 5. **NOC / SOC Operations Commanders**: Shift leads performing daily operational rounds, enforcing SOP compliance before resolution, and tracking aggregate system health.
+6. **Customer Success & Account Managers**: Commercial and support managers tracking client accounts, SLAs, deal stages, and customer contacts.
 
 **Current Pain Points**:
 - Multi-second navigation latencies when juggling multiple incidents and change tickets.
@@ -29,6 +30,9 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 - Absence of transparent 90-day component uptime reporting tied directly to underlying incident records.
 - Premature ticket closures without verifying critical Standard Operating Procedures (SOPs).
 - Hallucinated or unverified diagnostic claims lacking concrete cryptographic or machine-generated log evidence.
+- Disconnected CRM data leading to blind incident handling without account SLA tier or health score visibility.
+- Manual and skewed ticket distribution overloading individual engineers.
+- Subjective change risk evaluations resulting in undetected change collisions on mission-critical CIs.
 
 ---
 
@@ -41,8 +45,10 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 | Spatial Hierarchy Integrity | Breadcrumb path resolution across 6 tiers | 100% relational referential integrity |
 | SOP Resolution Integrity | Mandatory checklist enforcement | 100% block rate (HTTP 422) on incomplete items |
 | Operational Attention | Watchtower health score & attention stream refresh | Real-time deterministic aggregation |
-| Test Coverage | Vitest regression test suite | 100% passing (136 tests across 18 files) |
-| Production Build Reliability | Next.js compilation & TypeScript type-check | 0 errors, 0 unresolved imports, 82 static routes |
+| Automated Load Balancing | Ticket assignment skew among active group members | Deviation < 1 open ticket |
+| Quantitative Change Risk | Conflict and duration risk scoring accuracy | 100% detection of overlapping CI change windows |
+| Test Coverage | Vitest regression test suite | 100% passing (140 tests across 19 files) |
+| Production Build Reliability | Next.js compilation & TypeScript type-check | 0 errors, 0 unresolved imports, 85 routes |
 
 ---
 
@@ -196,6 +202,27 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 - [x] **Advanced Multi-Condition Filter Engine**: Dynamic condition rows supporting operators (`=`, `!=`, `LIKE`, `STARTSWITH`, `>`, `<`), dynamic field pickers, and breadcrumbs.
 - [x] **Encoded Query Conversion**: Bi-directional conversion between UI conditions and standard encoded query strings (`sysparm_query=priority=1^state!=6`).
 
+#### 15. CRM Customer 360 & Commercial Deal Management (`crm_organization`, `crm_contact`, `crm_deal`, `/workspace/crm`)
+- [x] **Customer 360 Account Entity (`CrmOrganization`)**: Tracks account tier (`strategic`, `enterprise`, `mid_market`, `smb`), health score (0–100), ARR/MRR financial metrics, industry classification, and contracted SLA tier (`24/7_mission_critical`, `gold_enterprise`, `business_hours`).
+- [x] **Account Contacts (`CrmContact`)**: Relational contact directory linked to organizations with job titles, emails, direct phone lines, and primary contact indicators.
+- [x] **Sales & Renewal Pipeline Kanban (`CrmDeal`)**: Visual Kanban board across 6 deal stages (`lead`, `qualified`, `proposal`, `negotiation`, `won`, `lost`) with probability weighting, expected close dates, and direct one-click stage advance controls.
+- [x] **Polymorphic ITIL Task Integration**: Bidirectional foreign keys on `Task` (`organizationId`, `contactId`) allowing incidents, problems, and changes to be tagged with customer account context.
+
+#### 16. Automated Load-Balancing Task Assignment Engine (`src/lib/assignment-engine.ts`)
+- [x] **Workload-Balancing Routing Algorithm**: Evaluates all active members of an assignment group and routes new or unassigned tickets to the technician with the fewest open (non-closed, non-resolved) tasks.
+- [x] **Manager Fallback**: Falls back to the primary group manager when all members have equal workload or group has no direct assignments.
+- [x] **Audit Work Note Logging**: Automatically appends an immutable system work note (`sys_audit` / `activity_notes`) recording the exact load-balancing computation and assignment decision.
+
+#### 17. Quantitative Change Risk & Collision Scoring Engine (`src/lib/change-risk-engine.ts`, `/api/now/change-risk`)
+- [x] **Multi-Factor Risk Assessment (0–100 Score)**: Computes quantitative change risk scores based on target CI tier (Tier 1 Mission Critical = +35, Tier 2 = +20), change type (Emergency = +40, Normal = +20, Standard = +5), planned duration (>24h = +25, >8h = +15), and concurrent CI collision (+30).
+- [x] **Overlapping CI Collision Detection**: Actively queries scheduled and active change requests against the same CMDB Configuration Item to flag concurrent maintenance window collisions.
+- [x] **Automated CAB Recommendation**: Recommends mandatory CAB review for any change with risk score >= 50 or classified as `high` / `very_high`.
+
+#### 18. AI Smart Customer Response Auto-Drafting Engine (`/api/now/ai/draft-response`, `ActivityStream.tsx`)
+- [x] **Multi-Tone Contextual Synthesis**: Generates customer-facing draft responses in multiple tones (`empathetic`, `professional`, `technical`, `concise`).
+- [x] **Evidence-Grounded Ingestion**: Synthesizes drafts directly from ticket short description, latest internal work notes, customer account context, and verified Hermes diagnostic evidence.
+- [x] **One-Click Stream Injection**: Single-click `✨ AI Draft Response` button in the activity stream customer communication box, allowing technicians to preview, edit, and send drafts instantly.
+
 ---
 
 ## 6. Technical Architecture & Stack Decisions
@@ -303,6 +330,56 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 - `PATCH /api/now/spatial/batch-allocate`: Batch assigns department, division, or room category to an array of space IDs (`{ spaceIds: string[], category?: string, department?: string }`).
 - `GET /api/now/spatial/drawings`: Returns catalog of registered architectural CAD drawings (`hq18`, `tt_l4`, `offcen01`, etc.) with layer definitions, bounding boxes, and floor associations.
 
+### 7.8 CRM & Smart Engine APIs
+- `GET /api/now/table/crm_organization`: Returns list of customer accounts with tier, health score, ARR, and SLA tier.
+- `POST /api/now/table/crm_organization`: Creates new customer account organization record with validation.
+- `GET /api/now/table/crm_contact`: Returns contacts directory linked to parent organization.
+- `GET /api/now/table/crm_deal`: Returns commercial and renewal deals across stages (`lead` through `won`/`lost`).
+- `POST /api/now/ai/draft-response`: Generates an AI-synthesized customer communication draft.
+  - **Request Body**:
+    ```json
+    {
+      "taskId": "task-uuid",
+      "tone": "empathetic" // "empathetic" | "professional" | "technical" | "concise"
+    }
+    ```
+  - **Response (200 OK)**:
+    ```json
+    {
+      "result": {
+        "draft": "Dear Dr. Catherine Howard,\n\nWe are actively working on Incident INC0010042 regarding the Core Gateway Fiber Switch...",
+        "tone": "empathetic",
+        "evidenceUsed": 1
+      }
+    }
+    ```
+- `POST /api/now/change-risk`: Evaluates planned change request risk and detects CI collisions.
+  - **Request Body**:
+    ```json
+    {
+      "changeType": "emergency",
+      "cmdbCiId": "ci-uuid",
+      "plannedStart": "2026-11-01T00:00:00Z",
+      "plannedEnd": "2026-11-02T12:00:00Z"
+    }
+    ```
+  - **Response (200 OK)**:
+    ```json
+    {
+      "result": {
+        "riskScore": 100,
+        "riskLevel": "very_high",
+        "cabRecommended": true,
+        "factors": [
+          { "factor": "CHANGE_TYPE_EMERGENCY", "weight": 40, "detail": "Emergency change classification" },
+          { "factor": "CI_TIER_1_CRITICAL", "weight": 35, "detail": "Target CI is Tier 1 Mission Critical" },
+          { "factor": "EXTENDED_DURATION", "weight": 25, "detail": "Maintenance window exceeds 24 hours (36.0h)" }
+        ],
+        "conflictingChanges": []
+      }
+    }
+    ```
+
 ### 5.9 Swiss Grid Design System & Radical First-Time User Accessibility (v3.0.0)
 - **Design Philosophy**: Adheres to the International Typographic Style (Swiss Grid). Structured on a mathematical modular grid, objective grotesque typography (Inter / Helvetica), stark high-contrast visual hierarchy (monochrome with International Swiss Red `#EB0029` and Klein Blue `#0047FF`), and zero visual clutter (banning nested gradients, muddy shadows, and decorative micro-pills).
 - **First-Time User Accessibility**: Engineered so a user who has never operated an enterprise portal can complete tasks without instructions:
@@ -348,8 +425,9 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 ## 10. Verification Sign-Off
 | Verification Gate | Result | Date |
 |---|---|---|
-| Vitest Test Suite | 136 passed / 18 test files (100%) | 2026-10-22 |
-| Next.js App Router Build | 0 errors / 82 static pages & routes compiled | 2026-10-22 |
+| Vitest Test Suite | 140 passed / 19 test files (100%) | 2026-10-22 |
+| Next.js App Router Build | 0 errors / 85 static pages & routes compiled | 2026-10-22 |
+| CRM Customer 360 & Pipeline | 4/4 CRM tests passed (Orgs, Contacts, Deals, Load-Balancing, Risk) | 2026-10-22 |
 | Watchtower Attention Cockpit | 2/2 tests passed (Health Score & Escalation) | 2026-10-22 |
 | Mandatory SOP Gatekeeper & Evidence | 3/3 tests passed (Gatekeeper & Hermes facts) | 2026-10-22 |
 | Swiss Grid Design System | 100% compliant across Portal, Catalog, Tickets, Login & Workspace | 2026-10-22 |
@@ -359,3 +437,4 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 | QuickJS WASM Sandbox Defense | 15/15 security tests passed | 2026-10-22 |
 | Spatial Hierarchy Referential Integrity | 7/7 hierarchy tests passed | 2026-10-22 |
 | Universal Command Palette & Search | 6/6 search tests passed | 2026-10-22 |
+

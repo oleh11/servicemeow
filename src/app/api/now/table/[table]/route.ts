@@ -7,6 +7,7 @@ import { executeBusinessRules } from "@/lib/business-rules";
 import { triggerFlows } from "@/lib/flow-engine";
 import { evaluateAcl } from "@/lib/acl-engine";
 import { getServerSession } from "@/lib/auth";
+import { autoAssignTask } from "@/lib/assignment-engine";
 
 const ADMIN_ONLY_WRITE_TABLES = new Set(["sys_user", "sys_user_group", "sys_user_grmember", "sys_security_acl", "sys_user_role"]);
 
@@ -583,6 +584,78 @@ export async function GET(
         orderBy: { endDate: "asc" },
       });
       return NextResponse.json({ result: contracts });
+    }
+
+    if (table === "crm_organization") {
+      const orgs = await db.crmOrganization.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { name: "asc" },
+        include: {
+          assignedTo: { select: { id: true, name: true, email: true } },
+          contacts: { select: { id: true, name: true, email: true, title: true, isPrimary: true } },
+          deals: { select: { id: true, title: true, amount: true, stage: true } },
+          tasks: { select: { id: true, number: true, shortDescription: true, priority: true, state: true } },
+        },
+      });
+      const formatted = orgs.map((o) => ({
+        ...o,
+        sys_id: o.id,
+        id: o.id,
+        assigned_to: o.assignedTo ? { value: o.assignedTo.id, display_value: o.assignedTo.name } : null,
+        sys_created_on: o.createdAt.toISOString(),
+        sys_updated_on: o.updatedAt.toISOString(),
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "crm_contact") {
+      const contacts = await db.crmContact.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { lastName: "asc" },
+        include: {
+          organization: { select: { id: true, name: true, tier: true } },
+          deals: { select: { id: true, title: true, amount: true, stage: true } },
+          tasks: { select: { id: true, number: true, shortDescription: true, priority: true, state: true } },
+        },
+      });
+      const formatted = contacts.map((c) => ({
+        ...c,
+        sys_id: c.id,
+        id: c.id,
+        organization: c.organization ? { value: c.organization.id, display_value: c.organization.name } : null,
+        organization_name: c.organization?.name || null,
+        sys_created_on: c.createdAt.toISOString(),
+        sys_updated_on: c.updatedAt.toISOString(),
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "crm_deal") {
+      const deals = await db.crmDeal.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { createdAt: "desc" },
+        include: {
+          organization: { select: { id: true, name: true, tier: true } },
+          contact: { select: { id: true, name: true, email: true } },
+          assignedTo: { select: { id: true, name: true, email: true } },
+        },
+      });
+      const formatted = deals.map((d) => ({
+        ...d,
+        sys_id: d.id,
+        id: d.id,
+        organization: d.organization ? { value: d.organization.id, display_value: d.organization.name } : null,
+        organization_name: d.organization?.name || null,
+        contact: d.contact ? { value: d.contact.id, display_value: d.contact.name } : null,
+        contact_name: d.contact?.name || null,
+        assigned_to: d.assignedTo ? { value: d.assignedTo.id, display_value: d.assignedTo.name } : null,
+        sys_created_on: d.createdAt.toISOString(),
+        sys_updated_on: d.updatedAt.toISOString(),
+      }));
+      return NextResponse.json({ result: formatted });
     }
 
     // Dynamic handling for any custom table registered in sys_db_object
@@ -1343,6 +1416,70 @@ export async function POST(
         },
         { status: 201 }
       );
+    }
+
+    if (table === "crm_organization") {
+      if (!body.name) {
+        return NextResponse.json({ error: "name is required" }, { status: 400 });
+      }
+      const org = await db.crmOrganization.create({
+        data: {
+          name: body.name,
+          domain: body.domain || null,
+          industry: body.industry || "technology",
+          tier: body.tier || "enterprise",
+          status: body.status || "active",
+          healthScore: body.health_score !== undefined ? Number(body.health_score) : (body.healthScore !== undefined ? Number(body.healthScore) : 95),
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+        },
+      });
+      return NextResponse.json({ result: { ...org, sys_id: org.id } }, { status: 201 });
+    }
+
+    if (table === "crm_contact") {
+      if (!body.first_name && !body.name) {
+        return NextResponse.json({ error: "first_name or name is required" }, { status: 400 });
+      }
+      if (!body.email) {
+        return NextResponse.json({ error: "email is required" }, { status: 400 });
+      }
+      const firstName = body.first_name || body.firstName || body.name?.split(" ")[0] || "Contact";
+      const lastName = body.last_name || body.lastName || body.name?.split(" ").slice(1).join(" ") || "";
+      const fullName = body.name || `${firstName} ${lastName}`.trim();
+
+      const contact = await db.crmContact.create({
+        data: {
+          firstName,
+          lastName,
+          name: fullName,
+          email: body.email,
+          phone: body.phone || null,
+          title: body.title || null,
+          isPrimary: Boolean(body.is_primary ?? body.isPrimary ?? false),
+          organizationId: body.organization_id || body.organizationId || null,
+        },
+      });
+      return NextResponse.json({ result: { ...contact, sys_id: contact.id } }, { status: 201 });
+    }
+
+    if (table === "crm_deal") {
+      if (!body.title) {
+        return NextResponse.json({ error: "title is required" }, { status: 400 });
+      }
+      const deal = await db.crmDeal.create({
+        data: {
+          title: body.title,
+          amount: body.amount !== undefined ? Number(body.amount) : 0.0,
+          stage: body.stage || "lead",
+          probability: body.probability !== undefined ? Number(body.probability) : 20,
+          expectedCloseDate: body.expected_close_date ? new Date(body.expected_close_date) : (body.expectedCloseDate ? new Date(body.expectedCloseDate) : null),
+          organizationId: body.organization_id || body.organizationId || null,
+          contactId: body.contact_id || body.contactId || null,
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+          notes: body.notes || null,
+        },
+      });
+      return NextResponse.json({ result: { ...deal, sys_id: deal.id } }, { status: 201 });
     }
 
     if (table === "sys_user") {

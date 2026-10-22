@@ -17,6 +17,7 @@ graph TD
         SpaceConsole["ServiceMeow Space Console (/workspace/spaces, /studio?tab=workplace)<br/>• 3-Zone Master-Detail Split Console<br/>• Multi-Level Floor Sheet Grid (HQ15-HQ19)<br/>• Room Categories & Organizational Legends<br/>• Layer Highlights & Complex Architectural CAD Stage"]
         WatchtowerCockpit["Watchtower Attention Cockpit (/workspace/watchtower)<br/>• Operational Health Index (0-100)<br/>• 6 High-Urgency Attention Streams<br/>• Critical P1/P2 Incidents & Breaching SLAs"]
         MorningChecks["Morning Checks Console (/workspace/morning-checks)<br/>• Shift Operational Rounds (Morning/Evening/Night)<br/>• Pass/Degraded/Fail Inspection Toggles<br/>• 1-Click P1/P2 Critical Incident Escalation"]
+        CrmConsole["Customer Service & CRM Console (/workspace/crm)<br/>• Deal Pipeline Kanban Board (Lead to Won)<br/>• Customer Account 360 Health Scores<br/>• Client Contacts Directory & ARR Tracking"]
     end
 
     subgraph Tier2["Tier 2: Edge Session & Route Guard (middleware.ts)"]
@@ -29,10 +30,11 @@ graph TD
         FlowEngine["Hermes Workflow Engine<br/>• Trigger Evaluator<br/>• Step Action Runner<br/>• Execution Audit Trail"]
         SpatialService["Connected Workplace Engine<br/>• 6-Tier Hierarchy Traverser<br/>• Architectural CAD Layer Engine (Walls, Columns, Door Swings, Workstations)<br/>• Room Category & Division Allocation Engine<br/>• Double-Booking Conflict Detector"]
         WatchtowerService["Watchtower Intelligence Engine (/api/now/watchtower)<br/>• Multi-Stream Risk Aggregator<br/>• Health Index Algorithm<br/>• Shift Inspection Management (/api/now/morning-checks)"]
+        SmartEngines["Smart Automation Engines<br/>• Load-Balancing Task Assignment (src/lib/assignment-engine.ts)<br/>• Quantitative Change Risk & CI Collision Scoring (/api/now/change-risk)<br/>• AI Smart Response Contextual Synthesizer (/api/now/ai/draft-response)"]
     end
 
     subgraph Tier4["Tier 4: Enterprise Persistence & Background Daemons"]
-        PostgresCluster[("PostgreSQL 16 Relational Engine<br/>• 43+ Relational Entities<br/>• Foreign Key Cascade Safety<br/>• Prisma Query Password Hash Omission<br/>• Row Level Security (RLS)")]
+        PostgresCluster[("PostgreSQL 16 Relational Engine<br/>• 46+ Relational Entities<br/>• Foreign Key Cascade Safety<br/>• Prisma Query Password Hash Omission<br/>• Row Level Security (RLS)")]
         WorkerDaemon["Worker Scheduler Daemon (src/worker.ts)<br/>• 15s Scheduled Job Polling<br/>• Autonomous SLA Escalation Triage<br/>• Background Batch Processor"]
     end
 
@@ -98,10 +100,19 @@ classDiagram
         CmnMorningCheck
     }
 
+    class CustomerAccountContext {
+        <<Bounded Context>>
+        CrmOrganization
+        CrmContact
+        CrmDeal
+    }
+
     IdentityAccessContext ..> ITILOperationsContext : assigns & approves
+    IdentityAccessContext ..> CustomerAccountContext : manages accounts & owns deals
     SystemMetaContext ..> ITILOperationsContext : metadata & schema
     OperationalAssuranceContext ..> ITILOperationsContext : enforces SOP & logs diagnostic evidence
     OperationalAssuranceContext ..> IdentityAccessContext : inspectors & approvers
+    CustomerAccountContext ..> ITILOperationsContext : client account & contact context
     ConnectedWorkplaceContext ..> CMDBTopologyContext : physical location
     ConnectedWorkplaceContext ..> ITILOperationsContext : affected facility
     CMDBTopologyContext ..> ITILOperationsContext : impacted CI
@@ -114,6 +125,7 @@ classDiagram
 4. **Operational Assurance Context**: Enforces strict SOP compliance before incident resolution. Mandatory checklist verification halts early closure with HTTP 422. Diagnostic evidence provides tamper-evident audit facts.
 5. **Connected Workplace Context**: Maintains strict 6-tier spatial invariant. A Space cannot exist without an enclosing Floor, Building, Campus, State, and Region.
 6. **CMDB Topology Context**: Tracks CI lifecycle status and bidirectional graph dependencies (`cmdb_rel_ci`) with cycle detection.
+7. **Customer Account Context**: Manages B2B customer organizations, primary contacts, and deal pipelines. Customer health score and contract SLA tiers are projected into ITIL tasks without cross-domain pollution.
 
 ---
 
@@ -142,11 +154,11 @@ servicemeow/
 │   │   │   ├── auth/           # Login, logout, me, impersonation
 │   │   │   ├── custom/         # User-defined custom scripted REST endpoints
 │   │   │   ├── health/         # System uptime & database connection health check
-│   │   │   └── now/            # Table API, Watchtower, Morning Checks, CMDB, Spatial, ACLs, Flows
+│   │   │   └── now/            # Table API, Watchtower, Morning Checks, CMDB, Spatial, ACLs, Flows, Change Risk, AI Draft
 │   │   ├── login/              # Secure authentication entry point
 │   │   ├── portal/             # Employee Self-Service intake, reservations & status
 │   │   ├── studio/             # 2-Pane Low-Code Configuration Center & Monaco IDE
-│   │   ├── workspace/          # Multi-record dockable fulfiller workspace, Watchtower, Morning Checks
+│   │   ├── workspace/          # Multi-record dockable fulfiller workspace, Watchtower, Morning Checks, CRM Console
 │   │   └── layout.tsx          # Root platform shell with theme & identity context
 │   ├── components/             # Reusable UI component libraries
 │   │   ├── agile/              # Visual sprint & Kanban board components
@@ -154,11 +166,13 @@ servicemeow/
 │   │   ├── common/             # Accessible dialogs, buttons, dropdowns & badges
 │   │   ├── studio/             # Monaco editor workbench, schema builder, update sets
 │   │   ├── workplace/          # 3-View reservation engine, SpaceConsole, CadFloorplanEditor & FloorBuildingDimensionsModal
-│   │   └── workspace/          # Dockable tab bar, WatchtowerCockpit, MorningChecksConsole, TaskChecklist, TaskEvidenceLedger, AssetQrLabelModal, FilterBuilder
+│   │   └── workspace/          # Dockable tab bar, CrmConsole, WatchtowerCockpit, MorningChecksConsole, TaskChecklist, TaskEvidenceLedger, AssetQrLabelModal, FilterBuilder
 │   ├── lib/                    # Core business logic engines & security infrastructure
 │   │   ├── acl-engine.ts       # Granular RBAC, modular admin domain bypass & table ACLs
+│   │   ├── assignment-engine.ts # Automated load-balancing task assignment engine
 │   │   ├── auth.ts             # Session management, modular admin verification & passwords
 │   │   ├── business-rules.ts   # Before/after database trigger lifecycle engine
+│   │   ├── change-risk-engine.ts # Quantitative change risk & CI collision evaluation
 │   │   ├── db.ts               # Global Prisma client singleton with passwordHash omission
 │   │   ├── flow-engine.ts      # Low-code workflow step execution graph
 │   │   ├── rate-limiter.ts     # In-memory sliding window rate limiter & lockout guard
@@ -168,7 +182,7 @@ servicemeow/
 │   │   └── workflow-agent.ts   # Autonomous Hermes triage & auto-routing agent
 │   ├── middleware.ts           # Edge HMAC-SHA256 session guard, modular admin gates
 │   └── worker.ts               # Background 15s scheduler daemon
-├── tests/                      # Full Vitest integration test suite (136 passing tests across 18 test files)
+├── tests/                      # Full Vitest integration test suite (140 passing tests across 19 test files)
 ├── Dockerfile                  # Multi-stage production container runner
 ├── docker-compose.yml          # Production PostgreSQL 16 + Web App + Worker stack
 ├── package.json                # Project dependencies & operational npm scripts

@@ -13,7 +13,7 @@
   <a href="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml"><img src="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml/badge.svg" alt="ServiceMeow CI" /></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-emerald.svg" alt="Node.js Version" /></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-16-blue.svg" alt="PostgreSQL" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-136%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-140%20passed-8b5cf6.svg" alt="Tests" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
 </p>
 
@@ -44,15 +44,17 @@
    - **Fulfiller Workspace**: Multi-record dockable tab bar, polymorphic ITIL forms, visual Kanban boards, and CMDB dependency topology graphs.
    - **Self-Service Portal**: Catalog item fulfillment, shopping cart checkout, record producers, and 90-day service uptime status pages.
    - **Studio Low-Code IDE**: Schema table builder, ACL governance, Monaco code editor, business rules, and Update Set lifecycle management.
+   - **Customer Service & CRM**: Deal pipeline Kanban, customer account health scores, contact directory, and ARR metrics.
 2. **Tier 2: Edge & Session Route Guard (`middleware.ts`)**:
    - Pure Web Crypto HMAC-SHA256 session token verification at the edge with zero Node runtime dependencies.
    - Live database role and session evaluation on each tick—demotions and lockouts take effect immediately.
    - Strips client-supplied identity headers (`x-auth-role`, `x-auth-user-id`).
 3. **Tier 3: Core ITIL Engines & Sandboxed Execution**:
-   - 66 REST endpoints across Table API, Change Management, CMDB, and Reports.
+   - 85+ REST endpoints across Table API, Change Management, CMDB, Watchtower, CRM, and Reports.
    - **QuickJS WebAssembly Sandbox**: Untrusted scripts (scheduled jobs, script includes, record producers) execute in an isolated guest WebAssembly memory heap with zero access to Node's V8 heap or process APIs.
+   - **Smart Automation Engines**: Automated load-balancing assignment, quantitative change risk & CI collision evaluation, and AI-grounded response auto-drafting.
 4. **Tier 4: Enterprise Persistence & Worker Daemon**:
-   - **PostgreSQL 16 Engine**: 40+ relational tables with foreign keys and indexes managed by Prisma ORM. Global password hash omission (`omit: { user: { passwordHash: true } }`) prevents credential leakage across all queries.
+   - **PostgreSQL 16 Engine**: 46+ relational tables with foreign keys and indexes managed by Prisma ORM. Global password hash omission (`omit: { user: { passwordHash: true } }`) prevents credential leakage across all queries.
    - **Background Worker Daemon (`src/worker.ts`)**: Standalone scheduler polling on a 15s timer executing due `sys_scheduled_jobs` and running the autonomous Workflow Agent triage cycle.
 
 ---
@@ -404,6 +406,19 @@ Advanced condition builder for enterprise data lists:
 - **Multi-Condition Filtering**: Build composite filters using operators (`=`, `!=`, `LIKE`, `STARTSWITH`, `>`, `<`) across any table field.
 - **Bidirectional Encoded Queries**: Seamless conversion between visual condition rows and encoded query strings (`sysparm_query=priority=1^state!=6`).
 - **Interactive Breadcrumb Filter Bar**: Clickable breadcrumb pills for rapid filter exploration and removal.
+
+---
+
+### 23. CRM Customer 360, Deal Pipelines & Smart Automation Engines (`/workspace/crm`)
+
+Unified commercial customer intelligence and autonomous routing engines inspired by FreeITSM, Frappe CRM, and CompAI CRM:
+
+- **Customer 360 Accounts (`crm_organization`)**: Unified client directory with operational health scores (0–100), customer tier segmentation (`strategic`, `enterprise`, `mid_market`, `smb`), ARR/MRR revenue tracking, and contracted SLA tier mapping (`24/7_mission_critical`, `gold_enterprise`, `business_hours`).
+- **Sales & Renewal Pipeline Kanban (`crm_deal`)**: Visual deal board spanning 6 stages (`Lead` ⟶ `Qualified` ⟶ `Proposal` ⟶ `Negotiation` ⟶ `Won` / `Lost`) with probability weighting, expected close dates, deal amounts, and 1-click stage advancement.
+- **Customer Contacts Directory (`crm_contact`)**: Relational contact roster directly linked to ITIL tasks (`Task.organizationId`, `Task.contactId`) for seamless support and account management.
+- **Automated Load-Balancing Task Assignment (`src/lib/assignment-engine.ts`)**: Workload-balancing routing engine that assigns incoming tickets to the active technician in the assignment group with the fewest open tickets, logging an immutable audit work note.
+- **Quantitative Change Risk & CI Collision Engine (`src/lib/change-risk-engine.ts`, `/api/now/change-risk`)**: Algorithmic 0–100 risk scoring based on CI tier (+35 for Tier 1), emergency change type (+40), maintenance window duration (+25 for >24h), and real-time detection of concurrent overlapping changes targeting the same CMDB CI (+30), with automated CAB approval recommendations.
+- **AI Smart Customer Response Auto-Drafting (`/api/now/ai/draft-response`, `ActivityStream.tsx`)**: 1-click `✨ AI Draft Response` in the activity stream customer communication box, synthesizing contextual drafts (`empathetic`, `professional`, `technical`, `concise`) grounded in ticket summaries, work notes, and verified Hermes diagnostic evidence.
 
 ---
 

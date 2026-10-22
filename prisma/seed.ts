@@ -34,6 +34,9 @@ async function main() {
   console.log("Seeding ServiceMeow Database (Purr-fect Enterprise ITIL)...");
 
   // Clear existing data
+  await prisma.crmDeal.deleteMany();
+  await prisma.crmContact.deleteMany();
+  await prisma.crmOrganization.deleteMany();
   await prisma.sysCustomRecord.deleteMany();
   await prisma.sysHubFlowExecution.deleteMany();
   await prisma.sysHubFlow.deleteMany();
@@ -97,6 +100,9 @@ async function main() {
       { name: "sys_script", label: "Business Rule [sys_script]", superClass: null, description: "Server-side business logic and event automation" },
       { name: "sys_ui_policy", label: "UI Policy [sys_ui_policy]", superClass: null, description: "Client-side form visibility, mandatory and read-only behavior" },
       { name: "sys_hub_flow", label: "Flow [sys_hub_flow]", superClass: null, description: "ServiceMeow Flow Designer automated approval and notification workflows" },
+      { name: "crm_organization", label: "Customer Organization [crm_organization]", superClass: null, description: "Customer organizations, enterprise accounts, and external company entities" },
+      { name: "crm_contact", label: "Customer Contact [crm_contact]", superClass: null, description: "Customer stakeholders, requesters, and points of contact" },
+      { name: "crm_deal", label: "Opportunity & Deal [crm_deal]", superClass: null, description: "Sales contracts, support tiers, and pipeline opportunities" },
     ],
   });
 
@@ -148,6 +154,31 @@ async function main() {
       { tableName: "cmn_space", columnName: "status", columnLabel: "Occupancy Status", columnType: "choice", defaultVal: "vacant" },
       { tableName: "cmn_space", columnName: "capacity", columnLabel: "Capacity", columnType: "integer", defaultVal: "1" },
       { tableName: "cmdb_ci", columnName: "space", columnLabel: "Space / Room", columnType: "reference", referenceTable: "cmn_space" },
+      // CRM Organization Fields
+      { tableName: "crm_organization", columnName: "name", columnLabel: "Organization Name", columnType: "string", isMandatory: true },
+      { tableName: "crm_organization", columnName: "domain", columnLabel: "Corporate Domain", columnType: "string" },
+      { tableName: "crm_organization", columnName: "industry", columnLabel: "Industry", columnType: "string" },
+      { tableName: "crm_organization", columnName: "tier", columnLabel: "Account Tier", columnType: "choice", defaultVal: "enterprise" },
+      { tableName: "crm_organization", columnName: "status", columnLabel: "Account Status", columnType: "choice", defaultVal: "active" },
+      { tableName: "crm_organization", columnName: "health_score", columnLabel: "Health Score", columnType: "integer", defaultVal: "95" },
+      { tableName: "crm_organization", columnName: "assigned_to", columnLabel: "Account Manager", columnType: "reference", referenceTable: "sys_user" },
+      // CRM Contact Fields
+      { tableName: "crm_contact", columnName: "name", columnLabel: "Full Name", columnType: "string", isMandatory: true },
+      { tableName: "crm_contact", columnName: "email", columnLabel: "Email Address", columnType: "string", isMandatory: true },
+      { tableName: "crm_contact", columnName: "phone", columnLabel: "Phone Number", columnType: "string" },
+      { tableName: "crm_contact", columnName: "title", columnLabel: "Job Title", columnType: "string" },
+      { tableName: "crm_contact", columnName: "is_primary", columnLabel: "Primary Contact", columnType: "boolean", defaultVal: "false" },
+      { tableName: "crm_contact", columnName: "organization", columnLabel: "Customer Organization", columnType: "reference", referenceTable: "crm_organization" },
+      // CRM Deal Fields
+      { tableName: "crm_deal", columnName: "title", columnLabel: "Deal Title", columnType: "string", isMandatory: true },
+      { tableName: "crm_deal", columnName: "amount", columnLabel: "Contract Value ($)", columnType: "integer", defaultVal: "50000" },
+      { tableName: "crm_deal", columnName: "stage", columnLabel: "Deal Stage", columnType: "choice", defaultVal: "lead" },
+      { tableName: "crm_deal", columnName: "probability", columnLabel: "Win Probability (%)", columnType: "integer", defaultVal: "20" },
+      { tableName: "crm_deal", columnName: "expected_close_date", columnLabel: "Target Close Date", columnType: "datetime" },
+      { tableName: "crm_deal", columnName: "organization", columnLabel: "Customer Organization", columnType: "reference", referenceTable: "crm_organization" },
+      { tableName: "crm_deal", columnName: "contact", columnLabel: "Primary Contact", columnType: "reference", referenceTable: "crm_contact" },
+      { tableName: "crm_deal", columnName: "assigned_to", columnLabel: "Opportunity Owner", columnType: "reference", referenceTable: "sys_user" },
+      { tableName: "crm_deal", columnName: "notes", columnLabel: "Scope & Requirement Notes", columnType: "text" },
     ],
   });
 
@@ -2603,6 +2634,132 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
         notes: "Daemon heartbeat verified, 15s scheduled queue tick cadence nominal.",
         checkedById: adminUser.id,
         checkedAt: new Date(),
+      },
+    ],
+  });
+
+  // Seed CRM Customer Organizations, Contacts & Deals
+  console.log("Seeding Customer Service Organizations, Contacts & Deals...");
+  const acmeOrg = await prisma.crmOrganization.create({
+    data: {
+      name: "Acme Healthcare Systems",
+      domain: "acmehealth.com",
+      industry: "Healthcare",
+      tier: "enterprise",
+      status: "active",
+      healthScore: 98,
+      assignedToId: itilUser.id,
+    },
+  });
+
+  const globexOrg = await prisma.crmOrganization.create({
+    data: {
+      name: "Globex Logistics Corp",
+      domain: "globexlogistics.io",
+      industry: "Logistics & Supply Chain",
+      tier: "mid_market",
+      status: "active",
+      healthScore: 84,
+      assignedToId: itilUser.id,
+    },
+  });
+
+  const initechOrg = await prisma.crmOrganization.create({
+    data: {
+      name: "Initech Software Global",
+      domain: "initech.com",
+      industry: "Technology",
+      tier: "enterprise",
+      status: "active",
+      healthScore: 92,
+      assignedToId: adminUser.id,
+    },
+  });
+
+  const catherineContact = await prisma.crmContact.create({
+    data: {
+      firstName: "Catherine",
+      lastName: "Howard",
+      name: "Dr. Catherine Howard",
+      email: "catherine.howard@acmehealth.com",
+      phone: "+1 (415) 555-0142",
+      title: "Chief Medical Information Officer",
+      isPrimary: true,
+      organizationId: acmeOrg.id,
+    },
+  });
+
+  const bobContact = await prisma.crmContact.create({
+    data: {
+      firstName: "Bob",
+      lastName: "Porter",
+      name: "Bob Porter",
+      email: "bob.porter@initech.com",
+      phone: "+1 (512) 555-0189",
+      title: "VP of Enterprise Infrastructure",
+      isPrimary: true,
+      organizationId: initechOrg.id,
+    },
+  });
+
+  const hankContact = await prisma.crmContact.create({
+    data: {
+      firstName: "Hank",
+      lastName: "Scorpio",
+      name: "Hank Scorpio",
+      email: "hank.scorpio@globexlogistics.io",
+      phone: "+1 (202) 555-0199",
+      title: "Chief Executive Officer",
+      isPrimary: true,
+      organizationId: globexOrg.id,
+    },
+  });
+
+  await prisma.crmDeal.createMany({
+    data: [
+      {
+        title: "Acme 500-Rack Datacenter ESM Expansion",
+        amount: 145000.0,
+        stage: "proposal",
+        probability: 65,
+        expectedCloseDate: new Date(Date.now() + 30 * 86400000),
+        organizationId: acmeOrg.id,
+        contactId: catherineContact.id,
+        assignedToId: itilUser.id,
+        notes: "Enterprise upgrade covering 6-tier spatial floorplans and rack elevation monitoring.",
+      },
+      {
+        title: "Globex Autonomous Logistics Floorplan CAD",
+        amount: 48000.0,
+        stage: "negotiation",
+        probability: 80,
+        expectedCloseDate: new Date(Date.now() + 14 * 86400000),
+        organizationId: globexOrg.id,
+        contactId: hankContact.id,
+        assignedToId: itilUser.id,
+        notes: "Automated warehouse zone CAD tagging and workstation allocation.",
+      },
+      {
+        title: "Initech ITIL & Hermes AI Incident Suite",
+        amount: 220000.0,
+        stage: "qualified",
+        probability: 40,
+        expectedCloseDate: new Date(Date.now() + 60 * 86400000),
+        organizationId: initechOrg.id,
+        contactId: bobContact.id,
+        assignedToId: adminUser.id,
+        notes: "Full ESM suite replacement with QuickJS sandbox business rules.",
+      },
+      {
+        title: "Initech High-Performance Developer Workstations",
+        amount: 92000.0,
+        stage: "won",
+        probability: 100,
+        expectedCloseDate: new Date(Date.now() - 5 * 86400000),
+        organizationId: initechOrg.id,
+        contactId: bobContact.id,
+        assignedToId: adminUser.id,
+        notes: "Procurement fulfilled via Service Catalog shopping cart.",
       },
     ],
   });
