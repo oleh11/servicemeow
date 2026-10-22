@@ -1,0 +1,808 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import {
+  MessageSquare,
+  Plus,
+  Trash2,
+  Edit2,
+  CheckCircle2,
+  Settings,
+  Sparkles,
+  Layers,
+  Save,
+  Clock,
+  Users,
+  Shield,
+  Volume2,
+  X,
+  RefreshCw,
+} from "lucide-react";
+
+interface LiveChatQueue {
+  id: string;
+  name: string;
+  code: string;
+  description?: string;
+  active: boolean;
+  priority: number;
+  assignmentGroupId?: string;
+  assignmentGroup?: { id: string; name: string };
+  maxWaitSeconds: number;
+  welcomeMessage: string;
+  offlineMessage: string;
+  _count?: { channels: number };
+}
+
+interface CannedResponse {
+  id: string;
+  shortcut: string;
+  title: string;
+  message: string;
+  category: string;
+  active: boolean;
+}
+
+interface LiveChatConfig {
+  id: string;
+  enabled: boolean;
+  maxConcurrentChatsPerAgent: number;
+  autoAbandonTimeoutSeconds: number;
+  soundNotifications: boolean;
+  operatingHoursSchedule?: string;
+}
+
+interface GroupOption {
+  id: string;
+  name: string;
+}
+
+export function ChatConfigStudio() {
+  const [activeTab, setActiveTab] = useState<"queues" | "canned" | "settings">("queues");
+  const [queues, setQueues] = useState<LiveChatQueue[]>([]);
+  const [cannedResponses, setCannedResponses] = useState<CannedResponse[]>([]);
+  const [config, setConfig] = useState<LiveChatConfig>({
+    id: "global",
+    enabled: true,
+    maxConcurrentChatsPerAgent: 3,
+    autoAbandonTimeoutSeconds: 600,
+    soundNotifications: true,
+    operatingHoursSchedule: "24x7 Enterprise Support",
+  });
+  const [groups, setGroups] = useState<GroupOption[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Modal states
+  const [queueModalOpen, setQueueModalOpen] = useState(false);
+  const [editingQueue, setEditingQueue] = useState<Partial<LiveChatQueue> | null>(null);
+
+  const [cannedModalOpen, setCannedModalOpen] = useState(false);
+  const [editingCanned, setEditingCanned] = useState<Partial<CannedResponse> | null>(null);
+
+  // Load configuration
+  const loadConfig = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/now/chat/config");
+      if (res.ok) {
+        const data = await res.json();
+        setQueues(data.queues || []);
+        setCannedResponses(data.cannedResponses || []);
+        if (data.config) setConfig(data.config);
+        setGroups(data.groups || []);
+      }
+    } catch (err) {
+      console.error("Failed to load chat config:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadConfig();
+  }, []);
+
+  // Save Global Settings
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/now/chat/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          entity: "config",
+          data: config,
+        }),
+      });
+      if (res.ok) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      }
+    } catch (err) {
+      console.error("Failed to save settings:", err);
+    }
+  };
+
+  // Save / Update Queue
+  const handleSaveQueue = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingQueue?.name || !editingQueue?.code) return;
+
+    try {
+      const isUpdate = Boolean(editingQueue.id);
+      const res = await fetch("/api/now/chat/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          entity: "queue",
+          action: isUpdate ? "update" : "create",
+          id: editingQueue.id,
+          data: editingQueue,
+        }),
+      });
+
+      if (res.ok) {
+        setQueueModalOpen(false);
+        setEditingQueue(null);
+        await loadConfig();
+      }
+    } catch (err) {
+      console.error("Failed to save queue:", err);
+    }
+  };
+
+  // Delete Queue
+  const handleDeleteQueue = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this queue?")) return;
+    try {
+      const res = await fetch("/api/now/chat/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entity: "queue", action: "delete", id }),
+      });
+      if (res.ok) {
+        await loadConfig();
+      }
+    } catch (err) {
+      console.error("Failed to delete queue:", err);
+    }
+  };
+
+  // Save / Update Canned Response
+  const handleSaveCanned = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCanned?.shortcut || !editingCanned?.message) return;
+
+    try {
+      const isUpdate = Boolean(editingCanned.id);
+      const res = await fetch("/api/now/chat/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          entity: "canned",
+          action: isUpdate ? "update" : "create",
+          id: editingCanned.id,
+          data: editingCanned,
+        }),
+      });
+
+      if (res.ok) {
+        setCannedModalOpen(false);
+        setEditingCanned(null);
+        await loadConfig();
+      }
+    } catch (err) {
+      console.error("Failed to save canned response:", err);
+    }
+  };
+
+  // Delete Canned Response
+  const handleDeleteCanned = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this canned response?")) return;
+    try {
+      const res = await fetch("/api/now/chat/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entity: "canned", action: "delete", id }),
+      });
+      if (res.ok) {
+        await loadConfig();
+      }
+    } catch (err) {
+      console.error("Failed to delete canned response:", err);
+    }
+  };
+
+  return (
+    <div className="p-8 max-w-7xl mx-auto space-y-6 font-sans">
+      {/* Studio Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-300 dark:border-neutral-800 pb-5">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 bg-red-600 text-white font-mono text-[10px] font-bold">
+              SYS_LIVE_CHAT
+            </span>
+            <span className="text-xs font-mono text-neutral-500">
+              Omnichannel Support & Dispatch Engine
+            </span>
+          </div>
+          <h2 className="text-xl font-bold uppercase tracking-wider text-neutral-900 dark:text-white">
+            Live Agent Chat Configuration
+          </h2>
+          <p className="text-xs text-neutral-500 mt-1">
+            Configure customer intake queues, assignment routing groups, agent capacity limits, and /shortcut canned macros.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={loadConfig}
+            className="p-2 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
+            title="Refresh"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Sub Tabs */}
+      <div className="flex items-center gap-2 border-b border-neutral-300 dark:border-neutral-800 text-xs font-bold uppercase tracking-wider">
+        <button
+          onClick={() => setActiveTab("queues")}
+          className={`px-4 py-2.5 border-b-2 transition-colors flex items-center gap-2 ${
+            activeTab === "queues"
+              ? "border-neutral-900 dark:border-white text-neutral-900 dark:text-white"
+              : "border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span>Support Queues ({queues.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("canned")}
+          className={`px-4 py-2.5 border-b-2 transition-colors flex items-center gap-2 ${
+            activeTab === "canned"
+              ? "border-neutral-900 dark:border-white text-neutral-900 dark:text-white"
+              : "border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+          }`}
+        >
+          <Sparkles className="w-4 h-4 text-amber-500" />
+          <span>Canned Macros ({cannedResponses.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("settings")}
+          className={`px-4 py-2.5 border-b-2 transition-colors flex items-center gap-2 ${
+            activeTab === "settings"
+              ? "border-neutral-900 dark:border-white text-neutral-900 dark:text-white"
+              : "border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+          }`}
+        >
+          <Settings className="w-4 h-4" />
+          <span>Global Routing & Capacity</span>
+        </button>
+      </div>
+
+      {/* TAB 1: Support Queues */}
+      {activeTab === "queues" && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <p className="text-xs text-neutral-500">
+              Queues route portal callers to designated fulfiller assignment groups with custom wait thresholds.
+            </p>
+            <button
+              onClick={() => {
+                setEditingQueue({
+                  name: "",
+                  code: "",
+                  description: "",
+                  active: true,
+                  priority: 1,
+                  maxWaitSeconds: 300,
+                  welcomeMessage: "Hello! An ITIL specialist will assist you shortly.",
+                  offlineMessage: "Live support is currently offline.",
+                });
+                setQueueModalOpen(true);
+              }}
+              className="px-3 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Support Queue</span>
+            </button>
+          </div>
+
+          <div className="border border-neutral-300 dark:border-neutral-800 overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-neutral-100 dark:bg-neutral-900 border-b border-neutral-300 dark:border-neutral-800 font-bold uppercase text-neutral-500">
+                <tr>
+                  <th className="p-3">Queue Name</th>
+                  <th className="p-3">System Code</th>
+                  <th className="p-3">Assignment Group</th>
+                  <th className="p-3">Max Wait</th>
+                  <th className="p-3">Priority</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+                {queues.map((q) => (
+                  <tr key={q.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-850">
+                    <td className="p-3 font-bold text-neutral-900 dark:text-white">
+                      {q.name}
+                    </td>
+                    <td className="p-3 font-mono text-neutral-500">
+                      {q.code}
+                    </td>
+                    <td className="p-3">
+                      {q.assignmentGroup ? (
+                        <span className="px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700">
+                          {q.assignmentGroup.name}
+                        </span>
+                      ) : (
+                        <span className="text-neutral-400">All Available ITIL</span>
+                      )}
+                    </td>
+                    <td className="p-3 font-mono">
+                      {q.maxWaitSeconds}s
+                    </td>
+                    <td className="p-3 font-mono">
+                      #{q.priority}
+                    </td>
+                    <td className="p-3">
+                      <span
+                        className={`px-2 py-0.5 text-[10px] font-bold uppercase ${
+                          q.active
+                            ? "bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300"
+                            : "bg-neutral-200 dark:bg-neutral-800 text-neutral-500"
+                        }`}
+                      >
+                        {q.active ? "Active" : "Disabled"}
+                      </span>
+                    </td>
+                    <td className="p-3 text-right space-x-2">
+                      <button
+                        onClick={() => {
+                          setEditingQueue(q);
+                          setQueueModalOpen(true);
+                        }}
+                        className="p-1 hover:text-neutral-900 dark:hover:text-white text-neutral-500"
+                        title="Edit Queue"
+                      >
+                        <Edit2 className="w-3.5 h-3.5 inline" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteQueue(q.id)}
+                        className="p-1 hover:text-red-600 text-neutral-500"
+                        title="Delete Queue"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 inline" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: Canned Response Macros */}
+      {activeTab === "canned" && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <p className="text-xs text-neutral-500">
+              Canned responses allow agents to insert standardized greetings, diagnostics, and closing messages with /shortcuts.
+            </p>
+            <button
+              onClick={() => {
+                setEditingCanned({
+                  shortcut: "/",
+                  title: "",
+                  message: "",
+                  category: "general",
+                  active: true,
+                });
+                setCannedModalOpen(true);
+              }}
+              className="px-3 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Canned Macro</span>
+            </button>
+          </div>
+
+          <div className="border border-neutral-300 dark:border-neutral-800 overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-neutral-100 dark:bg-neutral-900 border-b border-neutral-300 dark:border-neutral-800 font-bold uppercase text-neutral-500">
+                <tr>
+                  <th className="p-3">Shortcut</th>
+                  <th className="p-3">Title</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3">Message Preview</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
+                {cannedResponses.map((c) => (
+                  <tr key={c.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-850">
+                    <td className="p-3 font-mono font-bold text-red-600 dark:text-red-400">
+                      {c.shortcut}
+                    </td>
+                    <td className="p-3 font-bold text-neutral-900 dark:text-white">
+                      {c.title}
+                    </td>
+                    <td className="p-3 uppercase text-[10px] text-neutral-500 font-mono">
+                      {c.category}
+                    </td>
+                    <td className="p-3 max-w-md truncate text-neutral-600 dark:text-neutral-300">
+                      {c.message}
+                    </td>
+                    <td className="p-3">
+                      <span
+                        className={`px-2 py-0.5 text-[10px] font-bold uppercase ${
+                          c.active
+                            ? "bg-green-100 dark:bg-green-950/60 text-green-700 dark:text-green-300"
+                            : "bg-neutral-200 dark:bg-neutral-800 text-neutral-500"
+                        }`}
+                      >
+                        {c.active ? "Active" : "Disabled"}
+                      </span>
+                    </td>
+                    <td className="p-3 text-right space-x-2">
+                      <button
+                        onClick={() => {
+                          setEditingCanned(c);
+                          setCannedModalOpen(true);
+                        }}
+                        className="p-1 hover:text-neutral-900 dark:hover:text-white text-neutral-500"
+                        title="Edit Macro"
+                      >
+                        <Edit2 className="w-3.5 h-3.5 inline" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCanned(c.id)}
+                        className="p-1 hover:text-red-600 text-neutral-500"
+                        title="Delete Macro"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 inline" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: Global Routing & Settings */}
+      {activeTab === "settings" && (
+        <form onSubmit={handleSaveSettings} className="space-y-6 max-w-2xl">
+          <div className="border border-neutral-300 dark:border-neutral-800 p-6 space-y-4 bg-white dark:bg-neutral-900">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white border-b border-neutral-200 dark:border-neutral-800 pb-3">
+              Fulfiller Dispatch & Concurrency Limits
+            </h3>
+
+            {/* Master Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-xs font-bold uppercase text-neutral-900 dark:text-white block">
+                  Enable Live Agent Chat
+                </label>
+                <span className="text-[11px] text-neutral-500">
+                  Controls whether the floating chat widget is visible on the Self-Service Portal.
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                checked={config.enabled}
+                onChange={(e) => setConfig({ ...config, enabled: e.target.checked })}
+                className="w-4 h-4 accent-red-600"
+              />
+            </div>
+
+            {/* Max Concurrent Chats */}
+            <div>
+              <label className="text-xs font-bold uppercase text-neutral-900 dark:text-white block mb-1">
+                Max Concurrent Chats per Agent: {config.maxConcurrentChatsPerAgent}
+              </label>
+              <span className="text-[11px] text-neutral-500 block mb-2">
+                Prevents fulfiller overload. Incoming chats will hold in queue once an agent hits capacity.
+              </span>
+              <input
+                type="range"
+                min={1}
+                max={10}
+                value={config.maxConcurrentChatsPerAgent}
+                onChange={(e) =>
+                  setConfig({ ...config, maxConcurrentChatsPerAgent: Number(e.target.value) })
+                }
+                className="w-full accent-red-600"
+              />
+            </div>
+
+            {/* Inactivity Abandon Timeout */}
+            <div>
+              <label className="text-xs font-bold uppercase text-neutral-900 dark:text-white block mb-1">
+                Auto-Abandon Inactivity Timeout (Seconds)
+              </label>
+              <input
+                type="number"
+                value={config.autoAbandonTimeoutSeconds}
+                onChange={(e) =>
+                  setConfig({ ...config, autoAbandonTimeoutSeconds: Number(e.target.value) })
+                }
+                className="w-full p-2.5 text-xs bg-neutral-50 dark:bg-neutral-850 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+              />
+            </div>
+
+            {/* Sound Alerts */}
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-xs font-bold uppercase text-neutral-900 dark:text-white block">
+                  Audible Queue Alerts
+                </label>
+                <span className="text-[11px] text-neutral-500">
+                  Plays audio chime in Fulfiller Workspace when a new caller enters the queue.
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                checked={config.soundNotifications}
+                onChange={(e) => setConfig({ ...config, soundNotifications: e.target.checked })}
+                className="w-4 h-4 accent-red-600"
+              />
+            </div>
+
+            {/* Operating Schedule */}
+            <div>
+              <label className="text-xs font-bold uppercase text-neutral-900 dark:text-white block mb-1">
+                Operating Schedule Coverage
+              </label>
+              <input
+                type="text"
+                value={config.operatingHoursSchedule || ""}
+                onChange={(e) =>
+                  setConfig({ ...config, operatingHoursSchedule: e.target.value })
+                }
+                placeholder="e.g. 24x7 Enterprise Support"
+                className="w-full p-2.5 text-xs bg-neutral-50 dark:bg-neutral-850 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              className="px-6 py-2.5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+            >
+              <Save className="w-4 h-4" />
+              <span>Save Chat Settings</span>
+            </button>
+            {saveSuccess && (
+              <span className="text-xs text-green-600 font-bold flex items-center gap-1">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Configuration Saved</span>
+              </span>
+            )}
+          </div>
+        </form>
+      )}
+
+      {/* Queue Modal */}
+      {queueModalOpen && editingQueue && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 w-full max-w-lg p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white">
+                {editingQueue.id ? "Edit Support Queue" : "New Support Queue"}
+              </h3>
+              <button onClick={() => setQueueModalOpen(false)}>
+                <X className="w-4 h-4 text-neutral-400 hover:text-white" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveQueue} className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold uppercase text-[11px] block mb-1">Queue Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editingQueue.name || ""}
+                  onChange={(e) => setEditingQueue({ ...editingQueue, name: e.target.value })}
+                  className="w-full p-2 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold uppercase text-[11px] block mb-1">Unique Code</label>
+                <input
+                  type="text"
+                  required
+                  value={editingQueue.code || ""}
+                  onChange={(e) => setEditingQueue({ ...editingQueue, code: e.target.value.toLowerCase().replace(/\s+/g, "_") })}
+                  className="w-full p-2 font-mono bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold uppercase text-[11px] block mb-1">Assignment Group</label>
+                <select
+                  value={editingQueue.assignmentGroupId || ""}
+                  onChange={(e) => setEditingQueue({ ...editingQueue, assignmentGroupId: e.target.value || undefined })}
+                  className="w-full p-2 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+                >
+                  <option value="">Any Available ITIL Agent</option>
+                  {groups.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold uppercase text-[11px] block mb-1">Max Wait (Seconds)</label>
+                  <input
+                    type="number"
+                    value={editingQueue.maxWaitSeconds || 300}
+                    onChange={(e) => setEditingQueue({ ...editingQueue, maxWaitSeconds: Number(e.target.value) })}
+                    className="w-full p-2 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold uppercase text-[11px] block mb-1">Priority</label>
+                  <input
+                    type="number"
+                    value={editingQueue.priority || 1}
+                    onChange={(e) => setEditingQueue({ ...editingQueue, priority: Number(e.target.value) })}
+                    className="w-full p-2 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold uppercase text-[11px] block mb-1">Automated Welcome Greeting</label>
+                <textarea
+                  rows={2}
+                  value={editingQueue.welcomeMessage || ""}
+                  onChange={(e) => setEditingQueue({ ...editingQueue, welcomeMessage: e.target.value })}
+                  className="w-full p-2 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white resize-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="queueActive"
+                  checked={editingQueue.active ?? true}
+                  onChange={(e) => setEditingQueue({ ...editingQueue, active: e.target.checked })}
+                  className="w-4 h-4 accent-red-600"
+                />
+                <label htmlFor="queueActive" className="font-bold uppercase text-[11px]">
+                  Queue Active
+                </label>
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-neutral-200 dark:border-neutral-800">
+                <button
+                  type="button"
+                  onClick={() => setQueueModalOpen(false)}
+                  className="px-4 py-2 text-neutral-600 dark:text-neutral-400 font-bold uppercase text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-bold uppercase text-xs"
+                >
+                  Save Queue
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Canned Macro Modal */}
+      {cannedModalOpen && editingCanned && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 w-full max-w-lg p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white">
+                {editingCanned.id ? "Edit Canned Macro" : "New Canned Macro"}
+              </h3>
+              <button onClick={() => setCannedModalOpen(false)}>
+                <X className="w-4 h-4 text-neutral-400 hover:text-white" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveCanned} className="space-y-3 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold uppercase text-[11px] block mb-1">Shortcut (e.g. /greet)</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingCanned.shortcut || "/"}
+                    onChange={(e) => setEditingCanned({ ...editingCanned, shortcut: e.target.value })}
+                    className="w-full p-2 font-mono bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold uppercase text-[11px] block mb-1">Category</label>
+                  <select
+                    value={editingCanned.category || "general"}
+                    onChange={(e) => setEditingCanned({ ...editingCanned, category: e.target.value })}
+                    className="w-full p-2 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+                  >
+                    <option value="general">General</option>
+                    <option value="troubleshooting">Troubleshooting</option>
+                    <option value="closing">Closing / Wrap Up</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="font-bold uppercase text-[11px] block mb-1">Title</label>
+                <input
+                  type="text"
+                  required
+                  value={editingCanned.title || ""}
+                  onChange={(e) => setEditingCanned({ ...editingCanned, title: e.target.value })}
+                  placeholder="e.g. Friendly Initial Greeting"
+                  className="w-full p-2 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold uppercase text-[11px] block mb-1">Message Body</label>
+                <textarea
+                  rows={4}
+                  required
+                  value={editingCanned.message || ""}
+                  onChange={(e) => setEditingCanned({ ...editingCanned, message: e.target.value })}
+                  placeholder="Template text inserted when agent triggers macro..."
+                  className="w-full p-2 bg-neutral-50 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white resize-none"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="cannedActive"
+                  checked={editingCanned.active ?? true}
+                  onChange={(e) => setEditingCanned({ ...editingCanned, active: e.target.checked })}
+                  className="w-4 h-4 accent-red-600"
+                />
+                <label htmlFor="cannedActive" className="font-bold uppercase text-[11px]">
+                  Macro Active
+                </label>
+              </div>
+
+              <div className="pt-3 flex justify-end gap-2 border-t border-neutral-200 dark:border-neutral-800">
+                <button
+                  type="button"
+                  onClick={() => setCannedModalOpen(false)}
+                  className="px-4 py-2 text-neutral-600 dark:text-neutral-400 font-bold uppercase text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-bold uppercase text-xs"
+                >
+                  Save Macro
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

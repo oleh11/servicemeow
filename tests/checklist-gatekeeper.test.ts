@@ -62,7 +62,7 @@ describe("Mandatory SOP Checklist & Hermes Evidence Gatekeeper Engine", () => {
   });
 
   const makeAuthRequest = (url: string, method: string, body?: any) => {
-    const init: RequestInit = {
+    return new NextRequest(url, {
       method,
       headers: {
         "Content-Type": "application/json",
@@ -70,11 +70,8 @@ describe("Mandatory SOP Checklist & Hermes Evidence Gatekeeper Engine", () => {
         "x-user-role": "admin",
         "x-user-id": adminUserId,
       },
-    };
-    if (body) {
-      init.body = JSON.stringify(body);
-    }
-    return new NextRequest(url, init);
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
   };
 
   it("enforces SOP gatekeeper: blocks task resolution when mandatory checklist items are incomplete", async () => {

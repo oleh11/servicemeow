@@ -444,3 +444,16 @@ export async function requireCatalogAdmin(req: Request): Promise<SessionContext>
   }
   return session;
 }
+
+/**
+ * Requires an active session with itil, admin, or any modular admin role.
+ */
+export async function requireFulfiller(req: Request): Promise<SessionContext> {
+  const session = await requireAuth(req);
+  const isAuthorized = session.isAdmin || session.hasRole("itil") || isModularAdmin(session.primaryRole, session.roles);
+  if (!isAuthorized) {
+    throw new AuthError("ITIL Fulfiller or Administrator privileges required", 403, "FORBIDDEN");
+  }
+  return session;
+}
+

@@ -20,6 +20,7 @@ import {
   LayoutDashboard,
   Clock,
   Sparkles,
+  MessageSquare,
 } from "lucide-react";
 
 interface SearchResults {
@@ -95,6 +96,15 @@ export function CommandPaletteModal({ isOpen, onClose, isEmployee = false }: Com
     },
     ...(!isEmployee
       ? [
+          {
+            id: "act-live-chat",
+            title: "Live Agent Cockpit",
+            subtitle: "Omnichannel real-time queue triage and live requester chat",
+            url: "/workspace/chat",
+            icon: MessageSquare,
+            badge: "Live",
+            color: "text-red-500",
+          },
           {
             id: "act-new-chg",
             title: "Create Change Request",

@@ -89,6 +89,9 @@ model User {
   morningChecksInspected  CmnMorningCheck[]   @relation("MorningCheckInspector")
   managedOrganizations    CrmOrganization[]   @relation("OrgAccountManager")
   managedDeals            CrmDeal[]           @relation("DealOwner")
+  requesterChatChannels   SysLiveChatChannel[] @relation("ChatRequester")
+  assignedChatChannels    SysLiveChatChannel[] @relation("ChatAssignedTo")
+  chatPresence            SysLiveChatPresence? @relation("UserPresence")
 }
 
 model Group {
@@ -102,6 +105,7 @@ model Group {
   createdAt   DateTime          @default(now())
   members     UserGroupMember[]
   tasks       Task[]            @relation("AssignmentGroup")
+  liveChatQueues SysLiveChatQueue[] @relation("QueueAssignmentGroup")
 }
 
 model CmnLocation {
@@ -1268,3 +1272,97 @@ model CrmDeal {
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 }
+
+// ----------------------------------------------------
+// Omnichannel Live Agent Chat
+// ----------------------------------------------------
+
+model SysLiveChatQueue {
+  id                String               @id @default(cuid())
+  name              String               // e.g. "IT Service Desk"
+  code              String               @unique // e.g. "it_service_desk"
+  description       String?
+  active            Boolean              @default(true)
+  priority          Int                  @default(1)
+  assignmentGroupId String?
+  assignmentGroup   Group?               @relation("QueueAssignmentGroup", fields: [assignmentGroupId], references: [id], onDelete: SetNull)
+  maxWaitSeconds    Int                  @default(300)
+  welcomeMessage    String               @default("Hello! An ITIL support specialist will assist you shortly.")
+  offlineMessage    String               @default("All agents are currently offline. Please submit a service ticket.")
+  channels          SysLiveChatChannel[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+}
+
+model SysLiveChatChannel {
+  id              String               @id @default(cuid())
+  number          String               @unique // e.g. "CHAT0001001"
+  queueId         String?
+  queue           SysLiveChatQueue?    @relation(fields: [queueId], references: [id], onDelete: SetNull)
+  requesterId     String
+  requester       User                 @relation("ChatRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  assignedToId    String?
+  assignedTo      User?                @relation("ChatAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  state           String               @default("queued") // "queued", "active", "resolved", "abandoned"
+  subject         String?
+  initialQuestion String?
+  waitStartedAt   DateTime             @default(now())
+  acceptedAt      DateTime?
+  endedAt         DateTime?
+  rating          Int?                 // 1-5
+  feedback        String?
+  incidentId      String?              // Link to incident ticket number e.g. INC0010042
+  messages        SysLiveChatMessage[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([state, assignedToId])
+  @@index([requesterId])
+}
+
+model SysLiveChatMessage {
+  id         String             @id @default(cuid())
+  channelId  String
+  channel    SysLiveChatChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  senderId   String?
+  senderName String?
+  senderType String             // "requester", "agent", "system", "bot"
+  body       String
+  isInternal Boolean            @default(false)
+  createdAt  DateTime           @default(now())
+
+  @@index([channelId, createdAt])
+}
+
+model SysCannedResponse {
+  id        String   @id @default(cuid())
+  shortcut  String   @unique // e.g. "/greet", "/resolve", "/kb", "/hold"
+  title     String
+  message   String
+  category  String   @default("general") // "general", "troubleshooting", "closing"
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SysLiveChatPresence {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  user             User     @relation("UserPresence", fields: [userId], references: [id], onDelete: Cascade)
+  status           String   @default("offline") // "online", "busy", "away", "offline"
+  activeChatsCount Int      @default(0)
+  lastPingAt       DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model SysLiveChatConfig {
+  id                          String   @id @default("global")
+  enabled                     Boolean  @default(true)
+  maxConcurrentChatsPerAgent  Int      @default(3)
+  autoAbandonTimeoutSeconds   Int      @default(600)
+  soundNotifications          Boolean  @default(true)
+  operatingHoursSchedule      String?  @default("24x7")
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+}
+

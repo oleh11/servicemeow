@@ -353,6 +353,86 @@ export interface RustScriptValidationResult {
   violations: string[];
   estimated_fuel_cost: number;
 }
+
+// Live Agent Omnichannel Chat Interfaces
+export type LiveChatChannelState = "queued" | "active" | "resolved" | "abandoned";
+export type LiveChatMessageSenderType = "requester" | "agent" | "system" | "bot";
+export type LiveChatPresenceStatus = "online" | "busy" | "away" | "offline";
+
+export interface LiveChatQueueRecord {
+  id: string;
+  name: string;
+  code: string;
+  description?: string;
+  active: boolean;
+  priority: number;
+  assignmentGroupId?: string;
+  maxWaitSeconds: number;
+  welcomeMessage: string;
+  offlineMessage: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LiveChatChannelRecord {
+  id: string;
+  number: string;
+  queueId?: string;
+  queue?: LiveChatQueueRecord;
+  requesterId: string;
+  requester?: { id: string; name: string; email: string; avatar?: string };
+  assignedToId?: string;
+  assignedTo?: { id: string; name: string; email: string };
+  state: LiveChatChannelState;
+  subject?: string;
+  initialQuestion?: string;
+  waitStartedAt: string;
+  acceptedAt?: string;
+  endedAt?: string;
+  rating?: number;
+  feedback?: string;
+  incidentId?: string;
+  messages?: LiveChatMessageRecord[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LiveChatMessageRecord {
+  id: string;
+  channelId: string;
+  senderId?: string;
+  senderName?: string;
+  senderType: LiveChatMessageSenderType;
+  body: string;
+  isInternal: boolean;
+  createdAt: string;
+}
+
+export interface CannedResponseRecord {
+  id: string;
+  shortcut: string;
+  title: string;
+  message: string;
+  category: string;
+  active: boolean;
+}
+
+export interface LiveChatPresenceRecord {
+  id: string;
+  userId: string;
+  status: LiveChatPresenceStatus;
+  activeChatsCount: number;
+  lastPingAt: string;
+}
+
+export interface LiveChatConfigRecord {
+  id: string;
+  enabled: boolean;
+  maxConcurrentChatsPerAgent: number;
+  autoAbandonTimeoutSeconds: number;
+  soundNotifications: boolean;
+  operatingHoursSchedule?: string;
+}
 ```
 
 ---
@@ -382,7 +462,13 @@ export interface RustScriptValidationResult {
 | `/api/now/morning-checks/:id` | `PATCH` | `{ status, notes, escalateToIncident, incidentPayload }` | `{ check: CmnMorningCheckRecord, incident?: any }` | `itil` or `admin` |
 | `/api/now/ai/assist` | `POST` | `{ taskId, contextNotes }` | `{ summary: string, recommendations: string[] }` | `itil` or `admin` |
 | `/api/now/script-includes/execute` | `POST` | `{ scriptIncludeId, params }` | `{ success: true, output: unknown }` | `admin` |
-| `/api/now/rust-engine` | `GET` | None | `{ healthy: boolean, mode: "native_rust_daemon" \| "fallback_typescript", stats: RustTelemetryStats }` | `itil` or `admin` |
+| `/api/now/chat/session` | `POST` | `{ queueId, initialQuestion }` | `{ channel: LiveChatChannelRecord }` | Authenticated Requester |
+| `/api/now/chat/session` | `GET` | `channelId` or `status` | `{ channels: LiveChatChannelRecord[] }` | Authenticated |
+| `/api/now/chat/message` | `POST` | `{ channelId, body, isInternal }` | `{ message: LiveChatMessageRecord }` | Authenticated Participant |
+| `/api/now/chat/message` | `GET` | `channelId` | `{ messages: LiveChatMessageRecord[] }` | Authenticated Participant |
+| `/api/now/chat/stream` | `GET` | `channelId` | Server-Sent Events stream (`event: message`, `event: status`) | Authenticated Participant |
+| `/api/now/chat/agent` | `POST` | `{ action: "status" \| "accept" \| "resolve" \| "create_incident", ...payload }` | `{ success: true, ...result }` | `itil` or `admin` |
+| `/api/now/chat/config` | `GET` / `POST` | Config payload or type (`queues`, `canned`, `settings`) | `{ queues, cannedResponses, config }` | `admin` (GET open to `itil`) |
 | `/api/health` | `GET` | None | `{ status: "ok", database: "connected" }` | Public |
 
 ---

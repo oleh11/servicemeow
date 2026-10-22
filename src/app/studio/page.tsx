@@ -56,6 +56,7 @@ import {
   ShoppingBag,
   Box,
   Building2,
+  MessageSquare,
 } from "lucide-react";
 import { SearchableMultiSelect, MultiSelectOption } from "@/components/common/SearchableMultiSelect";
 import { ClientScriptsTab } from "@/components/studio/ClientScriptsTab";
@@ -72,6 +73,7 @@ import { ApplicationsTab } from "@/components/studio/ApplicationsTab";
 import { NavigationTab } from "@/components/studio/NavigationTab";
 import { WorkplaceConfigTab } from "@/components/studio/WorkplaceConfigTab";
 import { TableDataEditorTab } from "@/components/studio/TableDataEditorTab";
+import { ChatConfigStudio } from "@/components/chat/ChatConfigStudio";
 import { ThemePickerModal } from "@/components/theme/ThemePickerModal";
 import { AVATAR_PRESETS, DEFAULT_AVATAR } from "@/lib/avatar-presets";
 
@@ -82,6 +84,7 @@ type StudioTab =
   | "apps"
   | "navigation"
   | "workplace"
+  | "chat"
   | "acls"
   | "users"
   | "business_rules"
@@ -316,6 +319,15 @@ const STUDIO_MODULES: StudioModuleDef[] = [
     icon: Calendar,
     accentColor: "emerald",
   },
+  {
+    id: "chat",
+    title: "Live Agent Chat & Routing",
+    tableCode: "sys_live_chat_queue",
+    category: "platform",
+    description: "Support queues, canned reply macros (/shortcut), agent capacity limits & operating hours",
+    icon: MessageSquare,
+    accentColor: "red",
+  },
 ];
 
 function StudioContent() {
@@ -331,6 +343,7 @@ function StudioContent() {
     "apps",
     "navigation",
     "workplace",
+    "chat",
     "acls",
     "users",
     "business_rules",
@@ -1691,6 +1704,8 @@ function StudioContent() {
     switch (modId) {
       case "workplace":
         return isWorkplaceAdminUser;
+      case "chat":
+        return isItilAdminUser || isPlatformAdmin;
       case "catalog_items":
       case "record_producers":
         return isCatalogAdminUser;
@@ -4804,6 +4819,11 @@ function StudioContent() {
         {/* TAB 20: WORKPLACE HUB & RESERVATIONS                  */}
         {/* ==================================================== */}
         {activeTab === "workplace" && <WorkplaceConfigTab />}
+
+        {/* ==================================================== */}
+        {/* TAB 21: LIVE AGENT CHAT & ROUTING                    */}
+        {/* ==================================================== */}
+        {activeTab === "chat" && <ChatConfigStudio />}
           </main>
         </div>
       ) : (

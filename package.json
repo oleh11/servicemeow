@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "node scripts/generate-client.js && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "tsc --noEmit",
     "worker": "tsx src/worker.ts",
     "test": "vitest run",
     "test:watch": "vitest",

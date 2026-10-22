@@ -34,6 +34,12 @@ async function main() {
   console.log("Seeding ServiceMeow Database (Purr-fect Enterprise ITIL)...");
 
   // Clear existing data
+  await prisma.sysLiveChatMessage.deleteMany();
+  await prisma.sysLiveChatChannel.deleteMany();
+  await prisma.sysLiveChatPresence.deleteMany();
+  await prisma.sysLiveChatQueue.deleteMany();
+  await prisma.sysCannedResponse.deleteMany();
+  await prisma.sysLiveChatConfig.deleteMany();
   await prisma.crmDeal.deleteMany();
   await prisma.crmContact.deleteMany();
   await prisma.crmOrganization.deleteMany();
@@ -2762,6 +2768,118 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
         notes: "Procurement fulfilled via Service Catalog shopping cart.",
       },
     ],
+  });
+
+  // 17. Omnichannel Live Agent Chat
+  console.log("Seeding Live Agent Chat Queues, Canned Responses & Config...");
+  const queueIT = await prisma.sysLiveChatQueue.create({
+    data: {
+      name: "Global IT Service Desk",
+      code: "it_service_desk",
+      description: "Tier 1 hardware, network, software and authentication support",
+      active: true,
+      priority: 1,
+      assignmentGroupId: groupServiceDesk.id,
+      maxWaitSeconds: 300,
+      welcomeMessage: "Hello! You've reached ServiceMeow IT Support. An ITIL engineer will be with you shortly.",
+      offlineMessage: "Live IT support is currently offline. Please submit an incident via the self-service portal.",
+    },
+  });
+
+  const queueWorkplace = await prisma.sysLiveChatQueue.create({
+    data: {
+      name: "Workplace & Facilities Support",
+      code: "workplace_facilities",
+      description: "Room booking, HVAC, badge access, and facility operations",
+      active: true,
+      priority: 2,
+      assignmentGroupId: groupWorkplace.id,
+      maxWaitSeconds: 600,
+      welcomeMessage: "Hello! Welcome to Workplace & Facilities. How can we assist with your office or campus needs?",
+      offlineMessage: "Facilities support is offline. For urgent maintenance, call the building operations hotline.",
+    },
+  });
+
+  const queueHR = await prisma.sysLiveChatQueue.create({
+    data: {
+      name: "People Ops & HR General Inquiries",
+      code: "people_ops_hr",
+      description: "Benefits, payroll, workplace policy, and onboarding questions",
+      active: true,
+      priority: 3,
+      maxWaitSeconds: 450,
+      welcomeMessage: "Welcome to People Operations Live Support. How may we assist your employee journey today?",
+      offlineMessage: "People Ops live agents are away. Please browse our Knowledge Base or submit an HR ticket.",
+    },
+  });
+
+  await prisma.sysCannedResponse.createMany({
+    data: [
+      {
+        shortcut: "/greet",
+        title: "Standard Professional Greeting",
+        message: "Hello! Thank you for contacting ServiceMeow Support. My name is Sarah. How may I assist you today?",
+        category: "general",
+        active: true,
+      },
+      {
+        shortcut: "/kb",
+        title: "Knowledge Article Recommendation",
+        message: "I've located a helpful Knowledge Article with verified step-by-step resolution instructions. Please check: ",
+        category: "troubleshooting",
+        active: true,
+      },
+      {
+        shortcut: "/hold",
+        title: "Brief Diagnostic Hold",
+        message: "I am actively checking the system telemetry and server event logs. May I place you on a brief 2-minute hold?",
+        category: "troubleshooting",
+        active: true,
+      },
+      {
+        shortcut: "/screen_share",
+        title: "Request Remote Assist",
+        message: "Would you like to initiate a secure remote session so I can inspect this error directly on your workstation?",
+        category: "troubleshooting",
+        active: true,
+      },
+      {
+        shortcut: "/resolve",
+        title: "Resolution & Wrap Up",
+        message: "The issue has been diagnosed and resolved. Is there anything else I can help you with today? Thank you for using ServiceMeow!",
+        category: "closing",
+        active: true,
+      },
+    ],
+  });
+
+  await prisma.sysLiveChatConfig.upsert({
+    where: { id: "global" },
+    update: {
+      enabled: true,
+      maxConcurrentChatsPerAgent: 3,
+      autoAbandonTimeoutSeconds: 600,
+      soundNotifications: true,
+      operatingHoursSchedule: "24x7 Enterprise Support",
+    },
+    create: {
+      id: "global",
+      enabled: true,
+      maxConcurrentChatsPerAgent: 3,
+      autoAbandonTimeoutSeconds: 600,
+      soundNotifications: true,
+      operatingHoursSchedule: "24x7 Enterprise Support",
+    },
+  });
+
+  await prisma.sysLiveChatPresence.upsert({
+    where: { userId: itilUser.id },
+    update: { status: "online", activeChatsCount: 0 },
+    create: {
+      userId: itilUser.id,
+      status: "online",
+      activeChatsCount: 0,
+    },
   });
 
   console.log("ServiceMeow Seed completed successfully!");

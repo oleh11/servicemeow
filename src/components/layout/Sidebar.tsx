@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "@/lib/theme-context";
 import {
   AlertCircle,
+  MessageSquare,
   GitPullRequest,
   HelpCircle,
   CheckSquare,
@@ -206,6 +207,7 @@ export function Sidebar() {
       title: "Agent Workspace",
       icon: LayoutDashboard,
       items: [
+        { label: "Live Agent Cockpit", href: "/workspace/chat", icon: MessageSquare, badge: "Live" },
         { label: "Watchtower Cockpit", href: "/workspace/watchtower", icon: Flame, badge: "Live" },
         { label: "Morning Checks Rounds", href: "/workspace/morning-checks", icon: Activity },
         { label: "Executive Dashboards", href: "/workspace/dashboard", icon: BarChart3 },

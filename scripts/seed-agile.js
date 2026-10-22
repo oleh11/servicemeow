@@ -241,12 +241,6 @@ async function seedAgile(dbPath) {
 async function main() {
   const localDb = path.resolve(__dirname, '../prisma/dev.db');
   await seedAgile(localDb);
-
-  const mainDb = 'C:\\Users\\oleha\\Documents\\Anti Gravity Projects\\ServiceMoew\\prisma\\dev.db';
-  const fs = require('fs');
-  if (fs.existsSync(mainDb)) {
-    await seedAgile(mainDb);
-  }
 }
 
 main().catch(console.error);

@@ -28,20 +28,13 @@ describe("Rust Core Engine & Hybrid Microservices Bridge", () => {
       },
     });
 
-    const token = await signSessionToken(
-      {
-        sessionId: session.id,
-        userId: admin.id,
-        sub: admin.id,
-        user_name: admin.userName || "admin",
-        userName: admin.userName || "admin",
-        email: admin.email,
-        role: "admin",
-        roles: ["admin"],
-        exp: Date.now() + 86400000,
-      },
-      process.env.AUTH_SECRET || "default_dev_secret_32_characters_long_min"
-    );
+    const token = await signSessionToken({
+      sessionId: session.id,
+      userId: admin.id,
+      role: "admin",
+      impersonatedUserId: null,
+      exp: Date.now() + 86400000,
+    });
     adminSessionCookie = `servicemeow_session=${token}`;
   });
 

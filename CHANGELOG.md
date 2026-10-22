@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-10-22
+
+### Added
+- **Enterprise Live Agent Chat Subsystem**:
+  - **Employee Portal Floating Widget (`/portal`)**:
+    - Floating docked bubble with badge status and sliding drawer.
+    - Queue selection (Global IT Service Desk, Workplace & Facilities, People Ops & HR).
+    - Real-time queue intake waiting card displaying dynamic estimated wait times, position in line, and cancel option.
+    - Real-time bidirectional streaming chat with typing indicators, auto-scroll, message timestamps, and agent presence badges.
+    - Post-chat CSAT 1–5 star rating review with optional feedback comment.
+    - 1-click formatted chat transcript export (`.txt`).
+  - **Fulfiller Live Agent Cockpit (`/workspace/chat`)**:
+    - Fulfiller presence control with dynamic state toggle (`Online`, `Busy`, `Away`, `Offline`).
+    - Dynamic agent concurrency capacity tracker ($N/3$ active sessions).
+    - Real-time incoming queue banner with 30-second acceptance countdown and sound/visual alerts.
+    - Multi-session tab navigation switching between concurrent active interactions without losing state.
+    - Canned macro insertion picker (`/greet`, `/kb`, `/hold`, `/screen_share`, `/resolve`) for rapid fulfillment.
+    - Internal whisper work notes (`isInternal = true`) with amber styling, strictly hidden from requesters.
+    - Live caller context dossier drawer showing requester email, company, department, active open tickets, and channel metadata.
+    - 1-click "Create Incident from Chat" workflow converting conversation transcript directly into a new Incident with atomic auto-numbering (`getNextNumber("INC")`).
+  - **Studio Live Chat Configurator (`/studio?tab=chat`)**:
+    - Module 21 added to Studio Explorer under *Server Automation*.
+    - Routing Queue Management: CRUD support for support queues (`sys_live_chat_queue`) with assignment group routing, priority weighting, and concurrency limits.
+    - Canned Macro Management: CRUD support for canned response shortcuts (`sys_canned_response`) with team-wide visibility.
+    - Global Engine Configuration: Maximum concurrent chats per agent, intake queue timeout thresholds, session inactivity timeouts, and custom welcome greetings.
+  - **Real-Time Streaming Engine & Pub/Sub Bus**:
+    - High-throughput Server-Sent Events (SSE) stream (`/api/now/chat/stream`) with Web Standards `ReadableStream`, 15-second heartbeat keepalive, and auto-cleanup.
+    - In-memory event pub/sub bus (`chat-bus.ts`) dispatching session events, queue broadcasts, and agent direct alerts.
+    - REST fallback API routes (`/api/now/chat/session`, `/api/now/chat/message`, `/api/now/chat/agent`, `/api/now/chat/config`).
+    - Persona segregation: Requesters cannot view internal whisper work notes across both REST and SSE streams.
+- **Automated Test Suite**:
+  - `tests/live-agent-chat.test.ts`: 12 comprehensive unit and integration tests verifying session lifecycle, queue routing, message broadcasting, whisper privacy, incident conversion, and API authorization. Test suite expanded to 156 passing tests across 21 files.
+
 ## [1.2.0] - 2026-10-15
 
 ### Added

@@ -18,6 +18,9 @@ graph TD
         WatchtowerCockpit["Watchtower Attention Cockpit (/workspace/watchtower)<br/>• Operational Health Index (0-100)<br/>• 6 High-Urgency Attention Streams<br/>• Critical P1/P2 Incidents & Breaching SLAs"]
         MorningChecks["Morning Checks Console (/workspace/morning-checks)<br/>• Shift Operational Rounds (Morning/Evening/Night)<br/>• Pass/Degraded/Fail Inspection Toggles<br/>• 1-Click P1/P2 Critical Incident Escalation"]
         CrmConsole["Customer Service & CRM Console (/workspace/crm)<br/>• Deal Pipeline Kanban Board (Lead to Won)<br/>• Customer Account 360 Health Scores<br/>• Client Contacts Directory & ARR Tracking"]
+        ChatCockpit["Live Agent Cockpit (/workspace/chat)<br/>• Presence & Capacity State Bar (Online/Busy/Away)<br/>• Multi-Session Concurrent Chat Tabs<br/>• Canned Response Macros (/shortcut) & Whisper Notes<br/>• 1-Click Create Incident from Chat"]
+        PortalChat["Portal Live Chat Widget (/portal)<br/>• Floating Omnipresent Drawer & Queue Picker<br/>• Real-Time Queue Position & Wait Counter<br/>• Bi-Directional SSE Chat & Transcript Export"]
+        ChatStudio["Studio Chat Configurator (/studio?tab=chat)<br/>• Queue CRUD & Schedule Linkage<br/>• Canned Macros Management (/greet, /kb, /resolve)<br/>• Agent Concurrency Limits & Auto-Abandon Rules"]
     end
 
     subgraph Tier2["Tier 2: Edge Session & Route Guard (middleware.ts)"]
@@ -26,6 +29,7 @@ graph TD
 
     subgraph Tier3["Tier 3: Core ITIL Application Services & Sandboxing"]
         TableAPI["Table REST API (/api/now/table/[table])<br/>• Encoded Query Parser & Filter Builder<br/>• Mandatory SOP Checklist Gatekeeper (HTTP 422)<br/>• Hermes Diagnostic Evidence Ledger Ingestion<br/>• Dynamic Reference Resolver<br/>• Audit Delta Logger (sys_audit)<br/>• Delegated Domain Table Bypass"]
+        ChatRouter["Live Agent Dispatch Engine (/api/now/chat/*)<br/>• Real-Time Server-Sent Events (SSE) Stream Router (/stream)<br/>• Capacity-Aware Queue Allocation & Group Dispatch<br/>• Interaction Session State Machine (queued->active->resolved)<br/>• Auto-Timeout & Idle Abandonment Supervisor"]
         ScriptEngine["QuickJS WASM Script Sandbox<br/>• Isolated Guest Memory (32MB Heap)<br/>• Prototype Pollution Defense<br/>• 1000ms Hard Execution Timeout"]
         FlowEngine["Hermes Workflow Engine<br/>• Trigger Evaluator<br/>• Step Action Runner<br/>• Execution Audit Trail"]
         SpatialService["Connected Workplace Engine<br/>• 6-Tier Hierarchy Traverser<br/>• Architectural CAD Layer Engine (Walls, Columns, Door Swings, Workstations)<br/>• Room Category & Division Allocation Engine<br/>• Double-Booking Conflict Detector"]

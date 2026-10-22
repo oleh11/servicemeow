@@ -1,7 +1,7 @@
 # Product Requirements Document (PRD)
 
 **Project**: ServiceMeow — Enterprise Service Management (ESM) & Autonomous ITIL Operations Platform  
-**Version**: 3.4.0 (Targeted High-Performance Rust Core Engine, CAD Vector Decomposition & Real-Time Telemetry Pipeline)  
+**Version**: 3.5.0 (Omnichannel Live Agent Chat System, Real-Time SSE Dispatch Engine & Studio Chat Console)  
 **Status**: Production Ready & Fully Tested  
 **Created**: 2026-10-14  
 **Last Updated**: 2026-10-22  
@@ -9,7 +9,7 @@
 ---
 
 ## 1. Executive Summary
-ServiceMeow is an open-source, high-performance Enterprise Service Management (ESM) and ITIL operations platform engineered with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Prisma ORM, and QuickJS WebAssembly sandboxing. It replaces legacy, high-latency enterprise service suites with a sub-second, dockable multi-record workspace, a 6-tier Connected Workplace spatial CAD floorplan booking engine, low-code studio development with Update Set ALM, a deterministic Watchtower attention cockpit, mandatory SOP gatekeeper verification, shift morning checks operational rounds, an autonomous Hermes triage agent, Customer 360 CRM accounts with deal pipelines, load-balancing task assignment, and quantitative change risk scoring.
+ServiceMeow is an open-source, high-performance Enterprise Service Management (ESM) and ITIL operations platform engineered with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Prisma ORM, and QuickJS WebAssembly sandboxing. It replaces legacy, high-latency enterprise service suites with a sub-second, dockable multi-record workspace, a 6-tier Connected Workplace spatial CAD floorplan booking engine, low-code studio development with Update Set ALM, a deterministic Watchtower attention cockpit, mandatory SOP gatekeeper verification, shift morning checks operational rounds, an autonomous Hermes triage agent, Customer 360 CRM accounts with deal pipelines, load-balancing task assignment, quantitative change risk scoring, and a real-time omnichannel Live Agent Chat system supporting Requestor self-service, Fulfiller cockpit multi-session triage, intelligent capacity-aware queue routing, and Studio administrative configuration.
 
 ---
 
@@ -49,9 +49,12 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 | Operational Attention | Watchtower health score & attention stream refresh | Real-time deterministic aggregation |
 | Automated Load Balancing | Ticket assignment skew among active group members | Deviation < 1 open ticket |
 | Quantitative Change Risk | Conflict and duration risk scoring accuracy | 100% detection of overlapping CI change windows |
-| Vitest Test Coverage | Next.js & TypeScript regression test suite | 100% passing (144 tests across 20 files) |
+| Live Chat SSE Delivery Latency | Message delivery across SSE event stream | < 40ms end-to-end |
+| Queue Dispatch & Assignment Latency | Agent intake notification dispatch | < 100ms from requester queue join |
+| Live Chat Capacity Enforcement | Concurrent chats per active fulfiller | Strict limit (e.g. max 3 chats) |
+| Vitest Test Coverage | Next.js & TypeScript regression test suite | 100% passing |
 | Rust Core Engine Tests | Cargo integration test suite | 100% passing (6 integration tests) |
-| Production Build Reliability | Next.js compilation & TypeScript type-check | 0 errors, 0 unresolved imports, 86 routes |
+| Production Build Reliability | Next.js compilation & TypeScript type-check | 0 errors, 0 unresolved imports |
 
 ---
 
@@ -415,6 +418,77 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
     - Endpoints: `GET /health`, `POST /api/v1/cad/decompose`, `POST /api/v1/cad/collision-check`, `POST /api/v1/telemetry/ingest`, `GET /api/v1/telemetry/stats`, `POST /api/v1/script/validate`.
     - Resilient TypeScript client (`src/lib/rust-core-client.ts`) providing automatic, seamless TypeScript fallback when the native daemon is offline.
     - Platform status route: `GET /api/now/rust-engine` for fulfiller telemetry verification.
+
+### 5.11 Enterprise Live Agent Chat System (Requestor, Fulfiller Cockpit, Real-Time SSE Dispatch & Studio Configurator) (v3.5.0)
+
+#### 1. System Architecture & Omnichannel Bounded Context
+The Live Agent Chat subsystem provides real-time bi-directional customer support and technical dispatch natively integrated into the ITIL platform. It bridges Requesters on the Self-Service Portal (`/portal`), Fulfillers in the Agent Workspace (`/workspace/chat`), and Administrators in the Studio Workbench (`/studio` and `/workspace/settings/chat`).
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Requester as Employee / Requester (/portal)
+    participant SSE as SSE Stream Router (/api/now/chat/stream)
+    participant Engine as Chat Dispatch Engine (/api/now/chat/*)
+    actor Fulfiller as ITIL Fulfiller (/workspace/chat)
+    actor Admin as Configurator (/studio)
+
+    Admin->>Engine: Configure Queue (sys_live_chat_queue) & Canned Macros
+    Fulfiller->>Engine: Toggle Presence: "Online" (Capacity: 0/3)
+    Requester->>Engine: POST /session (Queue: IT Support, Query: "VPN failing")
+    Engine->>Engine: Evaluate Queue, Assign Channel (CHAT0001001)
+    Engine-->>Requester: Return Channel (state: "queued", position: 1)
+    Engine->>Fulfiller: Broadcast Incoming Dispatch Alert via SSE (30s Timer)
+    Fulfiller->>Engine: POST /agent (action: "accept", channelId: CHAT0001001)
+    Engine-->>Requester: State: "active", AssignedTo: "Sarah Jenkins"
+    Requester->>Engine: POST /message ("Cannot connect to Cisco AnyConnect")
+    Engine->>SSE: Broadcast Message Event
+    SSE-->>Fulfiller: Stream Message (Render in Multi-Session Tab)
+    Fulfiller->>Engine: POST /message (body: "/vpn_fix" canned macro, isInternal: false)
+    Engine->>SSE: Broadcast Agent Response
+    SSE-->>Requester: Render Agent Message
+    Fulfiller->>Engine: POST /agent (action: "create_incident")
+    Engine->>Engine: Generate Task INC0010050 with Chat Transcript
+    Fulfiller->>Engine: POST /agent (action: "resolve")
+    Engine-->>Requester: State: "resolved", Prompt CSAT 1-5 Star & Transcript Download
+```
+
+#### 2. Requestor Experience (`/portal` — `PortalLiveChatWidget.tsx`)
+- **Floating Omnipresent Widget**: Compact trigger pill (`Chat with IT Support`) docked at bottom-right of the portal with unread badge pulse.
+- **Queue & Topic Selection**: User selects target queue (e.g., "IT Service Desk", "Workplace Facilities", "General HR") with operating status display.
+- **Queue Position & Wait Time**: Dynamic status header displaying estimated wait time, position in queue, and automated welcome greeting (`welcomeMessage`).
+- **Bi-directional Messaging**: Clean, responsive Swiss Grid bubble timeline with message timestamps, sender avatars, and typing indicators.
+- **Post-Chat Disposition**:
+  - CSAT rating (1 to 5 stars) and optional feedback commentary.
+  - 1-click "Download Transcript" generating a formatted text transcript.
+  - Direct reference to generated Incident ticket (`INC00...`) if converted by fulfiller.
+
+#### 3. Fulfiller Experience (`/workspace/chat` — `FulfillerChatCockpit.tsx`)
+- **Agent Presence Bar**: Instant status toggle between `Online` (Available for routing), `Busy`, `Away`, and `Offline`. Live capacity counter (`Active Chats: 2/3`).
+- **Incoming Dispatch Intake**: High-visibility alert banner when an incoming chat matches the agent's group with audio chime, caller summary, and countdown timer (30s) to accept before automatic re-queueing.
+- **Multi-Session Chat Tabs**: Browser-like tab bar allowing fulfillers to manage up to 3 concurrent active requester conversations without losing typed draft text.
+- **Rich Message Timeline & Internal Whisper Notes**:
+  - Public messages sent to requester.
+  - Internal whisper notes (highlighted in Swiss Amber, `isInternal: true`) visible only to ITIL fulfillers and administrators for escalation notes.
+  - Canned Response Macros (`SysCannedResponse`): Triggered via `/shortcut` (e.g. `/greet`, `/resolve`, `/kb`, `/hold`, `/zoom`) with instant auto-completion picker.
+- **Caller Context Panel**: Live sidebar showing requester's avatar, VIP badge, email, department, open incidents, and CMDB assets.
+- **1-Click "Create Incident from Chat"**: Automatically provisions a new ITIL `Incident` and `Task` record linked to caller, populated with initial issue and threaded chat transcript.
+
+#### 4. System / Process Routing Engine (`src/app/api/now/chat/*`)
+- **Real-Time Server-Sent Events (SSE)**: High-efficiency unidirectional push stream at `/api/now/chat/stream?channelId=...` with automatic heartbeat ping (15s) and reconnect resilience.
+- **Queue Dispatch State Machine**:
+  - `queued`: Requester waiting in line.
+  - `active`: Fulfiller accepted and interacting.
+  - `resolved`: Chat successfully concluded.
+  - `abandoned`: Requester disconnected or timeout exceeded without agent response.
+- **Capacity-Aware Routing**: Matches queued channels to active fulfillers belonging to the queue's `assignmentGroupId` who are `Online` and have `activeChatsCount < maxConcurrentChatsPerAgent`.
+- **Interaction Audit Storage**: Full conversation audit stored in `SysLiveChatChannel` and `SysLiveChatMessage`.
+
+#### 5. Configurator / Studio Workbench Console (`/studio` & `ChatConfigStudio.tsx`)
+- **Studio Explorer Module**: Registered under *Platform & Workplace* and *Forms, UI & Catalog* as "Live Agent Chat".
+- **Queue Management**: Full CRUD for `SysLiveChatQueue` (name, code, assignment group, priority, max wait seconds, custom welcome greeting, offline message, active toggle).
+- **Canned Responses Studio**: Full CRUD for `SysCannedResponse` (shortcut code, title, message body, category, active toggle).
+- **Global Configuration**: Configurable max concurrent chats per agent, auto-abandon timeout (seconds), sound alert toggles, and schedule linkages.
 
 ---
 

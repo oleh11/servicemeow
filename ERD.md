@@ -65,6 +65,13 @@ erDiagram
     CrmContact ||--o{ Task : "contact person"
     User ||--o{ CrmOrganization : "manages account"
     User ||--o{ CrmDeal : "assigned to"
+
+    Group ||--o{ SysLiveChatQueue : "handles queue"
+    SysLiveChatQueue ||--o{ SysLiveChatChannel : "routes"
+    User ||--o{ SysLiveChatChannel : "requester"
+    User ||--o{ SysLiveChatChannel : "assigned fulfiller"
+    SysLiveChatChannel ||--o{ SysLiveChatMessage : "contains"
+    User ||--o| SysLiveChatPresence : "presence & capacity"
 ```
 
 ---
@@ -121,6 +128,14 @@ erDiagram
 - **`CrmOrganization` (`crm_organization`)**: Enterprise client organizations and corporate accounts with domain, industry, customer tier (`enterprise`, `mid_market`, `smb`), operational health score (0–100), and designated account manager.
 - **`CrmContact` (`crm_contact`)**: Relational contact directory mapped to customer accounts. Supports primary contact flags, email, direct telephone, and job title.
 - **`CrmDeal` (`crm_deal`)**: Commercial and renewal deals tracked across pipeline stages (`lead`, `qualified`, `proposal`, `negotiation`, `won`, `lost`) with contract amounts, close probability percentages, and owner assignments.
+
+### 2.9 Live Agent Omnichannel Chat Domain (v3.5.0)
+- **`SysLiveChatQueue` (`sys_live_chat_queue`)**: Routing queue definitions (e.g. IT Support, Facilities, HR) linking incoming chats to assignment groups, priority, SLA max wait thresholds, and custom welcome/offline copy.
+- **`SysLiveChatChannel` (`sys_live_chat_channel`)**: Omnichannel live interaction session tracking state (`queued`, `active`, `resolved`, `abandoned`), requester, assigned fulfiller, wait start/accept/end timestamps, CSAT rating (1-5), and linked ITIL incident record.
+- **`SysLiveChatMessage` (`sys_live_chat_message`)**: Real-time threaded messages supporting requester, agent, system, and bot senders, as well as internal whisper notes (`is_internal = true`) hidden from requesters.
+- **`SysCannedResponse` (`sys_canned_response`)**: Quick-reply macros triggered by `/shortcut` autocomplete.
+- **`SysLiveChatPresence` (`sys_live_chat_presence`)**: Real-time agent status (`online`, `busy`, `away`, `offline`), current active chat load, and heartbeat timestamp.
+- **`SysLiveChatConfig` (`sys_live_chat_config`)**: Global chat configuration parameters including agent capacity limits, timeouts, and operational schedules.
 
 ---
 
@@ -628,4 +643,165 @@ CREATE POLICY crm_deal_guard ON crm_deal
     USING (
         current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
     );
+
+-- ==============================================================================
+-- 8. Live Agent Omnichannel Chat Domain (v3.5.0)
+-- ==============================================================================
+
+CREATE TABLE IF NOT EXISTS sys_live_chat_queue (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    code VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    active BOOLEAN DEFAULT true,
+    priority INTEGER DEFAULT 1,
+    assignment_group_id VARCHAR(36) REFERENCES sys_user_group(id) ON DELETE SET NULL,
+    max_wait_seconds INTEGER DEFAULT 300,
+    welcome_message TEXT DEFAULT 'Hello! An ITIL support specialist will assist you shortly.',
+    offline_message TEXT DEFAULT 'All agents are currently offline. Please submit a service ticket.',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sys_live_chat_channel (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid(),
+    number VARCHAR(32) NOT NULL UNIQUE,
+    queue_id VARCHAR(36) REFERENCES sys_live_chat_queue(id) ON DELETE SET NULL,
+    requester_id VARCHAR(36) NOT NULL REFERENCES sys_user(id) ON DELETE CASCADE,
+    assigned_to_id VARCHAR(36) REFERENCES sys_user(id) ON DELETE SET NULL,
+    state VARCHAR(32) DEFAULT 'queued', -- 'queued', 'active', 'resolved', 'abandoned'
+    subject VARCHAR(255),
+    initial_question TEXT,
+    wait_started_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    accepted_at TIMESTAMP WITH TIME ZONE,
+    ended_at TIMESTAMP WITH TIME ZONE,
+    rating INTEGER,
+    feedback TEXT,
+    incident_id VARCHAR(36),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_channel_state_assigned ON sys_live_chat_channel(state, assigned_to_id);
+CREATE INDEX IF NOT EXISTS idx_chat_channel_requester ON sys_live_chat_channel(requester_id);
+
+CREATE TABLE IF NOT EXISTS sys_live_chat_message (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid(),
+    channel_id VARCHAR(36) NOT NULL REFERENCES sys_live_chat_channel(id) ON DELETE CASCADE,
+    sender_id VARCHAR(36),
+    sender_name VARCHAR(255),
+    sender_type VARCHAR(32) NOT NULL, -- 'requester', 'agent', 'system', 'bot'
+    body TEXT NOT NULL,
+    is_internal BOOLEAN DEFAULT false,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_message_channel_created ON sys_live_chat_message(channel_id, created_at);
+
+CREATE TABLE IF NOT EXISTS sys_canned_response (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid(),
+    shortcut VARCHAR(64) NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    category VARCHAR(64) DEFAULT 'general',
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sys_live_chat_presence (
+    id VARCHAR(36) PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id VARCHAR(36) NOT NULL UNIQUE REFERENCES sys_user(id) ON DELETE CASCADE,
+    status VARCHAR(32) DEFAULT 'offline', -- 'online', 'busy', 'away', 'offline'
+    active_chats_count INTEGER DEFAULT 0,
+    last_ping_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS sys_live_chat_config (
+    id VARCHAR(64) PRIMARY KEY DEFAULT 'global',
+    enabled BOOLEAN DEFAULT true,
+    max_concurrent_chats_per_agent INTEGER DEFAULT 3,
+    auto_abandon_timeout_seconds INTEGER DEFAULT 600,
+    sound_notifications BOOLEAN DEFAULT true,
+    operating_hours_schedule VARCHAR(255) DEFAULT '24x7',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ==============================================================================
+-- 9. Row Level Security (RLS) Policies for Live Agent Chat
+-- ==============================================================================
+
+ALTER TABLE sys_live_chat_queue ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sys_live_chat_channel ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sys_live_chat_message ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sys_canned_response ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sys_live_chat_presence ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sys_live_chat_config ENABLE ROW LEVEL SECURITY;
+
+-- Queue Policy: Requesters can view active queues; Admins manage all
+CREATE POLICY chat_queue_read_policy ON sys_live_chat_queue
+    FOR SELECT
+    USING (active = true OR current_setting('request.jwt.claim.role', true) IN ('admin', 'itil'));
+
+CREATE POLICY chat_queue_admin_policy ON sys_live_chat_queue
+    FOR ALL
+    USING (current_setting('request.jwt.claim.role', true) = 'admin');
+
+-- Channel Policy: Requesters see their own; ITIL & Admin see active or all
+CREATE POLICY chat_channel_requester_policy ON sys_live_chat_channel
+    FOR SELECT
+    USING (
+        requester_id = current_setting('request.jwt.claim.sub', true)
+        OR current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
+    );
+
+CREATE POLICY chat_channel_requester_insert ON sys_live_chat_channel
+    FOR INSERT
+    WITH CHECK (requester_id = current_setting('request.jwt.claim.sub', true));
+
+CREATE POLICY chat_channel_fulfiller_manage ON sys_live_chat_channel
+    FOR UPDATE
+    USING (current_setting('request.jwt.claim.role', true) IN ('admin', 'itil'));
+
+-- Message Policy: Requesters cannot see internal whisper notes (is_internal = true)
+CREATE POLICY chat_message_read_policy ON sys_live_chat_message
+    FOR SELECT
+    USING (
+        (is_internal = false AND EXISTS (
+            SELECT 1 FROM sys_live_chat_channel 
+            WHERE sys_live_chat_channel.id = sys_live_chat_message.channel_id 
+            AND sys_live_chat_channel.requester_id = current_setting('request.jwt.claim.sub', true)
+        ))
+        OR current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
+    );
+
+CREATE POLICY chat_message_insert_policy ON sys_live_chat_message
+    FOR INSERT
+    WITH CHECK (
+        (sender_type = 'requester' AND is_internal = false AND EXISTS (
+            SELECT 1 FROM sys_live_chat_channel 
+            WHERE sys_live_chat_channel.id = sys_live_chat_message.channel_id 
+            AND sys_live_chat_channel.requester_id = current_setting('request.jwt.claim.sub', true)
+        ))
+        OR current_setting('request.jwt.claim.role', true) IN ('admin', 'itil')
+    );
+
+-- Canned Responses & Config Policy: Fulfillers read; Admins manage
+CREATE POLICY canned_response_read_policy ON sys_canned_response
+    FOR SELECT
+    USING (current_setting('request.jwt.claim.role', true) IN ('admin', 'itil'));
+
+CREATE POLICY canned_response_admin_policy ON sys_canned_response
+    FOR ALL
+    USING (current_setting('request.jwt.claim.role', true) = 'admin');
+
+CREATE POLICY chat_config_read_policy ON sys_live_chat_config
+    FOR SELECT
+    USING (true);
+
+CREATE POLICY chat_config_admin_policy ON sys_live_chat_config
+    FOR ALL
+    USING (current_setting('request.jwt.claim.role', true) = 'admin');
 ```

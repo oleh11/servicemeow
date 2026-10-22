@@ -2,18 +2,45 @@ const puppeteer = require('puppeteer-core');
 const path = require('path');
 const fs = require('fs');
 
-const EDGE_PATH = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
+function resolveBrowserPath() {
+  if (process.env.PUPPETEER_EXECUTABLE_PATH && fs.existsSync(process.env.PUPPETEER_EXECUTABLE_PATH)) {
+    return process.env.PUPPETEER_EXECUTABLE_PATH;
+  }
+  const candidatePaths = [
+    'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
+    'C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe',
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+    '/usr/bin/microsoft-edge',
+  ];
+  for (const p of candidatePaths) {
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
+
+const BROWSER_PATH = resolveBrowserPath();
 const BASE_URL = 'http://localhost:3000';
 const ASSETS_DIR = path.resolve(__dirname, '../docs/assets');
 
 async function main() {
+  if (!BROWSER_PATH) {
+    console.error('No suitable browser (Edge/Chrome/Chromium) found. Set PUPPETEER_EXECUTABLE_PATH in environment.');
+    process.exit(1);
+  }
+
   if (!fs.existsSync(ASSETS_DIR)) {
     fs.mkdirSync(ASSETS_DIR, { recursive: true });
   }
 
-  console.log('[capture] Launching Edge headless browser...');
+  console.log(`[capture] Launching headless browser from: ${BROWSER_PATH}...`);
   const browser = await puppeteer.launch({
-    executablePath: EDGE_PATH,
+    executablePath: BROWSER_PATH,
     headless: true,
     args: [
       '--no-sandbox',

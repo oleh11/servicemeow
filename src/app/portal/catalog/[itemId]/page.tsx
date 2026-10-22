@@ -74,8 +74,7 @@ function CatalogItemForm({ itemId }: { itemId: string }) {
       .finally(() => setLoading(false));
   }, [itemId]);
 
-  // If item wasn't fetched via specialized endpoint, let's make sure endpoint exists or load mock
-  // Let's create `src/app/api/now/catalog/item/route.ts` as well!
+  // Fallback to fetch catalog item if not preloaded
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);

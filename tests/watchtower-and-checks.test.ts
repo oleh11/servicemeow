@@ -54,7 +54,7 @@ describe("Watchtower Attention Cockpit & Shift Morning Checks Operational Rounds
   });
 
   const makeAuthRequest = (url: string, method: string, body?: any) => {
-    const init: RequestInit = {
+    return new NextRequest(url, {
       method,
       headers: {
         "Content-Type": "application/json",
@@ -62,11 +62,8 @@ describe("Watchtower Attention Cockpit & Shift Morning Checks Operational Rounds
         "x-user-role": "admin",
         "x-user-id": adminUserId,
       },
-    };
-    if (body) {
-      init.body = JSON.stringify(body);
-    }
-    return new NextRequest(url, init);
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
   };
 
   it("calculates real-time operational health index and attention streams in Watchtower", async () => {

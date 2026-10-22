@@ -84,17 +84,14 @@ describe("Agile, CMDB, Problem & Knowledge System Integration", () => {
   });
 
   const makeAuthRequest = (url: string, method: string, body?: any) => {
-    const init: RequestInit = {
+    return new NextRequest(url, {
       method,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${adminToken}`,
       },
-    };
-    if (body) {
-      init.body = JSON.stringify(body);
-    }
-    return new NextRequest(url, init);
+      ...(body ? { body: JSON.stringify(body) } : {}),
+    });
   };
 
   // =========================================================================
