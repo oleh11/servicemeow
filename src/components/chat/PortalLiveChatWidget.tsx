@@ -9,12 +9,10 @@ import {
   Star,
   CheckCircle2,
   Clock,
-  User,
-  ShieldAlert,
   Minimize2,
   Maximize2,
   ChevronRight,
-  Headphones,
+  ExternalLink,
 } from "lucide-react";
 
 interface LiveChatMessage {
@@ -43,12 +41,16 @@ interface LiveChatChannel {
   assignedTo?: { id: string; name: string; email: string };
   queue?: LiveChatQueue;
   incidentId?: string;
+  incidentTaskId?: string;
   rating?: number;
+  queuePosition?: number;
+  waitStartedAt?: string;
 }
 
 export function PortalLiveChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [widgetEnabled, setWidgetEnabled] = useState(true);
   const [queues, setQueues] = useState<LiveChatQueue[]>([]);
   const [selectedQueueId, setSelectedQueueId] = useState("");
   const [initialQuestion, setInitialQuestion] = useState("");
@@ -60,36 +62,76 @@ export function PortalLiveChatWidget() {
   const [csatFeedback, setCsatFeedback] = useState("");
   const [csatSubmitted, setCsatSubmitted] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [agentTypingName, setAgentTypingName] = useState<string | null>(null);
+  const [waitSeconds, setWaitSeconds] = useState(0);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTypingSentRef = useRef<number>(0);
 
   // Auto-scroll messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, channel?.state]);
+  }, [messages, channel?.state, agentTypingName]);
 
-  // Load available queues on mount
+  // Load available queues AND resume any active/queued session on mount
   useEffect(() => {
-    async function loadQueues() {
+    async function initChatWidget() {
       try {
-        const res = await fetch("/api/now/chat/config");
-        if (res.ok) {
-          const data = await res.json();
+        const [configRes, sessionRes] = await Promise.all([
+          fetch("/api/now/chat/config"),
+          fetch("/api/now/chat/session?perspective=requester"),
+        ]);
+
+        if (configRes.ok) {
+          const data = await configRes.json();
+          if (data.config && data.config.enabled === false) {
+            setWidgetEnabled(false);
+          }
           const activeQueues = (data.queues || []).filter((q: LiveChatQueue) => q.active);
           setQueues(activeQueues);
           if (activeQueues.length > 0) {
             setSelectedQueueId(activeQueues[0].id);
           }
         }
+
+        if (sessionRes.ok) {
+          const sessionData = await sessionRes.json();
+          if (sessionData.channel && (sessionData.channel.state === "queued" || sessionData.channel.state === "active")) {
+            setChannel(sessionData.channel);
+            const msgRes = await fetch(
+              `/api/now/chat/message?channelId=${sessionData.channel.id}&perspective=requester`
+            );
+            if (msgRes.ok) {
+              const msgData = await msgRes.json();
+              setMessages(msgData.messages || []);
+            }
+          }
+        }
       } catch (err) {
-        console.error("Failed to load chat queues:", err);
+        console.error("Failed to initialize chat widget:", err);
       }
     }
-    loadQueues();
+    initChatWidget();
   }, []);
 
-  // Connect Server-Sent Events stream when in an active channel
+  // Elapsed wait timer when queued
+  useEffect(() => {
+    if (!channel || channel.state !== "queued") {
+      setWaitSeconds(0);
+      return;
+    }
+    const startMs = channel.waitStartedAt ? new Date(channel.waitStartedAt).getTime() : Date.now();
+    const updateWait = () => {
+      setWaitSeconds(Math.max(0, Math.floor((Date.now() - startMs) / 1000)));
+    };
+    updateWait();
+    const timer = setInterval(updateWait, 1000);
+    return () => clearInterval(timer);
+  }, [channel?.id, channel?.state, channel?.waitStartedAt]);
+
+  // Connect Server-Sent Events stream when in an active/queued channel
   useEffect(() => {
     if (!channel || channel.state === "resolved" || channel.state === "abandoned") {
       if (eventSourceRef.current) {
@@ -100,7 +142,9 @@ export function PortalLiveChatWidget() {
       return;
     }
 
-    const sse = new EventSource(`/api/now/chat/stream?channelId=${channel.id}`);
+    const sse = new EventSource(
+      `/api/now/chat/stream?channelId=${channel.id}&perspective=requester`
+    );
     eventSourceRef.current = sse;
 
     sse.addEventListener("connected", () => {
@@ -110,6 +154,8 @@ export function PortalLiveChatWidget() {
     sse.addEventListener("message", (e) => {
       try {
         const newMsg: LiveChatMessage = JSON.parse(e.data);
+        if (newMsg.isInternal) return;
+        setAgentTypingName(null);
         setMessages((prev) => {
           if (prev.some((m) => m.id === newMsg.id)) return prev;
           return [...prev, newMsg];
@@ -117,6 +163,19 @@ export function PortalLiveChatWidget() {
       } catch (err) {
         console.error("Error parsing chat SSE message:", err);
       }
+    });
+
+    sse.addEventListener("typing", (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.senderType === "agent") {
+          setAgentTypingName(data.senderName || "Support Specialist");
+          if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = setTimeout(() => {
+            setAgentTypingName(null);
+          }, 3000);
+        }
+      } catch {}
     });
 
     sse.addEventListener("status", (e) => {
@@ -129,6 +188,7 @@ export function PortalLiveChatWidget() {
             state: statusUpdate.state || prev.state,
             assignedTo: statusUpdate.assignedTo || prev.assignedTo,
             incidentId: statusUpdate.incidentId || prev.incidentId,
+            incidentTaskId: statusUpdate.incidentTaskId || prev.incidentTaskId,
           };
         });
       } catch (err) {
@@ -168,8 +228,10 @@ export function PortalLiveChatWidget() {
         const data = await res.json();
         setChannel(data.channel);
 
-        // Fetch initial messages
-        const msgRes = await fetch(`/api/now/chat/message?channelId=${data.channel.id}`);
+        // Fetch initial messages with requester perspective
+        const msgRes = await fetch(
+          `/api/now/chat/message?channelId=${data.channel.id}&perspective=requester`
+        );
         if (msgRes.ok) {
           const msgData = await msgRes.json();
           setMessages(msgData.messages || []);
@@ -179,6 +241,25 @@ export function PortalLiveChatWidget() {
       console.error("Failed to start chat:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Broadcast requester typing event (throttled to once per 2s)
+  const handleInputChange = (val: string) => {
+    setInputText(val);
+    if (!channel || channel.state !== "active" || !val.trim()) return;
+    const now = Date.now();
+    if (now - lastTypingSentRef.current > 2000) {
+      lastTypingSentRef.current = now;
+      fetch("/api/now/chat/session", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "typing",
+          channelId: channel.id,
+          senderType: "requester",
+        }),
+      }).catch(() => {});
     }
   };
 
@@ -197,6 +278,7 @@ export function PortalLiveChatWidget() {
         body: JSON.stringify({
           channelId: channel.id,
           body: textToSend,
+          senderType: "requester",
         }),
       });
 
@@ -212,14 +294,13 @@ export function PortalLiveChatWidget() {
     }
   };
 
-  // End chat
+  // End chat (uses requester-authorized PATCH /api/now/chat/session)
   const handleEndChat = async () => {
     if (!channel) return;
-    if (!confirm("Are you sure you want to end this live support chat?")) return;
 
     try {
-      const res = await fetch("/api/now/chat/agent", {
-        method: "POST",
+      const res = await fetch("/api/now/chat/session", {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "resolve",
@@ -234,21 +315,23 @@ export function PortalLiveChatWidget() {
     }
   };
 
-  // Submit CSAT rating
+  // Submit CSAT rating (uses requester-authorized PATCH /api/now/chat/session)
   const handleSubmitRating = async () => {
     if (!channel || !csatRating) return;
     try {
-      await fetch("/api/now/chat/agent", {
-        method: "POST",
+      const res = await fetch("/api/now/chat/session", {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: "resolve",
+          action: "rate",
           channelId: channel.id,
           rating: csatRating,
           feedback: csatFeedback,
         }),
       });
-      setCsatSubmitted(true);
+      if (res.ok) {
+        setCsatSubmitted(true);
+      }
     } catch (err) {
       console.error("Failed to submit rating:", err);
     }
@@ -266,10 +349,15 @@ export function PortalLiveChatWidget() {
       `Assigned Agent: ${channel.assignedTo?.name || "Unassigned"}`,
       channel.incidentId ? `Linked Ticket: ${channel.incidentId}` : "",
       `======================================================\n`,
-      ...messages.map((m) => {
-        const time = new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-        return `[${time}] ${m.senderName || m.senderType.toUpperCase()}: ${m.body}`;
-      }),
+      ...messages
+        .filter((m) => !m.isInternal)
+        .map((m) => {
+          const time = new Date(m.createdAt).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          return `[${time}] ${m.senderName || m.senderType.toUpperCase()}: ${m.body}`;
+        }),
       `\n======================================================`,
       `End of Transcript`,
     ].filter(Boolean);
@@ -290,7 +378,18 @@ export function PortalLiveChatWidget() {
     setCsatRating(null);
     setCsatFeedback("");
     setCsatSubmitted(false);
+    setAgentTypingName(null);
   };
+
+  const formatWaitTime = (sec: number) => {
+    const mins = Math.floor(sec / 60);
+    const rem = sec % 60;
+    return mins > 0 ? `${mins}m ${rem}s` : `${rem}s`;
+  };
+
+  if (!widgetEnabled) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-6 right-6 z-50 font-sans">
@@ -308,7 +407,7 @@ export function PortalLiveChatWidget() {
           </div>
           <div className="text-left">
             <div className="text-[10px] uppercase tracking-widest text-neutral-400 dark:text-neutral-500 font-bold">
-              01 / Support
+              {channel && channel.state !== "resolved" ? `Active • ${channel.number}` : "01 / Support"}
             </div>
             <div className="text-xs font-bold uppercase tracking-wider">Live Agent Chat</div>
           </div>
@@ -325,17 +424,27 @@ export function PortalLiveChatWidget() {
           {/* Header Bar */}
           <div className="flex items-center justify-between px-4 py-3 bg-neutral-900 text-white border-b border-neutral-800 select-none">
             <div className="flex items-center gap-2.5">
-              <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              <div
+                className={`w-2.5 h-2.5 rounded-full ${
+                  channel?.state === "active"
+                    ? "bg-green-500 animate-pulse"
+                    : channel?.state === "queued"
+                    ? "bg-amber-400 animate-ping"
+                    : "bg-green-500"
+                }`}
+              />
               <div>
                 <div className="text-xs font-bold tracking-wider uppercase flex items-center gap-1.5">
                   <span>Live Agent Support</span>
-                  {channel && <span className="font-mono text-neutral-400 text-[10px]">[{channel.number}]</span>}
+                  {channel && (
+                    <span className="font-mono text-neutral-400 text-[10px]">[{channel.number}]</span>
+                  )}
                 </div>
                 <div className="text-[10px] text-neutral-400">
                   {channel?.state === "active"
                     ? `Connected with ${channel.assignedTo?.name || "Support Specialist"}`
                     : channel?.state === "queued"
-                    ? "Queued • Connecting with Fulfiller..."
+                    ? `Queued • Waiting ${formatWaitTime(waitSeconds)}`
                     : channel?.state === "resolved"
                     ? "Chat Session Concluded"
                     : "ITIL Service Desk Online"}
@@ -410,7 +519,9 @@ export function PortalLiveChatWidget() {
 
                     <div className="p-3 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-[11px] text-neutral-600 dark:text-neutral-400 flex items-center gap-2">
                       <Clock className="w-4 h-4 text-neutral-500 flex-shrink-0" />
-                      <span>Average response time: <strong>&lt; 2 minutes</strong> during business hours.</span>
+                      <span>
+                        Average response time: <strong>&lt; 2 minutes</strong> during business hours.
+                      </span>
                     </div>
                   </div>
 
@@ -441,14 +552,14 @@ export function PortalLiveChatWidget() {
                         <>
                           <Clock className="w-3.5 h-3.5 text-amber-500 animate-spin" />
                           <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase">
-                            Position: #1 in queue
+                            Position: #{channel.queuePosition || 1} in queue • {formatWaitTime(waitSeconds)}
                           </span>
                         </>
                       ) : (
                         <>
                           <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
                           <span className="text-[11px] font-bold text-green-700 dark:text-green-400 uppercase">
-                            Agent Active
+                            {channel.assignedTo?.name ? `${channel.assignedTo.name} • Active` : "Agent Active"}
                           </span>
                         </>
                       )}
@@ -456,9 +567,14 @@ export function PortalLiveChatWidget() {
 
                     <div className="flex items-center gap-2">
                       {channel.incidentId && (
-                        <span className="font-mono text-[10px] bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 px-1.5 py-0.5 font-bold border border-red-300 dark:border-red-800">
-                          {channel.incidentId}
-                        </span>
+                        <a
+                          href="/portal/my-tickets"
+                          className="font-mono text-[10px] bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 px-1.5 py-0.5 font-bold border border-red-300 dark:border-red-800 flex items-center gap-1 hover:underline"
+                          title="View in My Tickets"
+                        >
+                          <span>{channel.incidentId}</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
                       )}
                       <button
                         onClick={handleEndChat}
@@ -493,7 +609,12 @@ export function PortalLiveChatWidget() {
                           <div className="flex items-center gap-1.5 mb-1 text-[10px] text-neutral-500 font-medium">
                             <span>{m.senderName || (isMe ? "You" : "Agent")}</span>
                             <span>•</span>
-                            <span>{new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                            <span>
+                              {new Date(m.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
                           </div>
 
                           <div
@@ -508,6 +629,19 @@ export function PortalLiveChatWidget() {
                         </div>
                       );
                     })}
+
+                    {/* Live Agent Typing Indicator */}
+                    {agentTypingName && (
+                      <div className="flex items-center gap-2 text-[11px] text-neutral-500 font-mono italic">
+                        <span className="flex gap-1">
+                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce" />
+                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:150ms]" />
+                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:300ms]" />
+                        </span>
+                        <span>{agentTypingName} is typing...</span>
+                      </div>
+                    )}
+
                     <div ref={messagesEndRef} />
                   </div>
 
@@ -519,7 +653,7 @@ export function PortalLiveChatWidget() {
                     <input
                       type="text"
                       value={inputText}
-                      onChange={(e) => setInputText(e.target.value)}
+                      onChange={(e) => handleInputChange(e.target.value)}
                       placeholder="Type a message..."
                       className="flex-1 text-xs px-3 py-2.5 bg-neutral-100 dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-none focus:border-neutral-900 dark:focus:border-white"
                     />

@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getServerSession } from "@/lib/auth";
 import { chatBus, ChatStreamEvent } from "@/lib/chat-bus";
+import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +15,21 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const channelId = searchParams.get("channelId");
     const mode = searchParams.get("mode"); // "agent" or "channel"
+    const perspective = searchParams.get("perspective"); // "requester" | "agent"
 
     const isFulfiller = session.isAdmin || session.hasRole("itil");
+    const isRequesterView = !isFulfiller || perspective === "requester";
+
+    // Security check: non-fulfillers can only subscribe to their own chat channel
+    if (!isFulfiller && channelId) {
+      const channel = await db.sysLiveChatChannel.findUnique({
+        where: { id: channelId },
+        select: { requesterId: true },
+      });
+      if (!channel || channel.requesterId !== session.user.id) {
+        return new Response("Forbidden", { status: 403 });
+      }
+    }
 
     const encoder = new TextEncoder();
     let isClosed = false;
@@ -34,8 +48,8 @@ export async function GET(request: NextRequest) {
         const eventHandler = (event: ChatStreamEvent) => {
           if (isClosed) return;
           try {
-            // For requesters, do not stream internal whisper notes
-            if (!isFulfiller && event.data?.isInternal) {
+            // For requester views, never stream internal whisper notes
+            if (isRequesterView && event.data?.isInternal) {
               return;
             }
 

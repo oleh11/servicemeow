@@ -13,6 +13,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const channelId = searchParams.get("channelId");
     const state = searchParams.get("state"); // "queued", "active", "all"
+    const perspective = searchParams.get("perspective"); // "requester" or "agent"
+
+    const isFulfiller = session.isAdmin || session.hasRole("itil");
+    const isRequesterView = !isFulfiller || perspective === "requester";
 
     if (channelId) {
       const channel = await db.sysLiveChatChannel.findUnique({
@@ -30,15 +34,18 @@ export async function GET(request: NextRequest) {
       }
 
       // Requester privacy check: requester can only view their own channel
-      if (!session.isAdmin && !session.hasRole("itil") && channel.requesterId !== session.user.id) {
+      if (!isFulfiller && channel.requesterId !== session.user.id) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
 
-      // Filter internal notes if requester
-      const isRequester = !session.isAdmin && !session.hasRole("itil");
+      const queuePosition =
+        channel.state === "queued" ? await ChatService.getQueuePosition(channel.id) : 0;
+
+      // Filter internal notes if requester view
       const safeChannel = {
         ...channel,
-        messages: isRequester
+        queuePosition,
+        messages: isRequesterView
           ? channel.messages.filter((m) => !m.isInternal)
           : channel.messages,
       };
@@ -46,11 +53,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ channel: safeChannel });
     }
 
-    const isFulfiller = session.isAdmin || session.hasRole("itil");
-
     let where: any = {};
-    if (!isFulfiller) {
-      // Employee only sees their own sessions
+    if (isRequesterView) {
+      // Employee / Portal view only sees their own sessions
       where.requesterId = session.user.id;
       if (state && state !== "all") {
         where.state = state;
@@ -99,9 +104,63 @@ export async function POST(request: NextRequest) {
       subject,
     });
 
-    return NextResponse.json({ channel }, { status: 201 });
+    const queuePosition = await ChatService.getQueuePosition(channel.id);
+
+    return NextResponse.json({ channel: { ...channel, queuePosition } }, { status: 201 });
   } catch (error: any) {
     console.error("Error in chat session POST:", error);
     return NextResponse.json({ error: error.message || "Failed to start chat session" }, { status: 500 });
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await getServerSession(request);
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { channelId, action, rating, feedback, senderType } = body;
+
+    if (!channelId) {
+      return NextResponse.json({ error: "channelId is required" }, { status: 400 });
+    }
+
+    const existing = await db.sysLiveChatChannel.findUnique({
+      where: { id: channelId },
+    });
+
+    if (!existing) {
+      return NextResponse.json({ error: "Channel not found" }, { status: 404 });
+    }
+
+    const isFulfiller = session.isAdmin || session.hasRole("itil");
+    if (!isFulfiller && existing.requesterId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    if (action === "typing") {
+      const effectiveSenderType =
+        senderType === "requester" || !isFulfiller ? "requester" : "agent";
+      ChatService.sendTypingIndicator(channelId, session.user.name, effectiveSenderType);
+      return NextResponse.json({ ok: true });
+    }
+
+    if (action === "resolve" || action === "rate") {
+      const updated = await ChatService.resolveChat(
+        channelId,
+        existing.assignedToId || undefined,
+        rating,
+        feedback
+      );
+      return NextResponse.json({ channel: updated });
+    }
+
+    return NextResponse.json({ error: `Unsupported action: ${action}` }, { status: 400 });
+  } catch (error: any) {
+    console.error("Error in chat session PATCH:", error);
+    return NextResponse.json({ error: error.message || "Failed to update chat session" }, { status: 500 });
+  }
+}
+

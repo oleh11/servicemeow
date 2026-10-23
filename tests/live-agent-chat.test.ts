@@ -4,7 +4,11 @@ import { ChatService } from "@/lib/chat-service";
 import { chatBus } from "@/lib/chat-bus";
 import { signSessionToken } from "@/lib/auth-token";
 import { NextRequest } from "next/server";
-import { POST as handleChatSessionPost, GET as handleChatSessionGet } from "@/app/api/now/chat/session/route";
+import {
+  POST as handleChatSessionPost,
+  GET as handleChatSessionGet,
+  PATCH as handleChatSessionPatch,
+} from "@/app/api/now/chat/session/route";
 import { POST as handleChatMessagePost, GET as handleChatMessageGet } from "@/app/api/now/chat/message/route";
 import { POST as handleChatAgentPost, GET as handleChatAgentGet } from "@/app/api/now/chat/agent/route";
 import { POST as handleChatConfigPost, GET as handleChatConfigGet } from "@/app/api/now/chat/config/route";
@@ -425,5 +429,89 @@ describe("Omnichannel Live Agent Chat Subsystem", () => {
       const res = await handleChatConfigPost(unauthorizedReq);
       expect(res.status).toBe(403);
     });
+
+    it("separates internal whisper notes into JournalEntry work_notes when creating an Incident", async () => {
+      const channel = await ChatService.initiateSession({
+        requesterId: employeeUser.id,
+        initialQuestion: "SSO login error 500 on corporate portal",
+        subject: "SSO Login Error",
+      });
+      await ChatService.acceptChat(channel.id, itilUser.id);
+
+      // Agent sends public reply
+      await ChatService.sendMessage({
+        channelId: channel.id,
+        senderId: itilUser.id,
+        senderName: itilUser.name,
+        senderType: "agent",
+        body: "Checking Okta identity provider logs now.",
+        isInternal: false,
+      });
+
+      // Agent sends confidential internal whisper note
+      const secretNote = "CONFIDENTIAL_WHISPER: Root certificate on IdP node-02 expired at 03:00 UTC.";
+      await ChatService.sendMessage({
+        channelId: channel.id,
+        senderId: itilUser.id,
+        senderName: itilUser.name,
+        senderType: "agent",
+        body: secretNote,
+        isInternal: true,
+      });
+
+      const task = await ChatService.createIncidentFromChat(channel.id, itilUser.id);
+
+      // Public description must NOT leak the internal whisper note
+      expect(task.description).toContain("Checking Okta identity provider logs now.");
+      expect(task.description).not.toContain("CONFIDENTIAL_WHISPER");
+
+      // Internal whisper note must be saved as an internal ActivityNote work_note on the Incident
+      const workNotes = await db.activityNote.findMany({
+        where: { taskId: task.id, noteType: "work_note" },
+      });
+      expect(workNotes.length).toBe(1);
+      expect(workNotes[0].noteType).toBe("work_note");
+      expect(workNotes[0].content).toContain("CONFIDENTIAL_WHISPER");
+    });
+
+    it("allows employee requester to end their own chat and submit CSAT rating via PATCH /api/now/chat/session", async () => {
+      const channel = await ChatService.initiateSession({
+        requesterId: employeeUser.id,
+        initialQuestion: "Need VPN token resync",
+      });
+      await ChatService.acceptChat(channel.id, itilUser.id);
+
+      // 1. Employee ends the chat
+      const endReq = new NextRequest("http://localhost:3000/api/now/chat/session", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Cookie: employeeCookie },
+        body: JSON.stringify({
+          action: "resolve",
+          channelId: channel.id,
+        }),
+      });
+      const endRes = await handleChatSessionPatch(endReq);
+      expect(endRes.status).toBe(200);
+      const endData = await endRes.json();
+      expect(endData.channel.state).toBe("resolved");
+
+      // 2. Employee submits post-chat CSAT rating & feedback (idempotent resolve)
+      const rateReq = new NextRequest("http://localhost:3000/api/now/chat/session", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Cookie: employeeCookie },
+        body: JSON.stringify({
+          action: "rate",
+          channelId: channel.id,
+          rating: 5,
+          feedback: "Super smooth resolution!",
+        }),
+      });
+      const rateRes = await handleChatSessionPatch(rateReq);
+      expect(rateRes.status).toBe(200);
+      const rateData = await rateRes.json();
+      expect(rateData.channel.rating).toBe(5);
+      expect(rateData.channel.feedback).toBe("Super smooth resolution!");
+    });
   });
 });
+

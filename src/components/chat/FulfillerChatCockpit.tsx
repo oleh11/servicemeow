@@ -1,15 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   MessageSquare,
-  User,
-  Shield,
   Send,
   Lock,
   PlusCircle,
   CheckCircle2,
-  AlertTriangle,
   Clock,
   Sparkles,
   Copy,
@@ -17,6 +15,8 @@ import {
   ChevronDown,
   Volume2,
   VolumeX,
+  FileText,
+  Settings,
 } from "lucide-react";
 
 interface RequesterInfo {
@@ -42,11 +42,13 @@ interface LiveChatChannel {
   requesterId: string;
   requester?: RequesterInfo;
   assignedToId?: string;
+  assignedTo?: { id: string; name: string; email: string };
   queueId?: string;
   queue?: LiveChatQueue;
   waitStartedAt: string;
   acceptedAt?: string;
   incidentId?: string;
+  incidentTaskId?: string;
 }
 
 interface LiveChatMessage {
@@ -75,6 +77,14 @@ interface AgentPresence {
   activeChatsCount: number;
 }
 
+interface CallerTicket {
+  id: string;
+  number: string;
+  shortDescription: string;
+  state: string;
+  priority: number;
+}
+
 export function FulfillerChatCockpit() {
   const [presence, setPresence] = useState<AgentPresence | null>(null);
   const [queuedChannels, setQueuedChannels] = useState<LiveChatChannel[]>([]);
@@ -88,16 +98,39 @@ export function FulfillerChatCockpit() {
   const [loadingAction, setLoadingAction] = useState(false);
   const [showMacroMenu, setShowMacroMenu] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [statusBanner, setStatusBanner] = useState<{ text: string; type: "success" | "info" } | null>(null);
+  const [callerTypingName, setCallerTypingName] = useState<string | null>(null);
+  const [callerTickets, setCallerTickets] = useState<CallerTicket[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastTypingSentRef = useRef<number>(0);
 
   const activeChannel = activeChannels.find((c) => c.id === selectedChannelId) || null;
+
+  const showToast = (text: string, type: "success" | "info" = "success") => {
+    setStatusBanner({ text, type });
+    setTimeout(() => {
+      setStatusBanner(null);
+    }, 3500);
+  };
+
+  // Interpolate template variables in canned macros
+  const interpolateMacro = (template: string) => {
+    const callerName = activeChannel?.requester?.name || "there";
+    const agentName = activeChannel?.assignedTo?.name || "Support Specialist";
+    const chatNumber = activeChannel?.number || "";
+    return template
+      .replace(/\{\{\s*caller_name\s*\}\}/gi, callerName)
+      .replace(/\{\{\s*requester_name\s*\}\}/gi, callerName)
+      .replace(/\{\{\s*agent_name\s*\}\}/gi, agentName)
+      .replace(/\{\{\s*chat_number\s*\}\}/gi, chatNumber);
+  };
 
   // Auto-scroll messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, selectedChannelId]);
+  }, [messages, selectedChannelId, callerTypingName]);
 
   // Load initial workspace data
   const refreshWorkspace = async () => {
@@ -113,7 +146,6 @@ export function FulfillerChatCockpit() {
           setMaxCapacity(data.config.maxConcurrentChatsPerAgent);
         }
 
-        // If no channel selected and active channels exist, select first
         if (!selectedChannelId && data.activeChannels?.length > 0) {
           setSelectedChannelId(data.activeChannels[0].id);
         }
@@ -129,22 +161,22 @@ export function FulfillerChatCockpit() {
     return () => clearInterval(interval);
   }, []);
 
-  // Listen to Global SSE events for agent
+  // Listen to Global & Channel SSE events for agent
   useEffect(() => {
-    const sse = new EventSource("/api/now/chat/stream?mode=agent");
+    const streamUrl = selectedChannelId
+      ? `/api/now/chat/stream?mode=agent&channelId=${selectedChannelId}`
+      : `/api/now/chat/stream?mode=agent`;
+    const sse = new EventSource(streamUrl);
 
-    sse.addEventListener("dispatch", (e) => {
-      try {
-        refreshWorkspace();
-      } catch (err) {
-        console.error("Error on dispatch SSE:", err);
-      }
+    sse.addEventListener("dispatch", () => {
+      refreshWorkspace();
     });
 
     sse.addEventListener("message", (e) => {
       try {
         const newMsg: LiveChatMessage = JSON.parse(e.data);
         if (newMsg.channelId === selectedChannelId) {
+          setCallerTypingName(null);
           setMessages((prev) => {
             if (prev.some((m) => m.id === newMsg.id)) return prev;
             return [...prev, newMsg];
@@ -153,6 +185,19 @@ export function FulfillerChatCockpit() {
       } catch (err) {
         console.error("Error on message SSE:", err);
       }
+    });
+
+    sse.addEventListener("typing", (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        if (data.senderType === "requester" && data.channelId === selectedChannelId) {
+          setCallerTypingName(data.senderName || "Caller");
+          if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+          typingTimeoutRef.current = setTimeout(() => {
+            setCallerTypingName(null);
+          }, 3000);
+        }
+      } catch {}
     });
 
     sse.addEventListener("status", () => {
@@ -164,14 +209,16 @@ export function FulfillerChatCockpit() {
     };
   }, [selectedChannelId]);
 
-  // Load messages whenever selected channel changes
+  // Load messages and caller ticket history whenever selected channel changes
   useEffect(() => {
+    setCallerTypingName(null);
     if (!selectedChannelId) {
       setMessages([]);
+      setCallerTickets([]);
       return;
     }
 
-    async function loadMessages() {
+    async function loadChannelDetails() {
       try {
         const res = await fetch(`/api/now/chat/message?channelId=${selectedChannelId}`);
         if (res.ok) {
@@ -182,8 +229,28 @@ export function FulfillerChatCockpit() {
         console.error("Failed to load messages:", err);
       }
     }
-    loadMessages();
+    loadChannelDetails();
   }, [selectedChannelId]);
+
+  // Load caller recent tickets when activeChannel requesterId changes
+  useEffect(() => {
+    if (!activeChannel?.requesterId) {
+      setCallerTickets([]);
+      return;
+    }
+    async function loadCallerTickets() {
+      try {
+        const res = await fetch(
+          `/api/now/table/task?sysparm_query=openedById=${activeChannel?.requesterId}&sysparm_limit=4`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setCallerTickets((data.result || []).slice(0, 4));
+        }
+      } catch {}
+    }
+    loadCallerTickets();
+  }, [activeChannel?.requesterId, activeChannel?.incidentId]);
 
   // Change presence status
   const handleSetPresence = async (status: "online" | "busy" | "away" | "offline") => {
@@ -196,6 +263,7 @@ export function FulfillerChatCockpit() {
       if (res.ok) {
         const data = await res.json();
         setPresence(data.presence);
+        showToast(`Agent status updated to ${status.toUpperCase()}`, "info");
       }
     } catch (err) {
       console.error("Failed to update presence:", err);
@@ -214,6 +282,7 @@ export function FulfillerChatCockpit() {
       if (res.ok) {
         await refreshWorkspace();
         setSelectedChannelId(channelId);
+        showToast("Chat session accepted and assigned to your cockpit.");
       }
     } catch (err) {
       console.error("Failed to accept chat:", err);
@@ -222,12 +291,54 @@ export function FulfillerChatCockpit() {
     }
   };
 
+  // Handle composer input change + slash command expansion + typing broadcast
+  const handleComposerChange = (val: string) => {
+    // Check if the user typed a slash shortcut followed by space (e.g. "/greet ")
+    if (val.startsWith("/") && val.endsWith(" ")) {
+      const cmd = val.trim().toLowerCase();
+      const matched = cannedResponses.find((c) => c.shortcut.toLowerCase() === cmd);
+      if (matched) {
+        setComposerText(interpolateMacro(matched.message));
+        return;
+      }
+    }
+
+    setComposerText(val);
+
+    // Broadcast typing indicator if public reply mode
+    if (!isInternalNote && selectedChannelId && val.trim()) {
+      const now = Date.now();
+      if (now - lastTypingSentRef.current > 2000) {
+        lastTypingSentRef.current = now;
+        fetch("/api/now/chat/session", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "typing",
+            channelId: selectedChannelId,
+            senderType: "agent",
+          }),
+        }).catch(() => {});
+      }
+    }
+  };
+
   // Send message
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!composerText.trim() || !selectedChannelId) return;
 
-    const bodyText = composerText.trim();
+    let bodyText = composerText.trim();
+    // If the user typed an exact slash shortcut and hit Enter (e.g., "/greet"), expand it automatically
+    if (bodyText.startsWith("/")) {
+      const matched = cannedResponses.find(
+        (c) => c.shortcut.toLowerCase() === bodyText.toLowerCase()
+      );
+      if (matched) {
+        bodyText = interpolateMacro(matched.message);
+      }
+    }
+
     setComposerText("");
 
     try {
@@ -238,6 +349,7 @@ export function FulfillerChatCockpit() {
           channelId: selectedChannelId,
           body: bodyText,
           isInternal: isInternalNote,
+          senderType: "agent",
         }),
       });
 
@@ -268,7 +380,9 @@ export function FulfillerChatCockpit() {
       });
       if (res.ok) {
         const data = await res.json();
-        alert(`Incident ${data.task.number} created successfully with full chat transcript!`);
+        showToast(
+          `Incident ${data.task.number} created! Public messages added to description; whisper notes saved as internal work notes.`
+        );
         await refreshWorkspace();
       }
     } catch (err) {
@@ -281,7 +395,6 @@ export function FulfillerChatCockpit() {
   // Resolve chat
   const handleResolveChat = async () => {
     if (!selectedChannelId) return;
-    if (!confirm("Are you sure you want to resolve and wrap up this chat session?")) return;
 
     setLoadingAction(true);
     try {
@@ -294,6 +407,7 @@ export function FulfillerChatCockpit() {
         }),
       });
       if (res.ok) {
+        showToast("Chat session marked as resolved.");
         await refreshWorkspace();
         setSelectedChannelId(null);
       }
@@ -304,9 +418,10 @@ export function FulfillerChatCockpit() {
     }
   };
 
-  // Insert macro template
+  // Insert macro template with variable interpolation
   const handleInsertMacro = (macro: CannedResponse) => {
-    setComposerText((prev) => (prev ? `${prev} ${macro.message}` : macro.message));
+    const interpolated = interpolateMacro(macro.message);
+    setComposerText((prev) => (prev ? `${prev} ${interpolated}` : interpolated));
     setShowMacroMenu(false);
   };
 
@@ -317,7 +432,7 @@ export function FulfillerChatCockpit() {
       .map((m) => `[${m.senderType.toUpperCase()}] ${m.senderName || ""}: ${m.body}`)
       .join("\n");
     navigator.clipboard.writeText(text);
-    alert("Transcript copied to clipboard!");
+    showToast("Chat transcript copied to clipboard!", "info");
   };
 
   return (
@@ -352,10 +467,26 @@ export function FulfillerChatCockpit() {
               <span>{maxCapacity}</span>
             </div>
           </div>
+
+          {statusBanner && (
+            <div className="px-3 py-1 bg-green-100 dark:bg-green-950/60 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-300 text-xs font-medium flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+              <span>{statusBanner.text}</span>
+            </div>
+          )}
         </div>
 
-        {/* Presence Selector */}
+        {/* Presence Selector & Studio Shortcut */}
         <div className="flex items-center gap-3">
+          <Link
+            href="/studio"
+            className="px-2.5 py-1.5 border border-neutral-300 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5"
+            title="Configure Queues & Macros in Studio"
+          >
+            <Settings className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Configure Chat</span>
+          </Link>
+
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
             className="p-1.5 text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
@@ -492,12 +623,20 @@ export function FulfillerChatCockpit() {
                         <span className="text-xs font-bold truncate">
                           {ac.requester?.name || "Caller"}
                         </span>
-                        <span className={`text-[10px] font-mono ${isSelected ? "text-neutral-300 dark:text-neutral-600" : "text-neutral-500"}`}>
+                        <span
+                          className={`text-[10px] font-mono ${
+                            isSelected ? "text-neutral-300 dark:text-neutral-600" : "text-neutral-500"
+                          }`}
+                        >
                           {ac.number}
                         </span>
                       </div>
 
-                      <div className={`text-[11px] truncate ${isSelected ? "text-neutral-300 dark:text-neutral-700" : "text-neutral-500"}`}>
+                      <div
+                        className={`text-[11px] truncate ${
+                          isSelected ? "text-neutral-300 dark:text-neutral-700" : "text-neutral-500"
+                        }`}
+                      >
                         {ac.subject || "Support Inquiry"}
                       </div>
 
@@ -603,7 +742,12 @@ export function FulfillerChatCockpit() {
                       <div className="flex items-center gap-1.5 mb-1 text-[10px] text-neutral-500 font-medium">
                         <span>{m.senderName || (isAgent ? "You" : "Caller")}</span>
                         <span>•</span>
-                        <span>{new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                        <span>
+                          {new Date(m.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
                       </div>
 
                       <div
@@ -618,6 +762,18 @@ export function FulfillerChatCockpit() {
                     </div>
                   );
                 })}
+
+                {callerTypingName && (
+                  <div className="flex items-center gap-2 text-[11px] text-neutral-500 font-mono italic">
+                    <span className="flex gap-1">
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce" />
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:150ms]" />
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-bounce [animation-delay:300ms]" />
+                    </span>
+                    <span>{callerTypingName} is typing...</span>
+                  </div>
+                )}
+
                 <div ref={messagesEndRef} />
               </div>
 
@@ -664,9 +820,9 @@ export function FulfillerChatCockpit() {
                     </button>
 
                     {showMacroMenu && (
-                      <div className="absolute right-0 bottom-8 w-64 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 shadow-xl z-20 py-1">
+                      <div className="absolute right-0 bottom-8 w-72 bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 shadow-xl z-20 py-1">
                         <div className="px-3 py-1.5 text-[10px] font-bold uppercase text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
-                          Quick Canned Replies
+                          Quick Canned Replies (or type /shortcut)
                         </div>
                         {cannedResponses.map((macro) => (
                           <button
@@ -678,7 +834,9 @@ export function FulfillerChatCockpit() {
                             <span className="font-mono font-bold text-red-600 dark:text-red-400 mr-1.5">
                               {macro.shortcut}
                             </span>
-                            <span className="text-neutral-700 dark:text-neutral-200">{macro.title}</span>
+                            <span className="text-neutral-700 dark:text-neutral-200">
+                              {macro.title}
+                            </span>
                           </button>
                         ))}
                       </div>
@@ -691,7 +849,7 @@ export function FulfillerChatCockpit() {
                   <textarea
                     rows={2}
                     value={composerText}
-                    onChange={(e) => setComposerText(e.target.value)}
+                    onChange={(e) => handleComposerChange(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
                         handleSendMessage(e);
@@ -699,8 +857,8 @@ export function FulfillerChatCockpit() {
                     }}
                     placeholder={
                       isInternalNote
-                        ? "Enter internal technical note (hidden from caller)..."
-                        : "Type public response to caller (Press Ctrl+Enter to send)..."
+                        ? "Enter internal technical note (hidden from caller, saved as work_notes on Incident)..."
+                        : "Type public response or /shortcut + space (Press Ctrl+Enter to send)..."
                     }
                     className={`flex-1 p-2.5 text-xs border focus:outline-none resize-none font-medium ${
                       isInternalNote
@@ -785,13 +943,22 @@ export function FulfillerChatCockpit() {
                 </span>
 
                 {activeChannel.incidentId ? (
-                  <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-xs">
-                    <span className="text-[10px] uppercase font-bold text-red-700 dark:text-red-400 block mb-1">
-                      Incident Linked
-                    </span>
-                    <span className="font-mono font-bold text-sm text-neutral-900 dark:text-white">
-                      {activeChannel.incidentId}
-                    </span>
+                  <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-xs flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-red-700 dark:text-red-400 block mb-0.5">
+                        Incident Linked
+                      </span>
+                      <span className="font-mono font-bold text-sm text-neutral-900 dark:text-white">
+                        {activeChannel.incidentId}
+                      </span>
+                    </div>
+                    <Link
+                      href="/workspace/incident"
+                      className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white text-[10px] font-bold uppercase flex items-center gap-1"
+                    >
+                      <span>Open</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </Link>
                   </div>
                 ) : (
                   <button
@@ -812,6 +979,42 @@ export function FulfillerChatCockpit() {
                   <CheckCircle2 className="w-4 h-4 text-green-600" />
                   <span>Mark as Resolved</span>
                 </button>
+              </div>
+
+              {/* Caller Recent Tickets History */}
+              <div className="space-y-2 pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Caller Recent Tickets ({callerTickets.length})</span>
+                </span>
+
+                {callerTickets.length === 0 ? (
+                  <div className="text-[11px] text-neutral-400 font-mono py-2">
+                    No recent ITIL tickets found for this caller.
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {callerTickets.map((t) => (
+                      <Link
+                        key={t.id}
+                        href={`/workspace/incident/${t.id}`}
+                        className="block p-2.5 bg-neutral-50 dark:bg-neutral-850 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors"
+                      >
+                        <div className="flex items-center justify-between mb-0.5">
+                          <span className="font-mono text-[10px] font-bold text-red-600 dark:text-red-400">
+                            {t.number}
+                          </span>
+                          <span className="text-[9px] uppercase font-bold px-1.5 py-0.2 bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
+                            {t.state}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-neutral-700 dark:text-neutral-300 truncate">
+                          {t.shortDescription}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

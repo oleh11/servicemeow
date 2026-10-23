@@ -334,7 +334,8 @@ export class ChatService {
   }
 
   /**
-   * Resolves/concludes an active chat channel.
+   * Resolves/concludes an active chat channel or updates post-chat CSAT rating.
+   * Idempotent: if already resolved, updates rating/feedback without double-decrementing agent capacity.
    */
   static async resolveChat(
     channelId: string,
@@ -350,13 +351,15 @@ export class ChatService {
       throw new Error("Channel not found");
     }
 
+    const wasAlreadyResolved = existing.state === "resolved" || existing.state === "abandoned";
+
     const updated = await db.sysLiveChatChannel.update({
       where: { id: channelId },
       data: {
         state: "resolved",
-        endedAt: new Date(),
-        rating: rating ?? existing.rating,
-        feedback: feedback ?? existing.feedback,
+        endedAt: existing.endedAt || new Date(),
+        rating: rating !== undefined ? Number(rating) : existing.rating,
+        feedback: feedback !== undefined ? feedback : existing.feedback,
       },
       include: {
         queue: true,
@@ -365,45 +368,86 @@ export class ChatService {
       },
     });
 
-    // Decrement agent's active chats count if assigned
-    const effectiveAgentId = agentId || existing.assignedToId;
-    if (effectiveAgentId) {
-      const presence = await db.sysLiveChatPresence.findUnique({
-        where: { userId: effectiveAgentId },
-      });
-      if (presence && presence.activeChatsCount > 0) {
-        await db.sysLiveChatPresence.update({
+    if (!wasAlreadyResolved) {
+      // Decrement agent's active chats count if assigned
+      const effectiveAgentId = agentId || existing.assignedToId;
+      if (effectiveAgentId) {
+        const presence = await db.sysLiveChatPresence.findUnique({
           where: { userId: effectiveAgentId },
-          data: {
-            activeChatsCount: Math.max(0, presence.activeChatsCount - 1),
-          },
         });
+        if (presence && presence.activeChatsCount > 0) {
+          await db.sysLiveChatPresence.update({
+            where: { userId: effectiveAgentId },
+            data: {
+              activeChatsCount: Math.max(0, presence.activeChatsCount - 1),
+            },
+          });
+        }
       }
-    }
 
-    // Add closing message
-    const closeMsg = await db.sysLiveChatMessage.create({
-      data: {
-        channelId,
-        senderType: "system",
-        senderName: "ServiceMeow Dispatcher",
-        body: "The chat session has been resolved. Thank you for using ServiceMeow Live Support.",
-        isInternal: false,
-      },
-    });
+      // Add closing message only on first resolution transition
+      const closeMsg = await db.sysLiveChatMessage.create({
+        data: {
+          channelId,
+          senderType: "system",
+          senderName: "ServiceMeow Dispatcher",
+          body: "The chat session has been resolved. Thank you for using ServiceMeow Live Support.",
+          isInternal: false,
+        },
+      });
+      chatBus.broadcastChannel(channelId, "message", closeMsg);
+    }
 
     chatBus.broadcastChannel(channelId, "status", {
       state: "resolved",
       endedAt: updated.endedAt,
       rating: updated.rating,
+      feedback: updated.feedback,
     });
-    chatBus.broadcastChannel(channelId, "message", closeMsg);
 
     return updated;
   }
 
   /**
+   * Broadcasts a non-persistent typing indicator event to channel subscribers.
+   */
+  static sendTypingIndicator(
+    channelId: string,
+    senderName: string,
+    senderType: "requester" | "agent"
+  ) {
+    chatBus.broadcastChannel(channelId, "typing", {
+      channelId,
+      senderName,
+      senderType,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  /**
+   * Computes 1-indexed queue position for a waiting channel.
+   */
+  static async getQueuePosition(channelId: string): Promise<number> {
+    const channel = await db.sysLiveChatChannel.findUnique({
+      where: { id: channelId },
+      select: { state: true, queueId: true, waitStartedAt: true },
+    });
+    if (!channel || channel.state !== "queued") return 0;
+
+    const aheadCount = await db.sysLiveChatChannel.count({
+      where: {
+        state: "queued",
+        ...(channel.queueId ? { queueId: channel.queueId } : {}),
+        waitStartedAt: { lt: channel.waitStartedAt },
+      },
+    });
+    return aheadCount + 1;
+  }
+
+  /**
    * Creates a formal ITIL Incident and Task record from a live chat channel.
+   * Public messages populate the customer-visible description; internal whisper notes
+   * are stored strictly as internal JournalEntry work_notes to preserve Persona Segregation.
    */
   static async createIncidentFromChat(channelId: string, agentId: string) {
     const channel = await db.sysLiveChatChannel.findUnique({
@@ -418,12 +462,14 @@ export class ChatService {
       throw new Error("Channel not found");
     }
 
-    // Build threaded transcript for ticket description
-    const transcript = channel.messages
+    const publicMessages = channel.messages.filter((m) => !m.isInternal);
+    const internalMessages = channel.messages.filter((m) => m.isInternal);
+
+    // Build customer-safe public transcript for ticket description
+    const publicTranscript = publicMessages
       .map((m) => {
         const time = new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-        const prefix = m.isInternal ? "[INTERNAL NOTE] " : "";
-        return `[${time}] ${prefix}${m.senderName || m.senderType}: ${m.body}`;
+        return `[${time}] ${m.senderName || m.senderType}: ${m.body}`;
       })
       .join("\n");
 
@@ -439,7 +485,7 @@ export class ChatService {
         number: taskNumber,
         sysClassName: "incident",
         shortDescription: channel.subject || `Live Chat Escalation: ${channel.number}`,
-        description: `Created from Live Agent Chat session ${channel.number}.\n\n--- Transcript ---\n${transcript}`,
+        description: `Created from Live Agent Chat session ${channel.number}.\n\n--- Public Chat Transcript ---\n${publicTranscript}`,
         priority: 3,
         state: 2, // In Progress
         impact: 2,
@@ -456,6 +502,18 @@ export class ChatService {
         },
       },
     });
+
+    // Preserve internal whisper notes strictly as internal ActivityNote work_note entries
+    for (const internalMsg of internalMessages) {
+      await db.activityNote.create({
+        data: {
+          taskId: task.id,
+          authorId: internalMsg.senderId || agentId,
+          noteType: "work_note",
+          content: `[Live Chat Whisper Note - ${channel.number}] ${internalMsg.body}`,
+        },
+      });
+    }
 
     // Link Incident ID to chat channel
     await db.sysLiveChatChannel.update({
@@ -475,7 +533,10 @@ export class ChatService {
     });
 
     chatBus.broadcastChannel(channelId, "message", notice);
-    chatBus.broadcastChannel(channelId, "status", { incidentId: task.number });
+    chatBus.broadcastChannel(channelId, "status", {
+      incidentId: task.number,
+      incidentTaskId: task.id,
+    });
 
     return task;
   }

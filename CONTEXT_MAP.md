@@ -1,8 +1,8 @@
-# Subagent Context Map & Contract Slices (CONTEXT_MAP)
+# Architecture Context Map & Contract Reference (`CONTEXT_MAP.md`)
 
-**Project**: ServiceMeow  
-**Target Audience**: Autonomous Subagents (`fullstack-craftsman`, `quality-guardian`, `ci-cd-devops-architect`)  
-**Purpose**: High-density contract index to enable rapid code generation and verification without full repository re-scanning.
+**Project**: ServiceMeow Enterprise Service Management (ESM)  
+**Target Audience**: Contributors, Plugin Authors, and Platform Engineers  
+**Purpose**: High-density TypeScript contract and schema index for rapid domain orientation across the platform.
 
 ---
 

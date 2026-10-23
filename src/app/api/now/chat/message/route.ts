@@ -12,6 +12,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const channelId = searchParams.get("channelId");
+    const perspective = searchParams.get("perspective");
 
     if (!channelId) {
       return NextResponse.json({ error: "channelId is required" }, { status: 400 });
@@ -30,7 +31,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const messages = await ChatService.getChannelMessages(channelId, !isFulfiller);
+    const isRequesterView = !isFulfiller || perspective === "requester";
+    const messages = await ChatService.getChannelMessages(channelId, isRequesterView);
 
     return NextResponse.json({ messages });
   } catch (error: any) {
@@ -47,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     const json = await request.json();
-    const { channelId, body, isInternal } = json;
+    const { channelId, body, isInternal, senderType: requestedSenderType } = json;
 
     if (!channelId || !body || typeof body !== "string" || !body.trim()) {
       return NextResponse.json({ error: "channelId and body are required" }, { status: 400 });
@@ -68,9 +70,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Only fulfillers/admins can post internal whisper notes
-    const effectiveIsInternal = isFulfiller ? Boolean(isInternal) : false;
-    const senderType = isFulfiller ? "agent" : "requester";
+    // Honor explicit requester perspective when caller is the channel's requester
+    const isPostingAsRequester =
+      !isFulfiller || (requestedSenderType === "requester" && channel.requesterId === session.user.id);
+
+    const effectiveIsInternal = isPostingAsRequester ? false : Boolean(isInternal);
+    const senderType = isPostingAsRequester ? "requester" : "agent";
 
     const message = await ChatService.sendMessage({
       channelId,
