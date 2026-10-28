@@ -130,43 +130,45 @@ export default function VisualTaskBoardPage() {
   const columns = groupBy === "state" ? STATE_COLUMNS : PRIORITY_COLUMNS;
 
   return (
-    <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      {/* Top Banner & Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
+    <div className="p-6 md:p-8 space-y-8 bg-neutral-100 min-h-screen text-black font-sans">
+      {/* Swiss Header Bar */}
+      <div className="border-b-2 border-black pb-6 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
-              <Kanban className="w-4 h-4" />
-            </div>
-            <h1 className="text-lg font-bold text-slate-900">Visual Task Board (VTB)</h1>
-            <span className="text-[10px] font-mono uppercase bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-full font-bold">
-              vtb_board
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-mono text-xs uppercase font-extrabold px-2 py-0.5 bg-black text-white">
+              TRIAGE
+            </span>
+            <span className="font-mono text-xs uppercase font-bold text-neutral-500">
+              03 / Visual Task Board
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase text-black">
+            Visual Task Board (VTB)
+          </h1>
+          <p className="text-xs sm:text-sm text-neutral-600 mt-1 max-w-2xl">
             Real-time interactive Kanban swimlanes for operations triage, ticket status progression, and priority balancing.
           </p>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
           {/* Toggle Group By */}
-          <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border text-xs">
+          <div className="flex items-center border-2 border-black bg-white p-1 shadow-[2px_2px_0px_rgba(0,0,0,1)] text-xs">
             <button
               onClick={() => setGroupBy("state")}
-              className={`px-3 py-1 rounded-md font-semibold transition-colors ${
+              className={`px-3 py-1 font-mono text-xs font-bold uppercase transition-colors ${
                 groupBy === "state"
-                  ? "bg-white text-blue-600 shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
+                  ? "bg-black text-white"
+                  : "text-neutral-600 hover:text-black"
               }`}
             >
               By State
             </button>
             <button
               onClick={() => setGroupBy("priority")}
-              className={`px-3 py-1 rounded-md font-semibold transition-colors ${
+              className={`px-3 py-1 font-mono text-xs font-bold uppercase transition-colors ${
                 groupBy === "priority"
-                  ? "bg-white text-blue-600 shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
+                  ? "bg-black text-white"
+                  : "text-neutral-600 hover:text-black"
               }`}
             >
               By Priority
@@ -175,10 +177,10 @@ export default function VisualTaskBoardPage() {
 
           <button
             onClick={loadTasks}
-            className="p-2 border rounded-lg text-slate-500 hover:text-slate-800 transition-colors"
+            className="p-2 border-2 border-black bg-white hover:bg-neutral-100 text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-colors"
             title="Refresh Board"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-red-600" : ""}`} />
           </button>
         </div>
       </div>
@@ -203,10 +205,10 @@ export default function VisualTaskBoardPage() {
               <button
                 key={cls}
                 onClick={() => setClassFilter(cls)}
-                className={`px-3 py-1.5 rounded-full font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+                className={`px-3 py-1.5 font-mono text-xs font-bold uppercase transition-colors flex items-center gap-1.5 whitespace-nowrap border-2 ${
                   classFilter === cls
-                    ? "bg-blue-600 text-white font-bold"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    ? "bg-black text-white border-black"
+                    : "bg-white text-neutral-600 border-neutral-300 hover:border-black hover:text-black"
                 }`}
               >
                 <span>{label}</span>
@@ -218,13 +220,13 @@ export default function VisualTaskBoardPage() {
 
         {/* Search */}
         <div className="relative min-w-[240px]">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+          <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-neutral-400" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search number, title, assignee..."
-            className="w-full bg-slate-50 border rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:outline-blue-500"
+            className="w-full bg-white border-2 border-black pl-8 pr-3 py-1.5 text-xs text-black font-medium focus:outline-none focus:border-red-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]"
           />
         </div>
       </div>
@@ -239,13 +241,13 @@ export default function VisualTaskBoardPage() {
           return (
             <div
               key={col.id}
-              className={`bg-slate-50/80 rounded-2xl border-t-4 border border-slate-200 shadow-xs flex flex-col max-h-[82vh] overflow-hidden ${col.color}`}
+              className={`bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] flex flex-col max-h-[82vh] overflow-hidden`}
             >
               {/* Column Header */}
-              <div className="p-3.5 border-b bg-white flex items-center justify-between">
+              <div className="p-3.5 border-b-2 border-black bg-neutral-50 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-xs text-slate-800">{col.label}</h3>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${col.badge}`}>
+                  <h3 className="font-extrabold font-mono text-xs uppercase text-black">{col.label}</h3>
+                  <span className={`text-[10px] px-2 py-0.2 font-mono font-bold border border-black ${col.badge}`}>
                     {colTasks.length}
                   </span>
                 </div>
@@ -263,7 +265,7 @@ export default function VisualTaskBoardPage() {
                     return (
                       <div
                         key={t.id}
-                        className={`p-3 bg-white rounded-xl border border-slate-200 shadow-xs hover:shadow-md transition-all space-y-2 relative group ${
+                        className={`p-3 bg-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 transition-all space-y-2 relative group ${
                           isUpdating ? "opacity-40 pointer-events-none" : ""
                         }`}
                       >
@@ -271,44 +273,44 @@ export default function VisualTaskBoardPage() {
                         <div className="flex items-center justify-between gap-2">
                           <Link
                             href={`/workspace/${t.sysClassName || "task"}/${t.id}`}
-                            className="font-mono text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+                            className="font-mono text-xs font-bold text-red-600 hover:text-black flex items-center gap-1"
                           >
                             <span>{t.number}</span>
-                            <ExternalLink className="w-2.5 h-2.5 text-slate-400 group-hover:text-blue-600" />
+                            <ExternalLink className="w-2.5 h-2.5 text-neutral-400 group-hover:text-black" />
                           </Link>
 
-                          <span className="text-[9px] uppercase font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-semibold">
+                          <span className="text-[9px] uppercase font-mono px-1.5 py-0.2 bg-neutral-100 text-neutral-800 font-bold border border-neutral-300">
                             {t.sysClassName}
                           </span>
                         </div>
 
                         {/* Title */}
-                        <p className="text-xs text-slate-800 font-medium line-clamp-2 leading-snug">
+                        <p className="text-xs text-black font-bold line-clamp-2 leading-snug">
                           {t.shortDescription}
                         </p>
 
                         {/* Priority & Assignee Info */}
-                        <div className="flex items-center justify-between pt-1 border-t text-[10px] text-slate-500">
+                        <div className="flex items-center justify-between pt-1 border-t border-neutral-200 text-[10px] text-neutral-600">
                           <span
-                            className={`px-1.5 py-0.5 rounded font-mono font-bold ${
+                            className={`px-1.5 py-0.5 font-mono font-bold border ${
                               t.priority === 1
-                                ? "bg-rose-100 text-rose-800"
+                                ? "bg-red-600 text-white border-red-600"
                                 : t.priority === 2
-                                ? "bg-orange-100 text-orange-800"
-                                : "bg-slate-100 text-slate-600"
+                                ? "bg-amber-100 text-amber-900 border-amber-300"
+                                : "bg-neutral-100 text-neutral-700 border-neutral-300"
                             }`}
                           >
                             P{t.priority}
                           </span>
 
-                          <div className="flex items-center gap-1 text-slate-600 truncate max-w-[120px]">
-                            <User className="w-3 h-3 text-slate-400 shrink-0" />
+                          <div className="flex items-center gap-1 text-neutral-700 truncate max-w-[120px] font-mono">
+                            <User className="w-3 h-3 text-neutral-400 shrink-0" />
                             <span className="truncate">{t.assignedTo?.name || "Unassigned"}</span>
                           </div>
                         </div>
 
                         {/* Quick State/Priority Move Controls */}
-                        <div className="flex items-center justify-between pt-1 border-t text-[10px]">
+                        <div className="flex items-center justify-between pt-1 border-t border-neutral-200 text-[10px]">
                           {groupBy === "state" ? (
                             <>
                               <button

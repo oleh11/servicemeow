@@ -60,7 +60,7 @@ describe("Rust Core Engine & Hybrid Microservices Bridge", () => {
     const events = [
       {
         event_type: "log.stacktrace",
-        source: "hermes-agent",
+        source: "workflow-daemon",
         severity: "critical",
         task_id: "INC0010042",
         payload: { error: "OOM killer invoked on redis-worker" },

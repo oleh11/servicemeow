@@ -280,9 +280,9 @@ export function TaskForm({
     } else if (field === "close_code" || field === "closeCode") {
       setCloseCode(value);
     } else if (field === "description") {
-      setDescription((prev) => (prev ? `${prev}\n\n[Hermes Fact]: ${value}` : value));
+      setDescription((prev) => (prev ? `${prev}\n\n[Verified Fact]: ${value}` : value));
     }
-    showToast(`Incorporated verified Hermes fact into ${field}`);
+    showToast(`Incorporated verified fact into ${field}`);
   };
 
   // Add Activity Note
@@ -403,55 +403,50 @@ export function TaskForm({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-[var(--md-sys-color-surface)] text-[var(--md-sys-color-on-surface)] min-h-screen">
+    <div className="flex-1 flex flex-col bg-neutral-100 text-black font-sans min-h-screen">
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-lg bg-[var(--md-sys-color-on-surface)] text-[var(--md-sys-color-surface)] shadow-[var(--md-sys-elevation-3)] text-sm font-medium animate-in slide-in-from-bottom duration-200 flex items-center gap-2">
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-2.5 border-2 border-black bg-black text-white shadow-[4px_4px_0px_rgba(0,0,0,1)] text-xs font-mono font-bold uppercase flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           {toastMsg}
         </div>
       )}
 
       {/* ========================================================================= */}
-      {/* Top App Bar (M3 Specifications)                                           */}
+      {/* Top App Bar (Swiss Grid Header)                                           */}
       {/* ========================================================================= */}
-      <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between px-6 py-3 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)] shadow-[var(--md-sys-elevation-1)]">
+      <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between px-6 py-4 border-b-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)]">
         {/* Left: Navigation & Record Identity */}
         <div className="flex items-center space-x-3">
           <Link
             href={`/workspace/${tableName}`}
-            className="p-2 text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)] hover:bg-[var(--md-sys-color-surface-container)] rounded-full transition-colors"
+            className="p-2 border-2 border-black bg-white hover:bg-neutral-100 text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-colors"
             title="Back to list"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4" />
           </Link>
 
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
-                {number || (isNew ? "New Incident" : recordId)}
+              <span className="font-mono text-xs uppercase font-extrabold px-2 py-0.5 bg-black text-white">
+                {tableName.toUpperCase()}
+              </span>
+              <h1 className="text-xl font-extrabold uppercase tracking-tight text-black">
+                {number || (isNew ? `New ${tableName}` : recordId)}
               </h1>
 
-              {/* State Tonal Assist Chip */}
-              <span
-                className={`px-3 py-0.5 text-xs font-semibold rounded-full border ${getStateChipStyle(
-                  state
-                )}`}
-              >
+              {/* State Pill */}
+              <span className="px-2 py-0.5 font-mono text-[11px] font-bold border border-black uppercase bg-neutral-100 text-black">
                 {getStateLabel(state)}
               </span>
 
               {/* Priority Chip */}
-              <span
-                className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${getPriorityChipStyle(
-                  priority
-                )}`}
-              >
+              <span className="px-2 py-0.5 font-mono text-[11px] font-bold border border-black uppercase bg-neutral-100 text-black">
                 P{priority}
               </span>
             </div>
 
-            <p className="text-xs text-[var(--md-sys-color-on-surface-variant)] mt-0.5">
+            <p className="text-xs font-mono text-neutral-500 mt-0.5">
               ITSM Incident • joined table inheritance on task.id
             </p>
           </div>
@@ -464,7 +459,7 @@ export function TaskForm({
             type="button"
             onClick={handleAiAssist}
             disabled={aiGenerating}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-[var(--md-sys-color-tertiary-container)] text-[var(--md-sys-color-on-tertiary-container)] hover:shadow-[var(--md-sys-elevation-1)] transition-all"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 border-2 border-black bg-white hover:bg-neutral-100 text-black font-mono text-xs font-bold uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
             title="Ask AI Copilot for triage & solution suggestions"
           >
             <Sparkles className={`w-3.5 h-3.5 ${aiGenerating ? "animate-spin text-amber-500" : ""}`} />
@@ -479,18 +474,18 @@ export function TaskForm({
                 setState(6);
                 showToast("Incident marked Resolved. Please enter close notes.");
               }}
-              className="px-3.5 py-1.5 rounded-full text-xs font-medium border border-[var(--md-sys-color-outline)] text-[var(--md-sys-color-primary)] hover:bg-[var(--md-sys-color-primary-container)] transition-colors"
+              className="px-3.5 py-1.5 border-2 border-black bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-mono text-xs font-bold uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-colors cursor-pointer"
             >
               Resolve
             </button>
           )}
 
-          {/* Primary Save Button (M3 Filled Button) */}
+          {/* Primary Save Button */}
           <button
             type="button"
             onClick={() => handleSave()}
             disabled={saving}
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-medium bg-[var(--md-sys-color-primary)] text-[var(--md-sys-color-on-primary)] shadow-[var(--md-sys-elevation-1)] hover:shadow-[var(--md-sys-elevation-2)] active:scale-98 transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-5 py-2 border-2 border-black bg-[#eb0029] hover:bg-black text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50 cursor-pointer"
           >
             <Save className="w-4 h-4" />
             {saving ? "Saving..." : isNew ? "Submit" : "Save"}
@@ -500,14 +495,14 @@ export function TaskForm({
 
       {/* Form Error Banner */}
       {formError && (
-        <div className="mx-6 mt-4 p-4 rounded-xl bg-[var(--md-sys-color-error-container)] text-[var(--md-sys-color-on-error-container)] border border-[var(--md-sys-color-error)] flex items-center justify-between text-sm">
+        <div className="mx-6 mt-4 p-4 border-2 border-red-600 bg-red-100 text-red-950 flex items-center justify-between text-xs font-mono font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]">
           <div className="flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 flex-shrink-0" />
             <span>{formError}</span>
           </div>
           <button
             onClick={() => setFormError("")}
-            className="p-1 hover:bg-black/10 rounded-full"
+            className="p-1 hover:bg-black/10 cursor-pointer"
           >
             ✕
           </button>
@@ -516,138 +511,60 @@ export function TaskForm({
 
       {/* AI Suggestion Box */}
       {aiSummary && (
-        <div className="mx-6 mt-4 p-4 rounded-xl bg-[var(--md-sys-color-tertiary-container)]/30 border border-[var(--md-sys-color-tertiary)]/40 text-sm">
-          <div className="flex items-center gap-2 font-semibold text-[var(--md-sys-color-tertiary)] mb-1">
-            <Sparkles className="w-4 h-4" />
+        <div className="mx-6 mt-4 p-4 border-2 border-black bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] text-xs font-mono">
+          <div className="flex items-center gap-2 font-extrabold uppercase text-black mb-1">
+            <Sparkles className="w-4 h-4 text-[#eb0029]" />
             Purr-Assist AI Insights
           </div>
-          <p className="text-xs text-[var(--md-sys-color-on-surface)] leading-relaxed whitespace-pre-line">
+          <p className="text-xs text-neutral-800 leading-relaxed whitespace-pre-line">
             {aiSummary}
           </p>
         </div>
       )}
 
       {/* ========================================================================= */}
-      {/* Primary M3 Tab Bar                                                        */}
+      {/* Swiss Grid Tab Bar                                                        */}
       {/* ========================================================================= */}
-      <div className="px-6 border-b border-[var(--md-sys-color-outline-variant)] bg-[var(--md-sys-color-surface-container-low)]">
-        <div className="flex space-x-8">
-          <button
-            type="button"
-            onClick={() => setActiveTab("details")}
-            className={`relative py-3.5 text-sm font-medium transition-colors ${
-              activeTab === "details"
-                ? "text-[var(--md-sys-color-primary)] font-semibold"
-                : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
-            }`}
-          >
-            Record Details
-            {activeTab === "details" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--md-sys-color-primary)] rounded-t-full" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("stream")}
-            className={`relative py-3.5 text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              activeTab === "stream"
-                ? "text-[var(--md-sys-color-primary)] font-semibold"
-                : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
-            }`}
-          >
-            <MessageSquare className="w-4 h-4" />
-            Activity Stream
-            {activityNotes.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-[var(--md-sys-color-primary-container)] text-[var(--md-sys-color-on-primary-container)]">
-                {activityNotes.length}
-              </span>
-            )}
-            {activeTab === "stream" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--md-sys-color-primary)] rounded-t-full" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("related")}
-            className={`relative py-3.5 text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              activeTab === "related"
-                ? "text-[var(--md-sys-color-primary)] font-semibold"
-                : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            Related Lists & SLAs
-            {slaInstances.length > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-100 text-emerald-800">
-                {slaInstances.length}
-              </span>
-            )}
-            {activeTab === "related" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--md-sys-color-primary)] rounded-t-full" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("attachments")}
-            className={`relative py-3.5 text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              activeTab === "attachments"
-                ? "text-[var(--md-sys-color-primary)] font-semibold"
-                : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
-            }`}
-          >
-            <Paperclip className="w-4 h-4" />
-            Attachments
-            {activeTab === "attachments" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--md-sys-color-primary)] rounded-t-full" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("checklist")}
-            className={`relative py-3.5 text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              activeTab === "checklist"
-                ? "text-[var(--md-sys-color-primary)] font-semibold"
-                : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
-            }`}
-          >
-            <ListChecks className="w-4 h-4" />
-            SOP Checklist
-            {incompleteMandatoryCount > 0 ? (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-red-600 text-white font-mono font-bold">
-                {incompleteMandatoryCount}
-              </span>
-            ) : null}
-            {activeTab === "checklist" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--md-sys-color-primary)] rounded-t-full" />
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("evidence")}
-            className={`relative py-3.5 text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              activeTab === "evidence"
-                ? "text-[var(--md-sys-color-primary)] font-semibold"
-                : "text-[var(--md-sys-color-on-surface-variant)] hover:text-[var(--md-sys-color-on-surface)]"
-            }`}
-          >
-            <Sparkles className="w-4 h-4 text-purple-600" />
-            Hermes Evidence
-            {activeTab === "evidence" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-[var(--md-sys-color-primary)] rounded-t-full" />
-            )}
-          </button>
+      <div className="px-6 border-b-2 border-black bg-neutral-100">
+        <div className="flex space-x-2 overflow-x-auto py-2">
+          {[
+            { id: "details", label: "Record Details", icon: null, badge: null },
+            { id: "stream", label: "Activity Stream", icon: MessageSquare, badge: activityNotes.length },
+            { id: "related", label: "Related Lists & SLAs", icon: Layers, badge: slaInstances.length },
+            { id: "attachments", label: "Attachments", icon: Paperclip, badge: null },
+            { id: "checklist", label: "SOP Checklist", icon: ListChecks, badge: incompleteMandatoryCount > 0 ? incompleteMandatoryCount : null },
+            { id: "evidence", label: "Evidence Ledger", icon: Sparkles, badge: null },
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`px-3 py-1.5 font-mono text-xs font-bold uppercase transition-all flex items-center gap-1.5 border-2 border-black cursor-pointer shrink-0 ${
+                  isActive
+                    ? "bg-black text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                    : "bg-white hover:bg-neutral-100 text-black shadow-[1px_1px_0px_rgba(0,0,0,1)]"
+                }`}
+              >
+                {Icon && <Icon className="w-3.5 h-3.5" />}
+                <span>{tab.label}</span>
+                {Boolean(tab.badge) && (
+                  <span className={`px-1.5 py-0.2 text-[10px] font-mono font-bold ${isActive ? "bg-white text-black" : "bg-black text-white"}`}>
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* ========================================================================= */}
       {/* Tab Contents                                                              */}
       {/* ========================================================================= */}
-      <main className="flex-1 p-6 max-w-6xl w-full mx-auto">
+      <main className="flex-1 p-6 md:p-8 max-w-6xl w-full mx-auto">
         {activeTab === "details" && (
           <div className="space-x-0 space-y-6">
             {/* Top Full Width: Short Description */}

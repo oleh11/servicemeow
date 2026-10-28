@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct TelemetryEvent {
     pub id: Option<String>,
     pub event_type: String, // e.g. "ci.ping_failure", "log.stacktrace", "monitor.alert", "sla.breach_warning"
-    pub source: String,     // e.g. "hermes-agent", "datadog", "prometheus", "edge-router"
+    pub source: String,     // e.g. "workflow-daemon", "datadog", "prometheus", "edge-router"
     pub severity: String,   // "info", "warn", "error", "critical"
     pub task_id: Option<String>,
     pub ci_id: Option<String>,

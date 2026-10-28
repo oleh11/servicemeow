@@ -176,7 +176,7 @@ export function ActivityStream({ taskId, initialNotes, onAddNote }: ActivityStre
               disabled={isDraftingAi}
               onClick={() => handleAiDraft(activeTab === "customer_comment" ? "empathetic" : "technical")}
               className="ml-auto px-2.5 py-0.5 rounded-full border border-purple-300 bg-gradient-to-r from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 text-purple-800 text-[11px] font-bold flex items-center gap-1 transition-all shrink-0 disabled:opacity-50"
-              title="Generate contextual customer reply using Hermes AI"
+              title="Generate contextual customer reply from ticket facts"
             >
               <Sparkles className="w-3 h-3 text-purple-600 animate-pulse" />
               <span>{isDraftingAi ? "Drafting..." : "✨ AI Draft Response"}</span>

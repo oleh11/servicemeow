@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <strong>The Open-Source Enterprise Service Operations (ITIL) Platform &amp; Hermes Autonomous Agent</strong><br>
-  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Hermes Workflow Agent
+  <strong>The Open-Source Enterprise Service Management (ITIL) &amp; Spatial Workplace Platform</strong><br>
+  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Background Workflow Daemon
 </p>
 
 <p align="center">
@@ -374,7 +374,7 @@ Enforce rigorous Standard Operating Procedure (SOP) compliance on all task and i
 
 ---
 
-### 19. Hermes AI Anti-Hallucination Diagnostic Evidence Ledger (`task_evidence`)
+### 19. Task Diagnostic Evidence & Fact Verification Ledger (`task_evidence`)
 
 Eliminate speculative, ungrounded diagnostic claims by grounding ticket resolution in immutable, structured facts:
 
@@ -424,7 +424,7 @@ Unified commercial customer intelligence and autonomous routing engines inspired
 - **Customer Contacts Directory (`crm_contact`)**: Relational contact roster directly linked to ITIL tasks (`Task.organizationId`, `Task.contactId`) for seamless support and account management.
 - **Automated Load-Balancing Task Assignment (`src/lib/assignment-engine.ts`)**: Workload-balancing routing engine that assigns incoming tickets to the active technician in the assignment group with the fewest open tickets, logging an immutable audit work note.
 - **Quantitative Change Risk & CI Collision Engine (`src/lib/change-risk-engine.ts`, `/api/now/change-risk`)**: Algorithmic 0–100 risk scoring based on CI tier (+35 for Tier 1), emergency change type (+40), maintenance window duration (+25 for >24h), and real-time detection of concurrent overlapping changes targeting the same CMDB CI (+30), with automated CAB approval recommendations.
-- **AI Smart Customer Response Auto-Drafting (`/api/now/ai/draft-response`, `ActivityStream.tsx`)**: 1-click `✨ AI Draft Response` in the activity stream customer communication box, synthesizing contextual drafts (`empathetic`, `professional`, `technical`, `concise`) grounded in ticket summaries, work notes, and verified Hermes diagnostic evidence.
+- **AI Smart Customer Response Auto-Drafting (`/api/now/ai/draft-response`, `ActivityStream.tsx`)**: 1-click `✨ AI Draft Response` in the activity stream customer communication box, synthesizing contextual drafts (`empathetic`, `professional`, `technical`, `concise`) grounded in ticket summaries, work notes, and verified diagnostic evidence.
 
 ---
 

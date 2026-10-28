@@ -203,9 +203,9 @@ export function ProblemForm({ recordId }: ProblemFormProps) {
     } else if (field === "root_cause" || field === "rootCause") {
       setRootCause(value);
     } else if (field === "description") {
-      setDescription((prev) => (prev ? `${prev}\n\n[Hermes Fact]: ${value}` : value));
+      setDescription((prev) => (prev ? `${prev}\n\n[Verified Fact]: ${value}` : value));
     }
-    showToast(`Incorporated verified Hermes fact into ${field}`);
+    showToast(`Incorporated verified fact into ${field}`);
   };
 
   const handleAddNote = async (e: React.FormEvent) => {
@@ -631,7 +631,7 @@ export function ProblemForm({ recordId }: ProblemFormProps) {
             </div>
           )}
 
-          {/* Section 4: SOP Gatekeeper Checklist & Hermes Diagnostic Ledger */}
+          {/* Section 4: SOP Gatekeeper Checklist & Diagnostic Ledger */}
           {!isNew && (
             <div className="space-y-6 pt-4">
               <div className="border-t-2 border-black pt-6">

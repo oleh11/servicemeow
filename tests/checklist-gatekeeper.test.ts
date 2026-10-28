@@ -9,7 +9,7 @@ import {
   DELETE as deleteRecord,
 } from "@/app/api/now/table/[table]/[id]/route";
 
-describe("Mandatory SOP Checklist & Hermes Evidence Gatekeeper Engine", () => {
+describe("Mandatory SOP Checklist & Diagnostic Evidence Gatekeeper Engine", () => {
   let adminToken: string;
   let adminUserId: string;
 
@@ -183,7 +183,7 @@ describe("Mandatory SOP Checklist & Hermes Evidence Gatekeeper Engine", () => {
     expect(taskInDb?.state).toBe(6);
   });
 
-  it("creates, logs, and verifies Hermes AI diagnostic evidence records", async () => {
+  it("creates, logs, and verifies diagnostic evidence records", async () => {
     // 1. Create task
     const postTaskReq = makeAuthRequest("http://localhost:3000/api/now/table/incident", "POST", {
       short_description: "Postgres connection pool maxed at 500 connections",

@@ -25,7 +25,7 @@ ServiceMeow is organized into 4 decoupled, high-resilience tiers:
   ├── /api/now/search         (Multi-Domain Command Palette Search)
   ├── /api/now/spatial/tree   (6-Tier Recursive Workplace Topology)
   ├── QuickJS WASM Sandbox    (Isolated 32MB Memory Heap, Prototype Pollution Defense)
-  └── Hermes Flow Engine      (Trigger & Action State Machine)
+  └── Workflow Daemon Engine  (Trigger & Action State Machine)
          │
          ▼
 [Tier 4: Enterprise Persistence & Background Daemons]

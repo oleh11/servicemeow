@@ -79,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **6-Tier Connected Workplace Hierarchy**: Strict relational tree (Region ⟶ State ⟶ Campus ⟶ Building ⟶ Floor ⟶ Space) with interactive CAD SVG floorplan mapping and reservation conflict checks.
 - **Next Experience Dockable Multi-Tab Workspace**: Multi-record tab bar preserving unsaved form states across Incidents, Problems, and Change Requests.
 - **Studio Low-Code Workbench**: 2-pane IDE with Monaco editor, dynamic data dictionary (`sys_db_object`), and Update Set ALM package export/commit engine.
-- **Autonomous Worker Scheduler**: 15s interval scheduler daemon (`src/worker.ts`) executing due scheduled jobs and running the Hermes Workflow Agent triage cycle.
+- **Autonomous Worker Scheduler**: 15s interval scheduler daemon (`src/worker.ts`) executing due scheduled jobs and running the background workflow triage cycle.
 
 ### Security
 - **WebAssembly Script Sandbox**: Untrusted business rules and script includes run inside an isolated QuickJS guest WASM heap (32MB ceiling, 1000ms hard timeout).

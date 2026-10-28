@@ -9,7 +9,7 @@
 ---
 
 ## 1. Executive Summary
-ServiceMeow is an open-source, high-performance Enterprise Service Management (ESM) and ITIL operations platform engineered with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Prisma ORM, and QuickJS WebAssembly sandboxing. It replaces legacy, high-latency enterprise service suites with a sub-second, dockable multi-record workspace, a 6-tier Connected Workplace spatial CAD floorplan booking engine, low-code studio development with Update Set ALM, a deterministic Watchtower attention cockpit, mandatory SOP gatekeeper verification, shift morning checks operational rounds, an autonomous Hermes triage agent, Customer 360 CRM accounts with deal pipelines, load-balancing task assignment, quantitative change risk scoring, and a real-time omnichannel Live Agent Chat system supporting Requestor self-service, Fulfiller cockpit multi-session triage, intelligent capacity-aware queue routing, and Studio administrative configuration.
+ServiceMeow is an open-source, high-performance Enterprise Service Management (ESM) and ITIL operations platform engineered with Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS, Prisma ORM, and QuickJS WebAssembly sandboxing. It replaces legacy, high-latency enterprise service suites with a sub-second, dockable multi-record workspace, a 6-tier Connected Workplace spatial CAD floorplan booking engine, low-code studio development with Update Set ALM, a deterministic Watchtower attention cockpit, mandatory SOP gatekeeper verification, shift morning checks operational rounds, an autonomous background triage daemon, Customer 360 CRM accounts with deal pipelines, load-balancing task assignment, quantitative change risk scoring, and a real-time omnichannel Live Agent Chat system supporting Requestor self-service, Fulfiller cockpit multi-session triage, intelligent capacity-aware queue routing, and Studio administrative configuration.
 
 ---
 
@@ -137,7 +137,7 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 
 #### 6. Autonomous Worker Daemon (`src/worker.ts`)
 - [x] **15-Second Scheduler Polling**: Standalone worker daemon processing due `sys_scheduled_jobs`.
-- [x] **Autonomous Hermes Workflow Agent**: Scheduled SLA escalation, automated assignment routing, and state maintenance.
+- [x] **Autonomous Background Workflow Daemon**: Scheduled SLA escalation, automated assignment routing, and state maintenance.
 
 #### 7. Market-Parity Enterprise Usability Enhancements
 - [x] **Universal Command Palette (`Cmd+K` / `Ctrl+K`)**: Global spotlight search across Tasks, Catalog, Knowledge Base, CMDB CIs, and Spaces with keyboard selection (`↑↓↵`).
@@ -189,7 +189,7 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 - [x] **Hard API Gatekeeper (HTTP 422 Unprocessable Entity)**: The Table API (`PATCH /api/now/table/[table]/[id]`) strictly blocks state transition to Resolved (`6`) or Closed (`7`) if any mandatory checklist steps remain incomplete. Returns structured error `{ error: "MANDATORY_CHECKLIST_INCOMPLETE", incomplete_items: [...] }`.
 - [x] **Interactive Swiss Grid Progress UI**: Visual completion bar, mandatory indicator badges (`MANDATORY`), and 1-click step completion directly inside the task workspace.
 
-#### 11. Hermes AI Anti-Hallucination Diagnostic Evidence Ledger (`task_evidence`)
+#### 11. Task Diagnostic Evidence Ledger (`task_evidence`)
 - [x] **Concrete Evidence Ingestion**: Replaces speculative freeform text with structured diagnostic facts (`log.stacktrace`, `ci.ping_failure`, `git.commit_hash`, `monitor.alert`, `crm.thread_reply`).
 - [x] **Decisive vs. Supporting Fact Tagging**: Flags pivotal root causes vs supporting telemetry with confidence scoring (0.00–1.00).
 - [x] **Human-in-the-Loop Operator Verification**: 1-click "Accept Fact" / "Reject Fact" operator workflow that binds accepted claims to core task fields (`root_cause`, `workaround`, `cmdb_ci_id`).
@@ -226,7 +226,7 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
 
 #### 18. AI Smart Customer Response Auto-Drafting Engine (`/api/now/ai/draft-response`, `ActivityStream.tsx`)
 - [x] **Multi-Tone Contextual Synthesis**: Generates customer-facing draft responses in multiple tones (`empathetic`, `professional`, `technical`, `concise`).
-- [x] **Evidence-Grounded Ingestion**: Synthesizes drafts directly from ticket short description, latest internal work notes, customer account context, and verified Hermes diagnostic evidence.
+- [x] **Evidence-Grounded Ingestion**: Synthesizes drafts directly from ticket short description, latest internal work notes, customer account context, and verified diagnostic evidence.
 - [x] **One-Click Stream Injection**: Single-click `✨ AI Draft Response` button in the activity stream customer communication box, allowing technicians to preview, edit, and send drafts instantly.
 
 ---
@@ -311,7 +311,7 @@ ServiceMeow is an open-source, high-performance Enterprise Service Management (E
   ```
 - `DELETE /api/now/morning-checks/[id]`: Deletes check record.
 
-### 7.6 Mandatory SOP Checklist & Hermes Evidence APIs
+### 7.6 Mandatory SOP Checklist & Diagnostic Evidence APIs
 - `POST /api/now/table/task_checklist_item`: Attaches SOP verification item (`task_id`, `title`, `is_mandatory`, `order`).
 - `PATCH /api/now/table/task_checklist_item/[id]`: Toggles step completion (`is_completed`, `completed_by_id`).
 - `POST /api/now/table/task_evidence`: Ingests machine or diagnostic fact (`task_id`, `claim_field`, `claim_value`, `evidence_kind`, `is_decisive`, `raw_observation`).
@@ -535,7 +535,7 @@ sequenceDiagram
 | Telemetry Ingestion Benchmark | 2,303,609 events/sec (2.3M events/sec) | 2026-10-22 |
 | CRM Customer 360 & Pipeline | 4/4 CRM tests passed (Orgs, Contacts, Deals, Load-Balancing, Risk) | 2026-10-22 |
 | Watchtower Attention Cockpit | 2/2 tests passed (Health Score & Escalation) | 2026-10-22 |
-| Mandatory SOP Gatekeeper & Evidence | 3/3 tests passed (Gatekeeper & Hermes facts) | 2026-10-22 |
+| Mandatory SOP Gatekeeper & Evidence | 3/3 tests passed (Gatekeeper & Diagnostic facts) | 2026-10-22 |
 | Swiss Grid Design System | 100% compliant across Portal, Catalog, Tickets, Login & Workspace | 2026-10-22 |
 | Modular Admin Domain RBAC | 12/12 role tests passed | 2026-10-22 |
 | CAD Floorplan & Hotspot Mapper | 4/4 CAD tests passed | 2026-10-22 |

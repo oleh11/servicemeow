@@ -376,32 +376,32 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
     switch (p) {
       case "1":
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-p1-bg,#fee2e2)] text-[var(--md-sys-color-p1-fg,#991b1b)] border border-red-300">
-            P1 - Critical
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-[#eb0029] text-white border border-black uppercase">
+            P1 Critical
           </span>
         );
       case "2":
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-p2-bg,#ffedd5)] text-[var(--md-sys-color-p2-fg,#9a3412)] border border-amber-300">
-            P2 - High
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-amber-300 text-black border border-black uppercase">
+            P2 High
           </span>
         );
       case "3":
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-p3-bg,#fef9c3)] text-[var(--md-sys-color-p3-fg,#854d0e)] border border-yellow-300">
-            P3 - Moderate
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-yellow-200 text-black border border-black uppercase">
+            P3 Moderate
           </span>
         );
       case "4":
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-p4-bg,#f0fdf4)] text-[var(--md-sys-color-p4-fg,#166534)] border border-emerald-300">
-            P4 - Low
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-emerald-100 text-emerald-950 border border-black uppercase">
+            P4 Low
           </span>
         );
       default:
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-300">
-            P5 - Planning
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-neutral-100 text-neutral-800 border border-black uppercase">
+            P5 Plan
           </span>
         );
     }
@@ -412,37 +412,37 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
     switch (s) {
       case "1":
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-state-new-bg,#e0f2fe)] text-[var(--md-sys-color-state-new-fg,#0369a1)] border border-sky-300">
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-sky-100 text-sky-950 border border-black uppercase">
             New
           </span>
         );
       case "2":
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-state-progress-bg,#fef3c7)] text-[var(--md-sys-color-state-progress-fg,#92400e)] border border-amber-300">
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-amber-100 text-amber-950 border border-black uppercase">
             In Progress
           </span>
         );
       case "3":
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-amber-100 text-amber-900 border border-amber-300">
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-orange-100 text-orange-950 border border-black uppercase">
             On Hold
           </span>
         );
       case "6":
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-state-resolved-bg,#dcfce7)] text-[var(--md-sys-color-state-resolved-fg,#15803d)] border border-emerald-300">
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-emerald-100 text-emerald-950 border border-black uppercase">
             Resolved
           </span>
         );
       case "7":
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-[var(--md-sys-color-state-closed-bg,#f1f5f9)] text-[var(--md-sys-color-state-closed-fg,#475569)] border border-slate-300">
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-neutral-200 text-neutral-800 border border-black uppercase">
             Closed
           </span>
         );
       default:
         return (
-          <span className="px-2.5 py-0.5 rounded-[8px] text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-300">
+          <span className="px-2 py-0.5 font-mono text-[11px] font-bold bg-neutral-100 text-neutral-800 border border-black uppercase">
             Open
           </span>
         );
@@ -466,148 +466,103 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
   });
 
   return (
-    <div
-      className="space-y-4 p-6 min-h-screen relative"
-      style={{
-        backgroundColor: "var(--theme-page-bg, #f8f9fa)",
-        color: "var(--theme-text-primary, #1f1f1f)",
-      }}
-    >
-      {/* Toast Alert (M3 Snackbar: rounded-full pill) */}
+    <div className="space-y-6 p-6 md:p-8 min-h-screen bg-neutral-100 text-black font-sans relative">
+      {/* Toast Alert */}
       {toastMsg && (
-        <div
-          className="fixed bottom-6 right-6 z-50 rounded-full px-5 py-3 shadow-2xl text-xs flex items-center gap-2.5 animate-in slide-in-from-bottom-2 duration-150"
-          style={{
-            backgroundColor: "var(--md-sys-color-on-surface, #1d1b20)",
-            color: "var(--md-sys-color-surface, #fdfbff)",
-          }}
-        >
+        <div className="fixed bottom-6 right-6 z-50 border-2 border-black bg-black text-white px-4 py-2.5 shadow-[4px_4px_0px_rgba(0,0,0,1)] text-xs font-mono font-bold uppercase flex items-center gap-2">
           <Check className="w-4 h-4 text-emerald-400" />
           <span>{toastMsg}</span>
         </div>
       )}
 
-      {/* Top Action Header (M3 Outlined Container Card: rounded-[16px]) */}
-      <div
-        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-[16px] border shadow-[var(--md-sys-elevation-1)]"
-        style={{
-          backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-          borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-        }}
-      >
+      {/* Top Action Header (Swiss Grid) */}
+      <div className="border-b-2 border-black pb-6 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2.5">
-            <h1 className="text-xl font-bold tracking-tight text-[var(--md-sys-color-on-surface)]">
-              {tableTitle}
-            </h1>
-            <span
-              className="text-xs font-mono px-2.5 py-0.5 rounded-full border"
-              style={{
-                backgroundColor: "var(--md-sys-color-surface-container-high, #ece6f0)",
-                borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-                color: "var(--md-sys-color-on-surface-variant, #49454f)",
-              }}
-            >
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-mono text-xs uppercase font-extrabold px-2 py-0.5 bg-black text-white">
+              ITIL DIRECTORY
+            </span>
+            <span className="font-mono text-xs uppercase font-bold text-neutral-500">
               sys_table: {tableName}
             </span>
           </div>
-          <p
-            className="text-xs mt-1"
-            style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
-          >
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase text-black">
+            {tableTitle}
+          </h1>
+          <p className="text-xs sm:text-sm text-neutral-600 mt-1 max-w-2xl">
             Right-click any cell for <strong>Show Matching</strong>, <strong>Filter Out</strong>, or <strong>Copy sys_id</strong>.
           </p>
         </div>
 
-        <div className="flex items-center space-x-2.5 w-full sm:w-auto">
-          {/* Quick Search (M3 Pill Search Bar: 40px) */}
-          <div className="relative flex-1 sm:w-60">
+        <div className="flex items-center gap-2.5 w-full md:w-auto">
+          {/* Quick Search (Swiss Sharp Box) */}
+          <div className="relative flex-1 md:w-64 border-2 border-black bg-white shadow-[2px_2px_0px_rgba(0,0,0,1)]">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search in list..."
-              className="w-full rounded-full py-2 pl-9 pr-4 text-xs transition-all border outline-none focus:ring-2"
-              style={{
-                backgroundColor: "var(--md-sys-color-surface-container-high, #ece6f0)",
-                borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-                color: "var(--md-sys-color-on-surface, #1d1b20)",
-              }}
+              placeholder="SEARCH RECORDS..."
+              className="w-full py-2 pl-9 pr-3 text-xs font-mono font-bold text-black bg-transparent outline-none uppercase placeholder:normal-case"
             />
-            <Search
-              className="w-3.5 h-3.5 absolute left-3 top-2.5"
-              style={{ color: "var(--md-sys-color-on-surface-variant, #49454f)" }}
-            />
+            <Search className="w-4 h-4 text-neutral-500 absolute left-2.5 top-2.5" />
           </div>
 
           <button
             onClick={() => fetchRecords()}
-            className="p-2 border rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
-            style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
+            className="p-2 border-2 border-black bg-white hover:bg-neutral-100 text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-colors cursor-pointer"
             title="Refresh list"
           >
-            <RefreshCw
-              className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
-              style={{ color: "var(--md-sys-color-primary, #0b57d0)" }}
-            />
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
 
           {/* Export Dropdown Button */}
           <div className="relative">
             <button
               onClick={() => setExportDropdownOpen((prev) => !prev)}
-              className="p-2 border rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center gap-1"
-              style={{ borderColor: "var(--md-sys-color-outline-variant, #cac4d0)" }}
+              className="p-2 border-2 border-black bg-white hover:bg-neutral-100 text-black shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-colors flex items-center gap-1 cursor-pointer"
               title="Export Table Data (CSV / JSON)"
             >
-              <Download
-                className="w-4 h-4"
-                style={{ color: "var(--md-sys-color-on-surface, #1d1b20)" }}
-              />
+              <Download className="w-4 h-4" />
             </button>
 
             {exportDropdownOpen && (
               <div
-                className="absolute right-0 mt-1 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100"
+                className="absolute right-0 mt-1 w-48 bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] py-1.5 z-30 font-mono"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Export Options
+                <div className="px-3 py-1 text-[10px] font-black uppercase tracking-wider text-neutral-400">
+                  Export Formats
                 </div>
                 <button
                   onClick={handleExportCSV}
-                  className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300"
+                  className="w-full text-left px-3 py-2 text-xs hover:bg-neutral-100 flex items-center gap-2 font-bold text-black"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Export as CSV</span>
                 </button>
                 <button
                   onClick={handleExportJSON}
-                  className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300"
+                  className="w-full text-left px-3 py-2 text-xs hover:bg-neutral-100 flex items-center gap-2 font-bold text-black"
                 >
-                  <FileJson className="w-3.5 h-3.5 text-sky-600" />
+                  <FileJson className="w-3.5 h-3.5 text-blue-600" />
                   <span>Export as JSON</span>
                 </button>
-                <div className="border-t my-1 border-slate-100 dark:border-slate-800" />
+                <div className="border-t-2 border-black my-1" />
                 <button
                   onClick={handleCopyData}
-                  className="w-full text-left px-3 py-1.5 text-xs hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 text-slate-700 dark:text-slate-300"
+                  className="w-full text-left px-3 py-2 text-xs hover:bg-neutral-100 flex items-center gap-2 font-bold text-black"
                 >
-                  <Copy className="w-3.5 h-3.5 text-amber-600" />
+                  <Copy className="w-3.5 h-3.5 text-neutral-700" />
                   <span>Copy to Clipboard</span>
                 </button>
               </div>
             )}
           </div>
 
-          {/* New Record Button (M3 Filled Button: rounded-full, 40px) */}
+          {/* New Record Button */}
           <Link
             href={`/workspace/${tableName}/new`}
-            className="inline-flex items-center gap-1.5 font-medium px-5 py-2 rounded-full text-xs transition-all shadow-[var(--md-sys-elevation-1)] hover:shadow-[var(--md-sys-elevation-2)] shrink-0"
-            style={{
-              backgroundColor: "var(--md-sys-color-primary, #0b57d0)",
-              color: "var(--md-sys-color-on-primary, #ffffff)",
-            }}
+            className="inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider px-5 py-2 border-2 border-black bg-[#eb0029] text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-black transition-all shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>New</span>
@@ -616,8 +571,8 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
       </div>
 
       {/* Quick Filter Presets Toolbar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs select-none">
-        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1 mr-1 shrink-0">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs select-none">
+        <span className="font-mono text-xs font-extrabold text-neutral-500 uppercase tracking-wider flex items-center gap-1 mr-1 shrink-0">
           <ListFilter className="w-3.5 h-3.5" />
           <span>Presets:</span>
         </span>
@@ -634,10 +589,10 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
             <button
               key={preset.id}
               onClick={() => handlePresetSelect(preset.id)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-all shrink-0 border ${
+              className={`px-3 py-1 font-mono text-xs font-bold uppercase transition-all shrink-0 border-2 border-black ${
                 isActive
-                  ? "bg-sky-500 text-white border-sky-600 shadow-xs font-bold"
-                  : "bg-white/80 dark:bg-slate-800/80 hover:bg-black/5 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+                  ? "bg-black text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                  : "bg-white hover:bg-neutral-100 text-black shadow-[1px_1px_0px_rgba(0,0,0,1)]"
               }`}
             >
               {preset.label}
@@ -653,25 +608,12 @@ export function RecordList({ tableName, tableTitle }: RecordListProps) {
         activeConditions={[]}
       />
 
-      {/* High-Density Data Grid with Right-Click Context Menus (M3 Card Container) */}
-      <div
-        className="rounded-[16px] border shadow-[var(--md-sys-elevation-1)] overflow-hidden"
-        style={{
-          backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-          borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-        }}
-      >
+      {/* High-Density Data Grid with Right-Click Context Menus (Swiss Grid Container) */}
+      <div className="border-2 border-black bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr
-                className="border-b text-[11px] font-bold uppercase tracking-wider select-none"
-                style={{
-                  backgroundColor: "var(--md-sys-color-surface-container, #f3edf7)",
-                  borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-                  color: "var(--md-sys-color-on-surface-variant, #49454f)",
-                }}
-              >
+              <tr className="border-b-2 border-black bg-neutral-100 font-mono text-[11px] font-extrabold uppercase tracking-wider text-black select-none">
                 {isSpatialTable ? (
                   tableName === "cmn_space" ? (
                     <>

@@ -87,8 +87,7 @@ async function main() {
 
   // Helper to capture a page
   async function capture(url, filename, options = {}) {
-    console.log(`[capture] Navigating to ${url}...`);
-    await page.goto(`${BASE_URL}${url}`, { waitUntil: 'networkidle0', timeout: 30000 });
+    await page.goto(`${BASE_URL}${url}`, { waitUntil: options.waitUntil || 'domcontentloaded', timeout: 30000 });
     
     // Optional delay for CSS animations or client renders
     await new Promise(r => setTimeout(r, options.waitMs || 2000));
@@ -192,8 +191,17 @@ async function main() {
     // 13. CMDB Configuration Items & Datacenter Rackmount Spec
     await capture('/workspace/cmdb_ci/new', 'cmdb-ci-showcase.png', { waitMs: 2500 });
 
-    // 14. Knowledge Management & Markdown Editor
-    await capture('/workspace/kb_knowledge/new', 'knowledge-showcase.png', { waitMs: 2500 });
+    // 15. Executive ITIL Dashboard (Swiss Grid KPI & Metrics)
+    await capture('/workspace/dashboard', 'dashboard-showcase.png', { waitMs: 2500 });
+
+    // 16. Visual Task Board (VTB / Task Board)
+    await capture('/workspace/task-board', 'task-board-showcase.png', { waitMs: 2500 });
+
+    // 17. Ad-Hoc Report & Analytics Builder
+    await capture('/workspace/reports', 'reports-showcase.png', { waitMs: 2500 });
+
+    // 18. Live Agent Omnichannel Chat
+    await capture('/workspace/chat', 'live-chat-showcase.png', { waitMs: 2500 });
 
     console.log('[capture] ALL REAL SCREENSHOTS CAPTURED SUCCESSFULLY!');
   } finally {

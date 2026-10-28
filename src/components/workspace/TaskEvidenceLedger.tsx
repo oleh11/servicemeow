@@ -260,13 +260,13 @@ export function TaskEvidenceLedger({
     return (
       <div className="border-2 border-black bg-white p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-5 h-5 text-purple-600" />
+          <Sparkles className="w-5 h-5 text-neutral-800" />
           <h3 className="text-sm font-extrabold uppercase font-mono tracking-wider">
-            Hermes AI Anti-Hallucination Evidence Ledger
+            Task Diagnostic Evidence Ledger
           </h3>
         </div>
         <p className="text-xs font-mono text-neutral-500">
-          Save this task record to enable Hermes AI observation logging, decisive fact verification, and audit trail extraction.
+          Save this task record to enable observation logging, decisive fact verification, and audit trail extraction.
         </p>
       </div>
     );
@@ -286,10 +286,10 @@ export function TaskEvidenceLedger({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-[10px] font-black uppercase px-2 py-0.5 bg-black text-white">
-                HERMES AI LEDGER
+                EVIDENCE LEDGER
               </span>
               <span className="font-mono text-xs uppercase font-bold text-neutral-500">
-                Anti-Hallucination Evidence & Facts
+                Diagnostic Facts & Observations
               </span>
             </div>
             <h3 className="text-lg font-black uppercase tracking-tight text-black mt-1">
@@ -319,14 +319,14 @@ export function TaskEvidenceLedger({
 
         {/* Fact Verification Alert */}
         {pendingCount > 0 && (
-          <div className="mt-4 p-3 bg-purple-50 border-2 border-purple-600 flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-purple-700 shrink-0 mt-0.5" />
+          <div className="mt-4 p-3 bg-neutral-100 border-2 border-black flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-black shrink-0 mt-0.5" />
             <div>
-              <div className="font-mono text-xs font-extrabold uppercase text-purple-900">
-                {pendingCount} Proposed Fact {pendingCount === 1 ? "Awaiting" : "Awaiting"} Human Verification
+              <div className="font-mono text-xs font-extrabold uppercase text-black">
+                {pendingCount} Proposed Fact {pendingCount === 1 ? "Awaiting" : "Awaiting"} Verification
               </div>
-              <p className="text-xs text-purple-900 mt-0.5 leading-relaxed">
-                Hermes AI has extracted deterministic facts from live logs and telemetry. Review proposed
+              <p className="text-xs text-neutral-700 mt-0.5 leading-relaxed">
+                Deterministic facts extracted from live logs and telemetry. Review proposed
                 fields below and click <strong>Accept Fact</strong> to inject verified data into this record.
               </p>
             </div>
@@ -478,7 +478,7 @@ export function TaskEvidenceLedger({
       <div className="space-y-4">
         {loading ? (
           <div className="border-2 border-black bg-white p-8 text-center font-mono text-xs text-neutral-500 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-            Loading Hermes AI Evidence Ledger...
+            Loading Diagnostic Evidence Ledger...
           </div>
         ) : evidenceList.length === 0 ? (
           <div className="border-2 border-black bg-white p-8 text-center font-mono text-xs text-neutral-500 space-y-2 shadow-[4px_4px_0px_rgba(0,0,0,1)]">

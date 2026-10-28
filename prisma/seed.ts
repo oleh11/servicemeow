@@ -2560,8 +2560,8 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
     ],
   });
 
-  // Seed Hermes AI Anti-Hallucination Evidence Ledger on INC0001001
-  console.log("Seeding Hermes AI Evidence Ledger...");
+  // Seed Task Diagnostic Evidence Ledger on INC0001001
+  console.log("Seeding Task Diagnostic Evidence Ledger...");
   await prisma.taskEvidence.createMany({
     data: [
       {
@@ -2746,7 +2746,7 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
         notes: "Automated warehouse zone CAD tagging and workstation allocation.",
       },
       {
-        title: "Initech ITIL & Hermes AI Incident Suite",
+        title: "Initech Enterprise ITIL Incident Suite",
         amount: 220000.0,
         stage: "qualified",
         probability: 40,

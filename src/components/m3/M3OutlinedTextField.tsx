@@ -43,14 +43,14 @@ export const M3OutlinedTextField = forwardRef<HTMLInputElement, M3OutlinedTextFi
       <div className={`relative flex flex-col font-sans ${className}`}>
         {/* Outlined Container */}
         <div
-          className={`relative flex items-center min-h-[56px] px-4 rounded-[8px] border transition-all duration-150 bg-[var(--md-sys-color-surface-container-lowest)] ${
+          className={`relative flex items-center min-h-[56px] px-4 border-2 border-black transition-all duration-150 bg-white ${
             disabled
-              ? "opacity-60 bg-[var(--md-sys-color-surface-container-low)] border-[var(--md-sys-color-outline-variant)] cursor-not-allowed"
+              ? "opacity-60 bg-neutral-100 cursor-not-allowed"
               : error
-              ? "border-[var(--md-sys-color-error)] ring-1 ring-[var(--md-sys-color-error)]"
+              ? "border-red-600 ring-2 ring-red-600"
               : focused
-              ? "border-[var(--md-sys-color-primary)] ring-2 ring-[var(--md-sys-color-primary)]/20 border-2"
-              : "border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-outline)]"
+              ? "border-[#eb0029] ring-2 ring-[#eb0029]/20"
+              : "hover:bg-neutral-50"
           }`}
         >
           {/* Leading Icon */}

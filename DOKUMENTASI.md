@@ -11,7 +11,7 @@
 ```mermaid
 graph TD
     subgraph Tier1["Tier 1: Client Surfaces (Next.js 15 + React 19)"]
-        FulfillerWS["Fulfiller Workspace (/workspace)<br/>• Dockable Multi-Record Tabs<br/>• ITIL Polymorphic Forms<br/>• CMDB Visual Racks<br/>• Purr-Assist AI Panel<br/>• SOP Checklist & Gatekeeper UI<br/>• Hermes Diagnostic Evidence Ledger"]
+        FulfillerWS["Fulfiller Workspace (/workspace)<br/>• Dockable Multi-Record Tabs<br/>• ITIL Polymorphic Forms<br/>• CMDB Visual Racks<br/>• Purr-Assist AI Panel<br/>• SOP Checklist & Gatekeeper UI<br/>• Diagnostic Evidence Ledger"]
         StudioIDE["Studio Low-Code IDE (/studio)<br/>• Monaco Code Editor<br/>• Schema Builder (sys_db_object)<br/>• Update Set ALM Engine<br/>• Modular Admin Dynamic Explorer Filtering"]
         SelfService["Self-Service Portal (/portal)<br/>• Service Catalog & Cart<br/>• 6-Tier CAD Workplace Reservations<br/>• 90-Day Uptime Status"]
         SpaceConsole["ServiceMeow Space Console (/workspace/spaces, /studio?tab=workplace)<br/>• 3-Zone Master-Detail Split Console<br/>• Multi-Level Floor Sheet Grid (HQ15-HQ19)<br/>• Room Categories & Organizational Legends<br/>• Layer Highlights & Complex Architectural CAD Stage"]
@@ -28,10 +28,10 @@ graph TD
     end
 
     subgraph Tier3["Tier 3: Core ITIL Application Services & Sandboxing"]
-        TableAPI["Table REST API (/api/now/table/[table])<br/>• Encoded Query Parser & Filter Builder<br/>• Mandatory SOP Checklist Gatekeeper (HTTP 422)<br/>• Hermes Diagnostic Evidence Ledger Ingestion<br/>• Dynamic Reference Resolver<br/>• Audit Delta Logger (sys_audit)<br/>• Delegated Domain Table Bypass"]
+        TableAPI["Table REST API (/api/now/table/[table])<br/>• Encoded Query Parser & Filter Builder<br/>• Mandatory SOP Checklist Gatekeeper (HTTP 422)<br/>• Diagnostic Evidence Ledger Ingestion<br/>• Dynamic Reference Resolver<br/>• Audit Delta Logger (sys_audit)<br/>• Delegated Domain Table Bypass"]
         ChatRouter["Live Agent Dispatch Engine (/api/now/chat/*)<br/>• Real-Time Server-Sent Events (SSE) Stream Router (/stream)<br/>• Capacity-Aware Queue Allocation & Group Dispatch<br/>• Interaction Session State Machine (queued->active->resolved)<br/>• Auto-Timeout & Idle Abandonment Supervisor"]
         ScriptEngine["QuickJS WASM Script Sandbox<br/>• Isolated Guest Memory (32MB Heap)<br/>• Prototype Pollution Defense<br/>• 1000ms Hard Execution Timeout"]
-        FlowEngine["Hermes Workflow Engine<br/>• Trigger Evaluator<br/>• Step Action Runner<br/>• Execution Audit Trail"]
+        FlowEngine["ServiceMeow Workflow Engine<br/>• Trigger Evaluator<br/>• Step Action Runner<br/>• Execution Audit Trail"]
         SpatialService["Connected Workplace Engine<br/>• 6-Tier Hierarchy Traverser<br/>• Architectural CAD Layer Engine (Walls, Columns, Door Swings, Workstations)<br/>• Room Category & Division Allocation Engine<br/>• Double-Booking Conflict Detector"]
         WatchtowerService["Watchtower Intelligence Engine (/api/now/watchtower)<br/>• Multi-Stream Risk Aggregator<br/>• Health Index Algorithm<br/>• Shift Inspection Management (/api/now/morning-checks)"]
         SmartEngines["Smart Automation Engines<br/>• Load-Balancing Task Assignment (src/lib/assignment-engine.ts)<br/>• Quantitative Change Risk & CI Collision Scoring (/api/now/change-risk)<br/>• AI Smart Response Contextual Synthesizer (/api/now/ai/draft-response)"]
@@ -207,7 +207,7 @@ servicemeow/
 │   │   ├── script-sandbox.ts   # QuickJS WebAssembly guest memory sandbox
 │   │   ├── sla.ts              # Service Level Agreement calculation & breach engine
 │   │   ├── update-set.ts       # ALM package exporter, previewer & conflict detector
-│   │   └── workflow-agent.ts   # Autonomous Hermes triage & auto-routing agent
+│   │   └── workflow-agent.ts   # Autonomous triage & auto-routing daemon
 │   ├── middleware.ts           # Edge HMAC-SHA256 session guard, modular admin gates
 │   └── worker.ts               # Background 15s scheduler daemon
 ├── tests/                      # Full Vitest integration test suite (144 passing tests across 20 test files)
