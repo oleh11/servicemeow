@@ -79,6 +79,7 @@ async function main() {
   await prisma.sysChoice.deleteMany();
   await prisma.sysDictionary.deleteMany();
   await prisma.sysDbObject.deleteMany();
+  await prisma.sysNumber.deleteMany();
 
   // 1. Data Dictionary Tables (The Now Meta-Schema)
   console.log("Creating System Data Dictionary...");
@@ -2880,6 +2881,25 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
       status: "online",
       activeChatsCount: 0,
     },
+  });
+
+  // Seed System Number Sequences (sys_number)
+  console.log("Initializing System Number Sequences (sys_number)...");
+  await prisma.sysNumber.createMany({
+    data: [
+      { tableName: "incident", prefix: "INC", digits: 7, currentNumber: 1004 },
+      { tableName: "change_request", prefix: "CHG", digits: 7, currentNumber: 1002 },
+      { tableName: "problem", prefix: "PRB", digits: 7, currentNumber: 1002 },
+      { tableName: "sc_request", prefix: "REQ", digits: 7, currentNumber: 1002 },
+      { tableName: "sc_req_item", prefix: "RITM", digits: 7, currentNumber: 1002 },
+      { tableName: "sc_task", prefix: "TASK", digits: 7, currentNumber: 1002 },
+      { tableName: "task", prefix: "TASK", digits: 7, currentNumber: 1002 },
+      { tableName: "cmn_reservation", prefix: "RES", digits: 7, currentNumber: 1005 },
+      { tableName: "kb_knowledge", prefix: "KB", digits: 7, currentNumber: 1004 },
+      { tableName: "rm_story", prefix: "STRY", digits: 7, currentNumber: 1008 },
+      { tableName: "rm_epic", prefix: "EPIC", digits: 7, currentNumber: 1004 },
+      { tableName: "rm_sprint", prefix: "SPNT", digits: 7, currentNumber: 1003 },
+    ],
   });
 
   console.log("ServiceMeow Seed completed successfully!");

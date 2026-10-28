@@ -25,7 +25,7 @@ describe("CRM, Auto-Assignment & Change Risk Engines", () => {
     const testNum = Math.floor(Math.random() * 800000 + 100000);
     testTask = await db.task.create({
       data: {
-        number: `INC_CRM_${testNum}`,
+        number: `CRM_TASK_${Date.now()}_${testNum}`,
         sysClassName: "incident",
         shortDescription: "Core Gateway Fiber Switch BGP Session Dropped",
         description: "Primary fiber uplink to ISP dropped 100% of packets during routine BGP refresh.",
