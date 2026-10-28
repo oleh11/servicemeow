@@ -298,35 +298,459 @@
   </g>
 
   <!-- ============================================================ -->
-  <!-- LAYER 7: CENTRAL WORKSTATIONS & FURNITURE LAYOUT             -->
+  <!-- LAYER 7: COMPREHENSIVE ARCHITECTURAL FURNITURE POLYLINES     -->
   <!-- ============================================================ -->
-  <g id="layer-workstations" opacity="0.65">
-    <!-- Workstation Pod A (Open Plan Center) -->
-    <g transform="translate(470, 275)" stroke="#38bdf8" stroke-width="1.2" fill="#0f172a">
-      <rect x="0" y="0" width="90" height="40" rx="2"/>
-      <line x1="45" y1="0" x2="45" y2="40" stroke="#0284c7"/>
-      <circle cx="22" cy="20" r="5" fill="#334155"/>
-      <circle cx="68" cy="20" r="5" fill="#334155"/>
-    </g>
-    <g transform="translate(620, 275)" stroke="#38bdf8" stroke-width="1.2" fill="#0f172a">
-      <rect x="0" y="0" width="90" height="40" rx="2"/>
-      <line x1="45" y1="0" x2="45" y2="40" stroke="#0284c7"/>
-      <circle cx="22" cy="20" r="5" fill="#334155"/>
-      <circle cx="68" cy="20" r="5" fill="#334155"/>
+  <g id="layer-workstations" opacity="0.85">
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 104: NORTH CONFERENCE / BOARDROOM                       -->
+    <!-- ------------------------------------------------------------ -->
+    <g id="cad-furniture-room-104">
+      <!-- Wall AV Credenza Unit (North Wall) -->
+      <rect x="615" y="94" width="100" height="13" fill="#141e33" stroke="#475569" stroke-width="1"/>
+      <line x1="648" y1="94" x2="648" y2="107" stroke="#334155"/>
+      <line x1="682" y1="94" x2="682" y2="107" stroke="#334155"/>
+      <!-- AV Presentation Screen (East Wall) -->
+      <line x1="738" y1="135" x2="738" y2="195" stroke="#38bdf8" stroke-width="3"/>
+
+      <!-- Racetrack Boardroom Conference Table -->
+      <rect x="610" y="136" width="110" height="52" rx="22" fill="#141e33" stroke="#38bdf8" stroke-width="1.5"/>
+      <rect x="615" y="141" width="100" height="42" rx="18" fill="none" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+      <!-- Center AV Cable Trough & Pop-Up Power Hatches -->
+      <rect x="635" y="157" width="60" height="9" rx="1.5" fill="#0b1329" stroke="#38bdf8" stroke-width="0.8" stroke-dasharray="2 1"/>
+      <circle cx="650" cy="161.5" r="1.5" fill="#38bdf8"/>
+      <circle cx="680" cy="161.5" r="1.5" fill="#38bdf8"/>
+
+      <!-- 8 Cantilever Conference Chairs with Armrests -->
+      <!-- Top 3 Chairs -->
+      <g stroke="#38bdf8" stroke-width="0.9" fill="#1e293b">
+        <g transform="translate(624, 117)"><rect x="0" y="3" width="14" height="12" rx="2"/><path d="M -1 3 Q 7 -1 15 3" fill="none" stroke-width="1.3"/><line x1="-1" y1="3" x2="-1" y2="11"/><line x1="15" y1="3" x2="15" y2="11"/></g>
+        <g transform="translate(658, 117)"><rect x="0" y="3" width="14" height="12" rx="2"/><path d="M -1 3 Q 7 -1 15 3" fill="none" stroke-width="1.3"/><line x1="-1" y1="3" x2="-1" y2="11"/><line x1="15" y1="3" x2="15" y2="11"/></g>
+        <g transform="translate(692, 117)"><rect x="0" y="3" width="14" height="12" rx="2"/><path d="M -1 3 Q 7 -1 15 3" fill="none" stroke-width="1.3"/><line x1="-1" y1="3" x2="-1" y2="11"/><line x1="15" y1="3" x2="15" y2="11"/></g>
+      <!-- Bottom 3 Chairs -->
+        <g transform="translate(624, 193)"><rect x="0" y="0" width="14" height="12" rx="2"/><path d="M -1 12 Q 7 16 15 12" fill="none" stroke-width="1.3"/><line x1="-1" y1="4" x2="-1" y2="12"/><line x1="15" y1="4" x2="15" y2="12"/></g>
+        <g transform="translate(658, 193)"><rect x="0" y="0" width="14" height="12" rx="2"/><path d="M -1 12 Q 7 16 15 12" fill="none" stroke-width="1.3"/><line x1="-1" y1="4" x2="-1" y2="12"/><line x1="15" y1="4" x2="15" y2="12"/></g>
+        <g transform="translate(692, 193)"><rect x="0" y="0" width="14" height="12" rx="2"/><path d="M -1 12 Q 7 16 15 12" fill="none" stroke-width="1.3"/><line x1="-1" y1="4" x2="-1" y2="12"/><line x1="15" y1="4" x2="15" y2="12"/></g>
+      <!-- Left & Right Chairs -->
+        <g transform="translate(588, 155)"><rect x="3" y="0" width="12" height="14" rx="2"/><path d="M 3 -1 Q -1 7 3 15" fill="none" stroke-width="1.3"/><line x1="3" y1="-1" x2="11" y2="-1"/><line x1="3" y1="15" x2="11" y2="15"/></g>
+        <g transform="translate(726, 155)"><rect x="0" y="0" width="12" height="14" rx="2"/><path d="M 12 -1 Q 16 7 12 15" fill="none" stroke-width="1.3"/><line x1="4" y1="-1" x2="12" y2="-1"/><line x1="4" y1="15" x2="12" y2="15"/></g>
+      </g>
     </g>
 
-    <!-- Workstation Pod B (South Central Core) -->
-    <g transform="translate(470, 430)" stroke="#38bdf8" stroke-width="1.2" fill="#0f172a">
-      <rect x="0" y="0" width="90" height="40" rx="2"/>
-      <line x1="45" y1="0" x2="45" y2="40" stroke="#0284c7"/>
-      <circle cx="22" cy="20" r="5" fill="#334155"/>
-      <circle cx="68" cy="20" r="5" fill="#334155"/>
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 105: NORTH-EAST MEETING ROOM                            -->
+    <!-- ------------------------------------------------------------ -->
+    <g id="cad-furniture-room-105">
+      <!-- North Wall Display -->
+      <line x1="775" y1="150" x2="835" y2="150" stroke="#38bdf8" stroke-width="3"/>
+      <!-- Boat-Shaped Collaboration Table -->
+      <polygon points="770,172 850,172 842,208 778,208" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <ellipse cx="810" cy="190" rx="6" ry="3" fill="#0b1329" stroke="#38bdf8" stroke-width="0.8"/>
+      <!-- 6 Chairs -->
+      <g stroke="#38bdf8" stroke-width="0.9" fill="#1e293b">
+        <g transform="translate(782, 154)"><rect x="0" y="2" width="13" height="11" rx="2"/><path d="M -1 2 Q 6.5 -1 14 2" fill="none" stroke-width="1.2"/></g>
+        <g transform="translate(822, 154)"><rect x="0" y="2" width="13" height="11" rx="2"/><path d="M -1 2 Q 6.5 -1 14 2" fill="none" stroke-width="1.2"/></g>
+        <g transform="translate(785, 213)"><rect x="0" y="0" width="13" height="11" rx="2"/><path d="M -1 11 Q 6.5 14 14 11" fill="none" stroke-width="1.2"/></g>
+        <g transform="translate(820, 213)"><rect x="0" y="0" width="13" height="11" rx="2"/><path d="M -1 11 Q 6.5 14 14 11" fill="none" stroke-width="1.2"/></g>
+        <g transform="translate(752, 184)"><rect x="2" y="0" width="11" height="13" rx="2"/><path d="M 2 -1 Q -1 6.5 2 14" fill="none" stroke-width="1.2"/></g>
+        <g transform="translate(855, 184)"><rect x="0" y="0" width="11" height="13" rx="2"/><path d="M 11 -1 Q 14 6.5 11 14" fill="none" stroke-width="1.2"/></g>
+      </g>
     </g>
-    <g transform="translate(620, 430)" stroke="#38bdf8" stroke-width="1.2" fill="#0f172a">
-      <rect x="0" y="0" width="90" height="40" rx="2"/>
-      <line x1="45" y1="0" x2="45" y2="40" stroke="#0284c7"/>
-      <circle cx="22" cy="20" r="5" fill="#334155"/>
-      <circle cx="68" cy="20" r="5" fill="#334155"/>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 137: EAST EXECUTIVE SUITE (TOP)                         -->
+    <!-- ------------------------------------------------------------ -->
+    <g id="cad-furniture-room-137">
+      <!-- East Wall Credenza / Bookcase -->
+      <rect x="1056" y="260" width="14" height="95" fill="#141e33" stroke="#475569" stroke-width="1"/>
+      <line x1="1056" y1="292" x2="1070" y2="292" stroke="#334155"/>
+      <line x1="1056" y1="324" x2="1070" y2="324" stroke="#334155"/>
+
+      <!-- L-Shaped Executive Desk Polyline -->
+      <polygon points="940,285 1025,285 1025,355 995,355 995,315 940,315" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <!-- Modesty Panel & Desk Pad -->
+      <rect x="955" y="290" width="28" height="18" rx="1.5" fill="#0f172a" stroke="#64748b" stroke-width="0.8"/>
+      <!-- Executive Laptop & Phone -->
+      <rect x="960" y="294" width="18" height="11" rx="1" fill="#38bdf8" opacity="0.7"/>
+
+      <!-- High-Back Executive Swivel Chair with 5-Star Base -->
+      <g transform="translate(982, 260)" stroke="#38bdf8" stroke-width="1" fill="#1e293b">
+        <circle cx="10" cy="10" r="9"/>
+        <path d="M 2 5 Q 10 0 18 5" fill="none" stroke-width="1.6"/>
+        <line x1="10" y1="10" x2="10" y2="2" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="17" y2="6" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="15" y2="16" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="5" y2="16" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="3" y2="6" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="2" y1="7" x2="2" y2="13"/>
+        <line x1="18" y1="7" x2="18" y2="13"/>
+      </g>
+
+      <!-- 2 Visitor Armchairs -->
+      <g stroke="#38bdf8" stroke-width="0.9" fill="#1e293b">
+        <g transform="translate(945, 335)"><rect x="0" y="0" width="16" height="15" rx="2.5"/><path d="M 0 15 Q 8 19 16 15" fill="none" stroke-width="1.3"/><line x1="0" y1="3" x2="0" y2="15"/><line x1="16" y1="3" x2="16" y2="15"/></g>
+        <g transform="translate(970, 335)"><rect x="0" y="0" width="16" height="15" rx="2.5"/><path d="M 0 15 Q 8 19 16 15" fill="none" stroke-width="1.3"/><line x1="0" y1="3" x2="0" y2="15"/><line x1="16" y1="3" x2="16" y2="15"/></g>
+      </g>
+    </g>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 136: EAST EXECUTIVE SUITE (MID)                         -->
+    <!-- ------------------------------------------------------------ -->
+    <g id="cad-furniture-room-136">
+      <rect x="1056" y="390" width="14" height="95" fill="#141e33" stroke="#475569" stroke-width="1"/>
+      <line x1="1056" y1="422" x2="1070" y2="422" stroke="#334155"/>
+      <line x1="1056" y1="454" x2="1070" y2="454" stroke="#334155"/>
+
+      <polygon points="940,420 1025,420 1025,490 995,490 995,450 940,450" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <rect x="955" y="425" width="28" height="18" rx="1.5" fill="#0f172a" stroke="#64748b" stroke-width="0.8"/>
+      <rect x="960" y="429" width="18" height="11" rx="1" fill="#38bdf8" opacity="0.7"/>
+
+      <g transform="translate(982, 395)" stroke="#38bdf8" stroke-width="1" fill="#1e293b">
+        <circle cx="10" cy="10" r="9"/>
+        <path d="M 2 5 Q 10 0 18 5" fill="none" stroke-width="1.6"/>
+        <line x1="10" y1="10" x2="10" y2="2" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="17" y2="6" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="15" y2="16" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="5" y2="16" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="3" y2="6" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="2" y1="7" x2="2" y2="13"/>
+        <line x1="18" y1="7" x2="18" y2="13"/>
+      </g>
+
+      <g stroke="#38bdf8" stroke-width="0.9" fill="#1e293b">
+        <g transform="translate(945, 470)"><rect x="0" y="0" width="16" height="15" rx="2.5"/><path d="M 0 15 Q 8 19 16 15" fill="none" stroke-width="1.3"/><line x1="0" y1="3" x2="0" y2="15"/><line x1="16" y1="3" x2="16" y2="15"/></g>
+        <g transform="translate(970, 470)"><rect x="0" y="0" width="16" height="15" rx="2.5"/><path d="M 0 15 Q 8 19 16 15" fill="none" stroke-width="1.3"/><line x1="0" y1="3" x2="0" y2="15"/><line x1="16" y1="3" x2="16" y2="15"/></g>
+      </g>
+    </g>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 112: EAST EXECUTIVE MASTER SUITE (BOTTOM)               -->
+    <!-- ------------------------------------------------------------ -->
+    <g id="cad-furniture-room-112">
+      <rect x="1056" y="530" width="14" height="140" fill="#141e33" stroke="#475569" stroke-width="1"/>
+      <line x1="1056" y1="575" x2="1070" y2="575" stroke="#334155"/>
+      <line x1="1056" y1="620" x2="1070" y2="620" stroke="#334155"/>
+
+      <polygon points="940,550 1025,550 1025,625 995,625 995,582 940,582" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <rect x="955" y="555" width="28" height="18" rx="1.5" fill="#0f172a" stroke="#64748b" stroke-width="0.8"/>
+      <rect x="960" y="559" width="18" height="11" rx="1" fill="#38bdf8" opacity="0.7"/>
+
+      <g transform="translate(982, 525)" stroke="#38bdf8" stroke-width="1" fill="#1e293b">
+        <circle cx="10" cy="10" r="9"/>
+        <path d="M 2 5 Q 10 0 18 5" fill="none" stroke-width="1.6"/>
+        <line x1="10" y1="10" x2="10" y2="2" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="17" y2="6" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="15" y2="16" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="5" y2="16" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="10" y1="10" x2="3" y2="6" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="2" y1="7" x2="2" y2="13"/>
+        <line x1="18" y1="7" x2="18" y2="13"/>
+      </g>
+
+      <g stroke="#38bdf8" stroke-width="0.9" fill="#1e293b">
+        <g transform="translate(945, 600)"><rect x="0" y="0" width="16" height="15" rx="2.5"/><path d="M 0 15 Q 8 19 16 15" fill="none" stroke-width="1.3"/><line x1="0" y1="3" x2="0" y2="15"/><line x1="16" y1="3" x2="16" y2="15"/></g>
+        <g transform="translate(970, 600)"><rect x="0" y="0" width="16" height="15" rx="2.5"/><path d="M 0 15 Q 8 19 16 15" fill="none" stroke-width="1.3"/><line x1="0" y1="3" x2="0" y2="15"/><line x1="16" y1="3" x2="16" y2="15"/></g>
+      </g>
+
+      <!-- Informal Executive Discussion Table & 3 Chairs -->
+      <g transform="translate(930, 660)">
+        <circle cx="0" cy="0" r="15" fill="#141e33" stroke="#38bdf8" stroke-width="1.3"/>
+        <circle cx="0" cy="-22" r="4.5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="-19" cy="11" r="4.5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="19" cy="11" r="4.5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      </g>
+    </g>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 101, 102, 103: NORTH ELECTRONIC SYSTEMS LABS            -->
+    <!-- ------------------------------------------------------------ -->
+    <!-- Room 101 -->
+    <g id="cad-furniture-room-101">
+      <!-- L-Shaped ESD Lab Workbench with Riser Shelf -->
+      <polyline points="175,155 255,155 255,185 205,185 205,235 175,235 175,155" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <!-- Oscilloscope & Power Supply Footprints -->
+      <rect x="180" y="160" width="22" height="14" fill="#0b1329" stroke="#38bdf8" stroke-width="0.8"/>
+      <rect x="210" y="160" width="24" height="14" fill="#0b1329" stroke="#38bdf8" stroke-width="0.8"/>
+      <rect x="180" y="195" width="18" height="14" fill="#0b1329" stroke="#38bdf8" stroke-width="0.8"/>
+      <!-- Drafting Stool with Foot Ring -->
+      <circle cx="230" cy="210" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+      <circle cx="230" cy="210" r="3" fill="none" stroke="#64748b" stroke-width="0.8"/>
+    </g>
+
+    <!-- Room 102 -->
+    <g id="cad-furniture-room-102">
+      <!-- Continuous Dual Workbenches along North and East Walls -->
+      <rect x="278" y="105" width="130" height="24" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <line x1="278" y1="117" x2="408" y2="117" stroke="#0284c7" stroke-width="0.8" stroke-dasharray="2 2"/>
+      <!-- Equipment footprints -->
+      <rect x="290" y="108" width="20" height="12" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <rect x="330" y="108" width="24" height="12" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <rect x="375" y="108" width="20" height="12" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <!-- Soldering Iron Station -->
+      <circle cx="318" cy="114" r="3.5" fill="#1e293b" stroke="#eab308" stroke-width="1"/>
+      <!-- Dual Drafting Stools -->
+      <circle cx="310" cy="145" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+      <circle cx="370" cy="145" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    </g>
+
+    <!-- Room 103 -->
+    <g id="cad-furniture-room-103">
+      <!-- U-Shaped Diagnostics Workbench -->
+      <polyline points="430,95 570,95 570,140 540,140 540,120 460,120 460,200 430,200 430,95" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <rect x="440" y="100" width="24" height="12" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <rect x="480" y="100" width="24" height="12" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <rect x="525" y="100" width="24" height="12" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <!-- Dual Stools -->
+      <circle cx="500" cy="140" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+      <circle cx="480" cy="180" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    </g>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 135 & 110: CENTRAL ELECTRONIC SYSTEMS & OPERATIONS      -->
+    <!-- ------------------------------------------------------------ -->
+    <g id="cad-furniture-room-135">
+      <!-- L-Desk & Dual Monitors -->
+      <polygon points="752,260 820,260 820,310 795,310 795,285 752,285" fill="#141e33" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="765,264 780,265 M 782,265 797,264" stroke="#38bdf8" stroke-width="1.5"/>
+      <circle cx="780" cy="295" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+
+    <g id="cad-furniture-room-110">
+      <!-- Diagnostics Island & Technician Station -->
+      <rect x="752" y="395" width="60" height="30" rx="2" fill="#141e33" stroke="#38bdf8" stroke-width="1.3"/>
+      <rect x="760" y="400" width="18" height="10" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <rect x="785" y="400" width="18" height="10" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <circle cx="782" cy="440" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 111: SYSTEMS LAB & DATA CENTER (SERVER RACKS)           -->
+    <!-- ------------------------------------------------------------ -->
+    <g id="cad-furniture-room-111">
+      <!-- Row A: 4 Standard 19" 42U Server Racks with Cross-Hatched Louvers -->
+      <g transform="translate(752, 545)">
+        <!-- Rack 1 -->
+        <rect x="0" y="0" width="26" height="18" fill="#0b1329" stroke="#38bdf8" stroke-width="1.2"/>
+        <line x1="0" y1="0" x2="26" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <line x1="26" y1="0" x2="0" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="22" cy="3" r="1" fill="#22c55e"/>
+        <!-- Rack 2 -->
+        <rect x="30" y="0" width="26" height="18" fill="#0b1329" stroke="#38bdf8" stroke-width="1.2"/>
+        <line x1="30" y1="0" x2="56" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <line x1="56" y1="0" x2="30" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="52" cy="3" r="1" fill="#22c55e"/>
+        <!-- Rack 3 -->
+        <rect x="60" y="0" width="26" height="18" fill="#0b1329" stroke="#38bdf8" stroke-width="1.2"/>
+        <line x1="60" y1="0" x2="86" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <line x1="86" y1="0" x2="60" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="82" cy="3" r="1" fill="#22c55e"/>
+        <!-- Rack 4 -->
+        <rect x="90" y="0" width="26" height="18" fill="#0b1329" stroke="#38bdf8" stroke-width="1.2"/>
+        <line x1="90" y1="0" x2="116" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <line x1="116" y1="0" x2="90" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="112" cy="3" r="1" fill="#22c55e"/>
+      </g>
+
+      <!-- Cold Aisle Airflow Channel & Overhead Cable Ladder Tray -->
+      <line x1="750" y1="580" x2="870" y2="580" stroke="#0284c7" stroke-width="1" stroke-dasharray="3 2"/>
+
+      <!-- Row B: 4 Server Racks Facing Row A -->
+      <g transform="translate(752, 595)">
+        <!-- Rack 5 -->
+        <rect x="0" y="0" width="26" height="18" fill="#0b1329" stroke="#38bdf8" stroke-width="1.2"/>
+        <line x1="0" y1="0" x2="26" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <line x1="26" y1="0" x2="0" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="22" cy="15" r="1" fill="#22c55e"/>
+        <!-- Rack 6 -->
+        <rect x="30" y="0" width="26" height="18" fill="#0b1329" stroke="#38bdf8" stroke-width="1.2"/>
+        <line x1="30" y1="0" x2="56" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <line x1="56" y1="0" x2="30" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="52" cy="15" r="1" fill="#22c55e"/>
+        <!-- Rack 7 -->
+        <rect x="60" y="0" width="26" height="18" fill="#0b1329" stroke="#38bdf8" stroke-width="1.2"/>
+        <line x1="60" y1="0" x2="86" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <line x1="86" y1="0" x2="60" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="82" cy="15" r="1" fill="#22c55e"/>
+        <!-- Rack 8 -->
+        <rect x="90" y="0" width="26" height="18" fill="#0b1329" stroke="#38bdf8" stroke-width="1.2"/>
+        <line x1="90" y1="0" x2="116" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <line x1="116" y1="0" x2="90" y2="18" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="112" cy="15" r="1" fill="#22c55e"/>
+      </g>
+
+      <!-- Mobile Crash Cart / KVM Terminal Console -->
+      <g transform="translate(760, 655)">
+        <rect x="0" y="0" width="30" height="20" rx="2" fill="#141e33" stroke="#38bdf8" stroke-width="1.2"/>
+        <rect x="5" y="3" width="20" height="6" fill="#38bdf8" opacity="0.7"/>
+        <line x1="6" y1="13" x2="24" y2="13" stroke="#94a3b8" stroke-width="1"/>
+        <circle cx="15" cy="28" r="4.5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      </g>
+    </g>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOMS 115, 116, 113, 114: SOUTH ENGINEERING SUITES           -->
+    <!-- ------------------------------------------------------------ -->
+    <!-- Room 115 -->
+    <g id="cad-furniture-room-115">
+      <polygon points="538,610 595,610 595,645 570,645 570,630 538,630" fill="#141e33" stroke="#38bdf8" stroke-width="1.2"/>
+      <polyline points="545,613 560,614 M 562,614 577,613" stroke="#38bdf8" stroke-width="1.2"/>
+      <circle cx="560" cy="640" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+    <!-- Room 116 -->
+    <g id="cad-furniture-room-116">
+      <polygon points="538,705 595,705 595,740 570,740 570,725 538,725" fill="#141e33" stroke="#38bdf8" stroke-width="1.2"/>
+      <polyline points="545,708 560,709 M 562,709 577,708" stroke="#38bdf8" stroke-width="1.2"/>
+      <circle cx="560" cy="735" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+    <!-- Room 113 -->
+    <g id="cad-furniture-room-113">
+      <polygon points="648,610 705,610 705,645 680,645 680,630 648,630" fill="#141e33" stroke="#38bdf8" stroke-width="1.2"/>
+      <polyline points="655,613 670,614 M 672,614 687,613" stroke="#38bdf8" stroke-width="1.2"/>
+      <circle cx="670" cy="640" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+    <!-- Room 114 -->
+    <g id="cad-furniture-room-114">
+      <polygon points="648,705 705,705 705,740 680,740 680,725 648,725" fill="#141e33" stroke="#38bdf8" stroke-width="1.2"/>
+      <polyline points="655,708 670,709 M 672,709 687,708" stroke="#38bdf8" stroke-width="1.2"/>
+      <circle cx="670" cy="735" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 118: SOFTWARE LAB (WEST WING)                           -->
+    <!-- ------------------------------------------------------------ -->
+    <g id="cad-furniture-room-118">
+      <!-- Agile Sprint Board Display on West Wall -->
+      <line x1="102" y1="540" x2="102" y2="600" stroke="#38bdf8" stroke-width="3"/>
+
+      <!-- 4-Pack Developer Benching Pod A -->
+      <g transform="translate(125, 545)">
+        <rect x="0" y="0" width="100" height="50" rx="3" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+        <line x1="0" y1="25" x2="100" y2="25" stroke="#0284c7" stroke-width="1.2"/>
+        <line x1="50" y1="0" x2="50" y2="50" stroke="#334155" stroke-dasharray="2 2"/>
+        <!-- Dual 27" Monitors Polylines (4 Stations) -->
+        <polyline points="10,22 25,23 M 27,23 42,22" stroke="#38bdf8" stroke-width="1.4"/>
+        <polyline points="58,22 73,23 M 75,23 90,22" stroke="#38bdf8" stroke-width="1.4"/>
+        <polyline points="10,28 25,27 M 27,27 42,28" stroke="#38bdf8" stroke-width="1.4"/>
+        <polyline points="58,28 73,27 M 75,27 90,28" stroke="#38bdf8" stroke-width="1.4"/>
+        <!-- 4 Mesh Task Chairs -->
+        <circle cx="26" cy="-8" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="74" cy="-8" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="26" cy="58" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="74" cy="58" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      </g>
+
+      <!-- 4-Pack Developer Benching Pod B -->
+      <g transform="translate(125, 630)">
+        <rect x="0" y="0" width="100" height="50" rx="3" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+        <line x1="0" y1="25" x2="100" y2="25" stroke="#0284c7" stroke-width="1.2"/>
+        <line x1="50" y1="0" x2="50" y2="50" stroke="#334155" stroke-dasharray="2 2"/>
+        <polyline points="10,22 25,23 M 27,23 42,22" stroke="#38bdf8" stroke-width="1.4"/>
+        <polyline points="58,22 73,23 M 75,23 90,22" stroke="#38bdf8" stroke-width="1.4"/>
+        <polyline points="10,28 25,27 M 27,27 42,28" stroke="#38bdf8" stroke-width="1.4"/>
+        <polyline points="58,28 73,27 M 75,27 90,28" stroke="#38bdf8" stroke-width="1.4"/>
+        <circle cx="26" cy="-8" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="74" cy="-8" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="26" cy="58" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="74" cy="58" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      </g>
+    </g>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- ROOM 117: AGILE TEAM POD (SOUTH-WEST)                        -->
+    <!-- ------------------------------------------------------------ -->
+    <g id="cad-furniture-room-117">
+      <!-- Collaborative 4-Person Pod with Center Acoustic Screen -->
+      <g transform="translate(305, 620)">
+        <rect x="0" y="0" width="85" height="50" rx="3" fill="#141e33" stroke="#38bdf8" stroke-width="1.3"/>
+        <line x1="0" y1="25" x2="85" y2="25" stroke="#0284c7" stroke-width="1.4"/>
+        <!-- Dual Monitor setups -->
+        <polyline points="12,21 30,22 M 55,21 73,22" stroke="#38bdf8" stroke-width="1.3"/>
+        <polyline points="12,29 30,28 M 55,29 73,28" stroke="#38bdf8" stroke-width="1.3"/>
+        <!-- 4 Chairs -->
+        <circle cx="22" cy="-8" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="63" cy="-8" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="22" cy="58" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+        <circle cx="63" cy="58" r="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      </g>
+      <!-- Mobile Easel Whiteboard Polyline -->
+      <polygon points="340,695 365,695 360,705 345,705" fill="#1e293b" stroke="#94a3b8" stroke-width="1"/>
+    </g>
+
+    <!-- ------------------------------------------------------------ -->
+    <!-- PRIMARY CIRCULATION CORE (160): CENTRAL WORKSTATIONS & LOUNGE-->
+    <!-- ------------------------------------------------------------ -->
+    <!-- Central Atrium Collaboration Lounge -->
+    <g id="cad-furniture-atrium-lounge">
+      <!-- Modular L-Sectional Sofa with Cushion Seams -->
+      <polygon points="320,380 395,380 395,405 345,405 345,460 320,460" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <line x1="345" y1="380" x2="345" y2="405" stroke="#334155"/>
+      <line x1="370" y1="380" x2="370" y2="405" stroke="#334155"/>
+      <line x1="320" y1="405" x2="345" y2="405" stroke="#334155"/>
+      <line x1="320" y1="432" x2="345" y2="432" stroke="#334155"/>
+      <!-- Low Coffee Table -->
+      <rect x="355" y="418" width="35" height="22" rx="3" fill="#0b1329" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+
+    <!-- Central Core Benching Pod A (North-West) -->
+    <g id="cad-furniture-pod-a" transform="translate(465, 272)">
+      <rect x="0" y="0" width="100" height="48" rx="3" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <line x1="0" y1="24" x2="100" y2="24" stroke="#0284c7" stroke-width="1.3"/>
+      <line x1="50" y1="0" x2="50" y2="48" stroke="#334155" stroke-dasharray="2 2"/>
+      <!-- Dual Monitors Polylines -->
+      <polyline points="10,21 25,22 M 27,22 42,21" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="58,21 73,22 M 75,22 90,21" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="10,27 25,26 M 27,26 42,27" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="58,27 73,26 M 75,26 90,27" stroke="#38bdf8" stroke-width="1.3"/>
+      <!-- 4 Ergonomic Mesh Chairs -->
+      <g stroke="#38bdf8" stroke-width="0.9" fill="#1e293b">
+        <circle cx="26" cy="-8" r="6"/><circle cx="74" cy="-8" r="6"/>
+        <circle cx="26" cy="56" r="6"/><circle cx="74" cy="56" r="6"/>
+      </g>
+    </g>
+
+    <!-- Central Core Benching Pod B (North-East) -->
+    <g id="cad-furniture-pod-b" transform="translate(615, 272)">
+      <rect x="0" y="0" width="100" height="48" rx="3" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <line x1="0" y1="24" x2="100" y2="24" stroke="#0284c7" stroke-width="1.3"/>
+      <line x1="50" y1="0" x2="50" y2="48" stroke="#334155" stroke-dasharray="2 2"/>
+      <polyline points="10,21 25,22 M 27,22 42,21" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="58,21 73,22 M 75,22 90,21" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="10,27 25,26 M 27,26 42,27" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="58,27 73,26 M 75,26 90,27" stroke="#38bdf8" stroke-width="1.3"/>
+      <g stroke="#38bdf8" stroke-width="0.9" fill="#1e293b">
+        <circle cx="26" cy="-8" r="6"/><circle cx="74" cy="-8" r="6"/>
+        <circle cx="26" cy="56" r="6"/><circle cx="74" cy="56" r="6"/>
+      </g>
+    </g>
+
+    <!-- Central Core Benching Pod C (South-West) -->
+    <g id="cad-furniture-pod-c" transform="translate(465, 428)">
+      <rect x="0" y="0" width="100" height="48" rx="3" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <line x1="0" y1="24" x2="100" y2="24" stroke="#0284c7" stroke-width="1.3"/>
+      <line x1="50" y1="0" x2="50" y2="48" stroke="#334155" stroke-dasharray="2 2"/>
+      <polyline points="10,21 25,22 M 27,22 42,21" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="58,21 73,22 M 75,22 90,21" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="10,27 25,26 M 27,26 42,27" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="58,27 73,26 M 75,26 90,27" stroke="#38bdf8" stroke-width="1.3"/>
+      <g stroke="#38bdf8" stroke-width="0.9" fill="#1e293b">
+        <circle cx="26" cy="-8" r="6"/><circle cx="74" cy="-8" r="6"/>
+        <circle cx="26" cy="56" r="6"/><circle cx="74" cy="56" r="6"/>
+      </g>
+    </g>
+
+    <!-- Central Core Benching Pod D (South-East) -->
+    <g id="cad-furniture-pod-d" transform="translate(615, 428)">
+      <rect x="0" y="0" width="100" height="48" rx="3" fill="#141e33" stroke="#38bdf8" stroke-width="1.4"/>
+      <line x1="0" y1="24" x2="100" y2="24" stroke="#0284c7" stroke-width="1.3"/>
+      <line x1="50" y1="0" x2="50" y2="48" stroke="#334155" stroke-dasharray="2 2"/>
+      <polyline points="10,21 25,22 M 27,22 42,21" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="58,21 73,22 M 75,22 90,21" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="10,27 25,26 M 27,26 42,27" stroke="#38bdf8" stroke-width="1.3"/>
+      <polyline points="58,27 73,26 M 75,26 90,27" stroke="#38bdf8" stroke-width="1.3"/>
+      <g stroke="#38bdf8" stroke-width="0.9" fill="#1e293b">
+        <circle cx="26" cy="-8" r="6"/><circle cx="74" cy="-8" r="6"/>
+        <circle cx="26" cy="56" r="6"/><circle cx="74" cy="56" r="6"/>
+      </g>
     </g>
   </g>
 
