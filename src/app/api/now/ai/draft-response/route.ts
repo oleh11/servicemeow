@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getServerSession } from "@/lib/auth";
+import { requireFulfiller } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(request);
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Drafts include internal work notes, so this is fulfiller-only
+    let session;
+    try {
+      session = await requireFulfiller(request);
+    } catch (err: any) {
+      return NextResponse.json({ error: err.message }, { status: err.status || 401 });
     }
 
     const body = await request.json();

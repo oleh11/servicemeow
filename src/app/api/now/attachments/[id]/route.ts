@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAuth } from "@/lib/auth";
+import { canViewAttachment } from "@/lib/attachment-access";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAuth(request);
+    const session = await requireAuth(request);
     const { id } = await params;
     const attachment = await db.sysAttachment.findUnique({
       where: { id },
     });
 
-    if (!attachment) {
+    // Same 404 whether missing or not visible, so ids can't be probed
+    if (!attachment || !(await canViewAttachment(session, attachment))) {
       return NextResponse.json({ error: "Attachment not found" }, { status: 404 });
     }
 

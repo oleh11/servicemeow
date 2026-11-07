@@ -325,6 +325,12 @@ export async function getServerSession(req?: Request): Promise<SessionContext | 
       return null;
     }
 
+    // Deactivated accounts lose access immediately, not just at next login
+    if (!session.user.active) {
+      await db.sysUserSession.deleteMany({ where: { userId: session.userId } });
+      return null;
+    }
+
     const actualUser = session.user;
     let effectiveUser = actualUser;
     let isImpersonating = false;

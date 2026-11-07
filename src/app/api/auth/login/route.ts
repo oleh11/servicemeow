@@ -14,6 +14,14 @@ import {
   resetLoginRateLimit,
 } from "@/lib/rate-limiter";
 
+// Used to spend the same bcrypt time on unknown accounts as on real ones,
+// so response timing does not reveal which usernames exist.
+let dummyHashPromise: Promise<string> | null = null;
+function getDummyHash(): Promise<string> {
+  dummyHashPromise ??= hashPassword("servicemeow-timing-equalizer");
+  return dummyHashPromise;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const ipAddress =
@@ -25,7 +33,9 @@ export async function POST(req: NextRequest) {
     const { email, username, password, personaId } = body;
 
     const identifier = (email || username || personaId || "").trim().toLowerCase();
-    const rateLimitKey = `${ipAddress}:${identifier || "anonymous"}`;
+    // Keyed on the account only: X-Forwarded-For is client-controlled, so including it
+    // would let an attacker reset the lockout by rotating the header.
+    const rateLimitKey = `acct:${identifier || "anonymous"}`;
 
     // 1. Check Rate Limit & Account Lockout
     const rateLimit = checkLoginRateLimit(rateLimitKey);
@@ -78,6 +88,12 @@ export async function POST(req: NextRequest) {
           { status: 404 }
         );
       }
+      if (!user.active) {
+        return NextResponse.json(
+          { error: "User account is inactive. Contact platform administrator." },
+          { status: 403 }
+        );
+      }
     } else {
       // 3. Standard Credential Authentication (Email/Username + Password)
       if (!identifier) {
@@ -101,18 +117,11 @@ export async function POST(req: NextRequest) {
       });
 
       if (!user) {
+        await comparePassword(password || "", await getDummyHash());
         recordFailedLogin(rateLimitKey);
         return NextResponse.json(
           { error: "Invalid username, email, or password" },
           { status: 401 }
-        );
-      }
-
-      // Check if user account is active
-      if (!user.active) {
-        return NextResponse.json(
-          { error: "User account is inactive. Contact platform administrator." },
-          { status: 403 }
         );
       }
 
@@ -139,6 +148,14 @@ export async function POST(req: NextRequest) {
           { status: 401 }
         );
       }
+    }
+
+    // Only reveal that an account is inactive to someone who knows its password
+    if (!user.active) {
+      return NextResponse.json(
+        { error: "User account is inactive. Contact platform administrator." },
+        { status: 403 }
+      );
     }
 
     // Login successful: Reset failed attempt counters

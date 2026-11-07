@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireFulfiller } from "@/lib/auth";
+import { evaluateAcl } from "@/lib/acl-engine";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Reports aggregate whole tables, so they are a fulfiller tool (used by /workspace/reports)
+    const session = await requireFulfiller(request);
     const { id } = await params;
     const url = new URL(request.url);
 
@@ -27,6 +31,11 @@ export async function GET(
 
       table = report.tableName.toLowerCase();
       groupField = report.groupByField || "priority";
+    }
+
+    const acl = await evaluateAcl({ roles: session.roles, userId: session.user.id, operation: "read", tableName: table });
+    if (!acl.allowed) {
+      return NextResponse.json({ error: acl.reason }, { status: 403 });
     }
 
     // Fetch records
@@ -89,6 +98,6 @@ export async function GET(
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: error.status || 500 });
   }
 }

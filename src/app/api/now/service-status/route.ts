@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireFulfiller } from "@/lib/auth";
 
-// GET /api/now/service-status -> returns services and active outages/incidents
+// GET /api/now/service-status -> returns services and active outages/incidents.
+// Public (no login) so the status page works for everyone; writes need a fulfiller.
 export async function GET(request: NextRequest) {
   try {
     const services = await db.cmnService.findMany({
@@ -15,11 +17,8 @@ export async function GET(request: NextRequest) {
         state: { in: [1, 2, 3] }, // New, In Progress, On Hold
         priority: { in: [1, 2] },
       },
-      include: {
-        incident: {
-          include: { cmdbCi: true },
-        },
-      },
+      // This endpoint is public: expose only what the status page renders.
+      select: { id: true, number: true, priority: true, shortDescription: true },
       orderBy: { priority: "asc" },
       take: 5,
     });
@@ -49,6 +48,7 @@ export async function GET(request: NextRequest) {
 // PATCH /api/now/service-status -> update a service's status or uptime
 export async function PATCH(request: NextRequest) {
   try {
+    await requireFulfiller(request);
     const body = await request.json();
     const { id, status, uptimePercent, description } = body;
 
@@ -67,13 +67,14 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({ result: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: error.status || 500 });
   }
 }
 
 // POST /api/now/service-status -> create new service offering
 export async function POST(request: NextRequest) {
   try {
+    await requireFulfiller(request);
     const body = await request.json();
     const { name, category, status = "operational", description, uptimePercent = 100.0 } = body;
 
@@ -93,6 +94,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ result: created }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: error.status || 500 });
   }
 }

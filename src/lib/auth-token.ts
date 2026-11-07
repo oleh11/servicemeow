@@ -7,9 +7,12 @@ export const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
 function getAuthSecret(): string {
   const secret = process.env.AUTH_SECRET;
   if (!secret || secret.trim().length === 0) {
-    if (process.env.NODE_ENV === "production") {
+    // The fallback key is public (it's in the repo), so only use it when explicitly
+    // in local dev or tests — not for staging or any deploy that forgot NODE_ENV.
+    const env = process.env.NODE_ENV;
+    if (env !== "development" && env !== "test") {
       throw new Error(
-        "FATAL SECURITY ERROR: AUTH_SECRET environment variable is required in production. Please set AUTH_SECRET in your environment or .env file."
+        "FATAL SECURITY ERROR: AUTH_SECRET environment variable is required outside development/test. Please set AUTH_SECRET in your environment or .env file."
       );
     }
     return "servicemeow-dev-only-local-secret-key-32-chars-change-for-prod";

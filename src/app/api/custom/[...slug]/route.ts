@@ -27,7 +27,8 @@ async function handleScriptedRest(
 
     for (const def of definitions) {
       const cleanBase = def.basePath.replace(/^\/+|\/+$/g, "");
-      if (pathJoined.startsWith(cleanBase)) {
+      // Match on a path-segment boundary so base "foo" does not also match "foobar/..."
+      if (pathJoined === cleanBase || pathJoined.startsWith(cleanBase + "/")) {
         const remainingPath = pathJoined.slice(cleanBase.length).replace(/^\/+/, "") || "/";
         const op = def.operations.find(
           (o) =>
@@ -114,12 +115,20 @@ async function handleScriptedRest(
 
     return NextResponse.json(
       { result: resultOutput ?? { success: true } },
-      { status: safeResponse.status || 200 }
+      { status: toJsonStatus(safeResponse.status) }
     );
   } catch (err: any) {
     const status = err.status || 500;
     return NextResponse.json({ error: err.message }, { status });
   }
+}
+
+// The script controls the status; a value NextResponse.json cannot send (e.g. 99, 204)
+// would throw and surface as a 500, so fall back to 200.
+function toJsonStatus(status: unknown): number {
+  return Number.isInteger(status) && (status as number) >= 200 && (status as number) <= 599 && status !== 204 && status !== 205 && status !== 304
+    ? (status as number)
+    : 200;
 }
 
 export async function GET(

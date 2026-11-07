@@ -12,9 +12,10 @@ const PUBLIC_API_ROUTES = [
   "/api/auth/login",
   "/api/auth/logout",
   "/api/auth/me",
-  "/api/now/service-status",
-  "/api/portal/status",
 ];
+
+// Public for reads only (status pages); writes still need a session
+const PUBLIC_READ_API_ROUTES = ["/api/now/service-status", "/api/portal/status"];
 
 // Configuration / administrative API routes: admin required for every method
 const ADMIN_API_PREFIXES = [
@@ -79,7 +80,10 @@ export async function middleware(req: NextRequest) {
 
   // 2. API Route Guard (/api/*)
   if (pathname.startsWith("/api/")) {
-    const isPublicApi = PUBLIC_API_ROUTES.some((pub) => matchesPrefix(pathname, pub));
+    const isPublicApi =
+      PUBLIC_API_ROUTES.some((pub) => matchesPrefix(pathname, pub)) ||
+      (SAFE_METHODS.has(req.method.toUpperCase()) &&
+        PUBLIC_READ_API_ROUTES.some((pub) => matchesPrefix(pathname, pub)));
 
     if (!isPublicApi) {
       if (!isAuthenticated) {

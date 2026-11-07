@@ -9,6 +9,52 @@ import { getServerSession } from "@/lib/auth";
 
 const ADMIN_ONLY_WRITE_TABLES = new Set(["sys_user", "sys_user_group", "sys_user_grmember", "sys_security_acl", "sys_user_role"]);
 
+// Fields a ticket's requester may send when replying on their own ticket via /table/task/:id
+const REQUESTER_REPLY_FIELDS = new Set(["customer_comment", "author_id"]);
+
+type Session = Awaited<ReturnType<typeof getServerSession>>;
+
+function notFound() {
+  return NextResponse.json({ error: "Record not found" }, { status: 404 });
+}
+
+function isFulfiller(session: Session): boolean {
+  return !!session && (session.isAdmin || session.hasRole("itil"));
+}
+
+/**
+ * The upfront ACL check only sees the table name in the URL. Task records are shared
+ * across classes (incident, change_request, ...), so re-check against the record's
+ * real class. This stops e.g. PATCH /table/task/<incidentId> from bypassing incident ACLs.
+ * The ticket's requester may still read it and post customer comments on it.
+ * Returns an error response, or null when access is allowed.
+ */
+async function authorizeTaskRecord(
+  table: string,
+  task: { sysClassName: string; openedById: string | null; incident?: { callerId: string | null } | null },
+  operation: "read" | "write" | "delete",
+  session: Session,
+  body?: Record<string, unknown>
+): Promise<NextResponse | null> {
+  if (table !== "task" && table !== task.sysClassName) return notFound();
+  if (table === "task") {
+    const real = await evaluateAcl({
+      roles: session ? session.roles : ["public"],
+      userId: session?.user.id,
+      operation,
+      tableName: task.sysClassName,
+    });
+    if (!real.allowed) {
+      const userId = session?.user.id;
+      const isRequester = !!userId && (task.openedById === userId || task.incident?.callerId === userId);
+      const replyOnly = !!body && Object.keys(body).every((k) => REQUESTER_REPLY_FIELDS.has(k));
+      const requesterAllowed = isRequester && (operation === "read" || (operation === "write" && replyOnly));
+      if (!requesterAllowed) return NextResponse.json({ error: real.reason }, { status: 403 });
+    }
+  }
+  return null;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ table: string; id: string }> }
@@ -89,8 +135,10 @@ export async function GET(
       });
 
       if (!task) {
-        return NextResponse.json({ error: "Record not found" }, { status: 404 });
+        return notFound();
       }
+      const denied = await authorizeTaskRecord(table, task, "read", session);
+      if (denied) return denied;
 
       let custom: any = {};
       if (task.dynamicFields) {
@@ -99,10 +147,16 @@ export async function GET(
         } catch {}
       }
 
+      // Work notes are internal to fulfillers
+      const activityNotes = isFulfiller(session)
+        ? task.activityNotes
+        : task.activityNotes.filter((n) => n.noteType !== "work_note");
+
       return NextResponse.json({
         result: {
           ...task,
           ...custom,
+          activityNotes,
           sys_id: task.id,
           id: task.id,
           root_cause: task.problem?.rootCause || undefined,
@@ -156,7 +210,7 @@ export async function GET(
     }
 
     if (table === "kb_knowledge_base") {
-      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      const rec = await db.sysCustomRecord.findFirst({ where: { id, tableName: table } });
       if (!rec) return NextResponse.json({ error: "Knowledge Base not found" }, { status: 404 });
       let parsed: any = {};
       try {
@@ -174,7 +228,7 @@ export async function GET(
     }
 
     if (table === "rm_sprint") {
-      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      const rec = await db.sysCustomRecord.findFirst({ where: { id, tableName: table } });
       if (!rec) return NextResponse.json({ error: "Sprint not found" }, { status: 404 });
       let parsed: any = {};
       try {
@@ -422,8 +476,8 @@ export async function GET(
     const tableMeta = await db.sysDbObject.findUnique({ where: { name: table } });
     if (tableMeta) {
       if (tableMeta.superClass === "task") {
-        const task = await db.task.findUnique({
-          where: { id },
+        const task = await db.task.findFirst({
+          where: { id, sysClassName: table },
           include: {
             assignedTo: true,
             assignmentGroup: true,
@@ -438,7 +492,7 @@ export async function GET(
         }
         return NextResponse.json({ result: { ...task, ...custom } });
       } else {
-        const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+        const rec = await db.sysCustomRecord.findFirst({ where: { id, tableName: table } });
         if (!rec) return NextResponse.json({ error: "Record not found" }, { status: 404 });
         let data: any = {};
         try {
@@ -472,7 +526,8 @@ export async function PATCH(
     // Resolve caller identity and roles strictly from DB session
     const session = await getServerSession(request);
     const callerRoles = session ? session.roles : ["public"];
-    const callerUserId = session?.user.id || body.author_id || body.user_id || null;
+    // Identity comes from the session only; never trust author/user ids in the body
+    const callerUserId = session?.user.id || null;
     let callerUserName = session?.user.name || body.caller_name || null;
     if (!callerUserName && callerUserId) {
       const u = await db.user.findUnique({ where: { id: callerUserId } });
@@ -504,7 +559,7 @@ export async function PATCH(
 
     // Handle Standalone Custom Table
     if (tableMeta && tableMeta.superClass !== "task" && tableMeta.isCustom) {
-      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      const rec = await db.sysCustomRecord.findFirst({ where: { id, tableName: table } });
       if (!rec) return NextResponse.json({ error: "Record not found" }, { status: 404 });
       let currentData: any = {};
       try {
@@ -904,7 +959,7 @@ export async function PATCH(
     }
 
     if (table === "kb_knowledge_base") {
-      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      const rec = await db.sysCustomRecord.findFirst({ where: { id, tableName: table } });
       if (!rec) return NextResponse.json({ error: "Knowledge base not found" }, { status: 404 });
       let currentData: any = {};
       try {
@@ -926,7 +981,7 @@ export async function PATCH(
     }
 
     if (table === "rm_sprint") {
-      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      const rec = await db.sysCustomRecord.findFirst({ where: { id, tableName: table } });
       if (!rec) return NextResponse.json({ error: "Sprint not found" }, { status: 404 });
       let currentData: any = {};
       try {
@@ -1038,8 +1093,10 @@ export async function PATCH(
     });
 
     if (!existingTask) {
-      return NextResponse.json({ error: "Record not found" }, { status: 404 });
+      return notFound();
     }
+    const denied = await authorizeTaskRecord(table, existingTask, "write", session, body);
+    if (denied) return denied;
 
     // Capture old values for sys_audit delta logging
     const oldValues: Record<string, any> = {
@@ -1247,7 +1304,7 @@ export async function PATCH(
       await db.activityNote.create({
         data: {
           taskId: id,
-          authorId: body.author_id || null,
+          authorId: callerUserId,
           noteType: "work_note",
           content: body.work_note,
         },
@@ -1256,7 +1313,7 @@ export async function PATCH(
       await db.activityNote.create({
         data: {
           taskId: id,
-          authorId: body.author_id || null,
+          authorId: callerUserId,
           noteType: "customer_comment",
           content: body.customer_comment,
         },
@@ -1469,7 +1526,8 @@ export async function DELETE(
     }
 
     if (table === "kb_knowledge_base" || table === "rm_sprint") {
-      await db.sysCustomRecord.delete({ where: { id } });
+      const { count } = await db.sysCustomRecord.deleteMany({ where: { id, tableName: table } });
+      if (count === 0) return notFound();
       return NextResponse.json({ result: { status: "deleted", sys_id: id } });
     }
 
@@ -1505,9 +1563,18 @@ export async function DELETE(
 
     const tableMeta = await db.sysDbObject.findUnique({ where: { name: table } });
     if (tableMeta && tableMeta.superClass !== "task" && tableMeta.isCustom) {
-      await db.sysCustomRecord.delete({ where: { id } });
+      const { count } = await db.sysCustomRecord.deleteMany({ where: { id, tableName: table } });
+      if (count === 0) return notFound();
       return NextResponse.json({ result: { status: "deleted", sys_id: id } });
     }
+
+    const task = await db.task.findUnique({
+      where: { id },
+      select: { sysClassName: true, openedById: true },
+    });
+    if (!task) return notFound();
+    const denied = await authorizeTaskRecord(table, task, "delete", session);
+    if (denied) return denied;
 
     await db.task.delete({ where: { id } });
     return NextResponse.json({ result: { status: "deleted", sys_id: id } });

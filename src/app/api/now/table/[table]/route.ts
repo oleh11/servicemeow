@@ -11,6 +11,16 @@ import { autoAssignTask } from "@/lib/assignment-engine";
 
 const ADMIN_ONLY_WRITE_TABLES = new Set(["sys_user", "sys_user_group", "sys_user_grmember", "sys_security_acl", "sys_user_role"]);
 
+// Workflow fields only fulfillers may set when creating an incident or change
+const PRIVILEGED_CREATE_FIELDS = [
+  "priority", "state",
+  "assigned_to_id", "assignedToId", "assignment_group_id", "assignmentGroupId",
+  "opened_by_id", "openedById", "caller_id", "callerId",
+  "caller_name", "callerName", "caller_email", "callerEmail",
+  "close_code", "closeCode", "close_notes", "closeNotes",
+  "cab_approval_state", "cabApprovalState", "cab_required", "cabRequired",
+];
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ table: string }> }
@@ -19,8 +29,8 @@ export async function GET(
     const { table } = await params;
     const searchParams = request.nextUrl.searchParams;
     const sysparmQuery = searchParams.get("sysparm_query");
-    const limit = Math.min(100, parseInt(searchParams.get("sysparm_limit") || "50", 10));
-    const offset = parseInt(searchParams.get("sysparm_offset") || "0", 10);
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("sysparm_limit") ?? "", 10) || 50));
+    const offset = Math.max(0, parseInt(searchParams.get("sysparm_offset") ?? "", 10) || 0);
 
     // Resolve caller identity and roles strictly from DB session
     const session = await getServerSession(request);
@@ -368,7 +378,7 @@ export async function GET(
     }
 
     if (table === "cmn_location") {
-      const locLimit = Math.min(500, parseInt(searchParams.get("sysparm_limit") || "100", 10));
+      const locLimit = Math.min(500, Math.max(1, parseInt(searchParams.get("sysparm_limit") ?? "", 10) || 100));
       const where: any = {};
       const parentParam = searchParams.get("parent_id") || searchParams.get("parentId");
       if (parentParam === "null" || parentParam === "root") {
@@ -763,6 +773,19 @@ export async function POST(
       );
     }
 
+    // Requesters can't pre-set workflow fields (priority, assignment, CAB approval)
+    // or file tickets as someone else. Done before business rules so rules can still set them.
+    const isFulfiller = !!session && (session.isAdmin || session.hasRole("itil"));
+    if (!isFulfiller && session && (table === "incident" || table === "change_request")) {
+      for (const key of PRIVILEGED_CREATE_FIELDS) delete body[key];
+      body.opened_by_id = session.user.id;
+      if (table === "incident") {
+        body.caller_id = session.user.id;
+        body.caller_name = session.user.name;
+        body.caller_email = session.user.email;
+      }
+    }
+
     // 1. Execute ServiceMeow Business Rules: before_insert
     const beforeRules = await executeBusinessRules(table, "before_insert", body);
     if (beforeRules.mutatedFields) {
@@ -927,6 +950,7 @@ export async function POST(
           state: 1, // New
           assignedToId: body.assigned_to_id || body.assignedToId || null,
           assignmentGroupId: body.assignment_group_id || body.assignmentGroupId || null,
+          openedById: body.opened_by_id || body.openedById || null,
         },
       });
 

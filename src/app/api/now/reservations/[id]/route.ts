@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAuth } from "@/lib/auth";
+
+type Session = Awaited<ReturnType<typeof requireAuth>>;
+
+// Workplace admins and fulfillers manage any booking; everyone else only their own.
+function canManageAny(session: Session): boolean {
+  return session.isAdmin || session.hasRole("workplace_admin") || session.hasRole("itil");
+}
 
 export async function GET(
   request: NextRequest,
@@ -43,6 +51,7 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
+    const session = await requireAuth(request);
     const body = await request.json();
 
     const existing = await db.cmnReservation.findUnique({
@@ -51,6 +60,15 @@ export async function PATCH(
 
     if (!existing) {
       return NextResponse.json({ error: "Reservation not found" }, { status: 404 });
+    }
+    const manager = canManageAny(session);
+    if (!manager && existing.reservedById !== session.user.id) {
+      return NextResponse.json({ error: "You can only change your own reservations" }, { status: 403 });
+    }
+    // Only managers may hand a booking to someone else
+    if (!manager) {
+      delete body.reservedById;
+      delete body.reserved_by_id;
     }
 
     const targetSpaceId = body.spaceId || body.space_id || existing.spaceId;
@@ -128,7 +146,7 @@ export async function PATCH(
 
     return NextResponse.json({ result: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to update reservation" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to update reservation" }, { status: error.status || 500 });
   }
 }
 
@@ -138,9 +156,17 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    const session = await requireAuth(request);
+    const existing = await db.cmnReservation.findUnique({ where: { id }, select: { reservedById: true } });
+    if (!existing) {
+      return NextResponse.json({ error: "Reservation not found" }, { status: 404 });
+    }
+    if (!canManageAny(session) && existing.reservedById !== session.user.id) {
+      return NextResponse.json({ error: "You can only cancel your own reservations" }, { status: 403 });
+    }
     await db.cmnReservation.delete({ where: { id } });
     return NextResponse.json({ result: { status: "deleted", id } });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to delete reservation" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to delete reservation" }, { status: error.status || 500 });
   }
 }
