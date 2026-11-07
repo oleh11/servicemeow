@@ -84,6 +84,14 @@ model User {
   sessions             SysUserSession[]  @relation("UserSessions")
   impersonatedSessions SysUserSession[]  @relation("ImpersonatedSessionUser")
   reservations         CmnReservation[]
+  checklistItemsCompleted TaskChecklistItem[] @relation("ChecklistCompletedBy")
+  evidenceDecided         TaskEvidence[]      @relation("EvidenceDecidedBy")
+  morningChecksInspected  CmnMorningCheck[]   @relation("MorningCheckInspector")
+  managedOrganizations    CrmOrganization[]   @relation("OrgAccountManager")
+  managedDeals            CrmDeal[]           @relation("DealOwner")
+  requesterChatChannels   SysLiveChatChannel[] @relation("ChatRequester")
+  assignedChatChannels    SysLiveChatChannel[] @relation("ChatAssignedTo")
+  chatPresence            SysLiveChatPresence? @relation("UserPresence")
 }
 
 model Group {
@@ -97,6 +105,7 @@ model Group {
   createdAt   DateTime          @default(now())
   members     UserGroupMember[]
   tasks       Task[]            @relation("AssignmentGroup")
+  liveChatQueues SysLiveChatQueue[] @relation("QueueAssignmentGroup")
 }
 
 model CmnLocation {
@@ -351,6 +360,12 @@ model Task {
   slaInstances      SlaInstance[]
   approvals         ApprovalRecord[]
   changeTask        ChangeTask?
+  checklistItems    TaskChecklistItem[]
+  evidenceItems     TaskEvidence[]
+  organizationId    String?
+  organization      CrmOrganization?  @relation("TaskOrganization", fields: [organizationId], references: [id], onDelete: SetNull)
+  contactId         String?
+  contact           CrmContact?       @relation("TaskContact", fields: [contactId], references: [id], onDelete: SetNull)
 
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -645,6 +660,62 @@ model ApprovalRecord {
   approvalType String   @default("cab") // "cab", "manager"
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model TaskChecklistItem {
+  id            String    @id @default(cuid())
+  taskId        String
+  task          Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  isMandatory   Boolean   @default(false)
+  isCompleted   Boolean   @default(false)
+  completedById String?
+  completedBy   User?     @relation("ChecklistCompletedBy", fields: [completedById], references: [id])
+  completedAt   DateTime?
+  sortOrder     Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([taskId, isMandatory, isCompleted])
+}
+
+model TaskEvidence {
+  id             String    @id @default(cuid())
+  taskId         String
+  task           Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  claimField     String    // e.g. "root_cause", "workaround", "cmdb_ci_id", "assigned_to_id"
+  claimValue     String    // e.g. "Memory leak in auth microservice", "ci_123"
+  evidenceKind   String    // "log.stacktrace", "ci.ping_failure", "git.commit_hash", "monitor.alert", "crm.thread_reply"
+  isDecisive     Boolean   @default(false) // Primary decisive evidence vs supporting
+  rawObservation String    // Concrete observation details from logs or agents
+  sourceUrl      String?
+  status         String    @default("proposed") // "proposed", "accepted", "rejected"
+  decidedById    String?
+  decidedBy      User?     @relation("EvidenceDecidedBy", fields: [decidedById], references: [id])
+  decidedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([taskId, status])
+}
+
+model CmnMorningCheck {
+  id           String    @id @default(cuid())
+  title        String    // e.g. "Primary SAN Storage Capacity", "Offsite Backup Verification"
+  category     String    // "backup", "network", "datacenter", "database", "security", "application"
+  targetSystem String    // e.g. "SAN-Cluster-01", "PostgreSQL-Replica-02"
+  shift        String    @default("morning") // "morning", "evening", "night"
+  status       String    @default("pending") // "pass", "degraded", "fail", "pending"
+  notes        String?
+  checkedById  String?
+  checkedBy    User?     @relation("MorningCheckInspector", fields: [checkedById], references: [id])
+  checkedAt    DateTime?
+  incidentId   String?   // Linked Incident ID if escalated
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([category, status, createdAt])
 }
 
 // ----------------------------------------------------
@@ -1146,5 +1217,152 @@ model SysWsOperation {
   @@unique([webServiceDefinitionId, httpMethod, uriTemplate])
 }
 
+// ----------------------------------------------------
+// Customer Service Management & CRM (Customer 360)
+// ----------------------------------------------------
 
+model CrmOrganization {
+  id           String       @id @default(cuid())
+  name         String       @unique
+  domain       String?
+  industry     String?      @default("technology")
+  tier         String       @default("enterprise") // "enterprise", "mid_market", "smb"
+  status       String       @default("active") // "active", "prospect", "churned"
+  healthScore  Int          @default(95) // 0-100
+  assignedToId String?
+  assignedTo   User?        @relation("OrgAccountManager", fields: [assignedToId], references: [id], onDelete: SetNull)
+  contacts     CrmContact[]
+  deals        CrmDeal[]
+  tasks        Task[]       @relation("TaskOrganization")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model CrmContact {
+  id             String           @id @default(cuid())
+  firstName      String
+  lastName       String
+  name           String           // Full name display
+  email          String           @unique
+  phone          String?
+  title          String?
+  isPrimary      Boolean          @default(false)
+  organizationId String?
+  organization   CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  deals          CrmDeal[]
+  tasks          Task[]           @relation("TaskContact")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model CrmDeal {
+  id                String           @id @default(cuid())
+  title             String
+  amount            Float            @default(0.0)
+  stage             String           @default("lead") // "lead", "qualified", "proposal", "negotiation", "won", "lost"
+  probability       Int              @default(20) // 0-100
+  expectedCloseDate DateTime?
+  organizationId    String?
+  organization      CrmOrganization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  contactId         String?
+  contact           CrmContact?      @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  assignedToId      String?
+  assignedTo        User?            @relation("DealOwner", fields: [assignedToId], references: [id], onDelete: SetNull)
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+// ----------------------------------------------------
+// Omnichannel Live Agent Chat
+// ----------------------------------------------------
+
+model SysLiveChatQueue {
+  id                String               @id @default(cuid())
+  name              String               // e.g. "IT Service Desk"
+  code              String               @unique // e.g. "it_service_desk"
+  description       String?
+  active            Boolean              @default(true)
+  priority          Int                  @default(1)
+  assignmentGroupId String?
+  assignmentGroup   Group?               @relation("QueueAssignmentGroup", fields: [assignmentGroupId], references: [id], onDelete: SetNull)
+  maxWaitSeconds    Int                  @default(300)
+  welcomeMessage    String               @default("Hello! An ITIL support specialist will assist you shortly.")
+  offlineMessage    String               @default("All agents are currently offline. Please submit a service ticket.")
+  channels          SysLiveChatChannel[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+}
+
+model SysLiveChatChannel {
+  id              String               @id @default(cuid())
+  number          String               @unique // e.g. "CHAT0001001"
+  queueId         String?
+  queue           SysLiveChatQueue?    @relation(fields: [queueId], references: [id], onDelete: SetNull)
+  requesterId     String
+  requester       User                 @relation("ChatRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  assignedToId    String?
+  assignedTo      User?                @relation("ChatAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  state           String               @default("queued") // "queued", "active", "resolved", "abandoned"
+  subject         String?
+  initialQuestion String?
+  waitStartedAt   DateTime             @default(now())
+  acceptedAt      DateTime?
+  endedAt         DateTime?
+  rating          Int?                 // 1-5
+  feedback        String?
+  incidentId      String?              // Link to incident ticket number e.g. INC0010042
+  messages        SysLiveChatMessage[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@index([state, assignedToId])
+  @@index([requesterId])
+}
+
+model SysLiveChatMessage {
+  id         String             @id @default(cuid())
+  channelId  String
+  channel    SysLiveChatChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  senderId   String?
+  senderName String?
+  senderType String             // "requester", "agent", "system", "bot"
+  body       String
+  isInternal Boolean            @default(false)
+  createdAt  DateTime           @default(now())
+
+  @@index([channelId, createdAt])
+}
+
+model SysCannedResponse {
+  id        String   @id @default(cuid())
+  shortcut  String   @unique // e.g. "/greet", "/resolve", "/kb", "/hold"
+  title     String
+  message   String
+  category  String   @default("general") // "general", "troubleshooting", "closing"
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SysLiveChatPresence {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  user             User     @relation("UserPresence", fields: [userId], references: [id], onDelete: Cascade)
+  status           String   @default("offline") // "online", "busy", "away", "offline"
+  activeChatsCount Int      @default(0)
+  lastPingAt       DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model SysLiveChatConfig {
+  id                          String   @id @default("global")
+  enabled                     Boolean  @default(true)
+  maxConcurrentChatsPerAgent  Int      @default(3)
+  autoAbandonTimeoutSeconds   Int      @default(600)
+  soundNotifications          Boolean  @default(true)
+  operatingHoursSchedule      String?  @default("24x7")
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+}
 

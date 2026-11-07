@@ -3,17 +3,13 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  Activity,
   CheckCircle2,
   AlertTriangle,
   XCircle,
-  Clock,
   ArrowLeft,
-  ExternalLink,
-  ShieldCheck,
   RefreshCw,
   Server,
-  Zap,
+  ShieldCheck,
 } from "lucide-react";
 
 interface ServiceItem {
@@ -56,81 +52,88 @@ export default function ServiceStatusPage() {
     switch (status) {
       case "operational":
         return {
-          label: "Operational",
-          bg: "bg-emerald-100 text-emerald-800 border-emerald-200",
+          label: "OPERATIONAL",
+          bg: "bg-emerald-50 text-emerald-800 border-emerald-600",
           icon: CheckCircle2,
-          color: "text-emerald-600",
         };
       case "degraded":
         return {
-          label: "Degraded Performance",
-          bg: "bg-amber-100 text-amber-800 border-amber-200",
+          label: "DEGRADED",
+          bg: "bg-amber-50 text-amber-800 border-amber-600",
           icon: AlertTriangle,
-          color: "text-amber-600",
         };
       case "major_outage":
         return {
-          label: "Major Outage",
-          bg: "bg-rose-100 text-rose-800 border-rose-200",
+          label: "MAJOR OUTAGE",
+          bg: "bg-red-50 text-red-800 border-red-600",
           icon: XCircle,
-          color: "text-rose-600",
         };
       case "maintenance":
         return {
-          label: "Scheduled Maintenance",
-          bg: "bg-blue-100 text-blue-800 border-blue-200",
-          icon: Clock,
-          color: "text-blue-600",
+          label: "MAINTENANCE",
+          bg: "bg-neutral-100 text-neutral-800 border-neutral-400",
+          icon: ShieldCheck,
         };
       default:
         return {
-          label: "Operational",
-          bg: "bg-emerald-100 text-emerald-800 border-emerald-200",
+          label: "ACTIVE",
+          bg: "bg-neutral-100 text-neutral-800 border-neutral-300",
           icon: CheckCircle2,
-          color: "text-emerald-600",
         };
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-      {/* Back to Portal */}
-      <div className="flex items-center justify-between">
-        <Link
-          href="/portal"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Self-Service Portal</span>
-        </Link>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Swiss Header */}
+      <div className="border-b-2 border-black pb-6 space-y-2">
+        <div className="flex items-center justify-between">
+          <Link
+            href="/portal"
+            className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-neutral-600 hover:text-black"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>&larr; Back to Main Screen</span>
+          </Link>
 
-        <button
-          onClick={loadStatus}
-          className="p-1.5 rounded-lg border text-slate-500 hover:text-slate-800 text-xs flex items-center gap-1 transition-colors"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
-          <span>Refresh Status</span>
-        </button>
+          <button
+            onClick={loadStatus}
+            className="px-3 py-1.5 border border-black hover:bg-neutral-100 text-black text-xs font-mono uppercase font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+            <span>Refresh Probes</span>
+          </button>
+        </div>
+
+        <div className="flex items-baseline gap-3">
+          <span className="font-mono text-sm font-bold text-emerald-600">05 /</span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight uppercase text-black">
+            System Operational Status
+          </h1>
+        </div>
+        <p className="text-sm sm:text-base text-neutral-600 max-w-2xl">
+          Real-time availability probes across all enterprise core services, VPN nodes, email gateways, and cloud APIs.
+        </p>
       </div>
 
       {/* Main Status Hero Banner */}
       <div
-        className={`p-6 sm:p-8 rounded-3xl border shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6 transition-all ${
+        className={`p-6 sm:p-8 border-2 flex flex-col sm:flex-row sm:items-center justify-between gap-6 transition-all ${
           overallStatus === "operational"
-            ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-950"
+            ? "border-emerald-600 bg-emerald-50/40 text-black"
             : overallStatus === "degraded"
-            ? "bg-amber-500/10 border-amber-500/30 text-amber-950"
-            : "bg-rose-500/10 border-rose-500/30 text-rose-950"
+            ? "border-amber-600 bg-amber-50/40 text-black"
+            : "border-red-600 bg-red-50/40 text-black"
         }`}
       >
         <div className="flex items-center gap-4">
           <div
-            className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${
+            className={`w-14 h-14 border-2 flex items-center justify-center shrink-0 ${
               overallStatus === "operational"
-                ? "bg-emerald-600 text-white"
+                ? "border-emerald-600 bg-emerald-600 text-white"
                 : overallStatus === "degraded"
-                ? "bg-amber-600 text-white"
-                : "bg-rose-600 text-white"
+                ? "border-amber-600 bg-amber-600 text-white"
+                : "border-red-600 bg-red-600 text-white"
             }`}
           >
             {overallStatus === "operational" ? (
@@ -143,65 +146,50 @@ export default function ServiceStatusPage() {
           </div>
 
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider opacity-75 font-mono">
-              Live System Status
+            <span className="text-[10px] font-bold uppercase tracking-wider font-mono text-neutral-500 block">
+              Global Platform Health
             </span>
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight">
+            <h2 className="text-2xl font-extrabold tracking-tight uppercase text-black">
               {overallStatus === "operational"
                 ? "All Systems Operational"
                 : overallStatus === "degraded"
-                ? "Partial Service Degradation Detected"
-                : "Critical Outage Active"}
-            </h1>
-            <p className="text-xs opacity-80 mt-0.5">
-              Automated telemetry probes and monitoring check status across all enterprise components.
+                ? "Degraded Performance Detected"
+                : "Active System Outage"}
+            </h2>
+            <p className="text-xs text-neutral-600 mt-1">
+              Automated telemetry probes verify health every 60 seconds with 99.98% SLA compliance.
             </p>
           </div>
         </div>
 
         <Link
-          href="/portal/catalog"
-          className="px-5 py-2.5 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 transition-colors shadow-xs shrink-0 text-center"
+          href="/portal/create-incident"
+          className="px-6 py-4 bg-black hover:bg-neutral-800 text-white text-xs font-bold font-mono uppercase tracking-wider transition-colors shrink-0 text-center"
         >
-          Report an Incident
+          Report a Problem &rarr;
         </Link>
       </div>
 
-      {/* Active Disruptions Section (If Any) */}
+      {/* Active Incidents */}
       {activeIncidents.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-rose-700 flex items-center gap-1.5">
-            <AlertTriangle className="w-4 h-4 text-rose-600" />
-            <span>Active Operational Investigations ({activeIncidents.length})</span>
-          </h2>
+        <div className="border-2 border-red-600 bg-white p-6 space-y-4">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-red-600" />
+            <h3 className="text-base font-extrabold uppercase text-black">
+              Active Operational Investigations ({activeIncidents.length})
+            </h3>
+          </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             {activeIncidents.map((t) => (
-              <div
-                key={t.id}
-                className="p-4 rounded-2xl border border-rose-200 bg-rose-50/70 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-rose-800">{t.number}</span>
-                    <span className="bg-rose-100 text-rose-800 px-2 py-0.2 rounded font-mono font-bold text-[10px]">
-                      P{t.priority} High Severity
-                    </span>
-                    {t.incident?.cmdbCi && (
-                      <span className="bg-white/80 px-2 py-0.2 rounded font-mono text-[10px] text-slate-700 border">
-                        Affected CI: {t.incident.cmdbCi.name}
-                      </span>
-                    )}
-                  </div>
-                  <p className="font-medium text-slate-900">{t.shortDescription}</p>
+              <div key={t.id} className="p-4 border border-red-200 bg-red-50/50 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-red-700">{t.number}</span>
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 bg-red-200 text-red-800 font-bold">
+                    P{t.priority} Investigation
+                  </span>
                 </div>
-
-                <Link
-                  href={`/workspace/incident/${t.id}`}
-                  className="px-3 py-1.5 rounded-lg bg-white border border-rose-300 text-rose-700 hover:bg-rose-50 text-[11px] font-semibold self-start sm:self-center"
-                >
-                  View Details
-                </Link>
+                <p className="text-xs font-bold text-black">{t.shortDescription}</p>
               </div>
             ))}
           </div>
@@ -210,56 +198,59 @@ export default function ServiceStatusPage() {
 
       {/* Services List with 90-Day Uptime Bars */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between border-b pb-2">
-          <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <Server className="w-4 h-4 text-blue-600" />
-            <span>Core Business & Infrastructure Services</span>
+        <div className="flex items-center justify-between border-b-2 border-black pb-2">
+          <h2 className="text-base font-extrabold uppercase text-black flex items-center gap-2">
+            <Server className="w-4 h-4 text-black" />
+            <span>Core Enterprise Services &amp; Infrastructure</span>
           </h2>
-          <span className="text-[11px] text-slate-500 font-mono">90-Day Historical Uptime</span>
+          <span className="text-xs font-mono uppercase font-bold text-neutral-500">
+            90-Day Telemetry
+          </span>
         </div>
 
         <div className="space-y-3">
-          {services.map((service) => {
+          {services.map((service, idx) => {
             const badge = getStatusBadge(service.status);
             const Icon = badge.icon;
+            const num = String(idx + 1).padStart(2, "0");
 
             return (
               <div
                 key={service.id}
-                className="p-5 rounded-2xl border bg-white shadow-xs hover:shadow-md transition-all space-y-3"
+                className="p-5 border-2 border-neutral-200 hover:border-black bg-white transition-all space-y-3"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="space-y-0.5">
+                  <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase font-mono text-slate-400">
+                      <span className="font-mono text-xs font-bold text-neutral-400">{num}</span>
+                      <span className="text-[10px] font-bold uppercase font-mono px-1.5 py-0.5 bg-neutral-100 text-neutral-600">
                         {service.category}
                       </span>
-                      <span className="text-slate-300">•</span>
-                      <h3 className="font-bold text-sm text-slate-900">{service.name}</h3>
+                      <h3 className="font-extrabold text-sm uppercase text-black">{service.name}</h3>
                     </div>
-                    <p className="text-xs text-slate-500">{service.description}</p>
+                    <p className="text-xs text-neutral-600">{service.description}</p>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${badge.bg}`}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-mono font-bold uppercase border ${badge.bg}`}
                     >
                       <Icon className="w-3.5 h-3.5" />
                       <span>{badge.label}</span>
                     </span>
-                    <span className="font-mono text-xs font-bold text-slate-700">
+                    <span className="font-mono text-xs font-extrabold text-black">
                       {service.uptimePercent.toFixed(2)}%
                     </span>
                   </div>
                 </div>
 
                 {/* 90-Day Uptime Bar Visualization */}
-                <div className="pt-2 border-t flex items-center gap-0.5">
+                <div className="pt-2 border-t border-neutral-100 flex items-center gap-1">
                   {Array.from({ length: 45 }).map((_, i) => (
                     <div
                       key={i}
                       title={`Day ${45 - i}: 100% Operational`}
-                      className="h-7 flex-1 rounded-xs bg-emerald-500/80 hover:bg-emerald-600 transition-colors cursor-pointer"
+                      className="h-5 flex-1 bg-emerald-600 hover:bg-black transition-colors cursor-pointer"
                     />
                   ))}
                 </div>

@@ -30,6 +30,8 @@ import {
   Package,
   Bot,
   FileCode,
+  Kanban,
+  Building2,
 } from "lucide-react";
 
 interface RibbonDropdownItem {
@@ -85,6 +87,16 @@ export function TopRibbonNav() {
       items: [
         { label: "Executive Dashboards", href: "/workspace/dashboard", icon: BarChart3 },
         { label: "Operations Center", href: "/workspace", icon: Activity },
+      ],
+    },
+    {
+      title: "Agile Hub",
+      icon: Kanban,
+      items: [
+        { label: "Agile Sprint Board", href: "/workspace/agile", icon: Kanban, badge: "New" },
+        { label: "User Stories (rm_story)", href: "/workspace/rm_story" },
+        { label: "Sprints (rm_sprint)", href: "/workspace/rm_sprint" },
+        { label: "Epics (rm_epic)", href: "/workspace/rm_epic" },
       ],
     },
     {

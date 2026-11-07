@@ -7,6 +7,7 @@ import { executeBusinessRules } from "@/lib/business-rules";
 import { triggerFlows } from "@/lib/flow-engine";
 import { evaluateAcl } from "@/lib/acl-engine";
 import { getServerSession } from "@/lib/auth";
+import { autoAssignTask } from "@/lib/assignment-engine";
 
 const ADMIN_ONLY_WRITE_TABLES = new Set(["sys_user", "sys_user_group", "sys_user_grmember", "sys_security_acl", "sys_user_role"]);
 
@@ -40,7 +41,19 @@ export async function GET(
     const parsedQuery = parseEncodedQuery(sysparmQuery);
 
     // Common query handler based on table
-    if (table === "incident" || table === "task" || table === "change_request" || table === "problem") {
+    if (
+      table === "incident" ||
+      table === "task" ||
+      table === "change_request" ||
+      table === "problem" ||
+      table === "sc_task" ||
+      table === "sc_request" ||
+      table === "sc_req_item" ||
+      table === "change_task" ||
+      table === "rm_story" ||
+      table === "rm_epic" ||
+      table === "rm_project"
+    ) {
       const where: any = {};
       if (table !== "task") {
         where.sysClassName = table;
@@ -118,6 +131,7 @@ export async function GET(
         }
         return {
           sys_id: t.id,
+          id: t.id,
           number: t.number,
           sys_class_name: t.sysClassName,
           short_description: t.shortDescription,
@@ -136,6 +150,9 @@ export async function GET(
           incident: t.incident,
           change_request: t.changeRequest,
           problem: t.problem,
+          root_cause: t.problem?.rootCause || undefined,
+          workaround: t.problem?.workaround || undefined,
+          is_known_error: t.problem ? t.problem.isKnownError : undefined,
           sla_instances: t.slaInstances,
           ...custom,
         };
@@ -150,12 +167,115 @@ export async function GET(
         skip: offset,
         orderBy: { name: "asc" },
         include: {
-          location: { select: { id: true, name: true } },
+          location: { select: { id: true, name: true, fullPath: true } },
+          space: { select: { id: true, name: true, spaceNumber: true } },
+          rack: { select: { id: true, name: true } },
           incidents: { select: { id: true } },
           changes: { select: { id: true } },
         },
       });
-      return NextResponse.json({ result: cis });
+      const formatted = cis.map((ci) => ({
+        ...ci,
+        sys_id: ci.id,
+        id: ci.id,
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "kb_knowledge") {
+      const where: any = {};
+      for (const cond of parsedQuery.conditions) {
+        if (cond.field === "category") where.category = cond.value;
+        if (cond.field === "is_published" || cond.field === "isPublished") where.isPublished = cond.value === "true";
+        if (cond.field === "number") where.number = cond.value;
+      }
+      const search = searchParams.get("search");
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: "insensitive" } },
+          { content: { contains: search, mode: "insensitive" } },
+          { category: { contains: search, mode: "insensitive" } },
+        ];
+      }
+      const articles = await db.knowledgeArticle.findMany({
+        where,
+        take: limit,
+        skip: offset,
+        orderBy: { createdAt: "desc" },
+        include: {
+          author: { select: { id: true, name: true, email: true } },
+        },
+      });
+      const formatted = articles.map((a) => ({
+        sys_id: a.id,
+        id: a.id,
+        number: a.number,
+        title: a.title,
+        short_description: a.title,
+        content: a.content,
+        category: a.category,
+        author_id: a.authorId,
+        author: a.author ? { value: a.author.id, display_value: a.author.name } : null,
+        views: a.views,
+        helpful_votes: a.helpfulVotes,
+        is_published: a.isPublished,
+        published_at: a.publishedAt.toISOString(),
+        sys_created_on: a.createdAt.toISOString(),
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "kb_knowledge_base") {
+      const records = await db.sysCustomRecord.findMany({
+        where: { tableName: "kb_knowledge_base" },
+        take: limit,
+        skip: offset,
+        orderBy: { createdAt: "desc" },
+      });
+      const formatted = records.map((r) => {
+        let parsed: any = {};
+        try {
+          parsed = JSON.parse(r.dataJson);
+        } catch {}
+        return {
+          sys_id: r.id,
+          id: r.id,
+          sys_created_on: r.createdAt.toISOString(),
+          sys_updated_on: r.updatedAt.toISOString(),
+          ...parsed,
+        };
+      });
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "rm_sprint") {
+      const records = await db.sysCustomRecord.findMany({
+        where: { tableName: "rm_sprint" },
+        take: limit,
+        skip: offset,
+        orderBy: { createdAt: "desc" },
+      });
+      const formatted = records.map((r) => {
+        let parsed: any = {};
+        try {
+          parsed = JSON.parse(r.dataJson);
+        } catch {}
+        return {
+          sys_id: r.id,
+          id: r.id,
+          number: parsed.number || "",
+          name: parsed.name || "",
+          state: parsed.state || "planning",
+          start_date: parsed.startDate || parsed.start_date || "",
+          end_date: parsed.endDate || parsed.end_date || "",
+          capacity_points: parsed.capacityPoints || parsed.capacity_points || 0,
+          goal: parsed.goal || "",
+          sys_created_on: r.createdAt.toISOString(),
+          sys_updated_on: r.updatedAt.toISOString(),
+          ...parsed,
+        };
+      });
+      return NextResponse.json({ result: formatted });
     }
 
     if (table === "sys_user") {
@@ -186,6 +306,65 @@ export async function GET(
         },
       });
       return NextResponse.json({ result: groups });
+    }
+
+    if (table === "task_checklist_item" || table === "task_checklist") {
+      let taskId = searchParams.get("task_id") || searchParams.get("taskId");
+      if (!taskId) {
+        const cond = parsedQuery.conditions.find((c) => c.field === "task_id" || c.field === "taskId");
+        if (cond) taskId = cond.value;
+      }
+      const items = await db.taskChecklistItem.findMany({
+        where: taskId ? { taskId } : {},
+        include: { completedBy: { select: { id: true, name: true, email: true } } },
+        orderBy: { sortOrder: "asc" },
+      });
+      const formatted = items.map((i) => ({
+        ...i,
+        sys_id: i.id,
+        order: i.sortOrder,
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "task_evidence") {
+      let taskId = searchParams.get("task_id") || searchParams.get("taskId");
+      if (!taskId) {
+        const cond = parsedQuery.conditions.find((c) => c.field === "task_id" || c.field === "taskId");
+        if (cond) taskId = cond.value;
+      }
+      const items = await db.taskEvidence.findMany({
+        where: taskId ? { taskId } : {},
+        include: { decidedBy: { select: { id: true, name: true, email: true } } },
+        orderBy: { createdAt: "desc" },
+      });
+      const formatted = items.map((e) => ({
+        ...e,
+        sys_id: e.id,
+        isAccepted: e.status === "accepted" ? true : e.status === "rejected" ? false : null,
+        is_accepted: e.status === "accepted" ? true : e.status === "rejected" ? false : null,
+        observationSummary: e.rawObservation,
+        observation_summary: e.rawObservation,
+        proposedFactField: e.claimField,
+        proposed_fact_field: e.claimField,
+        proposedFactValue: e.claimValue,
+        proposed_fact_value: e.claimValue,
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "cmn_morning_check") {
+      const shift = searchParams.get("shift");
+      const category = searchParams.get("category");
+      const where: any = {};
+      if (shift) where.shift = shift;
+      if (category) where.category = category;
+      const items = await db.cmnMorningCheck.findMany({
+        where,
+        include: { checkedBy: { select: { id: true, name: true, email: true } } },
+        orderBy: { createdAt: "desc" },
+      });
+      return NextResponse.json({ result: items });
     }
 
     if (table === "cmn_location") {
@@ -405,6 +584,78 @@ export async function GET(
         orderBy: { endDate: "asc" },
       });
       return NextResponse.json({ result: contracts });
+    }
+
+    if (table === "crm_organization") {
+      const orgs = await db.crmOrganization.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { name: "asc" },
+        include: {
+          assignedTo: { select: { id: true, name: true, email: true } },
+          contacts: { select: { id: true, name: true, email: true, title: true, isPrimary: true } },
+          deals: { select: { id: true, title: true, amount: true, stage: true } },
+          tasks: { select: { id: true, number: true, shortDescription: true, priority: true, state: true } },
+        },
+      });
+      const formatted = orgs.map((o) => ({
+        ...o,
+        sys_id: o.id,
+        id: o.id,
+        assigned_to: o.assignedTo ? { value: o.assignedTo.id, display_value: o.assignedTo.name } : null,
+        sys_created_on: o.createdAt.toISOString(),
+        sys_updated_on: o.updatedAt.toISOString(),
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "crm_contact") {
+      const contacts = await db.crmContact.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { lastName: "asc" },
+        include: {
+          organization: { select: { id: true, name: true, tier: true } },
+          deals: { select: { id: true, title: true, amount: true, stage: true } },
+          tasks: { select: { id: true, number: true, shortDescription: true, priority: true, state: true } },
+        },
+      });
+      const formatted = contacts.map((c) => ({
+        ...c,
+        sys_id: c.id,
+        id: c.id,
+        organization: c.organization ? { value: c.organization.id, display_value: c.organization.name } : null,
+        organization_name: c.organization?.name || null,
+        sys_created_on: c.createdAt.toISOString(),
+        sys_updated_on: c.updatedAt.toISOString(),
+      }));
+      return NextResponse.json({ result: formatted });
+    }
+
+    if (table === "crm_deal") {
+      const deals = await db.crmDeal.findMany({
+        take: limit,
+        skip: offset,
+        orderBy: { createdAt: "desc" },
+        include: {
+          organization: { select: { id: true, name: true, tier: true } },
+          contact: { select: { id: true, name: true, email: true } },
+          assignedTo: { select: { id: true, name: true, email: true } },
+        },
+      });
+      const formatted = deals.map((d) => ({
+        ...d,
+        sys_id: d.id,
+        id: d.id,
+        organization: d.organization ? { value: d.organization.id, display_value: d.organization.name } : null,
+        organization_name: d.organization?.name || null,
+        contact: d.contact ? { value: d.contact.id, display_value: d.contact.name } : null,
+        contact_name: d.contact?.name || null,
+        assigned_to: d.assignedTo ? { value: d.assignedTo.id, display_value: d.assignedTo.name } : null,
+        sys_created_on: d.createdAt.toISOString(),
+        sys_updated_on: d.updatedAt.toISOString(),
+      }));
+      return NextResponse.json({ result: formatted });
     }
 
     // Dynamic handling for any custom table registered in sys_db_object
@@ -753,15 +1004,208 @@ export async function POST(
       );
     }
 
+    if (table === "problem") {
+      const number = await getNextNumber("PRB");
+      const impact = parseInt(body.impact || "2", 10);
+      const urgency = parseInt(body.urgency || "2", 10);
+      const priority = body.priority ? parseInt(body.priority, 10) : calculatePriority(impact, urgency);
+
+      const task = await db.task.create({
+        data: {
+          number,
+          sysClassName: "problem",
+          shortDescription: body.short_description || body.shortDescription || "New Problem",
+          description: body.description || "",
+          priority,
+          impact,
+          urgency,
+          state: parseInt(body.state || "1", 10),
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+          assignmentGroupId: body.assignment_group_id || body.assignmentGroupId || null,
+          openedById: body.opened_by_id || body.openedById || callerUserId || null,
+          cmdbCiId: body.cmdb_ci_id || body.cmdbCiId || null,
+        },
+      });
+
+      const problem = await db.problem.create({
+        data: {
+          taskId: task.id,
+          rootCause: body.root_cause || body.rootCause || "",
+          workaround: body.workaround || "",
+          isKnownError: body.is_known_error !== undefined ? Boolean(body.is_known_error) : (body.isKnownError !== undefined ? Boolean(body.isKnownError) : false),
+        },
+      });
+
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: task.id,
+            id: task.id,
+            number: task.number,
+            short_description: task.shortDescription,
+            description: task.description,
+            state: task.state,
+            priority: task.priority,
+            impact: task.impact,
+            urgency: task.urgency,
+            root_cause: problem.rootCause,
+            workaround: problem.workaround,
+            is_known_error: problem.isKnownError,
+            problem_id: problem.id,
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "task_checklist_item" || table === "task_checklist") {
+      const taskId = body.task_id || body.taskId;
+      if (!taskId) {
+        return NextResponse.json({ error: "task_id is required" }, { status: 400 });
+      }
+      const item = await db.taskChecklistItem.create({
+        data: {
+          taskId,
+          title: body.title || "Checklist Step",
+          description: body.description || null,
+          isMandatory: Boolean(body.is_mandatory ?? body.isMandatory ?? false),
+          isCompleted: Boolean(body.is_completed ?? body.isCompleted ?? false),
+          sortOrder:
+            body.sort_order !== undefined
+              ? parseInt(body.sort_order, 10)
+              : body.order !== undefined
+              ? parseInt(body.order, 10)
+              : (body.sortOrder || 0),
+          completedById: body.completed_by_id || body.completedById || (body.is_completed || body.isCompleted ? callerUserId : null),
+          completedAt: body.is_completed || body.isCompleted ? new Date() : null,
+        },
+        include: { completedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            ...item,
+            sys_id: item.id,
+            order: item.sortOrder,
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "task_evidence") {
+      const taskId = body.task_id || body.taskId;
+      if (!taskId) {
+        return NextResponse.json({ error: "task_id is required" }, { status: 400 });
+      }
+      const claimField =
+        body.claim_field ||
+        body.claimField ||
+        body.proposed_fact_field ||
+        body.proposedFactField ||
+        "general";
+      const claimValue =
+        body.claim_value ||
+        body.claimValue ||
+        body.proposed_fact_value ||
+        body.proposedFactValue ||
+        "";
+      const isAccepted = body.is_accepted === true || body.status === "accepted";
+      const isRejected = body.is_accepted === false || body.status === "rejected";
+      const status =
+        body.status ||
+        (isAccepted
+          ? "accepted"
+          : isRejected
+          ? "rejected"
+          : "proposed");
+
+      const item = await db.taskEvidence.create({
+        data: {
+          taskId,
+          claimField,
+          claimValue,
+          evidenceKind: body.evidence_kind || body.evidenceKind || "log.stacktrace",
+          isDecisive: Boolean(body.is_decisive ?? body.isDecisive ?? false),
+          rawObservation:
+            body.raw_observation ||
+            body.rawObservation ||
+            body.observation_summary ||
+            body.observationSummary ||
+            body.raw_evidence_payload ||
+            body.rawEvidencePayload ||
+            "Diagnostic observation recorded",
+          sourceUrl: body.source_url || body.sourceUrl || null,
+          status,
+          decidedById:
+            body.decided_by_id ||
+            body.decidedById ||
+            (isAccepted || isRejected ? callerUserId : null),
+          decidedAt: isAccepted || isRejected ? new Date() : null,
+        },
+        include: { decidedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            ...item,
+            sys_id: item.id,
+            evidenceKind: item.evidenceKind,
+            isDecisive: item.isDecisive,
+            isAccepted: item.status === "accepted",
+            is_accepted: item.status === "accepted",
+            proposedFactField: item.claimField,
+            proposedFactValue: item.claimValue,
+            observationSummary: item.rawObservation,
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "cmn_morning_check") {
+      if (!body.title) {
+        return NextResponse.json({ error: "title is required" }, { status: 400 });
+      }
+      const targetSystem =
+        body.target_system || body.targetSystem || body.title || "Core-Infrastructure";
+      const shift = (body.shift || "morning").toLowerCase();
+      const status = (body.status || "pending").toLowerCase();
+      const category = (body.category || "datacenter").toLowerCase();
+
+      const check = await db.cmnMorningCheck.create({
+        data: {
+          title: body.title,
+          category,
+          targetSystem,
+          shift,
+          status,
+          notes: body.notes || null,
+          checkedById: body.checked_by_id || body.checkedById || callerUserId || null,
+          checkedAt: status !== "pending" ? new Date() : null,
+        },
+        include: { checkedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({ result: { ...check, sys_id: check.id } }, { status: 201 });
+    }
+
     if (table === "cmn_location") {
       const loc = await db.cmnLocation.create({
         data: {
           name: body.name,
+          locationType: body.location_type || body.locationType || null,
           street: body.street || null,
           city: body.city || null,
           state: body.state || null,
           country: body.country || null,
+          fullPath: body.full_path || body.fullPath || null,
           parentId: body.parent_id || body.parentId || null,
+          regionId: body.region_id || body.regionId || null,
+          stateRefId: body.state_ref_id || body.stateRefId || null,
+          campusId: body.campus_id || body.campusId || null,
+          buildingId: body.building_id || body.buildingId || null,
+          floorId: body.floor_id || body.floorId || null,
+          spaceId: body.space_id || body.spaceId || null,
         },
       });
       return NextResponse.json({ result: { sys_id: loc.id, ...loc } }, { status: 201 });
@@ -782,9 +1226,260 @@ export async function POST(
           tier: body.tier || null,
           owner: body.owner || null,
           locationId: body.location_id || body.locationId || null,
+          spaceId: body.space_id || body.spaceId || null,
+          rackId: body.rack_id || body.rackId || null,
+          rackUnitStart: body.rack_unit_start ? parseInt(body.rack_unit_start, 10) : (body.rackUnitStart ? parseInt(body.rackUnitStart, 10) : null),
+          rackUnitHeight: body.rack_unit_height ? parseInt(body.rack_unit_height, 10) : (body.rackUnitHeight ? parseInt(body.rackUnitHeight, 10) : 1),
         },
       });
-      return NextResponse.json({ result: { sys_id: ci.id, ...ci } }, { status: 201 });
+      return NextResponse.json({ result: { ...ci, sys_id: ci.id, id: ci.id } }, { status: 201 });
+    }
+
+    if (table === "kb_knowledge") {
+      const number = await getNextNumber("KB");
+      let authorId = body.author_id || body.authorId || callerUserId;
+      if (!authorId) {
+        const fallbackUser = await db.user.findFirst();
+        authorId = fallbackUser?.id || null;
+      }
+      if (!authorId) {
+        return NextResponse.json({ error: "Author is required to create a knowledge article." }, { status: 400 });
+      }
+
+      const article = await db.knowledgeArticle.create({
+        data: {
+          number,
+          title: body.title || body.short_description || "Untitled Article",
+          content: body.content || "",
+          category: body.category || "General",
+          authorId,
+          isPublished: body.is_published !== undefined ? Boolean(body.is_published) : (body.isPublished !== undefined ? Boolean(body.isPublished) : true),
+          views: 0,
+          helpfulVotes: 0,
+        },
+        include: {
+          author: { select: { id: true, name: true, email: true } },
+        },
+      });
+
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: article.id,
+            id: article.id,
+            number: article.number,
+            title: article.title,
+            short_description: article.title,
+            content: article.content,
+            category: article.category,
+            author_id: article.authorId,
+            author: article.author ? { value: article.author.id, display_value: article.author.name } : null,
+            is_published: article.isPublished,
+            views: article.views,
+            helpful_votes: article.helpfulVotes,
+            published_at: article.publishedAt.toISOString(),
+            sys_created_on: article.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "kb_knowledge_base") {
+      const number = await getNextNumber("KBB");
+      const kbData = {
+        number,
+        name: body.name || "Enterprise Knowledge Base",
+        description: body.description || "",
+        owner: body.owner || callerUserId || "System Administrator",
+        active: body.active !== undefined ? Boolean(body.active) : true,
+      };
+      const record = await db.sysCustomRecord.create({
+        data: {
+          tableName: "kb_knowledge_base",
+          dataJson: JSON.stringify(kbData),
+        },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: record.id,
+            id: record.id,
+            ...kbData,
+            sys_created_on: record.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "rm_story") {
+      const number = await getNextNumber("STRY");
+      const customAttrs = {
+        story_points: body.story_points !== undefined ? Number(body.story_points) : 3,
+        sprint_id: body.sprint_id || null,
+        sprint_name: body.sprint_name || null,
+        epic_name: body.epic_name || null,
+        acceptance_criteria: body.acceptance_criteria || "",
+      };
+      const task = await db.task.create({
+        data: {
+          number,
+          sysClassName: "rm_story",
+          shortDescription: body.short_description || body.shortDescription || "New Agile Story",
+          description: body.description || "",
+          priority: parseInt(body.priority || "3", 10),
+          state: parseInt(body.state || "1", 10),
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+          assignmentGroupId: body.assignment_group_id || body.assignmentGroupId || null,
+          dynamicFields: JSON.stringify(customAttrs),
+        },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: task.id,
+            id: task.id,
+            number: task.number,
+            short_description: task.shortDescription,
+            description: task.description,
+            state: String(task.state),
+            priority: String(task.priority),
+            assigned_to: body.assigned_to || null,
+            ...customAttrs,
+            sys_created_on: task.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "rm_sprint") {
+      const number = await getNextNumber("SPNT");
+      const sprintData = {
+        number,
+        name: body.name || `Sprint ${number}`,
+        state: body.state || "planning",
+        startDate: body.start_date || body.startDate || new Date().toISOString().split("T")[0],
+        endDate: body.end_date || body.endDate || new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
+        capacityPoints: body.capacity_points ? Number(body.capacity_points) : (body.capacityPoints ? Number(body.capacityPoints) : 40),
+        goal: body.goal || "",
+      };
+      const record = await db.sysCustomRecord.create({
+        data: {
+          tableName: "rm_sprint",
+          dataJson: JSON.stringify(sprintData),
+        },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: record.id,
+            id: record.id,
+            ...sprintData,
+            sys_created_on: record.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "rm_epic") {
+      const number = await getNextNumber("EPIC");
+      const task = await db.task.create({
+        data: {
+          number,
+          sysClassName: "rm_epic",
+          shortDescription: body.short_description || body.shortDescription || body.name || "New Epic",
+          description: body.description || "",
+          priority: parseInt(body.priority || "2", 10),
+          state: parseInt(body.state || "1", 10),
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+          dynamicFields: JSON.stringify({
+            owner: body.owner || body.assigned_to || null,
+            target_date: body.target_date || null,
+          }),
+        },
+      });
+      return NextResponse.json(
+        {
+          result: {
+            sys_id: task.id,
+            id: task.id,
+            number: task.number,
+            short_description: task.shortDescription,
+            description: task.description,
+            state: String(task.state),
+            priority: String(task.priority),
+            sys_created_on: task.createdAt.toISOString(),
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    if (table === "crm_organization") {
+      if (!body.name) {
+        return NextResponse.json({ error: "name is required" }, { status: 400 });
+      }
+      const org = await db.crmOrganization.create({
+        data: {
+          name: body.name,
+          domain: body.domain || null,
+          industry: body.industry || "technology",
+          tier: body.tier || "enterprise",
+          status: body.status || "active",
+          healthScore: body.health_score !== undefined ? Number(body.health_score) : (body.healthScore !== undefined ? Number(body.healthScore) : 95),
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+        },
+      });
+      return NextResponse.json({ result: { ...org, sys_id: org.id } }, { status: 201 });
+    }
+
+    if (table === "crm_contact") {
+      if (!body.first_name && !body.name) {
+        return NextResponse.json({ error: "first_name or name is required" }, { status: 400 });
+      }
+      if (!body.email) {
+        return NextResponse.json({ error: "email is required" }, { status: 400 });
+      }
+      const firstName = body.first_name || body.firstName || body.name?.split(" ")[0] || "Contact";
+      const lastName = body.last_name || body.lastName || body.name?.split(" ").slice(1).join(" ") || "";
+      const fullName = body.name || `${firstName} ${lastName}`.trim();
+
+      const contact = await db.crmContact.create({
+        data: {
+          firstName,
+          lastName,
+          name: fullName,
+          email: body.email,
+          phone: body.phone || null,
+          title: body.title || null,
+          isPrimary: Boolean(body.is_primary ?? body.isPrimary ?? false),
+          organizationId: body.organization_id || body.organizationId || null,
+        },
+      });
+      return NextResponse.json({ result: { ...contact, sys_id: contact.id } }, { status: 201 });
+    }
+
+    if (table === "crm_deal") {
+      if (!body.title) {
+        return NextResponse.json({ error: "title is required" }, { status: 400 });
+      }
+      const deal = await db.crmDeal.create({
+        data: {
+          title: body.title,
+          amount: body.amount !== undefined ? Number(body.amount) : 0.0,
+          stage: body.stage || "lead",
+          probability: body.probability !== undefined ? Number(body.probability) : 20,
+          expectedCloseDate: body.expected_close_date ? new Date(body.expected_close_date) : (body.expectedCloseDate ? new Date(body.expectedCloseDate) : null),
+          organizationId: body.organization_id || body.organizationId || null,
+          contactId: body.contact_id || body.contactId || null,
+          assignedToId: body.assigned_to_id || body.assignedToId || null,
+          notes: body.notes || null,
+        },
+      });
+      return NextResponse.json({ result: { ...deal, sys_id: deal.id } }, { status: 201 });
     }
 
     if (table === "sys_user") {
@@ -1023,36 +1718,13 @@ export async function POST(
       return NextResponse.json({ result: { sys_id: reservation.id, ...reservation } }, { status: 201 });
     }
 
-    if (table === "cmn_location") {
-      const loc = await db.cmnLocation.create({
-        data: {
-          name: body.name,
-          locationType: body.location_type || body.locationType || null,
-          street: body.street || null,
-          city: body.city || null,
-          state: body.state || null,
-          country: body.country || null,
-          fullPath: body.full_path || body.fullPath || null,
-          parentId: body.parent_id || body.parentId || null,
-          regionId: body.region_id || body.regionId || null,
-          stateRefId: body.state_ref_id || body.stateRefId || null,
-          campusId: body.campus_id || body.campusId || null,
-          buildingId: body.building_id || body.buildingId || null,
-          floorId: body.floor_id || body.floorId || null,
-          spaceId: body.space_id || body.spaceId || null,
-        },
-      });
-      return NextResponse.json({ result: { sys_id: loc.id, ...loc } }, { status: 201 });
-    }
-
-    // Dynamic Creation Handler for Any Custom Table
     const tableMeta = await db.sysDbObject.findUnique({
       where: { name: table },
     });
 
     if (tableMeta) {
       if (tableMeta.superClass === "task") {
-        const number = await getNextNumber("TASK");
+        const number = await getNextNumber(table as any);
         const task = await db.task.create({
           data: {
             number,

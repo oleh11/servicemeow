@@ -138,14 +138,14 @@ export function ReferenceField({
 
   return (
     <div className={`relative flex flex-col font-sans ${className}`}>
-      {/* M3 Outlined Container */}
+      {/* Swiss Outlined Container */}
       <div
-        className={`relative flex items-center min-h-[56px] px-4 rounded-[8px] border transition-all duration-150 bg-[var(--md-sys-color-surface-container-lowest)] ${
+        className={`relative flex items-center min-h-[56px] px-4 border-2 border-black transition-all duration-150 bg-white ${
           disabled
-            ? "opacity-60 bg-[var(--md-sys-color-surface-container-low)] border-[var(--md-sys-color-outline-variant)] cursor-not-allowed"
+            ? "opacity-60 bg-neutral-100 cursor-not-allowed"
             : error
-            ? "border-[var(--md-sys-color-error)] ring-1 ring-[var(--md-sys-color-error)]"
-            : "border-[var(--md-sys-color-outline-variant)] hover:border-[var(--md-sys-color-outline)] focus-within:border-[var(--md-sys-color-primary)] focus-within:ring-2 focus-within:ring-[var(--md-sys-color-primary)]/20 focus-within:border-2"
+            ? "border-red-600 ring-2 ring-red-600"
+            : "hover:bg-neutral-50 focus-within:border-[#eb0029] focus-within:ring-2 focus-within:ring-[#eb0029]/20"
         }`}
       >
         {/* Floating Label */}

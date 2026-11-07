@@ -3,16 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser, DEFAULT_PERSONAS } from "@/lib/user-context";
-import {
-  Cat,
-  Shield,
-  KeyRound,
-  ArrowRight,
-  CheckCircle,
-  AlertCircle,
-  Sparkles,
-  Loader2,
-} from "lucide-react";
+import { ArrowRight, AlertCircle, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -55,7 +46,6 @@ export default function LoginPage() {
 
   const handlePersonaLogin = async (persona: any) => {
     setErrorMsg("");
-    // Quick persona login only works when the server has ALLOW_DEV_PERSONA_LOGIN=true (non-production).
     setEmailInput(persona.email);
 
     setLoading(true);
@@ -82,130 +72,132 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="max-w-md w-full space-y-8 bg-slate-900/80 backdrop-blur-md p-8 rounded-2xl border border-slate-800 shadow-2xl relative z-10">
-        {/* Brand header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 items-center justify-center font-bold text-slate-950 shadow-lg shadow-emerald-500/20 mb-2">
-            <Cat className="w-7 h-7 text-slate-950" />
-          </div>
-          <h2 className="text-2xl font-extrabold tracking-tight text-white flex items-center justify-center gap-2">
-            Service<span className="text-emerald-400">Meow</span>
-            <span className="text-[10px] uppercase font-bold tracking-wider bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/40">
-              Purr-ITSM
+    <div className="min-h-screen bg-neutral-100 text-black flex flex-col justify-center items-center px-4 py-12">
+      <div className="max-w-xl w-full border-2 border-black bg-white p-8 md:p-10 space-y-8">
+        {/* Brand Header */}
+        <div className="border-b-2 border-black pb-6 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-sm uppercase tracking-widest font-extrabold text-black">
+              SERVICEMEOW ■
             </span>
-          </h2>
-          <p className="text-xs text-slate-400">
-            Enterprise Cloud Service Management & ITIL Workflow Engine
+            <span className="font-mono text-xs uppercase px-2 py-0.5 bg-black text-white font-bold">
+              SWISS GRID SYSTEM
+            </span>
+          </div>
+          <h1 className="text-3xl font-extrabold tracking-tight uppercase text-black">
+            Sign In &amp; Access Roles
+          </h1>
+          <p className="text-xs sm:text-sm text-neutral-600">
+            Click any role below for instant 1-click access, or log in with custom email credentials.
           </p>
         </div>
 
         {errorMsg && (
-          <div className="p-3 bg-rose-500/20 border border-rose-500/40 rounded-lg text-rose-300 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="p-4 border-2 border-red-600 bg-red-50 text-red-800 text-xs font-mono flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 shrink-0 text-red-600" />
             <span>{errorMsg}</span>
           </div>
         )}
 
-        {/* Email & Password Login Form */}
-        <form onSubmit={handleCustomLogin} className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Email or Username
-            </label>
-            <div className="relative">
+        {/* 1-Click Fast Persona Switcher */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono uppercase font-bold text-neutral-600">
+              1-Click Instant Persona Sign-In:
+            </span>
+            <span className="text-[10px] font-mono uppercase text-neutral-400">
+              Zero Password Required
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2.5">
+            {DEFAULT_PERSONAS.map((p, idx) => {
+              const num = String(idx + 1).padStart(2, "0");
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => handlePersonaLogin(p)}
+                  disabled={loading}
+                  className="w-full text-left p-3.5 border border-neutral-300 hover:border-black hover:bg-neutral-50 transition-all flex items-center justify-between group cursor-pointer disabled:opacity-40"
+                >
+                  <div className="flex items-center space-x-3">
+                    <span className="font-mono text-xs font-bold text-neutral-400 group-hover:text-black">
+                      {num}
+                    </span>
+                    <img
+                      src={p.avatar}
+                      alt={p.name}
+                      className="w-8 h-8 rounded-none border border-neutral-300 object-cover"
+                    />
+                    <div>
+                      <span className="font-bold text-xs uppercase tracking-tight text-black block">
+                        {p.name}
+                      </span>
+                      <span className="text-[11px] text-neutral-500">{p.title}</span>
+                    </div>
+                  </div>
+
+                  <span className="font-mono text-[10px] uppercase font-bold px-2 py-1 border border-black bg-neutral-100 group-hover:bg-black group-hover:text-white transition-colors">
+                    {p.role} &rarr;
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Custom Credential Divider */}
+        <div className="relative border-t border-neutral-300 pt-6 space-y-4">
+          <span className="text-xs font-mono uppercase font-bold text-neutral-600 block">
+            Or Sign In With Account Email:
+          </span>
+
+          <form onSubmit={handleCustomLogin} className="space-y-4">
+            <div>
+              <label htmlFor="login-email" className="block text-xs font-mono uppercase font-bold text-neutral-700 mb-1">
+                Email Address
+              </label>
               <input
+                id="login-email"
                 type="text"
                 required
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
-                placeholder="name@servicemeow.io or admin"
-                className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 focus:border-emerald-400"
+                placeholder="taylor.reed@servicemeow.io or admin"
+                className="w-full text-sm px-3.5 py-2.5 border border-neutral-400 text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
               />
             </div>
-          </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-semibold text-slate-300">
-                Password (bcrypt protected)
+            <div>
+              <label htmlFor="login-password" className="block text-xs font-mono uppercase font-bold text-neutral-700 mb-1">
+                Password
               </label>
+              <input
+                id="login-password"
+                type="password"
+                required
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                placeholder="••••••••••••"
+                className="w-full text-sm px-3.5 py-2.5 border border-neutral-400 text-black placeholder:text-neutral-400 focus:outline-none focus:border-black"
+              />
             </div>
-            <input
-              type="password"
-              required
-              value={passwordInput}
-              onChange={(e) => setPasswordInput(e.target.value)}
-              placeholder="••••••••••••"
-              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-400"
-            />
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold py-2 px-4 rounded-lg text-xs transition-colors shadow-lg shadow-emerald-600/20"
-          >
-            {loading ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <>
-                <span>Sign In with Secure Session</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </>
-            )}
-          </button>
-        </form>
-
-        {/* 1-Click Fast Persona Switcher */}
-        <div className="pt-4 border-t border-slate-800 space-y-3">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
-            <span>Or 1-Click Persona Login (Server DB Session):</span>
-            <span className="text-[10px] text-emerald-400 font-mono">Secure DB RBAC</span>
-          </div>
-
-          <div className="space-y-2">
-            {DEFAULT_PERSONAS.map((p) => (
-              <button
-                key={p.id}
-                onClick={() => handlePersonaLogin(p)}
-                disabled={loading}
-                className="w-full p-2.5 rounded-xl bg-slate-950/60 hover:bg-slate-950 border border-slate-800 hover:border-emerald-500/50 flex items-center justify-between transition-all group disabled:opacity-50"
-              >
-                <div className="flex items-center space-x-3">
-                  <img
-                    src={p.avatar}
-                    alt={p.name}
-                    className="w-7 h-7 rounded-full object-cover ring-1 ring-slate-700"
-                  />
-                  <div className="text-left">
-                    <span className="font-semibold text-xs text-slate-200 block group-hover:text-emerald-300 transition-colors">
-                      {p.name}
-                    </span>
-                    <span className="text-[10px] text-slate-500">{p.title}</span>
-                  </div>
-                </div>
-
-                <span
-                  className={`text-[9px] uppercase font-bold px-2 py-0.5 rounded border ${
-                    p.role === "admin"
-                      ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
-                      : p.role === "itil"
-                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                      : p.role === "cab_approver"
-                      ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                      : "bg-slate-800 text-slate-300 border-slate-700"
-                  }`}
-                >
-                  {p.role}
-                </span>
-              </button>
-            ))}
-          </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-40 cursor-pointer"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <span>Sign In with Credentials</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
         </div>
       </div>
     </div>

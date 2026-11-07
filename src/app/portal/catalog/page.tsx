@@ -19,6 +19,7 @@ import {
   Key,
   Building2,
   Calendar,
+  ArrowLeft,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -39,9 +40,12 @@ export default async function CatalogPortalPage({
 
   const categories = Array.from(new Set(allItems.map((i) => i.category)));
 
-  const items = activeCategory === "all"
-    ? allItems
-    : allItems.filter((i) => i.category.toLowerCase() === activeCategory.toLowerCase());
+  const items =
+    activeCategory === "all"
+      ? allItems
+      : allItems.filter(
+          (i) => i.category.toLowerCase() === activeCategory.toLowerCase()
+        );
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -80,33 +84,37 @@ export default async function CatalogPortalPage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Catalog Banner */}
-      <div className="bg-gradient-to-r from-emerald-800 via-slate-900 to-indigo-900 rounded-2xl p-6 sm:p-8 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold">
-            <ShoppingBag className="w-3.5 h-3.5" />
-            <span>Enterprise Procurement & Workplace Services</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Service Catalog & Logistics
+      {/* Swiss Header */}
+      <div className="border-b-2 border-black pb-6 space-y-2">
+        <Link
+          href="/portal"
+          className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-neutral-600 hover:text-black mb-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>&larr; Back to Main Screen</span>
+        </Link>
+        <div className="flex items-baseline gap-3">
+          <span className="font-mono text-sm font-bold text-blue-600">02 /</span>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight uppercase text-black">
+            Order Equipment & Services
           </h1>
-          <p className="text-xs text-slate-300 max-w-xl">
-            Order certified developer laptops, cloud entitlements, ergonomic standing desks, conference room AV setups, and physical badge access.
-          </p>
         </div>
+        <p className="text-sm sm:text-base text-neutral-600 max-w-2xl">
+          Request new laptops, software licenses, desk accessories, and office permissions. Your manager and IT will approve and deliver them.
+        </p>
       </div>
 
-      {/* Category Filter Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+      {/* Category Modular Switcher */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-neutral-200 pb-4">
         <Link
           href="/portal/catalog"
-          className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 ${
+          className={`px-4 py-2 text-xs font-bold font-mono uppercase tracking-wider transition-all border ${
             activeCategory === "all"
-              ? "bg-emerald-600 text-white shadow-xs"
-              : "bg-white text-slate-600 border hover:bg-slate-50"
+              ? "bg-black text-white border-black"
+              : "bg-white text-neutral-700 border-neutral-300 hover:border-black"
           }`}
         >
-          All Offerings ({allItems.length})
+          All Items ({allItems.length})
         </Link>
         {categories.map((cat) => {
           const isSelected = activeCategory.toLowerCase() === cat.toLowerCase();
@@ -115,10 +123,10 @@ export default async function CatalogPortalPage({
             <Link
               key={cat}
               href={`/portal/catalog?category=${encodeURIComponent(cat)}`}
-              className={`px-3 py-1.5 rounded-full font-bold transition-all shrink-0 ${
+              className={`px-4 py-2 text-xs font-bold font-mono uppercase tracking-wider transition-all border ${
                 isSelected
-                  ? "bg-emerald-600 text-white shadow-xs"
-                  : "bg-white text-slate-600 border hover:bg-slate-50"
+                  ? "bg-black text-white border-black"
+                  : "bg-white text-neutral-700 border-neutral-300 hover:border-black"
               }`}
             >
               {cat} ({count})
@@ -127,52 +135,62 @@ export default async function CatalogPortalPage({
         })}
       </div>
 
-      {/* Catalog Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {items.map((item) => {
+      {/* Swiss Grid Catalog Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {items.map((item, idx) => {
           const Icon = getIcon(item.icon);
+          const indexFormatted = String(idx + 1).padStart(2, "0");
           return (
             <div
               key={item.id}
-              className="bg-white rounded-xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-emerald-500/50 transition-all flex flex-col justify-between overflow-hidden group"
+              className="border-2 border-neutral-200 hover:border-black bg-white transition-all flex flex-col justify-between group p-6 space-y-6"
             >
-              <div className="p-5 space-y-4">
+              <div className="space-y-4">
                 <div className="flex items-start justify-between">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <div className="p-3 bg-neutral-100 group-hover:bg-black group-hover:text-white transition-colors">
                     <Icon className="w-6 h-6" />
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                    {item.category}
+                  <span className="font-mono text-xs font-bold text-neutral-400">
+                    {indexFormatted}
                   </span>
                 </div>
 
-                <div className="space-y-1.5">
-                  <h3 className="font-bold text-slate-900 text-sm group-hover:text-emerald-700 transition-colors">
+                <div>
+                  <span className="text-[10px] font-mono uppercase font-bold tracking-widest text-neutral-500 block mb-1">
+                    {item.category}
+                  </span>
+                  <h3 className="font-extrabold text-black text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors">
                     {item.name}
                   </h3>
-                  <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
+                  <p className="text-xs text-neutral-600 mt-2 leading-relaxed">
                     {item.shortDescription}
                   </p>
                 </div>
               </div>
 
-              {/* Card Footer with Price & Action */}
-              <div className="px-5 py-3.5 bg-slate-50 border-t flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-bold font-mono text-slate-900">
-                    {item.price === 0 ? "Free / Entitled" : `$${item.price.toLocaleString()}`}
-                  </span>
-                  <div className="text-[10px] text-slate-400 flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> SLA: {item.deliveryDays} business days
+              <div className="border-t border-neutral-200 pt-4 space-y-4">
+                <div className="flex items-center justify-between text-xs">
+                  <div>
+                    <span className="font-mono text-[10px] uppercase text-neutral-400 block">Cost</span>
+                    <span className="font-bold font-mono text-black">
+                      {item.price === 0 ? "Included / Free" : `$${item.price.toLocaleString()}`}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-mono text-[10px] uppercase text-neutral-400 block">Delivery</span>
+                    <span className="text-neutral-700 font-mono flex items-center gap-1 justify-end">
+                      <Clock className="w-3 h-3 text-neutral-400" />
+                      {item.deliveryDays} business days
+                    </span>
                   </div>
                 </div>
 
                 <Link
                   href={`/portal/catalog/${item.id}`}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-colors"
+                  className="w-full py-3 bg-neutral-100 hover:bg-black hover:text-white text-black font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all border border-neutral-300 group-hover:border-black"
                 >
-                  <span>Configure & Order</span>
-                  <ArrowRight className="w-3 h-3" />
+                  <span>Order Item</span>
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>

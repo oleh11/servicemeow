@@ -50,7 +50,17 @@ function normalizeKey(key: string): string {
  */
 export async function getNextTaskNumber(tableName: string = "incident", customPrefix?: string): Promise<string> {
   const meta = TABLE_METADATA[tableName];
-  const prefix = customPrefix || meta?.numberPrefix || tableName.substring(0, 3).toUpperCase();
+  let prefix = customPrefix || meta?.numberPrefix;
+  if (!prefix) {
+    if (tableName === "cmn_reservation") prefix = "RES";
+    else if (tableName === "sc_task" || tableName === "task") prefix = "TASK";
+    else if (tableName === "change_task") prefix = "CTASK";
+    else if (tableName === "rm_story") prefix = "STRY";
+    else if (tableName === "rm_sprint") prefix = "SPNT";
+    else if (tableName === "rm_epic") prefix = "EPIC";
+    else if (tableName === "rm_project") prefix = "PRJ";
+    else prefix = tableName.substring(0, 3).toUpperCase();
+  }
   const digits = 7;
 
   // Use an atomic upsert transaction
@@ -71,9 +81,8 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
             initialNumber = parseInt(match[0], 10) + 1;
           }
         }
-      } else if (tableName === "incident" || tableName === "task" || tableName === "change_request" || tableName === "problem") {
-        const highest = await tx.task.findFirst({
-          where: tableName !== "task" ? { sysClassName: tableName } : {},
+      } else if (tableName === "kb_knowledge") {
+        const highest = await tx.knowledgeArticle.findFirst({
           orderBy: { number: "desc" },
         });
         if (highest?.number) {
@@ -81,6 +90,65 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
           if (match) {
             initialNumber = parseInt(match[0], 10) + 1;
           }
+        }
+      } else if (tableName === "kb_knowledge_base" || tableName === "rm_sprint" || tableName.startsWith("u_")) {
+        const records = await tx.sysCustomRecord.findMany({
+          where: { tableName },
+          select: { dataJson: true },
+        });
+        let maxNum = 1000;
+        for (const r of records) {
+          try {
+            const data = JSON.parse(r.dataJson);
+            if (data.number) {
+              const m = String(data.number).match(/\d+$/);
+              if (m) {
+                const n = parseInt(m[0], 10);
+                if (n > maxNum) maxNum = n;
+              }
+            }
+          } catch {}
+        }
+        if (maxNum >= 1001) {
+          initialNumber = maxNum + 1;
+        }
+      } else if (
+        tableName === "incident" ||
+        tableName === "task" ||
+        tableName === "change_request" ||
+        tableName === "problem" ||
+        tableName === "sc_task" ||
+        tableName === "sc_request" ||
+        tableName === "sc_req_item" ||
+        tableName === "change_task" ||
+        tableName === "rm_story" ||
+        tableName === "rm_epic" ||
+        tableName === "rm_project"
+      ) {
+        const highest = await tx.task.findFirst({
+          where: {
+            ...(tableName !== "task" ? { sysClassName: tableName } : {}),
+            number: { startsWith: prefix },
+          },
+          orderBy: { number: "desc" },
+        });
+        if (highest?.number) {
+          const prefixRegex = new RegExp(`^${prefix}(\\d+)$`);
+          const match = highest.number.match(prefixRegex);
+          if (match && match[1]) {
+            initialNumber = parseInt(match[1], 10) + 1;
+          }
+        }
+      }
+
+      // Ensure candidate initialNumber is not already used in Task
+      if (tableName !== "cmn_reservation" && tableName !== "kb_knowledge") {
+        let candidatePadded = String(initialNumber).padStart(digits, "0");
+        let exists = await tx.task.findUnique({ where: { number: `${prefix}${candidatePadded}` } });
+        while (exists) {
+          initialNumber++;
+          candidatePadded = String(initialNumber).padStart(digits, "0");
+          exists = await tx.task.findUnique({ where: { number: `${prefix}${candidatePadded}` } });
         }
       }
 
@@ -97,6 +165,7 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
       let nextNum = sysNum.currentNumber + 1;
       if (tableName === "cmn_reservation") {
         const highest = await tx.cmnReservation.findFirst({
+          where: { number: { startsWith: prefix } },
           orderBy: { number: "desc" },
         });
         if (highest?.number) {
@@ -108,20 +177,115 @@ export async function getNextTaskNumber(tableName: string = "incident", customPr
             }
           }
         }
+        // Advance if reservation number already exists
+        let candidatePadded = String(nextNum).padStart(digits, "0");
+        let exists = await tx.cmnReservation.findUnique({ where: { number: `${prefix}${candidatePadded}` } });
+        while (exists) {
+          nextNum++;
+          candidatePadded = String(nextNum).padStart(digits, "0");
+          exists = await tx.cmnReservation.findUnique({ where: { number: `${prefix}${candidatePadded}` } });
+        }
+      } else if (tableName === "kb_knowledge") {
+        const highest = await tx.knowledgeArticle.findFirst({
+          where: { number: { startsWith: prefix } },
+          orderBy: { number: "desc" },
+        });
+        if (highest?.number) {
+          const match = highest.number.match(/\d+$/);
+          if (match) {
+            const highestNum = parseInt(match[0], 10);
+            if (nextNum <= highestNum) {
+              nextNum = highestNum + 1;
+            }
+          }
+        }
+        let candidatePadded = String(nextNum).padStart(digits, "0");
+        let exists = await tx.knowledgeArticle.findUnique({ where: { number: `${prefix}${candidatePadded}` } });
+        while (exists) {
+          nextNum++;
+          candidatePadded = String(nextNum).padStart(digits, "0");
+          exists = await tx.knowledgeArticle.findUnique({ where: { number: `${prefix}${candidatePadded}` } });
+        }
+      } else if (tableName === "kb_knowledge_base" || tableName === "rm_sprint" || tableName.startsWith("u_")) {
+        const records = await tx.sysCustomRecord.findMany({
+          where: { tableName },
+          select: { dataJson: true },
+        });
+        let maxNum = 0;
+        for (const r of records) {
+          try {
+            const data = JSON.parse(r.dataJson);
+            if (data.number && String(data.number).startsWith(prefix)) {
+              const m = String(data.number).match(/\d+$/);
+              if (m) {
+                const n = parseInt(m[0], 10);
+                if (n > maxNum) maxNum = n;
+              }
+            }
+          } catch {}
+        }
+        if (nextNum <= maxNum) {
+          nextNum = maxNum + 1;
+        }
+      } else if (
+        tableName === "incident" ||
+        tableName === "task" ||
+        tableName === "change_request" ||
+        tableName === "problem" ||
+        tableName === "sc_task" ||
+        tableName === "sc_request" ||
+        tableName === "sc_req_item" ||
+        tableName === "change_task" ||
+        tableName === "rm_story" ||
+        tableName === "rm_epic" ||
+        tableName === "rm_project"
+      ) {
+        const highest = await tx.task.findFirst({
+          where: {
+            ...(tableName !== "task" ? { sysClassName: tableName } : {}),
+            number: { startsWith: prefix },
+          },
+          orderBy: { number: "desc" },
+        });
+        if (highest?.number) {
+          const prefixRegex = new RegExp(`^${prefix}(\\d+)$`);
+          const match = highest.number.match(prefixRegex);
+          if (match && match[1]) {
+            const highestNum = parseInt(match[1], 10);
+            if (highestNum > 0 && highestNum < 2000000000 && nextNum <= highestNum) {
+              nextNum = highestNum + 1;
+            }
+          }
+        }
+
+        // Guarantee collision avoidance: check if candidate number is already occupied in Task
+        let candidatePadded = String(nextNum).padStart(sysNum.digits || digits, "0");
+        let exists = await tx.task.findUnique({ where: { number: `${prefix}${candidatePadded}` } });
+        while (exists) {
+          nextNum++;
+          candidatePadded = String(nextNum).padStart(sysNum.digits || digits, "0");
+          exists = await tx.task.findUnique({ where: { number: `${prefix}${candidatePadded}` } });
+        }
+      }
+
+      const updateData: any = {
+        currentNumber: nextNum,
+      };
+      // Self-heal corrupted or misconfigured prefixes in sys_number
+      if (sysNum.prefix !== prefix) {
+        updateData.prefix = prefix;
       }
 
       sysNum = await tx.sysNumber.update({
         where: { tableName },
-        data: {
-          currentNumber: nextNum,
-        },
+        data: updateData,
       });
       return sysNum;
     }
   });
 
   const paddedNum = String(record.currentNumber).padStart(record.digits || digits, "0");
-  return `${record.prefix}${paddedNum}`;
+  return `${prefix}${paddedNum}`;
 }
 
 /**

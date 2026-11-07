@@ -176,6 +176,8 @@ export default function UnifiedLocationsPage() {
       else if (field === "parent") body.parent_id = val === "none" ? null : val;
       else if (field === "city") body.city = val.trim();
       else if (field === "state") body.state = val.trim();
+      else if (field === "street") body.street = val.trim();
+      else if (field === "country") body.country = val.trim();
 
       const res = await fetch(`/api/now/table/cmn_location/${id}`, {
         method: "PATCH",

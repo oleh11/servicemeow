@@ -28,16 +28,17 @@ export interface ReportItem {
   filterQuery?: string;
 }
 
-const M3_COLORS = [
-  "#0b57d0", // Primary Blue
-  "#7c5295", // Tertiary Purple
-  "#006874", // Cyan
-  "#ba1a1a", // Red
-  "#3b6939", // Green
-  "#904d00", // Orange
-  "#6750a4", // Indigo
-  "#7d5260", // Rose
+const SWISS_COLORS = [
+  "#000000", // Black
+  "#eb0029", // Swiss Red
+  "#2563eb", // Royal Blue
+  "#16a34a", // Emerald Green
+  "#d97706", // Amber
+  "#7c3aed", // Violet
+  "#0891b2", // Cyan
+  "#475569", // Slate
 ];
+const M3_COLORS = SWISS_COLORS;
 
 export function ReportBuilder() {
   const [reports, setReports] = useState<any[]>([]);
@@ -156,35 +157,33 @@ export function ReportBuilder() {
 
   return (
     <div className="space-y-6">
-      {/* Top Header Card */}
-      <div
-        className="p-6 rounded-[20px] border shadow-[var(--md-sys-elevation-1)] flex flex-col md:flex-row md:items-center justify-between gap-4"
-        style={{
-          backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-          borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-        }}
-      >
+      {/* Swiss Header Bar */}
+      <div className="border-b-2 border-black pb-6 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-[var(--md-sys-color-primary,#0b57d0)]" />
-            <h1 className="text-xl font-bold tracking-tight">Ad-Hoc Report & Analytics Builder</h1>
-            <span className="text-[10px] font-mono uppercase bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
-              sys_report
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-mono text-xs uppercase font-extrabold px-2 py-0.5 bg-black text-white">
+              REPORTING
+            </span>
+            <span className="font-mono text-xs uppercase font-bold text-neutral-500">
+              04 / Ad-Hoc Analytics
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Build, execute, and visualize real-time enterprise metrics across ITIL tables with native M3 chart components.
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight uppercase text-black">
+            Report & Analytics Builder
+          </h1>
+          <p className="text-xs sm:text-sm text-neutral-600 mt-1 max-w-2xl">
+            Build, execute, and visualize real-time enterprise metrics across ITIL tables with Swiss graphic data structures.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {reports.length > 0 && (
-            <div className="flex items-center gap-1.5">
-              <FolderOpen className="w-4 h-4 text-slate-400" />
+            <div className="flex items-center gap-1.5 border-2 border-black bg-white px-2 py-1 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+              <FolderOpen className="w-3.5 h-3.5 text-black" />
               <select
                 value={selectedReportId}
                 onChange={(e) => handleSelectSavedReport(e.target.value)}
-                className="bg-slate-50 border rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none"
+                className="bg-transparent font-mono text-xs font-bold text-black focus:outline-none"
               >
                 <option value="">-- Load Saved Report --</option>
                 {reports.map((r) => (
@@ -200,7 +199,7 @@ export function ReportBuilder() {
             type="button"
             onClick={executeReport}
             disabled={running}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-[var(--md-sys-color-primary,#0b57d0)] text-white hover:opacity-95 shadow-xs transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider bg-[#eb0029] text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-black transition-all"
           >
             <Play className={`w-3.5 h-3.5 ${running ? "animate-spin" : ""}`} />
             <span>{running ? "Calculating..." : "Run Report"}</span>
@@ -210,7 +209,7 @@ export function ReportBuilder() {
             type="button"
             onClick={handleSaveReport}
             disabled={saving}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold border border-[var(--md-sys-color-outline,#79747e)] text-slate-800 hover:bg-black/5 transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-mono font-bold uppercase tracking-wider bg-white text-black border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-neutral-100 transition-all"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{saving ? "Saving..." : "Save Report"}</span>
@@ -219,43 +218,46 @@ export function ReportBuilder() {
       </div>
 
       {statusMsg && (
-        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-          <CheckCircle className="w-4 h-4" />
-          <span>{statusMsg}</span>
+        <div className="p-3 bg-emerald-50 border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] font-mono text-xs text-emerald-900 flex items-center gap-2">
+          <CheckCircle className="w-4 h-4 text-emerald-700" />
+          <span className="font-bold">{statusMsg}</span>
         </div>
       )}
 
       {/* Main Grid: Controls + Visual Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Configuration Form */}
-        <div
-          className="p-5 rounded-[16px] border shadow-[var(--md-sys-elevation-1)] space-y-4"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 border-b pb-2 flex items-center gap-1.5">
-            <Filter className="w-3.5 h-3.5 text-[var(--md-sys-color-primary,#0b57d0)]" />
-            <span>Report Parameters</span>
-          </h2>
+        <div className="p-6 bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] space-y-4">
+          <div className="flex items-center justify-between border-b-2 border-black pb-3">
+            <h2 className="text-xs font-mono font-extrabold uppercase tracking-wider text-black flex items-center gap-2">
+              <Filter className="w-4 h-4 text-[#eb0029]" />
+              <span>Report Parameters</span>
+            </h2>
+            <span className="font-mono text-[10px] uppercase font-bold px-2 py-0.5 bg-neutral-100 border border-black">
+              sys_report
+            </span>
+          </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Report Title</label>
+            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-black mb-1.5">
+              Report Title
+            </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-blue-500"
+              className="w-full bg-neutral-50 border-2 border-black px-3 py-2 text-xs font-mono text-black focus:outline-none focus:ring-2 focus:ring-[#eb0029]"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Source Table</label>
+            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-black mb-1.5">
+              Source Table
+            </label>
             <select
               value={tableName}
               onChange={(e) => setTableName(e.target.value)}
-              className="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-blue-500"
+              className="w-full bg-neutral-50 border-2 border-black px-3 py-2 text-xs font-mono text-black focus:outline-none focus:ring-2 focus:ring-[#eb0029]"
             >
               <option value="incident">Incident [incident]</option>
               <option value="change_request">Change Request [change_request]</option>
@@ -266,7 +268,9 @@ export function ReportBuilder() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Visual Visualization Type</label>
+            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-black mb-1.5">
+              Visual Visualization Type
+            </label>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { type: "bar", label: "Bar", icon: BarChart3 },
@@ -282,10 +286,10 @@ export function ReportBuilder() {
                     key={item.type}
                     type="button"
                     onClick={() => setReportType(item.type as any)}
-                    className={`flex flex-col items-center justify-center p-2 rounded-xl border text-[11px] font-medium transition-all ${
+                    className={`flex flex-col items-center justify-center p-2.5 border-2 border-black font-mono text-xs transition-all ${
                       isSelected
-                        ? "bg-blue-50 border-blue-600 text-blue-700 font-bold"
-                        : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                        ? "bg-black text-white font-extrabold shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                        : "bg-white text-neutral-800 hover:bg-neutral-100 shadow-[1px_1px_0px_rgba(0,0,0,1)]"
                     }`}
                   >
                     <Icon className="w-4 h-4 mb-1" />
@@ -297,11 +301,13 @@ export function ReportBuilder() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Group By Field</label>
+            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-black mb-1.5">
+              Group By Field
+            </label>
             <select
               value={groupBy}
               onChange={(e) => setGroupBy(e.target.value)}
-              className="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-blue-500"
+              className="w-full bg-neutral-50 border-2 border-black px-3 py-2 text-xs font-mono text-black focus:outline-none focus:ring-2 focus:ring-[#eb0029]"
             >
               <option value="priority">Priority</option>
               <option value="state">State</option>
@@ -313,11 +319,13 @@ export function ReportBuilder() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">Aggregation Function</label>
+            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-black mb-1.5">
+              Aggregation Function
+            </label>
             <select
               value={aggregation}
               onChange={(e) => setAggregation(e.target.value)}
-              className="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs text-slate-800 focus:outline-blue-500"
+              className="w-full bg-neutral-50 border-2 border-black px-3 py-2 text-xs font-mono text-black focus:outline-none focus:ring-2 focus:ring-[#eb0029]"
             >
               <option value="count">Count (Records)</option>
               <option value="sum">Sum</option>
@@ -326,7 +334,7 @@ export function ReportBuilder() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-black mb-1.5">
               Encoded Query Filter (sysparm_query)
             </label>
             <input
@@ -334,30 +342,24 @@ export function ReportBuilder() {
               value={filterQuery}
               onChange={(e) => setFilterQuery(e.target.value)}
               placeholder="e.g. active=true^priority=1"
-              className="w-full bg-slate-50 border rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-blue-500"
+              className="w-full bg-neutral-50 border-2 border-black px-3 py-2 text-xs font-mono text-black focus:outline-none focus:ring-2 focus:ring-[#eb0029]"
             />
           </div>
         </div>
 
         {/* Right: SVG Live Chart Canvas (2 cols) */}
-        <div
-          className="lg:col-span-2 p-6 rounded-[16px] border shadow-[var(--md-sys-elevation-1)] flex flex-col justify-between"
-          style={{
-            backgroundColor: "var(--md-sys-color-surface-container-lowest, #ffffff)",
-            borderColor: "var(--md-sys-color-outline-variant, #cac4d0)",
-          }}
-        >
+        <div className="lg:col-span-2 p-6 bg-white border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between border-b pb-3 mb-4">
+            <div className="flex items-center justify-between border-b-2 border-black pb-3 mb-6">
               <div>
-                <h3 className="font-bold text-sm text-slate-900">{title}</h3>
-                <span className="text-[11px] text-slate-400">
-                  {tableName} • Grouped by {groupBy} • {aggregation.toUpperCase()}
+                <h3 className="font-extrabold text-base uppercase tracking-tight text-black">{title}</h3>
+                <span className="text-xs font-mono text-neutral-500">
+                  TABLE: <strong className="text-black">{tableName}</strong> • GROUP BY: <strong className="text-black">{groupBy}</strong> • {aggregation.toUpperCase()}
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full">
-                  Total: <strong className="text-slate-900">{totalCount}</strong>
+                <span className="text-xs font-mono font-bold text-black bg-neutral-100 border-2 border-black px-3 py-1 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                  TOTAL RECORDS: <strong>{totalCount}</strong>
                 </span>
               </div>
             </div>
@@ -365,8 +367,8 @@ export function ReportBuilder() {
             {/* Chart Area */}
             <div className="min-h-[300px] flex items-center justify-center p-2">
               {chartData.length === 0 ? (
-                <div className="text-center text-slate-400 text-xs py-12">
-                  No records matched the selected query filter.
+                <div className="text-center font-mono text-neutral-400 text-xs py-12">
+                  NO RECORDS MATCHED THE SELECTED QUERY FILTER.
                 </div>
               ) : reportType === "bar" ? (
                 /* Bar Chart Render */
@@ -374,19 +376,19 @@ export function ReportBuilder() {
                   {chartData.map((item, idx) => {
                     const maxCount = Math.max(...chartData.map((d) => d.count || 1));
                     const pct = Math.max(8, Math.round((item.count / maxCount) * 100));
-                    const color = M3_COLORS[idx % M3_COLORS.length];
+                    const color = SWISS_COLORS[idx % SWISS_COLORS.length];
 
                     return (
                       <div key={idx} className="space-y-1">
-                        <div className="flex justify-between text-xs font-medium">
-                          <span className="text-slate-700">{item.label}</span>
-                          <span className="text-slate-900 font-bold">
+                        <div className="flex justify-between text-xs font-mono font-bold">
+                          <span className="text-black uppercase">{item.label}</span>
+                          <span className="text-black">
                             {item.count} ({totalCount > 0 ? Math.round((item.count / totalCount) * 100) : 0}%)
                           </span>
                         </div>
-                        <div className="h-6 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                        <div className="h-7 w-full bg-neutral-100 border-2 border-black overflow-hidden flex">
                           <div
-                            className="h-full rounded-full transition-all duration-500 flex items-center px-2.5 text-[10px] text-white font-bold"
+                            className="h-full transition-all duration-500 flex items-center px-3 text-xs text-white font-mono font-bold"
                             style={{
                               width: `${pct}%`,
                               backgroundColor: color,
@@ -413,7 +415,7 @@ export function ReportBuilder() {
                         const slicePct = totalCount > 0 ? (item.count / totalCount) * 100 : 0;
                         const strokeDasharray = `${slicePct} ${100 - slicePct}`;
                         const strokeDashoffset = -startPct;
-                        const color = M3_COLORS[idx % M3_COLORS.length];
+                        const color = SWISS_COLORS[idx % SWISS_COLORS.length];
 
                         return (
                           <circle
@@ -434,27 +436,27 @@ export function ReportBuilder() {
 
                     {reportType === "donut" && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                        <span className="text-2xl font-black text-slate-800">{totalCount}</span>
-                        <span className="text-[10px] uppercase font-bold text-slate-400">Total</span>
+                        <span className="text-3xl font-black font-mono text-black">{totalCount}</span>
+                        <span className="text-[10px] font-mono uppercase font-bold text-neutral-500">Total</span>
                       </div>
                     )}
                   </div>
 
                   {/* Legend */}
-                  <div className="space-y-2 max-w-xs">
+                  <div className="space-y-2 max-w-xs border-2 border-black bg-neutral-50 p-4 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
                     {chartData.map((item, idx) => {
-                      const color = M3_COLORS[idx % M3_COLORS.length];
+                      const color = SWISS_COLORS[idx % SWISS_COLORS.length];
                       const pct = totalCount > 0 ? Math.round((item.count / totalCount) * 100) : 0;
 
                       return (
-                        <div key={idx} className="flex items-center gap-2.5 text-xs">
+                        <div key={idx} className="flex items-center gap-2.5 text-xs font-mono">
                           <span
-                            className="w-3 h-3 rounded-full shrink-0"
+                            className="w-3 h-3 border border-black shrink-0"
                             style={{ backgroundColor: color }}
                           />
-                          <span className="text-slate-700 font-medium truncate">{item.label}</span>
-                          <span className="ml-auto font-bold text-slate-900">{item.count}</span>
-                          <span className="text-[11px] text-slate-400 font-mono">({pct}%)</span>
+                          <span className="text-black font-bold uppercase truncate">{item.label}</span>
+                          <span className="ml-auto font-black text-black">{item.count}</span>
+                          <span className="text-[11px] text-neutral-500 font-mono">({pct}%)</span>
                         </div>
                       );
                     })}
@@ -463,14 +465,14 @@ export function ReportBuilder() {
               ) : reportType === "single_score" ? (
                 /* Single Score Card */
                 <div className="text-center py-12 space-y-3">
-                  <div className="inline-flex items-center justify-center p-4 rounded-3xl bg-blue-50 text-[var(--md-sys-color-primary,#0b57d0)]">
+                  <div className="inline-flex items-center justify-center p-4 border-2 border-black bg-neutral-100 shadow-[2px_2px_0px_rgba(0,0,0,1)] text-[#eb0029]">
                     <Sparkles className="w-8 h-8" />
                   </div>
-                  <div className="text-5xl font-black tracking-tight text-slate-900">{totalCount}</div>
-                  <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <div className="text-6xl font-black font-mono tracking-tight text-black">{totalCount}</div>
+                  <div className="text-xs font-mono font-bold text-neutral-600 uppercase tracking-wider">
                     {title} ({filterQuery})
                   </div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 border-2 border-black bg-[#eb0029] text-white text-xs font-mono font-bold uppercase shadow-[2px_2px_0px_rgba(0,0,0,1)]">
                     <span>Active Records in Real-Time</span>
                   </div>
                 </div>
@@ -480,19 +482,19 @@ export function ReportBuilder() {
                   {chartData.map((item, idx) => {
                     const maxCount = Math.max(...chartData.map((d) => d.count || 1));
                     const heightPct = Math.max(15, Math.round((item.count / maxCount) * 100));
-                    const color = M3_COLORS[idx % M3_COLORS.length];
+                    const color = SWISS_COLORS[idx % SWISS_COLORS.length];
 
                     return (
                       <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                        <span className="text-xs font-bold text-slate-700">{item.count}</span>
+                        <span className="text-xs font-mono font-bold text-black">{item.count}</span>
                         <div
-                          className="w-full rounded-t-lg transition-all duration-500"
+                          className="w-full border-2 border-black transition-all duration-500"
                           style={{
                             height: `${heightPct}%`,
                             backgroundColor: color,
                           }}
                         />
-                        <span className="text-[10px] text-slate-500 font-medium truncate max-w-[60px] text-center">
+                        <span className="text-[10px] font-mono uppercase text-neutral-600 font-bold truncate max-w-[60px] text-center">
                           {item.label}
                         </span>
                       </div>
@@ -503,8 +505,8 @@ export function ReportBuilder() {
             </div>
           </div>
 
-          <div className="pt-4 border-t flex items-center justify-between text-[11px] text-slate-400">
-            <span>Powered by ServiceMeow M3 Visualization Engine</span>
+          <div className="pt-4 border-t-2 border-black flex items-center justify-between text-xs font-mono uppercase font-bold text-neutral-500">
+            <span>Powered by ServiceMeow Swiss Visualization Engine</span>
             <span>Refreshed live via `/api/now/reports/[id]/run`</span>
           </div>
         </div>

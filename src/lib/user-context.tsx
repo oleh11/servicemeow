@@ -48,6 +48,28 @@ export const DEFAULT_PERSONAS: UserPersona[] = [
     effectiveRoles: ["cab_approver", "employee", "public"],
   },
   {
+    id: "workplace-user",
+    userName: "workplace.admin",
+    name: "Morgan 'Blueprint' Reed",
+    email: "workplace.admin@servicemeow.io",
+    role: "workplace_admin",
+    title: "Director of Real Estate & Workplace Technology",
+    department: "Global Workplace Hub",
+    avatar: AVATAR_PRESETS[4].url,
+    effectiveRoles: ["workplace_admin", "employee", "public"],
+  },
+  {
+    id: "catalog-user",
+    userName: "catalog.admin",
+    name: "Chloe 'Spec' Montgomery",
+    email: "catalog.admin@servicemeow.io",
+    role: "catalog_admin",
+    title: "Principal Service Catalog Architect",
+    department: "IT Service Catalog",
+    avatar: AVATAR_PRESETS[3].url,
+    effectiveRoles: ["catalog_admin", "employee", "public"],
+  },
+  {
     id: "employee-user",
     name: "Alex 'Paws' Chen",
     email: "alex.chen@servicemeow.io",
@@ -73,6 +95,12 @@ interface UserContextType {
   allPersonas: UserPersona[];
   refreshPersonas: () => Promise<void>;
   updateCurrentUserAvatar: (newAvatarUrl: string) => Promise<boolean>;
+  isWorkplaceAdmin: boolean;
+  isCatalogAdmin: boolean;
+  isItilAdmin: boolean;
+  isCmdbAdmin: boolean;
+  isKnowledgeAdmin: boolean;
+  isAnyAdmin: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -284,6 +312,27 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const effectiveUser = impersonatedUser || actualUser;
+  const effectiveRoles = effectiveUser.effectiveRoles || [effectiveUser.role];
+  const isAnyAdmin =
+    effectiveRoles.includes("admin") ||
+    effectiveRoles.some((r) => r.endsWith("_admin"));
+  const isWorkplaceAdmin =
+    effectiveRoles.includes("admin") ||
+    effectiveRoles.includes("workplace_admin");
+  const isCatalogAdmin =
+    effectiveRoles.includes("admin") ||
+    effectiveRoles.includes("catalog_admin");
+  const isItilAdmin =
+    effectiveRoles.includes("admin") ||
+    effectiveRoles.includes("itil_admin") ||
+    effectiveRoles.includes("itil");
+  const isCmdbAdmin =
+    effectiveRoles.includes("admin") ||
+    effectiveRoles.includes("cmdb_admin") ||
+    effectiveRoles.includes("cmdb_editor");
+  const isKnowledgeAdmin =
+    effectiveRoles.includes("admin") ||
+    effectiveRoles.includes("knowledge_admin");
 
   return (
     <UserContext.Provider
@@ -301,6 +350,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         allPersonas,
         refreshPersonas,
         updateCurrentUserAvatar,
+        isWorkplaceAdmin,
+        isCatalogAdmin,
+        isItilAdmin,
+        isCmdbAdmin,
+        isKnowledgeAdmin,
+        isAnyAdmin,
       }}
     >
       {children}

@@ -5,23 +5,32 @@
 </p>
 
 <p align="center">
-  <strong>The Open-Source Enterprise Service Operations (ITIL) Platform &amp; Hermes Autonomous Agent</strong><br>
-  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Hermes Workflow Agent
+  <strong>The Open-Source Enterprise Service Management (ITIL) &amp; Spatial Workplace Platform</strong><br>
+  Next Experience Dockable Tabs • QuickJS WASM Script Isolation • PostgreSQL 16 • Autonomous Background Workflow Daemon
 </p>
 
 <p align="center">
   <a href="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml"><img src="https://github.com/oleh11/servicemeow/actions/workflows/ci.yml/badge.svg" alt="ServiceMeow CI" /></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D20.0.0-emerald.svg" alt="Node.js Version" /></a>
   <a href="https://www.postgresql.org/"><img src="https://img.shields.io/badge/postgresql-16-blue.svg" alt="PostgreSQL" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-85%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/vitest-144%20passed-8b5cf6.svg" alt="Tests" /></a>
+  <a href="crates/servicemeow-core-engine"><img src="https://img.shields.io/badge/rust-2024%20edition-dea584.svg" alt="Rust 2024" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-purple.svg" alt="License: MIT" /></a>
+</p>
+
+<p align="center">
+  <img src="docs/assets/roman-dog-halloween.svg" alt="ServiceMeow Halloween Special — Roman Dog Dressed as a Cat" width="100%" style="border-radius: 12px; border: 2px solid #eb0029;" />
+</p>
+
+<p align="center">
+  <em>🎃 <strong>Halloween Special Mascot</strong>: Operation <code>Felis Incognitus</code> — Roman Canis dressed as an Imperial Cat ("Bark? No citizen, definitely meow.")</em>
 </p>
 
 ---
 
 ## 📑 Overview
 
-**ServiceMeow** is a full-featured, open-source Enterprise Service Management (ESM) and IT Operations platform designed for modern engineering organizations. It delivers complete ITIL service workflows, multi-record dockable workspace multitasking, low-code studio development, autonomous triage automation, and zero-trust security architecture.
+**ServiceMeow** is a full-featured, open-source Enterprise Service Management (ESM) and IT Operations platform designed for modern engineering organizations. It delivers complete ITIL service workflows, multi-record dockable workspace multitasking, low-code studio development, autonomous triage automation, targeted high-performance Rust microservices, and zero-trust security architecture.
 
 ---
 
@@ -36,15 +45,22 @@
    - **Fulfiller Workspace**: Multi-record dockable tab bar, polymorphic ITIL forms, visual Kanban boards, and CMDB dependency topology graphs.
    - **Self-Service Portal**: Catalog item fulfillment, shopping cart checkout, record producers, and 90-day service uptime status pages.
    - **Studio Low-Code IDE**: Schema table builder, ACL governance, Monaco code editor, business rules, and Update Set lifecycle management.
+   - **Customer Service & CRM**: Deal pipeline Kanban, customer account health scores, contact directory, and ARR metrics.
 2. **Tier 2: Edge & Session Route Guard (`middleware.ts`)**:
    - Pure Web Crypto HMAC-SHA256 session token verification at the edge with zero Node runtime dependencies.
    - Live database role and session evaluation on each tick—demotions and lockouts take effect immediately.
    - Strips client-supplied identity headers (`x-auth-role`, `x-auth-user-id`).
 3. **Tier 3: Core ITIL Engines & Sandboxed Execution**:
-   - 66 REST endpoints across Table API, Change Management, CMDB, and Reports.
+   - 86+ REST endpoints across Table API, Change Management, CMDB, Watchtower, CRM, and Reports.
    - **QuickJS WebAssembly Sandbox**: Untrusted scripts (scheduled jobs, script includes, record producers) execute in an isolated guest WebAssembly memory heap with zero access to Node's V8 heap or process APIs.
-4. **Tier 4: Enterprise Persistence & Worker Daemon**:
-   - **PostgreSQL 16 Engine**: 40+ relational tables with foreign keys and indexes managed by Prisma ORM. Global password hash omission (`omit: { user: { passwordHash: true } }`) prevents credential leakage across all queries.
+   - **Smart Automation Engines**: Automated load-balancing assignment, quantitative change risk & CI collision evaluation, and AI-grounded response auto-drafting.
+4. **Tier 3.5: Targeted High-Performance Rust Microservices (`crates/servicemeow-core-engine`)**:
+   - Axum 0.8 REST daemon (`:8080`) and CLI engine for high-compute vector decomposition, geometric math, and real-time telemetry.
+   - Streaming Quick-XML CAD floorplan decomposition (**346,000+ blueprints/sec**).
+   - Atomic lock-free telemetry ingestion ring buffer (**2.3+ Million events/sec**).
+   - Pre-execution AST security and fuel metering validator safeguarding WASM script sandboxes.
+5. **Tier 4: Enterprise Persistence & Worker Daemon**:
+   - **PostgreSQL 16 Engine**: 46+ relational tables with foreign keys and indexes managed by Prisma ORM. Global password hash omission (`omit: { user: { passwordHash: true } }`) prevents credential leakage across all queries.
    - **Background Worker Daemon (`src/worker.ts`)**: Standalone scheduler polling on a 15s timer executing due `sys_scheduled_jobs` and running the autonomous Workflow Agent triage cycle.
 
 ---
@@ -189,6 +205,246 @@ A specialized, enterprise-grade interface for managing physical enterprise locat
 
 ---
 
+### 8. Dedicated Spatial Entity Record Forms (`/workspace/cmn_* / [id]`)
+
+ServiceMeow replaces generic ITIL task forms with tailored, context-aware spatial editors for all 6 tiers (`cmn_region`, `cmn_state`, `cmn_campus`, `cmn_building`, `cmn_floor`, `cmn_space`, `cmn_location`, `cmn_reservation`):
+
+#### 📝 Specialized State / Province & Spatial Entity Forms
+<p align="center">
+  <img src="docs/assets/cmn_state_new_form.png" alt="New State Form" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Context-Aware Fields by Spatial Tier**:
+  - **`cmn_state` (Tier 2)**: State/Province Name, Unique Code (`US-CA`, `US-WA`), Country, Parent Region dropdown selector (`cmn_region`).
+  - **`cmn_region` (Tier 1)**: Region Name, Region Code, Operational Description, Active status toggle.
+  - **`cmn_campus` (Tier 3)**: Campus Name, Code, State dropdown, Street Address, City, Zip Code, GPS Coordinates.
+  - **`cmn_building` (Tier 4)**: Building Name, Code, Campus dropdown, Building Type (`hospital`, `clinic`, `lab`, `office`, `datacenter`), Floors Count, Area Sq Ft.
+  - **`cmn_floor` (Tier 5)**: Floor Name, Code, Floor Level Number, Building dropdown, Area Sq Ft, CAD/SVG Drawing URL.
+  - **`cmn_space` (Tier 6)**: Room Name, Space Number, Floor dropdown, Space Type, Occupancy Status (`available`, `occupied`, `reserved`, `maintenance`), Capacity, Square Footage, Department, Amenity capability pills.
+- **Hierarchy Placement Card**: Dedicated right-hand rail displaying Tier classification, database table metadata, parent relationship links, and Connected Workplace Architecture notes.
+- **Related Child Assets & Deep Linkage**: Directly inspect and manage child assets (e.g. Campuses located within a State) with inline "+ Add New" actions.
+
+<p align="center">
+  <img src="docs/assets/cmn_state_saved_detail.png" alt="Saved State Detail View" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+---
+
+### 9. Agile Project Management & Sprint Hub (`/workspace/agile`)
+
+A Swiss Grid Kanban workspace designed for engineering velocity, sprint planning, and release governance:
+- **5-Column Kanban Board**: *Backlog*, *Sprint Ready*, *In Progress*, *Testing & QA*, and *Done* with single-click card transitions.
+- **Fibonacci Story Point Estimates**: Instant 1, 2, 3, 5, 8, 13, 21 sizing selectors with automated sprint velocity rollups.
+- **Sprint Hub & Capacity Planning**: Define multi-week timeboxes (`rm_sprint`), track commitment burn-up, and enforce sprint goals.
+- **Strategic Epics & Story Management**: Direct linkage to strategic epics (`rm_epic`) and full Table API parity for stories (`rm_story`) with Gherkin acceptance criteria.
+
+<p align="center">
+  <img src="docs/assets/agile-board-showcase.png" alt="Agile Sprint Board Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+---
+
+### 10. Problem Management & Known Error Database (KEDB) (`/workspace/problem`)
+
+Enterprise-grade ITIL Problem Management designed to eliminate recurring incidents, investigate root causes, and publish authoritative workarounds:
+
+<p align="center">
+  <img src="docs/assets/problem-management-showcase.png" alt="Problem Management & KEDB Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Formal 6-Stage ITIL Problem Lifecycle**:
+  $$\text{1 - New} \longrightarrow \text{2 - Assessing / RCA} \longrightarrow \text{3 - Workaround Established} \longrightarrow \text{4 - Known Error (KEDB)} \longrightarrow \text{6 - Resolved} \longrightarrow \text{7 - Closed}$$
+- **Root Cause Analysis (RCA) & Permanent Fix Documentation**: Dedicated investigation blocks tracking technical triggers, architectural remediations, and deployment milestones.
+- **Known Error Database (KEDB) Publishing**: Toggle any problem directly into the platform KEDB with verified temporary workarounds to expedite first-call incident resolution.
+- **Bi-Directional Incident & CI Linkage**: Associate multiple child incidents with a parent problem and pinpoint affected Configuration Items (`cmdb_ci`) for automated blast-radius assessment.
+- **Dynamic Priority Engine**: Real-time 3x3 Impact × Urgency matrix computing standard ITIL priority (P1 Critical through P4 Low).
+
+---
+
+### 11. Enterprise CMDB Hardware & Datacenter Rackmount Topology (`/workspace/cmdb_ci`)
+
+A robust Configuration Management Database (CMDB) linking physical infrastructure, virtual assets, and datacenter rackmount geometry:
+
+<p align="center">
+  <img src="docs/assets/cmdb-ci-showcase.png" alt="Enterprise CMDB Hardware Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Datacenter 42U Rack Elevation Spec**: Specify rack positions (`rack_id`, `rack_units`, `rack_unit_start`, `rack_unit_end`) for physical servers, network switches, and storage arrays with datacenter visualization (`/workspace/cmdb/racks`).
+- **Complete Hardware Asset Attributes**: Serial numbers, asset tags, MAC addresses, primary IP addresses, manufacturers, and model numbers.
+- **6-Tier Spatial Location Binding**: Physical hardware is directly mapped to the enterprise spatial hierarchy (Region $\longrightarrow$ State $\longrightarrow$ Campus $\longrightarrow$ Building $\longrightarrow$ Floor $\longrightarrow$ Space/Room).
+- **Upstream & Downstream Dependency Topology (`ci_rel`)**: Track service dependencies, network linkages, and parent/child cluster relationships to accelerate change impact analysis.
+
+---
+
+### 12. Knowledge Management & Curated Self-Service Intake (`/workspace/kb_knowledge`)
+
+Empower both support fulfillers and end-users with unified, version-controlled knowledge bases:
+
+<p align="center">
+  <img src="docs/assets/knowledge-showcase.png" alt="Knowledge Management Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Multi-Repository Knowledge Governance (`kb_knowledge_base`)**: Scoped knowledge repositories (IT Support, HR Benefits, Facilities Engineering, Developer Guides) with role-based access.
+- **Split-Screen Markdown Authoring**: Write technical runbooks in Markdown with live preview, header navigation, and code syntax highlighting.
+- **Publication Lifecycle State Machine**: Manage articles across *Draft*, *Review*, *Published*, and *Retired* states with scheduled expiration dates and public portal publication toggles.
+- **Employee Portal Integration (`/portal/knowledge`)**: Fast self-service intake with instantaneous keyword search, category navigation, helpfulness ratings, and view tracking.
+
+---
+
+### 13. Space Console & Interactive CAD Floorplan Blueprint (`/workspace/spaces`)
+
+An enterprise architectural space console bridging facilities management, occupancy tracking, and resource allocation:
+
+<p align="center">
+  <img src="docs/assets/spatial-hierarchy-cad-showcase.png" alt="Space Console CAD Showcase" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Interactive CAD Floorplan Editor**: Drag-and-drop room repositioning, interactive corner resize handles, and instant coordinate updates.
+- **Occupancy & Capacity Metrics**: Live visual occupancy status (*Vacant*, *Occupied*, *Reserved*, *Maintenance*) with capacity percentage gauges across wings and floors.
+- **Integrated Workplace Reservation Linkage**: Seamless synchronization with `/portal/reservations` and `/workspace/reservations`.
+- **Architectural Vector Schematics**: Standard 1:100 scale blueprint exports (SVG / PDF) for emergency egress planning and facility briefings.
+
+---
+
+### 14. Universal Command Palette (`Cmd+K`) & Swiss Grid Design System
+
+ServiceMeow features a stark, high-contrast user interface built on the principles of the **Swiss International Typographic Style**:
+
+- **Swiss Grid Design Architecture**: 2px solid black borders, hard drop-shadows (`shadow-[4px_4px_0px_rgba(0,0,0,1)]`), sharp non-rounded geometry (`rounded-none`), high-contrast grotesque and monospace typography, and international `#eb0029` red accents.
+- **Global Command Palette (`Cmd+K` / `Ctrl+K`)**: Instant spotlight navigation across all system records—Incidents, Problems, Changes, CMDB CIs, Knowledge Articles, Spaces, and Sprints.
+- **Prefix-Ranked Search API**: Ticket numbers (e.g. `INC0001001`, `PRB0001001`) are automatically prioritized ahead of substring body matches for instantaneous search resolution.
+- **Keyboard Shortcut Overlay (`?`)**: Quick help drawer for rapid navigation without touching the mouse.
+- **Modular Admin Roles**: Fine-grained administrative delegation (`user_admin`, `catalog_admin`, `cmdb_admin`, `workflow_admin`, `space_admin`) preventing over-privileged access.
+- **Hydration Extension Guard**: Immune to third-party browser extension DOM mutations (`grammarly`, `lastpass`, etc.) ensuring React 19 SSR / hydration stability.
+
+---
+
+### 15. Universal Excel-Style Table Data Editor (`/studio?tab=table_editor`)
+
+A high-productivity, spreadsheet-grade administrative data grid providing platform admins complete control over all system and operational tables (`incident`, `change_request`, `sys_user`, `cmdb_ci`, `rm_story`, `cmn_location`, `sc_task`, etc.):
+
+<p align="center">
+  <img src="docs/assets/table-editor-showcase.png" alt="Universal Excel-Style Table Data Editor" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Inline Cell Editing & Auto-Save**: Double-click or click any cell to edit fields directly in place with real-time feedback and immediate PATCH persistence.
+- **Admin View Customizer**: Toggle column visibility, reorder columns, and personalize grid density with preferences saved permanently to `localStorage` per table.
+- **Batch Operations & Record Creation**: Add new rows via quick inline insert or structured modal form; multi-select rows for bulk deletion with atomic confirmation safeguards.
+- **Instant Sorting, Filtering & CSV Export**: Column header sort toggles, multi-field regex text search, pagination size selection (15, 25, 50, 100), and 1-click client-side CSV spreadsheet export.
+
+---
+
+### 16. Employee Table & Spatial Location Explorer with End-of-Day Data Extraction (`/portal/data-explorer`)
+
+A dedicated, theme-harmonized open data explorer giving employees and staff instant visibility and extraction capabilities across 25+ system and spatial tables:
+
+<p align="center">
+  <img src="docs/assets/data-explorer-showcase.png" alt="Employee Table & Spatial Data Explorer with End-of-Day CSV Extract" width="100%" style="border-radius: 8px; border: 1px solid #1e293b;" />
+</p>
+
+- **Dedicated Explorers for All Spatial Tiers**: Direct exploration across the full spatial hierarchy—`cmn_region`, `cmn_state`, `cmn_campus`, `cmn_building`, `cmn_floor`, `cmn_space`, `cmn_location`, and `cmn_reservation`.
+- **Collapsible Table Directory Sidebar**: Browse tables organized intuitively into Workplace & Spatial, Agile Project Management, ITIL Operations, CMDB, Knowledge, and User Directory categories.
+- **Direct Bookmarkable URLs**: Synchronized URL parameters (`/portal/data-explorer?table=cmn_space`) enabling direct links to any specific table explorer.
+- **End-of-Day CSV Extraction**: One-click instant **Export CSV** download with automated timestamped filenames for daily auditing, compliance reporting, and external data warehousing.
+
+---
+
+### 17. "Watchtower" Unified Attention Cockpit (`/workspace/watchtower`)
+
+A mission-critical operational cockpit consolidating enterprise risk and operational metrics into a single high-density Swiss Grid view:
+
+- **Algorithmic Operational Health Score (0–100)**: Real-time health index penalized by active P1/P2 incidents, imminent SLA breaches, emergency changes pending CAB review, unmitigated problems, degraded CMDB infrastructure, and failing morning operational rounds.
+- **6 Real-Time Attention Streams**: Instant filtered streams directing fulfiller attention to what matters most:
+  1. *Critical Incidents (P1/P2)* with live SLA timers.
+  2. *Imminent SLA Breaches* (< 60m remaining).
+  3. *Pending CAB Approvals* requiring governance sign-off.
+  4. *Active Problems Missing RCA / Workarounds*.
+  5. *Degraded CMDB CIs* flagged across datacenter or cloud tiers.
+  6. *Failing Shift Rounds* needing prompt triage.
+
+---
+
+### 18. Mandatory SOP Checklist & Gatekeeper Engine (`task_checklist_item`)
+
+Enforce rigorous Standard Operating Procedure (SOP) compliance on all task and incident resolutions:
+
+- **Checklist Step Attaching**: Attach granular, ordered verification steps with `isMandatory` flags directly to tasks.
+- **Hard API Gatekeeper (HTTP 422)**: When transitioning an incident or problem to Resolved (`6`) or Closed (`7`), the Table API (`PATCH /api/now/table/[table]/[id]`) validates completion. Incomplete mandatory items halt state transition with HTTP `422 Unprocessable Entity` and return `{ error: "MANDATORY_CHECKLIST_INCOMPLETE", incomplete_items: [...] }`.
+- **Interactive Workspace UI**: Visual completion progress bar, mandatory warning badges, and inline checklist additions directly within the record form.
+
+---
+
+### 19. Task Diagnostic Evidence & Fact Verification Ledger (`task_evidence`)
+
+Eliminate speculative, ungrounded diagnostic claims by grounding ticket resolution in immutable, structured facts:
+
+- **Diagnostic Fact Ingestion**: Records machine telemetry (`log.stacktrace`, `ci.ping_failure`, `git.commit_hash`, `monitor.alert`, `crm.thread_reply`).
+- **Decisive Root Cause Tagging**: Highlights primary decisive triggers vs. supporting contextual observations with confidence scoring (0.00–1.00).
+- **Human-in-the-Loop Operator Verification**: Single-click "Accept Fact" / "Reject Fact" operator workflow that binds accepted claims to core task fields (`root_cause`, `workaround`, `cmdb_ci_id`).
+
+---
+
+### 20. "Morning Checks" Shift Operational Rounds Console (`/workspace/morning-checks`)
+
+Shift-based infrastructure inspection console replacing ad-hoc runbooks with structured daily rounds:
+
+- **Multi-Category Inspections**: Pre-configured checks across *Datacenter*, *Backup*, *Network*, *Database*, *Security*, and *Application* domains.
+- **Shift Handover Organization**: Structured tracking for *Morning*, *Evening*, and *Night* shifts with inspector attribution and timestamped notes.
+- **Pass / Degraded / Fail Tri-State Console**: One-click toggles updating status with live color indicators.
+- **1-Click Critical Incident Escalation**: Instantly generate linked P1/P2 Incidents from failed checks with pre-populated diagnostic notes and assignment categories.
+
+---
+
+### 21. Industrial Asset QR Label Generator & Custody Handover Document Modal
+
+Printable physical hardware asset tags and formal equipment custody agreements launched directly from any CMDB CI form (`CmdbCiForm.tsx`):
+
+- **Industrial 3" x 2" QR Asset Tag**: High-contrast printable SVG QR code embedding asset tag, serial number, CI class, hostname, and direct asset URL.
+- **Formal Custody Handover Agreement**: Enterprise equipment transfer agreement with employee signature line, security covenants, and condition acknowledgement.
+- **Direct Thermal & Paper Printing (`window.print()`)**: Integrated `@media print` CSS for clean sticker and agreement printing.
+
+---
+
+### 22. Swiss Grid Precision Condition Filter Builder (`FilterBuilder.tsx`)
+
+Advanced condition builder for enterprise data lists:
+
+- **Multi-Condition Filtering**: Build composite filters using operators (`=`, `!=`, `LIKE`, `STARTSWITH`, `>`, `<`) across any table field.
+- **Bidirectional Encoded Queries**: Seamless conversion between visual condition rows and encoded query strings (`sysparm_query=priority=1^state!=6`).
+- **Interactive Breadcrumb Filter Bar**: Clickable breadcrumb pills for rapid filter exploration and removal.
+
+---
+
+### 23. CRM Customer 360, Deal Pipelines & Smart Automation Engines (`/workspace/crm`)
+
+Unified commercial customer intelligence and autonomous routing engines inspired by FreeITSM, Frappe CRM, and CompAI CRM:
+
+- **Customer 360 Accounts (`crm_organization`)**: Unified client directory with operational health scores (0–100), customer tier segmentation (`strategic`, `enterprise`, `mid_market`, `smb`), ARR/MRR revenue tracking, and contracted SLA tier mapping (`24/7_mission_critical`, `gold_enterprise`, `business_hours`).
+- **Sales & Renewal Pipeline Kanban (`crm_deal`)**: Visual deal board spanning 6 stages (`Lead` ⟶ `Qualified` ⟶ `Proposal` ⟶ `Negotiation` ⟶ `Won` / `Lost`) with probability weighting, expected close dates, deal amounts, and 1-click stage advancement.
+- **Customer Contacts Directory (`crm_contact`)**: Relational contact roster directly linked to ITIL tasks (`Task.organizationId`, `Task.contactId`) for seamless support and account management.
+- **Automated Load-Balancing Task Assignment (`src/lib/assignment-engine.ts`)**: Workload-balancing routing engine that assigns incoming tickets to the active technician in the assignment group with the fewest open tickets, logging an immutable audit work note.
+- **Quantitative Change Risk & CI Collision Engine (`src/lib/change-risk-engine.ts`, `/api/now/change-risk`)**: Algorithmic 0–100 risk scoring based on CI tier (+35 for Tier 1), emergency change type (+40), maintenance window duration (+25 for >24h), and real-time detection of concurrent overlapping changes targeting the same CMDB CI (+30), with automated CAB approval recommendations.
+- **AI Smart Customer Response Auto-Drafting (`/api/now/ai/draft-response`, `ActivityStream.tsx`)**: 1-click `✨ AI Draft Response` in the activity stream customer communication box, synthesizing contextual drafts (`empathetic`, `professional`, `technical`, `concise`) grounded in ticket summaries, work notes, and verified diagnostic evidence.
+
+---
+
+### 24. Targeted High-Performance Rust Core Engine & Microservices (`crates/servicemeow-core-engine`)
+
+High-performance, memory-safe native Rust microservices engineered for CPU-bound computations and zero-trust pre-execution security verification:
+
+- **Ultra-Fast CAD Vector Decomposition (`cad/`)**: Streaming Quick-XML parser converting complex architectural SVG/DXF floorplans into normalized coordinate polygons (0.0%–100.0%) and Shoelace geometric areas at **346,000+ blueprints/sec** (~2.89 µs per blueprint).
+- **Spatial AABB Collision Detection**: Instant bounding-box collision algorithms preventing overlapping room reservations and validating physical rack asset constraints.
+- **High-Throughput Telemetry Ring Buffer (`telemetry/`)**: In-memory atomic circular ring buffer ingesting **2.3+ Million events/sec** with zero garbage collection pause and automated real-time operational anomaly detection (`deadlock`, `panic`, `memory_spike`, `ping_failure`).
+- **AST Pre-Execution Security & Fuel Metering (`sandbox/`)**: Pre-execution syntax inspection blocking prototype pollution (`__proto__`, `constructor.prototype`), process escaping (`process`, `require`), and dynamic evaluations (`eval`) with static fuel cost bounding before dispatching to QuickJS WASM sandboxes.
+- **Standalone Axum 0.8 Daemon & Resilient TypeScript Bridge**: High-concurrency async HTTP server exposed at `:8080` paired with `src/lib/rust-core-client.ts`, providing seamless, automatic TypeScript fallback when the native daemon is offline.
+- **Dedicated Operational Commands**:
+  - `npm run rust:test` — Run all 6 Rust integration tests
+  - `npm run rust:bench` — Execute microsecond benchmark suite
+  - `npm run rust:daemon` — Launch Axum 0.8 HTTP daemon
+  - `npm run rust:build` — Compile optimized release binary
+
+---
+
 ## 🚀 Quick Start with Docker Compose
 
 Run ServiceMeow with PostgreSQL and the background scheduler daemon using Docker Compose:
@@ -254,11 +510,17 @@ npm run worker
 
 ## 🧪 Testing & Verification
 
-ServiceMeow includes a full Vitest test suite with **77 passing tests** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, and the 6-tier Workplace Hub spatial hierarchy.
+ServiceMeow includes a full test suite with **144 passing tests across 20 Vitest test suites** plus **6 native Rust integration tests** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, spatial entity operations, the 6-tier Workplace Hub spatial hierarchy, CAD floorplan manipulation, modular administrator roles, search ranking, agile / CMDB / knowledge entity integrity, **Watchtower attention stream aggregation**, **Mandatory SOP Checklist Gatekeeper HTTP 422 enforcement**, **Shift Morning Checks operational rounds with 1-click incident escalation**, **CRM Customer 360 & Deal Pipelines**, **Automated Load-Balancing & Quantitative Change Risk Scoring**, and **Targeted Rust Core Engine Microservices & Client Bridge**.
 
 ```bash
-# Run Vitest test suite once
+# Run Vitest test suite (144 passing tests across 20 files)
 npm run test
+
+# Run native Rust integration test suite (6 passing integration tests)
+npm run rust:test
+
+# Run Rust microsecond benchmarks
+npm run rust:bench
 
 # Run Vitest in watch mode
 npm run test:watch

@@ -18,11 +18,63 @@ export interface AclCheckResult {
 }
 
 const ROLE_HIERARCHY: Record<string, string[]> = {
-  admin: ["admin", "itil", "cab_approver", "employee", "public"],
+  admin: [
+    "admin",
+    "workplace_admin",
+    "itil_admin",
+    "catalog_admin",
+    "cmdb_admin",
+    "knowledge_admin",
+    "itil",
+    "cab_approver",
+    "employee",
+    "public",
+  ],
+  workplace_admin: ["workplace_admin", "employee", "public"],
+  itil_admin: ["itil_admin", "itil", "employee", "public"],
+  catalog_admin: ["catalog_admin", "employee", "public"],
+  cmdb_admin: ["cmdb_admin", "itil", "employee", "public"],
+  knowledge_admin: ["knowledge_admin", "employee", "public"],
   itil: ["itil", "employee", "public"],
   cab_approver: ["cab_approver", "employee", "public"],
   employee: ["employee", "public"],
   public: ["public"],
+};
+
+export const MODULAR_ADMIN_DOMAINS: Record<string, string[]> = {
+  workplace_admin: [
+    "cmn_region",
+    "cmn_state",
+    "cmn_campus",
+    "cmn_building",
+    "cmn_floor",
+    "cmn_space",
+    "cmn_reservation",
+    "cmn_location",
+  ],
+  catalog_admin: [
+    "sc_cat_item",
+    "sc_category",
+    "item_option_new",
+    "sc_cat_item_producer",
+    "sc_req_item",
+    "sc_task",
+    "catalog_ui_policy",
+    "catalog_ui_policy_action",
+    "catalog_variable_set",
+  ],
+  cmdb_admin: ["cmdb_ci", "cmdb_rel_ci", "cmdb_ci_rack", "cmdb_rack"],
+  knowledge_admin: ["kb_knowledge", "kb_category", "kb_feedback", "knowledge_article"],
+  itil_admin: [
+    "incident",
+    "problem",
+    "change_request",
+    "change_task",
+    "task",
+    "sla_definition",
+    "sla_instance",
+    "cmn_schedule",
+  ],
 };
 
 export async function evaluateAcl({
@@ -88,6 +140,17 @@ export async function evaluateAcl({
       allowed: true,
       reason: "Platform Administrator has full access override",
     };
+  }
+
+  // Rule 1.5: Delegated Modular Administrator Domain Authority
+  // Allows module admins (workplace_admin, catalog_admin, cmdb_admin, etc.) to manage their domain
+  for (const [modRole, domainTables] of Object.entries(MODULAR_ADMIN_DOMAINS)) {
+    if (effectiveRoles.has(modRole) && domainTables.includes(normTable)) {
+      return {
+        allowed: true,
+        reason: `Delegated Module Administrator '${modRole}' has full domain authority over table '${normTable}'`,
+      };
+    }
   }
 
   // Find matching active ACL rules
@@ -280,9 +343,23 @@ export async function seedDefaultRolesIfEmpty() {
       active: true,
     },
     {
-      name: "knowledge_admin",
-      label: "Knowledge Administrator",
-      description: "Governs knowledge bases, authors and approves internal articles, and tracks self-service deflection",
+      name: "workplace_admin",
+      label: "Workplace & Real Estate Administrator",
+      description: "Administers corporate spatial hierarchy (regions, campuses, buildings, floors, rooms), CAD blueprints, floorplan room mapping, and reservation rules",
+      elevatedPrivilege: false,
+      active: true,
+    },
+    {
+      name: "itil_admin",
+      label: "ITSM Administrator",
+      description: "Administers ITIL processes, SLAs, business schedules, incident/change/problem settings",
+      elevatedPrivilege: false,
+      active: true,
+    },
+    {
+      name: "cmdb_admin",
+      label: "CMDB & Infrastructure Administrator",
+      description: "Administers CMDB configuration items, datacenter racks, and dependency topology models",
       elevatedPrivilege: false,
       active: true,
     },
@@ -290,6 +367,13 @@ export async function seedDefaultRolesIfEmpty() {
       name: "catalog_admin",
       label: "Service Catalog Administrator",
       description: "Designs and maintains service catalog items, categories, variables, and checkout workflows",
+      elevatedPrivilege: false,
+      active: true,
+    },
+    {
+      name: "knowledge_admin",
+      label: "Knowledge Administrator",
+      description: "Governs knowledge bases, authors and approves internal articles, and tracks self-service deflection",
       elevatedPrivilege: false,
       active: true,
     },

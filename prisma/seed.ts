@@ -1,6 +1,22 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { randomBytes } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
+
+if (!process.env.DATABASE_URL) {
+  const envPath = path.resolve(process.cwd(), ".env");
+  if (fs.existsSync(envPath)) {
+    try {
+      const match = fs.readFileSync(envPath, "utf8").match(/^DATABASE_URL=["']?([^"'\r\n]+)/m);
+      if (match) process.env.DATABASE_URL = match[1];
+    } catch {}
+  }
+  if (!process.env.DATABASE_URL) {
+    const dbPath = path.resolve(process.cwd(), "prisma/dev.db");
+    process.env.DATABASE_URL = `file:${dbPath}`;
+  }
+}
 
 // Seed passwords come from the environment; if unset, a random one is generated and
 // printed once. There are no shared, hardcoded default passwords.
@@ -18,6 +34,16 @@ async function main() {
   console.log("Seeding ServiceMeow Database (Purr-fect Enterprise ITIL)...");
 
   // Clear existing data
+  await prisma.sysLiveChatMessage.deleteMany();
+  await prisma.sysLiveChatChannel.deleteMany();
+  await prisma.sysLiveChatPresence.deleteMany();
+  await prisma.sysLiveChatQueue.deleteMany();
+  await prisma.sysCannedResponse.deleteMany();
+  await prisma.sysLiveChatConfig.deleteMany();
+  await prisma.crmDeal.deleteMany();
+  await prisma.crmContact.deleteMany();
+  await prisma.crmOrganization.deleteMany();
+  await prisma.sysCustomRecord.deleteMany();
   await prisma.sysHubFlowExecution.deleteMany();
   await prisma.sysHubFlow.deleteMany();
   await prisma.sysUiPolicyAction.deleteMany();
@@ -53,6 +79,7 @@ async function main() {
   await prisma.sysChoice.deleteMany();
   await prisma.sysDictionary.deleteMany();
   await prisma.sysDbObject.deleteMany();
+  await prisma.sysNumber.deleteMany();
 
   // 1. Data Dictionary Tables (The Now Meta-Schema)
   console.log("Creating System Data Dictionary...");
@@ -80,6 +107,9 @@ async function main() {
       { name: "sys_script", label: "Business Rule [sys_script]", superClass: null, description: "Server-side business logic and event automation" },
       { name: "sys_ui_policy", label: "UI Policy [sys_ui_policy]", superClass: null, description: "Client-side form visibility, mandatory and read-only behavior" },
       { name: "sys_hub_flow", label: "Flow [sys_hub_flow]", superClass: null, description: "ServiceMeow Flow Designer automated approval and notification workflows" },
+      { name: "crm_organization", label: "Customer Organization [crm_organization]", superClass: null, description: "Customer organizations, enterprise accounts, and external company entities" },
+      { name: "crm_contact", label: "Customer Contact [crm_contact]", superClass: null, description: "Customer stakeholders, requesters, and points of contact" },
+      { name: "crm_deal", label: "Opportunity & Deal [crm_deal]", superClass: null, description: "Sales contracts, support tiers, and pipeline opportunities" },
     ],
   });
 
@@ -131,6 +161,31 @@ async function main() {
       { tableName: "cmn_space", columnName: "status", columnLabel: "Occupancy Status", columnType: "choice", defaultVal: "vacant" },
       { tableName: "cmn_space", columnName: "capacity", columnLabel: "Capacity", columnType: "integer", defaultVal: "1" },
       { tableName: "cmdb_ci", columnName: "space", columnLabel: "Space / Room", columnType: "reference", referenceTable: "cmn_space" },
+      // CRM Organization Fields
+      { tableName: "crm_organization", columnName: "name", columnLabel: "Organization Name", columnType: "string", isMandatory: true },
+      { tableName: "crm_organization", columnName: "domain", columnLabel: "Corporate Domain", columnType: "string" },
+      { tableName: "crm_organization", columnName: "industry", columnLabel: "Industry", columnType: "string" },
+      { tableName: "crm_organization", columnName: "tier", columnLabel: "Account Tier", columnType: "choice", defaultVal: "enterprise" },
+      { tableName: "crm_organization", columnName: "status", columnLabel: "Account Status", columnType: "choice", defaultVal: "active" },
+      { tableName: "crm_organization", columnName: "health_score", columnLabel: "Health Score", columnType: "integer", defaultVal: "95" },
+      { tableName: "crm_organization", columnName: "assigned_to", columnLabel: "Account Manager", columnType: "reference", referenceTable: "sys_user" },
+      // CRM Contact Fields
+      { tableName: "crm_contact", columnName: "name", columnLabel: "Full Name", columnType: "string", isMandatory: true },
+      { tableName: "crm_contact", columnName: "email", columnLabel: "Email Address", columnType: "string", isMandatory: true },
+      { tableName: "crm_contact", columnName: "phone", columnLabel: "Phone Number", columnType: "string" },
+      { tableName: "crm_contact", columnName: "title", columnLabel: "Job Title", columnType: "string" },
+      { tableName: "crm_contact", columnName: "is_primary", columnLabel: "Primary Contact", columnType: "boolean", defaultVal: "false" },
+      { tableName: "crm_contact", columnName: "organization", columnLabel: "Customer Organization", columnType: "reference", referenceTable: "crm_organization" },
+      // CRM Deal Fields
+      { tableName: "crm_deal", columnName: "title", columnLabel: "Deal Title", columnType: "string", isMandatory: true },
+      { tableName: "crm_deal", columnName: "amount", columnLabel: "Contract Value ($)", columnType: "integer", defaultVal: "50000" },
+      { tableName: "crm_deal", columnName: "stage", columnLabel: "Deal Stage", columnType: "choice", defaultVal: "lead" },
+      { tableName: "crm_deal", columnName: "probability", columnLabel: "Win Probability (%)", columnType: "integer", defaultVal: "20" },
+      { tableName: "crm_deal", columnName: "expected_close_date", columnLabel: "Target Close Date", columnType: "datetime" },
+      { tableName: "crm_deal", columnName: "organization", columnLabel: "Customer Organization", columnType: "reference", referenceTable: "crm_organization" },
+      { tableName: "crm_deal", columnName: "contact", columnLabel: "Primary Contact", columnType: "reference", referenceTable: "crm_contact" },
+      { tableName: "crm_deal", columnName: "assigned_to", columnLabel: "Opportunity Owner", columnType: "reference", referenceTable: "sys_user" },
+      { tableName: "crm_deal", columnName: "notes", columnLabel: "Scope & Requirement Notes", columnType: "text" },
     ],
   });
 
@@ -220,6 +275,32 @@ async function main() {
     },
   });
 
+  const workplaceUser = await prisma.user.create({
+    data: {
+      userName: "workplace.admin",
+      email: "workplace.admin@servicemeow.io",
+      name: "Morgan 'Blueprint' Reed",
+      title: "Director of Real Estate & Workplace Technology",
+      department: "Global Workplace Hub",
+      role: "workplace_admin",
+      passwordHash: defaultPasswordHash,
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=128&h=128&fit=crop&crop=faces",
+    },
+  });
+
+  const catalogUser = await prisma.user.create({
+    data: {
+      userName: "catalog.admin",
+      email: "catalog.admin@servicemeow.io",
+      name: "Chloe 'Spec' Montgomery",
+      title: "Principal Service Catalog Architect",
+      department: "IT Service Catalog",
+      role: "catalog_admin",
+      passwordHash: defaultPasswordHash,
+      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=128&h=128&fit=crop&crop=faces",
+    },
+  });
+
   const callerAlex = await prisma.user.create({
     data: {
       userName: "alex.chen",
@@ -283,6 +364,24 @@ async function main() {
     },
   });
 
+  const groupWorkplace = await prisma.group.create({
+    data: {
+      name: "Workplace & Real Estate Operations",
+      description: "Connected Workplace facility planning, spatial hierarchy, CAD blueprints, and room reservation governance",
+      roles: "workplace_admin",
+      managerId: workplaceUser.id,
+    },
+  });
+
+  const groupCatalog = await prisma.group.create({
+    data: {
+      name: "Service Catalog Operations",
+      description: "Catalog item authoring, record producers, variable mapping, and checkout workflows",
+      roles: "catalog_admin",
+      managerId: catalogUser.id,
+    },
+  });
+
   // Add memberships
   await prisma.userGroupMember.createMany({
     data: [
@@ -290,6 +389,8 @@ async function main() {
       { userId: itilUser.id, groupId: groupSRE.id },
       { userId: cabUser.id, groupId: groupCAB.id },
       { userId: adminUser.id, groupId: groupDBA.id },
+      { userId: workplaceUser.id, groupId: groupWorkplace.id },
+      { userId: catalogUser.id, groupId: groupCatalog.id },
     ],
   });
 
@@ -444,6 +545,74 @@ async function main() {
       floorplanSvgUrl: "/floorplans/tech_tower_l4.svg",
       floorplanImageUrl: "/floorplans/tech_tower_l4.svg",
       areaSqFt: 32000,
+    },
+  });
+
+  // Enterprise Benchmark Building: World Technology Headquarters (HQ)
+  const bldgHQ = await prisma.cmnBuilding.create({
+    data: {
+      name: "Corporate Headquarters Tower (HQ)",
+      code: "HQ",
+      campusId: campusSV.id,
+      buildingType: "Corporate Office Complex",
+      floorsCount: 20,
+      totalAreaSqFt: 320000,
+    },
+  });
+
+  const flHQ15 = await prisma.cmnFloor.create({
+    data: {
+      name: "Floor 15 - Engineering Operations",
+      floorNumber: 15,
+      code: "HQ15",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 5373.24,
+    },
+  });
+
+  const flHQ17 = await prisma.cmnFloor.create({
+    data: {
+      name: "Floor 17 - Systems & Hardware Architecture",
+      floorNumber: 17,
+      code: "HQ17",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 5287.06,
+    },
+  });
+
+  const flHQ18 = await prisma.cmnFloor.create({
+    data: {
+      name: "Floor 18 - Electronic Systems & Executive Wing",
+      floorNumber: 18,
+      code: "HQ18",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      floorplanImageUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 5136.79,
+    },
+  });
+
+  const flHQ19 = await prisma.cmnFloor.create({
+    data: {
+      name: "Floor 19 - Product Strategy & Leadership",
+      floorNumber: 19,
+      code: "HQ19",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 5447.06,
+    },
+  });
+
+  const flHQB1 = await prisma.cmnFloor.create({
+    data: {
+      name: "Basement Level 1 - Central Logistics & Data Vault",
+      floorNumber: -1,
+      code: "HQB1",
+      buildingId: bldgHQ.id,
+      floorplanSvgUrl: "/floorplans/hq_floor_18.svg",
+      areaSqFt: 6428.73,
     },
   });
 
@@ -746,7 +915,339 @@ async function main() {
     },
   });
 
+  // ==============================================================
+  // Enterprise Spatial Benchmark: 21 Spaces for HQ Floor 18 (Electronic Systems & Executive)
+  // ==============================================================
+  const hq18Spaces = [
+    {
+      name: "Electronic Systems Engineering Suite 101",
+      spaceNumber: "101",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 6,
+      squareFeet: 420,
+      department: "Electronic Systems",
+      svgElementId: "room-101",
+      floorplanX: 13.5,
+      floorplanY: 17.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 14.5,
+    },
+    {
+      name: "Electronic Systems Engineering Suite 102",
+      spaceNumber: "102",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 6,
+      squareFeet: 430,
+      department: "Electronic Systems",
+      svgElementId: "room-102",
+      floorplanX: 23.0,
+      floorplanY: 11.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 15.0,
+    },
+    {
+      name: "Electronic Systems Engineering Suite 103",
+      spaceNumber: "103",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 6,
+      squareFeet: 430,
+      department: "Electronic Systems",
+      svgElementId: "room-103",
+      floorplanX: 36.0,
+      floorplanY: 11.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 15.0,
+    },
+    {
+      name: "Agile Collaboration Suite 104",
+      spaceNumber: "104",
+      spaceType: "Meeting",
+      status: "available",
+      capacity: 8,
+      squareFeet: 450,
+      department: "Electronic Systems",
+      svgElementId: "room-104",
+      floorplanX: 49.5,
+      floorplanY: 11.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 15.0,
+    },
+    {
+      name: "Strategy Conference Room 105",
+      spaceNumber: "105",
+      spaceType: "Meeting",
+      status: "available",
+      capacity: 10,
+      squareFeet: 480,
+      department: "Electronic Systems",
+      svgElementId: "room-105",
+      floorplanX: 63.0,
+      floorplanY: 17.5,
+      floorplanWidth: 12.0,
+      floorplanHeight: 14.5,
+    },
+    {
+      name: "Electronic Systems Development 110",
+      spaceNumber: "110",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 360,
+      department: "Electronic Systems",
+      svgElementId: "room-110",
+      floorplanX: 63.5,
+      floorplanY: 50.5,
+      floorplanWidth: 11.5,
+      floorplanHeight: 14.5,
+    },
+    {
+      name: "Hardware Systems Verification Lab 111",
+      spaceNumber: "111",
+      spaceType: "Lab",
+      status: "available",
+      capacity: 8,
+      squareFeet: 520,
+      department: "Electronic Systems",
+      svgElementId: "room-111",
+      floorplanX: 63.5,
+      floorplanY: 67.0,
+      floorplanWidth: 11.5,
+      floorplanHeight: 15.5,
+    },
+    {
+      name: "Executive Vice President Suite 112",
+      spaceNumber: "112",
+      spaceType: "Executive",
+      status: "available",
+      capacity: 8,
+      squareFeet: 680,
+      department: "Executive Leadership",
+      svgElementId: "room-112",
+      floorplanX: 76.5,
+      floorplanY: 67.0,
+      floorplanWidth: 13.5,
+      floorplanHeight: 16.5,
+    },
+    {
+      name: "Electronic Systems Integration Bay 113",
+      spaceNumber: "113",
+      spaceType: "Workstation",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 280,
+      department: "Electronic Systems",
+      svgElementId: "room-113",
+      floorplanX: 54.0,
+      floorplanY: 71.0,
+      floorplanWidth: 8.5,
+      floorplanHeight: 13.0,
+    },
+    {
+      name: "Electronic Systems Integration Bay 114",
+      spaceNumber: "114",
+      spaceType: "Workstation",
+      status: "available",
+      capacity: 4,
+      squareFeet: 280,
+      department: "Electronic Systems",
+      svgElementId: "room-114",
+      floorplanX: 54.0,
+      floorplanY: 84.5,
+      floorplanWidth: 8.5,
+      floorplanHeight: 10.0,
+    },
+    {
+      name: "Electronic Systems Integration Bay 115",
+      spaceNumber: "115",
+      spaceType: "Workstation",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 280,
+      department: "Electronic Systems",
+      svgElementId: "room-115",
+      floorplanX: 44.5,
+      floorplanY: 71.0,
+      floorplanWidth: 8.5,
+      floorplanHeight: 13.0,
+    },
+    {
+      name: "Electronic Systems Integration Bay 116",
+      spaceNumber: "116",
+      spaceType: "Workstation",
+      status: "available",
+      capacity: 4,
+      squareFeet: 280,
+      department: "Electronic Systems",
+      svgElementId: "room-116",
+      floorplanX: 44.5,
+      floorplanY: 84.5,
+      floorplanWidth: 8.5,
+      floorplanHeight: 10.0,
+    },
+    {
+      name: "Agile Team Pod 117",
+      spaceNumber: "117",
+      spaceType: "Open Plan",
+      status: "occupied",
+      capacity: 10,
+      squareFeet: 580,
+      department: "Product Engineering",
+      svgElementId: "room-117",
+      floorplanX: 24.5,
+      floorplanY: 69.5,
+      floorplanWidth: 15.5,
+      floorplanHeight: 16.0,
+    },
+    {
+      name: "Software Systems Lab 118",
+      spaceNumber: "118",
+      spaceType: "Lab",
+      status: "available",
+      capacity: 8,
+      squareFeet: 620,
+      department: "Product Engineering",
+      svgElementId: "room-118",
+      floorplanX: 9.5,
+      floorplanY: 62.5,
+      floorplanWidth: 14.0,
+      floorplanHeight: 19.5,
+    },
+    {
+      name: "Electronic Systems Ops 120",
+      spaceNumber: "120",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 310,
+      department: "Electronic Systems",
+      svgElementId: "room-120",
+      floorplanX: 45.0,
+      floorplanY: 39.0,
+      floorplanWidth: 9.0,
+      floorplanHeight: 10.0,
+    },
+    {
+      name: "Restroom Facility Core 121",
+      spaceNumber: "121",
+      spaceType: "Service Area",
+      status: "available",
+      capacity: 12,
+      squareFeet: 650,
+      department: "Facilities",
+      svgElementId: "room-121",
+      floorplanX: 9.5,
+      floorplanY: 38.0,
+      floorplanWidth: 15.0,
+      floorplanHeight: 20.0,
+    },
+    {
+      name: "Executive Suite 130",
+      spaceNumber: "130",
+      spaceType: "Executive",
+      status: "occupied",
+      capacity: 6,
+      squareFeet: 550,
+      department: "Executive Leadership",
+      svgElementId: "room-130",
+      floorplanX: 76.5,
+      floorplanY: 48.0,
+      floorplanWidth: 13.5,
+      floorplanHeight: 17.0,
+    },
+    {
+      name: "Electronic Systems Office 135",
+      spaceNumber: "135",
+      spaceType: "Office",
+      status: "occupied",
+      capacity: 4,
+      squareFeet: 360,
+      department: "Electronic Systems",
+      svgElementId: "room-135",
+      floorplanX: 63.5,
+      floorplanY: 33.5,
+      floorplanWidth: 11.5,
+      floorplanHeight: 15.0,
+    },
+    {
+      name: "Executive Boardroom 136",
+      spaceNumber: "136",
+      spaceType: "Executive",
+      status: "available",
+      capacity: 14,
+      squareFeet: 720,
+      department: "Executive Leadership",
+      svgElementId: "room-136",
+      floorplanX: 76.5,
+      floorplanY: 30.0,
+      floorplanWidth: 13.5,
+      floorplanHeight: 16.5,
+    },
+    {
+      name: "Chief Executive Office 137",
+      spaceNumber: "137",
+      spaceType: "Executive",
+      status: "occupied",
+      capacity: 8,
+      squareFeet: 750,
+      department: "Executive Leadership",
+      svgElementId: "room-137",
+      floorplanX: 76.5,
+      floorplanY: 11.5,
+      floorplanWidth: 13.5,
+      floorplanHeight: 16.5,
+    },
+    {
+      name: "Primary Circulation Atrium 160",
+      spaceNumber: "160",
+      spaceType: "Primary Circulation Area",
+      status: "available",
+      capacity: 30,
+      squareFeet: 2800,
+      department: "Facilities",
+      svgElementId: "room-160",
+      floorplanX: 30.0,
+      floorplanY: 29.0,
+      floorplanWidth: 32.0,
+      floorplanHeight: 28.0,
+    },
+  ];
+
+  for (const spData of hq18Spaces) {
+    await prisma.cmnSpace.create({
+      data: {
+        ...spData,
+        floorId: flHQ18.id,
+        capabilities: JSON.stringify(["teams", "zoom", "whiteboard", "high_speed_wifi"]),
+      },
+    });
+  }
+
   // Cross-compatibility Unified CmnLocation records
+  const locAmericas = await prisma.cmnLocation.create({
+    data: {
+      name: "Americas",
+      locationType: "region",
+      regionId: regionAmer.id,
+      fullPath: "Americas",
+    },
+  });
+
+  const locCalifornia = await prisma.cmnLocation.create({
+    data: {
+      name: "California",
+      state: "CA",
+      country: "United States",
+      locationType: "state",
+      parentId: locAmericas.id,
+      regionId: regionAmer.id,
+      stateRefId: stateCA.id,
+      fullPath: "Americas / California",
+    },
+  });
+
   const locSFMed = await prisma.cmnLocation.create({
     data: {
       name: "San Francisco Mission Bay Medical Center",
@@ -754,6 +1255,7 @@ async function main() {
       state: "CA",
       country: "United States",
       locationType: "campus",
+      parentId: locCalifornia.id,
       regionId: regionAmer.id,
       stateRefId: stateCA.id,
       campusId: campusSFMed.id,
@@ -1486,7 +1988,7 @@ This article provides step-by-step instructions for connecting to the corporate 
         title: "Developer Guide: Requesting Temporary Elevated Cloud Access via AWS IAM",
         category: "Cloud Services",
         content: `### Policy Summary
-Production cloud access requires zero-standing-privilege (ZSP) enforcement. All write permissions to production AWS accounts must be requested through OpenNow Service Catalog.
+Production cloud access requires zero-standing-privilege (ZSP) enforcement. All write permissions to production AWS accounts must be requested through ServiceMeow Service Catalog.
 
 ### Approval Requirements
 - **Sandbox**: Auto-approved within 5 minutes.
@@ -1766,6 +2268,637 @@ Laptops are provisioned with 3-year AppleCare+ or Dell ProSupport Plus with next
         capabilitiesNeeded: JSON.stringify(["teams", "zoom", "telepresence", "4k_projector", "microphones"]),
         notes: "Global live broadcast with dual telepresence feed.",
       },
+    ],
+  });
+
+  // 18. Seed Knowledge Bases (kb_knowledge_base in sysCustomRecord)
+  console.log("Seeding Knowledge Bases (kb_knowledge_base)...");
+  await prisma.sysCustomRecord.createMany({
+    data: [
+      {
+        tableName: "kb_knowledge_base",
+        dataJson: JSON.stringify({
+          number: "KB0001",
+          name: "IT Operations & Cloud Infrastructure Runbooks",
+          description: "Curated operational guides, deployment procedures, incident resolution runbooks, and SRE best practices.",
+          owner: "Alex Chen",
+          active: true,
+        }),
+      },
+      {
+        tableName: "kb_knowledge_base",
+        dataJson: JSON.stringify({
+          number: "KB0002",
+          name: "Employee Workplace & Facilities Self-Service",
+          description: "Workplace guidelines, floor directory guides, desk booking policies, and office services intake.",
+          owner: "Sarah Connor",
+          active: true,
+        }),
+      },
+      {
+        tableName: "kb_knowledge_base",
+        dataJson: JSON.stringify({
+          number: "KB0003",
+          name: "Corporate Security & Access Compliance",
+          description: "Security protocols, VPN & Wi-Fi certificates, identity verification, and data handling requirements.",
+          owner: "Marcus Vance",
+          active: true,
+        }),
+      },
+    ],
+  });
+
+  // 19. Seed Agile Sprints (rm_sprint in sysCustomRecord)
+  console.log("Seeding Agile Sprints (rm_sprint)...");
+  const sprintStart = new Date(Date.now() - 5 * 86400000).toISOString().split("T")[0];
+  const sprintEnd = new Date(Date.now() + 9 * 86400000).toISOString().split("T")[0];
+  const nextSprintStart = new Date(Date.now() + 10 * 86400000).toISOString().split("T")[0];
+  const nextSprintEnd = new Date(Date.now() + 24 * 86400000).toISOString().split("T")[0];
+
+  await prisma.sysCustomRecord.createMany({
+    data: [
+      {
+        tableName: "rm_sprint",
+        dataJson: JSON.stringify({
+          number: "SPNT0001001",
+          name: "Sprint 42 - Core ITIL & Platform Parity",
+          state: "active",
+          startDate: sprintStart,
+          endDate: sprintEnd,
+          capacityPoints: 45,
+          goal: "Complete Swiss Grid forms and full parity for ESM modules.",
+        }),
+      },
+      {
+        tableName: "rm_sprint",
+        dataJson: JSON.stringify({
+          number: "SPNT0001002",
+          name: "Sprint 43 - CAD Space Planning & Automation",
+          state: "planning",
+          startDate: nextSprintStart,
+          endDate: nextSprintEnd,
+          capacityPoints: 50,
+          goal: "Enhance CAD drag-and-drop floorplan visual tools and automated batch reservations.",
+        }),
+      },
+    ],
+  });
+
+  // 20. Seed Agile Epics (rm_epic in task)
+  console.log("Seeding Agile Epics (rm_epic)...");
+  await prisma.task.createMany({
+    data: [
+      {
+        number: "EPIC0001001",
+        sysClassName: "rm_epic",
+        shortDescription: "ITIL Core Engine Modernization",
+        description: "Deliver comprehensive Incident, Problem, Change, and CMDB CI workflows with zero legacy lock-in.",
+        priority: 1,
+        state: 2,
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          owner: "Product Director",
+          target_date: "Q4 2026",
+        }),
+      },
+      {
+        number: "EPIC0001002",
+        sysClassName: "rm_epic",
+        shortDescription: "Enterprise Workplace & CAD Spatial Integration",
+        description: "6-tier spatial model with interactive CAD floorplans, live room state matrix, and reservations.",
+        priority: 2,
+        state: 2,
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupWorkplace.id,
+        dynamicFields: JSON.stringify({
+          owner: "Head of Real Estate",
+          target_date: "Q4 2026",
+        }),
+      },
+      {
+        number: "EPIC0001003",
+        sysClassName: "rm_epic",
+        shortDescription: "Unified Self-Service Portal & Knowledge Expansion",
+        description: "Intuitive self-service catalog, 90-day uptime monitoring, and searchable knowledge bases.",
+        priority: 2,
+        state: 1,
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          owner: "Customer Experience Lead",
+          target_date: "Q1 2027",
+        }),
+      },
+    ],
+  });
+
+  // 21. Seed Agile User Stories (rm_story in task)
+  console.log("Seeding Agile Stories (rm_story)...");
+  await prisma.task.createMany({
+    data: [
+      {
+        number: "STRY0001001",
+        sysClassName: "rm_story",
+        shortDescription: "Implement Swiss Grid UI across all Workspace forms",
+        description: "Standardize all ITIL and Agile workspace forms using brutalist Swiss Grid design with high-contrast typography.",
+        priority: 1,
+        state: 7, // Complete
+        assignedToId: itilUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          story_points: 8,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001001: ITIL Core Engine Modernization",
+          assigned_to: "Alex Chen",
+          acceptance_criteria: "Given any fulfiller, when they open any form in workspace, it renders in clean Swiss Grid styling.",
+        }),
+      },
+      {
+        number: "STRY0001002",
+        sysClassName: "rm_story",
+        shortDescription: "Refactor CAD floorplan drag-and-drop room layout engine",
+        description: "Enable fulfillers and workspace managers to intuitively drag, resize, and position spaces directly on architectural SVG floorplans.",
+        priority: 2,
+        state: 3, // In Progress
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupWorkplace.id,
+        dynamicFields: JSON.stringify({
+          story_points: 5,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001002: Enterprise Workplace & CAD Spatial Integration",
+          assigned_to: "Sarah Connor",
+          acceptance_criteria: "Users can drag, resize, and reshape rooms directly in the SVG CAD canvas.",
+        }),
+      },
+      {
+        number: "STRY0001003",
+        sysClassName: "rm_story",
+        shortDescription: "Build real-time KEDB known error search in Incident resolution",
+        description: "Automatically suggest verified workarounds from the Known Error Database when an engineer troubleshoots a recurring incident.",
+        priority: 2,
+        state: 3, // In Progress
+        assignedToId: itilUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          story_points: 5,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001001: ITIL Core Engine Modernization",
+          assigned_to: "David Miller",
+          acceptance_criteria: "Known error database articles populate dynamically when searching incident symptoms.",
+        }),
+      },
+      {
+        number: "STRY0001004",
+        sysClassName: "rm_story",
+        shortDescription: "Enhance CMDB CI dependency tree visualization",
+        description: "Provide an interactive node graph displaying upstream and downstream relationships for enterprise configuration items.",
+        priority: 3,
+        state: 4, // Testing & QA
+        assignedToId: itilUser.id,
+        assignmentGroupId: groupSRE.id,
+        dynamicFields: JSON.stringify({
+          story_points: 3,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001001: ITIL Core Engine Modernization",
+          assigned_to: "Alex Chen",
+          acceptance_criteria: "CI relationships (Depends on / Hosted on) render in an interactive relationship graph.",
+        }),
+      },
+      {
+        number: "STRY0001005",
+        sysClassName: "rm_story",
+        shortDescription: "Enable multi-zone room reservation conflict resolution",
+        description: "Detect calendar collision on meeting rooms and recommend the closest available conference space on the same floor level.",
+        priority: 2,
+        state: 2, // Sprint Ready
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupWorkplace.id,
+        dynamicFields: JSON.stringify({
+          story_points: 5,
+          sprint_id: "SPNT0001001",
+          sprint_name: "Sprint 42 - Core ITIL & Platform Parity",
+          epic_name: "EPIC0001002: Enterprise Workplace & CAD Spatial Integration",
+          assigned_to: "Elena Rostova",
+          acceptance_criteria: "System prevents overlapping reservations and suggests nearest alternative conference rooms.",
+        }),
+      },
+      {
+        number: "STRY0001006",
+        sysClassName: "rm_story",
+        shortDescription: "Automate P1 Major Incident Cat-Swarm dispatch notifications",
+        description: "Trigger automated PagerDuty and Slack alerts to on-call commanders whenever an incident is flagged with Priority 1.",
+        priority: 1,
+        state: 1, // Backlog
+        assignedToId: itilUser.id,
+        assignmentGroupId: groupSRE.id,
+        dynamicFields: JSON.stringify({
+          story_points: 8,
+          sprint_id: null,
+          sprint_name: null,
+          epic_name: "EPIC0001001: ITIL Core Engine Modernization",
+          assigned_to: "Marcus Vance",
+          acceptance_criteria: "High-priority incidents immediately trigger automated webhook broadcasts to on-call squads.",
+        }),
+      },
+      {
+        number: "STRY0001007",
+        sysClassName: "rm_story",
+        shortDescription: "Publish Employee Workplace onboarding knowledge articles",
+        description: "Add step-by-step documentation for badge activation, desk booking, and workplace ergonomics on the employee self-service portal.",
+        priority: 3,
+        state: 1, // Backlog
+        assignedToId: adminUser.id,
+        assignmentGroupId: groupServiceDesk.id,
+        dynamicFields: JSON.stringify({
+          story_points: 3,
+          sprint_id: null,
+          sprint_name: null,
+          epic_name: "EPIC0001003: Unified Self-Service Portal & Knowledge Expansion",
+          assigned_to: "Rachel Adams",
+          acceptance_criteria: "New hires can search and read workplace guides directly from the self-service portal.",
+        }),
+      },
+    ],
+  });
+
+  // Seed Checklist SOP Items on INC0001001
+  console.log("Seeding Mandatory Checklist Items & SOP Gatekeeper...");
+  await prisma.taskChecklistItem.createMany({
+    data: [
+      {
+        taskId: task1.id,
+        title: "Verify BGP edge route peering status on border gateway",
+        description: "Execute 'show ip bgp summary' and confirm zero flap count over past 1 hour.",
+        isMandatory: true,
+        isCompleted: true,
+        completedById: itilUser.id,
+        completedAt: new Date(Date.now() - 20 * 60 * 1000),
+        sortOrder: 1,
+      },
+      {
+        taskId: task1.id,
+        title: "Inspect interface packet drop counters & MTU trunk alignment",
+        description: "Ensure MTU 1500 matches switchport trunk configuration on vpn-gw-east.",
+        isMandatory: true,
+        isCompleted: false,
+        sortOrder: 2,
+      },
+      {
+        taskId: task1.id,
+        title: "Notify on-call Network Operations Commander & publish bulletin",
+        description: "Post initial disruption announcement to Status page and Slack #incident-room.",
+        isMandatory: false,
+        isCompleted: true,
+        completedById: itilUser.id,
+        completedAt: new Date(Date.now() - 30 * 60 * 1000),
+        sortOrder: 3,
+      },
+    ],
+  });
+
+  // Seed Task Diagnostic Evidence Ledger on INC0001001
+  console.log("Seeding Task Diagnostic Evidence Ledger...");
+  await prisma.taskEvidence.createMany({
+    data: [
+      {
+        taskId: task1.id,
+        claimField: "root_cause",
+        claimValue: "Interface MTU mismatch on vpn-gw-east.corp.internal border trunk",
+        evidenceKind: "log.stacktrace",
+        isDecisive: true,
+        rawObservation: "Syslog captured fragmented packets dropped on interface eth0/1 with MTU 1400 vs router MTU 1500.",
+        status: "proposed",
+      },
+      {
+        taskId: task1.id,
+        claimField: "assigned_to_id",
+        claimValue: itilUser.id,
+        evidenceKind: "crm.thread_reply",
+        isDecisive: false,
+        rawObservation: "Sarah Jenkins replied with acknowledgement to initial PagerDuty escalation alert.",
+        status: "accepted",
+        decidedById: itilUser.id,
+        decidedAt: new Date(Date.now() - 25 * 60 * 1000),
+      },
+    ],
+  });
+
+  // Seed Daily Morning Checks (Operational Rounds)
+  console.log("Seeding Daily Infrastructure Morning Checks...");
+  await prisma.cmnMorningCheck.createMany({
+    data: [
+      {
+        title: "Primary SAN Storage Array Capacity & IOPS",
+        category: "datacenter",
+        targetSystem: "SAN-Pure-Cluster-01",
+        shift: "morning",
+        status: "pass",
+        notes: "Capacity at 62%, deduplication ratio 3.8:1, latency nominal under 1.2ms.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+      {
+        title: "Offsite Immutable Backup Replication Snapshot",
+        category: "backup",
+        targetSystem: "Veeam-B&R-Offsite",
+        shift: "morning",
+        status: "pass",
+        notes: "Nightly snapshot completed with zero CRC warnings; SHA-256 integrity verified.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+      {
+        title: "PostgreSQL Production Read-Replica Replication Lag",
+        category: "database",
+        targetSystem: "pg-read-replica-02",
+        shift: "morning",
+        status: "degraded",
+        notes: "Replica lag spiked to 480ms during automated index maintenance. Catch-up in progress.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+      {
+        title: "Corporate Dual-Fiber BGP & SD-WAN Border Uplinks",
+        category: "network",
+        targetSystem: "Cisco-Catalyst-Border-GW",
+        shift: "morning",
+        status: "pass",
+        notes: "Both 10Gbps fiber circuits online; packet loss 0.00% across synthetic probes.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+      {
+        title: "Workplace CAD & Room Booking Sync Daemon",
+        category: "application",
+        targetSystem: "ServiceMeow-Daemon-Worker",
+        shift: "morning",
+        status: "pass",
+        notes: "Daemon heartbeat verified, 15s scheduled queue tick cadence nominal.",
+        checkedById: adminUser.id,
+        checkedAt: new Date(),
+      },
+    ],
+  });
+
+  // Seed CRM Customer Organizations, Contacts & Deals
+  console.log("Seeding Customer Service Organizations, Contacts & Deals...");
+  const acmeOrg = await prisma.crmOrganization.create({
+    data: {
+      name: "Acme Healthcare Systems",
+      domain: "acmehealth.com",
+      industry: "Healthcare",
+      tier: "enterprise",
+      status: "active",
+      healthScore: 98,
+      assignedToId: itilUser.id,
+    },
+  });
+
+  const globexOrg = await prisma.crmOrganization.create({
+    data: {
+      name: "Globex Logistics Corp",
+      domain: "globexlogistics.io",
+      industry: "Logistics & Supply Chain",
+      tier: "mid_market",
+      status: "active",
+      healthScore: 84,
+      assignedToId: itilUser.id,
+    },
+  });
+
+  const initechOrg = await prisma.crmOrganization.create({
+    data: {
+      name: "Initech Software Global",
+      domain: "initech.com",
+      industry: "Technology",
+      tier: "enterprise",
+      status: "active",
+      healthScore: 92,
+      assignedToId: adminUser.id,
+    },
+  });
+
+  const catherineContact = await prisma.crmContact.create({
+    data: {
+      firstName: "Catherine",
+      lastName: "Howard",
+      name: "Dr. Catherine Howard",
+      email: "catherine.howard@acmehealth.com",
+      phone: "+1 (415) 555-0142",
+      title: "Chief Medical Information Officer",
+      isPrimary: true,
+      organizationId: acmeOrg.id,
+    },
+  });
+
+  const bobContact = await prisma.crmContact.create({
+    data: {
+      firstName: "Bob",
+      lastName: "Porter",
+      name: "Bob Porter",
+      email: "bob.porter@initech.com",
+      phone: "+1 (512) 555-0189",
+      title: "VP of Enterprise Infrastructure",
+      isPrimary: true,
+      organizationId: initechOrg.id,
+    },
+  });
+
+  const hankContact = await prisma.crmContact.create({
+    data: {
+      firstName: "Hank",
+      lastName: "Scorpio",
+      name: "Hank Scorpio",
+      email: "hank.scorpio@globexlogistics.io",
+      phone: "+1 (202) 555-0199",
+      title: "Chief Executive Officer",
+      isPrimary: true,
+      organizationId: globexOrg.id,
+    },
+  });
+
+  await prisma.crmDeal.createMany({
+    data: [
+      {
+        title: "Acme 500-Rack Datacenter ESM Expansion",
+        amount: 145000.0,
+        stage: "proposal",
+        probability: 65,
+        expectedCloseDate: new Date(Date.now() + 30 * 86400000),
+        organizationId: acmeOrg.id,
+        contactId: catherineContact.id,
+        assignedToId: itilUser.id,
+        notes: "Enterprise upgrade covering 6-tier spatial floorplans and rack elevation monitoring.",
+      },
+      {
+        title: "Globex Autonomous Logistics Floorplan CAD",
+        amount: 48000.0,
+        stage: "negotiation",
+        probability: 80,
+        expectedCloseDate: new Date(Date.now() + 14 * 86400000),
+        organizationId: globexOrg.id,
+        contactId: hankContact.id,
+        assignedToId: itilUser.id,
+        notes: "Automated warehouse zone CAD tagging and workstation allocation.",
+      },
+      {
+        title: "Initech Enterprise ITIL Incident Suite",
+        amount: 220000.0,
+        stage: "qualified",
+        probability: 40,
+        expectedCloseDate: new Date(Date.now() + 60 * 86400000),
+        organizationId: initechOrg.id,
+        contactId: bobContact.id,
+        assignedToId: adminUser.id,
+        notes: "Full ESM suite replacement with QuickJS sandbox business rules.",
+      },
+      {
+        title: "Initech High-Performance Developer Workstations",
+        amount: 92000.0,
+        stage: "won",
+        probability: 100,
+        expectedCloseDate: new Date(Date.now() - 5 * 86400000),
+        organizationId: initechOrg.id,
+        contactId: bobContact.id,
+        assignedToId: adminUser.id,
+        notes: "Procurement fulfilled via Service Catalog shopping cart.",
+      },
+    ],
+  });
+
+  // 17. Omnichannel Live Agent Chat
+  console.log("Seeding Live Agent Chat Queues, Canned Responses & Config...");
+  const queueIT = await prisma.sysLiveChatQueue.create({
+    data: {
+      name: "Global IT Service Desk",
+      code: "it_service_desk",
+      description: "Tier 1 hardware, network, software and authentication support",
+      active: true,
+      priority: 1,
+      assignmentGroupId: groupServiceDesk.id,
+      maxWaitSeconds: 300,
+      welcomeMessage: "Hello! You've reached ServiceMeow IT Support. An ITIL engineer will be with you shortly.",
+      offlineMessage: "Live IT support is currently offline. Please submit an incident via the self-service portal.",
+    },
+  });
+
+  const queueWorkplace = await prisma.sysLiveChatQueue.create({
+    data: {
+      name: "Workplace & Facilities Support",
+      code: "workplace_facilities",
+      description: "Room booking, HVAC, badge access, and facility operations",
+      active: true,
+      priority: 2,
+      assignmentGroupId: groupWorkplace.id,
+      maxWaitSeconds: 600,
+      welcomeMessage: "Hello! Welcome to Workplace & Facilities. How can we assist with your office or campus needs?",
+      offlineMessage: "Facilities support is offline. For urgent maintenance, call the building operations hotline.",
+    },
+  });
+
+  const queueHR = await prisma.sysLiveChatQueue.create({
+    data: {
+      name: "People Ops & HR General Inquiries",
+      code: "people_ops_hr",
+      description: "Benefits, payroll, workplace policy, and onboarding questions",
+      active: true,
+      priority: 3,
+      maxWaitSeconds: 450,
+      welcomeMessage: "Welcome to People Operations Live Support. How may we assist your employee journey today?",
+      offlineMessage: "People Ops live agents are away. Please browse our Knowledge Base or submit an HR ticket.",
+    },
+  });
+
+  await prisma.sysCannedResponse.createMany({
+    data: [
+      {
+        shortcut: "/greet",
+        title: "Standard Professional Greeting",
+        message: "Hello! Thank you for contacting ServiceMeow Support. My name is Sarah. How may I assist you today?",
+        category: "general",
+        active: true,
+      },
+      {
+        shortcut: "/kb",
+        title: "Knowledge Article Recommendation",
+        message: "I've located a helpful Knowledge Article with verified step-by-step resolution instructions. Please check: ",
+        category: "troubleshooting",
+        active: true,
+      },
+      {
+        shortcut: "/hold",
+        title: "Brief Diagnostic Hold",
+        message: "I am actively checking the system telemetry and server event logs. May I place you on a brief 2-minute hold?",
+        category: "troubleshooting",
+        active: true,
+      },
+      {
+        shortcut: "/screen_share",
+        title: "Request Remote Assist",
+        message: "Would you like to initiate a secure remote session so I can inspect this error directly on your workstation?",
+        category: "troubleshooting",
+        active: true,
+      },
+      {
+        shortcut: "/resolve",
+        title: "Resolution & Wrap Up",
+        message: "The issue has been diagnosed and resolved. Is there anything else I can help you with today? Thank you for using ServiceMeow!",
+        category: "closing",
+        active: true,
+      },
+    ],
+  });
+
+  await prisma.sysLiveChatConfig.upsert({
+    where: { id: "global" },
+    update: {
+      enabled: true,
+      maxConcurrentChatsPerAgent: 3,
+      autoAbandonTimeoutSeconds: 600,
+      soundNotifications: true,
+      operatingHoursSchedule: "24x7 Enterprise Support",
+    },
+    create: {
+      id: "global",
+      enabled: true,
+      maxConcurrentChatsPerAgent: 3,
+      autoAbandonTimeoutSeconds: 600,
+      soundNotifications: true,
+      operatingHoursSchedule: "24x7 Enterprise Support",
+    },
+  });
+
+  await prisma.sysLiveChatPresence.upsert({
+    where: { userId: itilUser.id },
+    update: { status: "online", activeChatsCount: 0 },
+    create: {
+      userId: itilUser.id,
+      status: "online",
+      activeChatsCount: 0,
+    },
+  });
+
+  // Seed System Number Sequences (sys_number)
+  console.log("Initializing System Number Sequences (sys_number)...");
+  await prisma.sysNumber.createMany({
+    data: [
+      { tableName: "incident", prefix: "INC", digits: 7, currentNumber: 1004 },
+      { tableName: "change_request", prefix: "CHG", digits: 7, currentNumber: 1002 },
+      { tableName: "problem", prefix: "PRB", digits: 7, currentNumber: 1002 },
+      { tableName: "sc_request", prefix: "REQ", digits: 7, currentNumber: 1002 },
+      { tableName: "sc_req_item", prefix: "RITM", digits: 7, currentNumber: 1002 },
+      { tableName: "sc_task", prefix: "TASK", digits: 7, currentNumber: 1002 },
+      { tableName: "task", prefix: "TASK", digits: 7, currentNumber: 1002 },
+      { tableName: "cmn_reservation", prefix: "RES", digits: 7, currentNumber: 1005 },
+      { tableName: "kb_knowledge", prefix: "KB", digits: 7, currentNumber: 1004 },
+      { tableName: "rm_story", prefix: "STRY", digits: 7, currentNumber: 1008 },
+      { tableName: "rm_epic", prefix: "EPIC", digits: 7, currentNumber: 1004 },
+      { tableName: "rm_sprint", prefix: "SPNT", digits: 7, currentNumber: 1003 },
     ],
   });
 

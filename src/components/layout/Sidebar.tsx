@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "@/lib/theme-context";
 import {
   AlertCircle,
+  MessageSquare,
   GitPullRequest,
   HelpCircle,
   CheckSquare,
@@ -41,6 +42,9 @@ import {
   Calendar,
   PanelLeftOpen,
   PanelLeftClose,
+  Flame,
+  Briefcase,
+  DollarSign,
 } from "lucide-react";
 
 import { useUser } from "@/lib/user-context";
@@ -67,6 +71,7 @@ const ICON_LOOKUP: Record<string, any> = {
   CheckCircle2,
   AlertCircle,
   PlusCircle,
+  Flame,
   GitPullRequest,
   HelpCircle,
   CheckSquare,
@@ -202,11 +207,40 @@ export function Sidebar() {
       title: "Agent Workspace",
       icon: LayoutDashboard,
       items: [
+        { label: "Live Agent Cockpit", href: "/workspace/chat", icon: MessageSquare, badge: "Live" },
+        { label: "Watchtower Cockpit", href: "/workspace/watchtower", icon: Flame, badge: "Live" },
+        { label: "Morning Checks Rounds", href: "/workspace/morning-checks", icon: Activity },
         { label: "Executive Dashboards", href: "/workspace/dashboard", icon: BarChart3 },
         { label: "Operations Center", href: "/workspace", icon: Activity },
         { label: "Visual Task Board (VTB)", href: "/workspace/task-board", icon: Kanban },
         { label: "Approvals Hub", href: "/workspace/approvals", icon: CheckCircle2 },
         { label: "Service Health & Status", href: "/workspace/status", icon: Activity },
+      ],
+    },
+    {
+      title: "Agile Management",
+      icon: Kanban,
+      items: [
+        { label: "Agile Sprint Board", href: "/workspace/agile", icon: Kanban, badge: "New" },
+        { label: "User Stories (rm_story)", href: "/workspace/rm_story" },
+        { label: "New Story", href: "/workspace/rm_story/new", icon: PlusCircle },
+        { label: "Sprints (rm_sprint)", href: "/workspace/rm_sprint" },
+        { label: "New Sprint", href: "/workspace/rm_sprint/new", icon: PlusCircle },
+        { label: "Epics (rm_epic)", href: "/workspace/rm_epic" },
+        { label: "New Epic", href: "/workspace/rm_epic/new", icon: PlusCircle },
+      ],
+    },
+    {
+      title: "Customer Service & CRM",
+      icon: Briefcase,
+      items: [
+        { label: "Deals & Pipeline", href: "/workspace/crm", icon: Kanban, badge: "New" },
+        { label: "Customer Organizations", href: "/workspace/crm_organization", icon: Building2 },
+        { label: "New Organization", href: "/workspace/crm_organization/new", icon: PlusCircle },
+        { label: "Customer Contacts", href: "/workspace/crm_contact", icon: Users },
+        { label: "New Contact", href: "/workspace/crm_contact/new", icon: PlusCircle },
+        { label: "Deals List", href: "/workspace/crm_deal", icon: DollarSign },
+        { label: "New Deal", href: "/workspace/crm_deal/new", icon: PlusCircle },
       ],
     },
     {
@@ -233,6 +267,7 @@ export function Sidebar() {
       items: [
         { label: "All Problems", href: "/workspace/problem" },
         { label: "Known Error Database", href: "/workspace/problem?known_error=true" },
+        { label: "New Problem", href: "/workspace/problem/new", icon: PlusCircle },
       ],
     },
     {
@@ -249,6 +284,7 @@ export function Sidebar() {
       items: [
         { label: "Interactive Topology", href: "/workspace/cmdb" },
         { label: "All Configuration Items", href: "/workspace/cmdb_ci" },
+        { label: "New Configuration Item", href: "/workspace/cmdb_ci/new", icon: PlusCircle },
         { label: "Datacenter Rack Elevations", href: "/workspace/cmdb/racks", icon: Server },
         { label: "ITAM Contracts & Leases", href: "/workspace/contracts", icon: FileCheck },
       ],
@@ -274,6 +310,10 @@ export function Sidebar() {
       icon: BookOpen,
       items: [
         { label: "Browse Knowledge Base", href: "/portal/knowledge" },
+        { label: "All Knowledge Articles", href: "/workspace/kb_knowledge" },
+        { label: "New Article", href: "/workspace/kb_knowledge/new", icon: PlusCircle },
+        { label: "Knowledge Bases", href: "/workspace/kb_knowledge_base" },
+        { label: "New Knowledge Base", href: "/workspace/kb_knowledge_base/new", icon: PlusCircle },
       ],
     },
   ];

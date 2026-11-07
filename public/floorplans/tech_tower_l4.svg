@@ -33,19 +33,116 @@
   <!-- ROOM: CONF-410 (Executive Boardroom) -->
   <g id="svg-room-conf-410">
     <rect x="40" y="55" width="260" height="205" fill="#0f172a" stroke="#0284c7" stroke-width="2.5" rx="3"/>
-    <text x="55" y="85" fill="#38bdf8" font-size="14" font-weight="700">CONF-410</text>
-    <text x="55" y="105" fill="#94a3b8" font-size="11">Executive Boardroom</text>
-    <text x="55" y="125" fill="#64748b" font-size="10">Cap: 20 • Teams / Zoom / 4K</text>
-    <!-- Conference Table Graphic -->
-    <rect x="100" y="130" width="140" height="65" rx="30" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2" opacity="0.8"/>
-    <circle cx="120" cy="115" r="4" fill="#64748b"/>
-    <circle cx="150" cy="115" r="4" fill="#64748b"/>
-    <circle cx="180" cy="115" r="4" fill="#64748b"/>
-    <circle cx="210" cy="115" r="4" fill="#64748b"/>
-    <circle cx="120" cy="210" r="4" fill="#64748b"/>
-    <circle cx="150" cy="210" r="4" fill="#64748b"/>
-    <circle cx="180" cy="210" r="4" fill="#64748b"/>
-    <circle cx="210" cy="210" r="4" fill="#64748b"/>
+    <text x="55" y="80" fill="#38bdf8" font-size="13" font-weight="700">CONF-410</text>
+    <text x="55" y="96" fill="#94a3b8" font-size="10">Executive Boardroom</text>
+    <text x="55" y="110" fill="#64748b" font-size="9" font-family="monospace">Cap: 20 • Teams / Zoom / 4K</text>
+
+    <!-- Wall-Mounted 85" 4K AV Display & Mounting Bracket -->
+    <line x1="44" y1="125" x2="44" y2="185" stroke="#38bdf8" stroke-width="4"/>
+    <polyline points="44,140 48,140 48,170 44,170" fill="none" stroke="#64748b" stroke-width="1.2"/>
+
+    <!-- Catering & AV Credenza Buffet Unit (North Wall) -->
+    <rect x="95" y="59" width="150" height="15" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+    <line x1="132" y1="59" x2="132" y2="74" stroke="#334155" stroke-width="1"/>
+    <line x1="170" y1="59" x2="170" y2="74" stroke="#334155" stroke-width="1"/>
+    <line x1="208" y1="59" x2="208" y2="74" stroke="#334155" stroke-width="1"/>
+    <!-- Pull handles -->
+    <line x1="110" y1="66" x2="118" y2="66" stroke="#94a3b8" stroke-width="1.2"/>
+    <line x1="148" y1="66" x2="156" y2="66" stroke="#94a3b8" stroke-width="1.2"/>
+    <line x1="186" y1="66" x2="194" y2="66" stroke="#94a3b8" stroke-width="1.2"/>
+    <line x1="224" y1="66" x2="232" y2="66" stroke="#94a3b8" stroke-width="1.2"/>
+
+    <!-- CAD Boardroom Racetrack Conference Table with Beveled Edge -->
+    <rect x="95" y="130" width="150" height="64" rx="28" fill="#141e33" stroke="#38bdf8" stroke-width="1.6"/>
+    <rect x="101" y="136" width="138" height="52" rx="24" fill="none" stroke="#0284c7" stroke-width="0.8" opacity="0.6"/>
+
+    <!-- Center Cable Trough & Dual AV Pop-Up Power Hatches -->
+    <rect x="122" y="157" width="96" height="10" rx="2" fill="#0b1329" stroke="#38bdf8" stroke-width="0.9" stroke-dasharray="3 1.5"/>
+    <polyline points="138,157 138,167 M 158,157 158,167 M 182,157 182,167 M 202,157 202,167" stroke="#38bdf8" stroke-width="0.8" opacity="0.7"/>
+    <circle cx="148" cy="162" r="2" fill="#38bdf8" opacity="0.8"/>
+    <circle cx="192" cy="162" r="2" fill="#38bdf8" opacity="0.8"/>
+
+    <!-- 10 CAD Cantilever Conference Chairs with Polyline Seat & Armrests -->
+    <!-- Top Row (4 Chairs) -->
+    <g stroke="#38bdf8" stroke-width="1" fill="#0f172a">
+      <!-- Chair 1 -->
+      <g transform="translate(108, 107)">
+        <path d="M 0 5 Q 9 0 18 5 L 18 16 Q 9 18 0 16 Z" fill="#1e293b"/>
+        <path d="M -2 5 Q 9 -1 20 5" fill="none" stroke-width="1.4"/>
+        <line x1="-2" y1="5" x2="-2" y2="14"/>
+        <line x1="20" y1="5" x2="20" y2="14"/>
+      </g>
+      <!-- Chair 2 -->
+      <g transform="translate(142, 107)">
+        <path d="M 0 5 Q 9 0 18 5 L 18 16 Q 9 18 0 16 Z" fill="#1e293b"/>
+        <path d="M -2 5 Q 9 -1 20 5" fill="none" stroke-width="1.4"/>
+        <line x1="-2" y1="5" x2="-2" y2="14"/>
+        <line x1="20" y1="5" x2="20" y2="14"/>
+      </g>
+      <!-- Chair 3 -->
+      <g transform="translate(176, 107)">
+        <path d="M 0 5 Q 9 0 18 5 L 18 16 Q 9 18 0 16 Z" fill="#1e293b"/>
+        <path d="M -2 5 Q 9 -1 20 5" fill="none" stroke-width="1.4"/>
+        <line x1="-2" y1="5" x2="-2" y2="14"/>
+        <line x1="20" y1="5" x2="20" y2="14"/>
+      </g>
+      <!-- Chair 4 -->
+      <g transform="translate(210, 107)">
+        <path d="M 0 5 Q 9 0 18 5 L 18 16 Q 9 18 0 16 Z" fill="#1e293b"/>
+        <path d="M -2 5 Q 9 -1 20 5" fill="none" stroke-width="1.4"/>
+        <line x1="-2" y1="5" x2="-2" y2="14"/>
+        <line x1="20" y1="5" x2="20" y2="14"/>
+      </g>
+    </g>
+
+    <!-- Bottom Row (4 Chairs) -->
+    <g stroke="#38bdf8" stroke-width="1" fill="#0f172a">
+      <!-- Chair 5 -->
+      <g transform="translate(108, 202)">
+        <path d="M 0 11 Q 9 16 18 11 L 18 0 Q 9 -2 0 0 Z" fill="#1e293b"/>
+        <path d="M -2 11 Q 9 17 20 11" fill="none" stroke-width="1.4"/>
+        <line x1="-2" y1="11" x2="-2" y2="2"/>
+        <line x1="20" y1="11" x2="20" y2="2"/>
+      </g>
+      <!-- Chair 6 -->
+      <g transform="translate(142, 202)">
+        <path d="M 0 11 Q 9 16 18 11 L 18 0 Q 9 -2 0 0 Z" fill="#1e293b"/>
+        <path d="M -2 11 Q 9 17 20 11" fill="none" stroke-width="1.4"/>
+        <line x1="-2" y1="11" x2="-2" y2="2"/>
+        <line x1="20" y1="11" x2="20" y2="2"/>
+      </g>
+      <!-- Chair 7 -->
+      <g transform="translate(176, 202)">
+        <path d="M 0 11 Q 9 16 18 11 L 18 0 Q 9 -2 0 0 Z" fill="#1e293b"/>
+        <path d="M -2 11 Q 9 17 20 11" fill="none" stroke-width="1.4"/>
+        <line x1="-2" y1="11" x2="-2" y2="2"/>
+        <line x1="20" y1="11" x2="20" y2="2"/>
+      </g>
+      <!-- Chair 8 -->
+      <g transform="translate(210, 202)">
+        <path d="M 0 11 Q 9 16 18 11 L 18 0 Q 9 -2 0 0 Z" fill="#1e293b"/>
+        <path d="M -2 11 Q 9 17 20 11" fill="none" stroke-width="1.4"/>
+        <line x1="-2" y1="11" x2="-2" y2="2"/>
+        <line x1="20" y1="11" x2="20" y2="2"/>
+      </g>
+    </g>
+
+    <!-- Head of Table Left Chair -->
+    <g transform="translate(71, 153)" stroke="#38bdf8" stroke-width="1" fill="#0f172a">
+      <path d="M 5 0 Q 0 9 5 18 L 16 18 Q 18 9 16 0 Z" fill="#1e293b"/>
+      <path d="M 5 -2 Q -1 9 5 20" fill="none" stroke-width="1.4"/>
+      <line x1="5" y1="-2" x2="14" y2="-2"/>
+      <line x1="5" y1="20" x2="14" y2="20"/>
+    </g>
+
+    <!-- Head of Table Right Chair -->
+    <g transform="translate(251, 153)" stroke="#38bdf8" stroke-width="1" fill="#0f172a">
+      <path d="M 11 0 Q 16 9 11 18 L 0 18 Q -2 9 0 0 Z" fill="#1e293b"/>
+      <path d="M 11 -2 Q 17 9 11 20" fill="none" stroke-width="1.4"/>
+      <line x1="11" y1="-2" x2="2" y2="-2"/>
+      <line x1="11" y1="20" x2="2" y2="20"/>
+    </g>
+
     <!-- Door Swing Arc -->
     <path d="M 280 260 A 25 25 0 0 0 300 235" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2"/>
     <line x1="280" y1="260" x2="280" y2="235" stroke="#38bdf8" stroke-width="1.5"/>
@@ -54,11 +151,53 @@
   <!-- ROOM: CONF-405 (Teams Huddle) -->
   <g id="svg-room-conf-405">
     <rect x="330" y="55" width="190" height="135" fill="#0f172a" stroke="#0284c7" stroke-width="2" rx="3"/>
-    <text x="345" y="80" fill="#38bdf8" font-size="13" font-weight="700">CONF-405</text>
-    <text x="345" y="98" fill="#94a3b8" font-size="11">Agile Teams Huddle</text>
-    <text x="345" y="115" fill="#64748b" font-size="10">Cap: 6 • Teams / Whiteboard</text>
-    <!-- Huddle Table -->
-    <rect x="380" y="125" width="80" height="40" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="345" y="76" fill="#38bdf8" font-size="12" font-weight="700">CONF-405</text>
+    <text x="345" y="90" fill="#94a3b8" font-size="10">Agile Teams Huddle</text>
+    <text x="345" y="103" fill="#64748b" font-size="8" font-family="monospace">Cap: 6 • Whiteboard</text>
+
+    <!-- Front Display Screen on North Wall -->
+    <line x1="395" y1="57" x2="455" y2="57" stroke="#38bdf8" stroke-width="3"/>
+
+    <!-- Glass Whiteboard on East Wall -->
+    <line x1="517" y1="80" x2="517" y2="140" stroke="#94a3b8" stroke-width="2.5"/>
+    <line x1="515" y1="135" x2="515" y2="142" stroke="#38bdf8" stroke-width="2"/>
+
+    <!-- CAD Trapezoid / Boat Collaboration Table Polyline -->
+    <polygon points="380,118 460,118 450,158 390,158" fill="#1e293b" stroke="#38bdf8" stroke-width="1.4"/>
+    <ellipse cx="420" cy="138" rx="6" ry="3" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8"/>
+
+    <!-- 6 Ergonomic Huddle Chairs Polylines -->
+    <!-- Top 2 chairs -->
+    <g stroke="#38bdf8" stroke-width="1" fill="#0f172a">
+      <g transform="translate(390, 98)">
+        <rect x="0" y="3" width="14" height="12" rx="2" fill="#1e293b"/>
+        <path d="M -1 3 Q 7 -1 15 3" fill="none" stroke-width="1.3"/>
+      </g>
+      <g transform="translate(434, 98)">
+        <rect x="0" y="3" width="14" height="12" rx="2" fill="#1e293b"/>
+        <path d="M -1 3 Q 7 -1 15 3" fill="none" stroke-width="1.3"/>
+      </g>
+      <!-- Bottom 2 chairs -->
+      <g transform="translate(394, 163)">
+        <rect x="0" y="0" width="14" height="12" rx="2" fill="#1e293b"/>
+        <path d="M -1 12 Q 7 16 15 12" fill="none" stroke-width="1.3"/>
+      </g>
+      <g transform="translate(430, 163)">
+        <rect x="0" y="0" width="14" height="12" rx="2" fill="#1e293b"/>
+        <path d="M -1 12 Q 7 16 15 12" fill="none" stroke-width="1.3"/>
+      </g>
+      <!-- Left Chair -->
+      <g transform="translate(360, 131)">
+        <rect x="3" y="0" width="12" height="14" rx="2" fill="#1e293b"/>
+        <path d="M 3 -1 Q -1 7 3 15" fill="none" stroke-width="1.3"/>
+      </g>
+      <!-- Right Chair -->
+      <g transform="translate(466, 131)">
+        <rect x="0" y="0" width="12" height="14" rx="2" fill="#1e293b"/>
+        <path d="M 12 -1 Q 16 7 12 15" fill="none" stroke-width="1.3"/>
+      </g>
+    </g>
+
     <!-- Door Swing Arc -->
     <path d="M 330 170 A 20 20 0 0 1 350 190" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2"/>
   </g>
@@ -66,11 +205,68 @@
   <!-- ROOM: CONF-408 (Zoom Studio Suite) -->
   <g id="svg-room-conf-408">
     <rect x="540" y="55" width="190" height="135" fill="#0f172a" stroke="#0284c7" stroke-width="2" rx="3"/>
-    <text x="555" y="80" fill="#38bdf8" font-size="13" font-weight="700">CONF-408</text>
-    <text x="555" y="98" fill="#94a3b8" font-size="11">Zoom Studio Suite</text>
-    <text x="555" y="115" fill="#64748b" font-size="10">Cap: 8 • Zoom / Telepresence</text>
-    <!-- Studio Arc Table -->
-    <path d="M 580 155 Q 635 125 690 155" fill="none" stroke="#38bdf8" stroke-width="14" stroke-linecap="round"/>
+    <text x="555" y="76" fill="#38bdf8" font-size="12" font-weight="700">CONF-408</text>
+    <text x="555" y="90" fill="#94a3b8" font-size="10">Zoom Studio Suite</text>
+    <text x="555" y="103" fill="#64748b" font-size="8" font-family="monospace">Cap: 8 • Telepresence</text>
+
+    <!-- Dual 4K Studio Telepresence Screens & Center Camera Pod -->
+    <line x1="585" y1="57" x2="630" y2="57" stroke="#38bdf8" stroke-width="3"/>
+    <line x1="645" y1="57" x2="690" y2="57" stroke="#38bdf8" stroke-width="3"/>
+    <circle cx="637.5" cy="62" r="3" fill="#38bdf8"/>
+    <circle cx="637.5" cy="62" r="1.2" fill="#090d16"/>
+
+    <!-- Authentic CAD Curved Telepresence Arc Table Polyline with Multi-line Profile -->
+    <path d="M 570 152 C 605 125 670 125 705 152" fill="none" stroke="#1e293b" stroke-width="18" stroke-linecap="round"/>
+    <path d="M 570 152 C 605 125 670 125 705 152" fill="none" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- Mic modules along arc -->
+    <circle cx="600" cy="143" r="2.5" fill="#38bdf8"/>
+    <circle cx="637.5" cy="136" r="2.5" fill="#38bdf8"/>
+    <circle cx="675" cy="143" r="2.5" fill="#38bdf8"/>
+
+    <!-- 5 Studio Swivel Armchairs with Castor Starbases -->
+    <g stroke="#38bdf8" stroke-width="0.9" fill="#0f172a">
+      <!-- Chair 1 -->
+      <g transform="translate(565, 162)">
+        <circle cx="8" cy="8" r="7" fill="#1e293b"/>
+        <path d="M 1 11 Q 8 16 15 11" fill="none" stroke-width="1.3"/>
+        <line x1="8" y1="8" x2="3" y2="4"/>
+        <line x1="8" y1="8" x2="13" y2="4"/>
+        <line x1="8" y1="8" x2="8" y2="15"/>
+      </g>
+      <!-- Chair 2 -->
+      <g transform="translate(601, 155)">
+        <circle cx="8" cy="8" r="7" fill="#1e293b"/>
+        <path d="M 1 11 Q 8 16 15 11" fill="none" stroke-width="1.3"/>
+        <line x1="8" y1="8" x2="3" y2="4"/>
+        <line x1="8" y1="8" x2="13" y2="4"/>
+        <line x1="8" y1="8" x2="8" y2="15"/>
+      </g>
+      <!-- Chair 3 (Center) -->
+      <g transform="translate(630, 150)">
+        <circle cx="8" cy="8" r="7" fill="#1e293b"/>
+        <path d="M 1 11 Q 8 16 15 11" fill="none" stroke-width="1.3"/>
+        <line x1="8" y1="8" x2="3" y2="4"/>
+        <line x1="8" y1="8" x2="13" y2="4"/>
+        <line x1="8" y1="8" x2="8" y2="15"/>
+      </g>
+      <!-- Chair 4 -->
+      <g transform="translate(659, 155)">
+        <circle cx="8" cy="8" r="7" fill="#1e293b"/>
+        <path d="M 1 11 Q 8 16 15 11" fill="none" stroke-width="1.3"/>
+        <line x1="8" y1="8" x2="3" y2="4"/>
+        <line x1="8" y1="8" x2="13" y2="4"/>
+        <line x1="8" y1="8" x2="8" y2="15"/>
+      </g>
+      <!-- Chair 5 -->
+      <g transform="translate(695, 162)">
+        <circle cx="8" cy="8" r="7" fill="#1e293b"/>
+        <path d="M 1 11 Q 8 16 15 11" fill="none" stroke-width="1.3"/>
+        <line x1="8" y1="8" x2="3" y2="4"/>
+        <line x1="8" y1="8" x2="13" y2="4"/>
+        <line x1="8" y1="8" x2="8" y2="15"/>
+      </g>
+    </g>
+
     <!-- Door Swing Arc -->
     <path d="M 710 190 A 20 20 0 0 0 730 170" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2"/>
   </g>
@@ -78,18 +274,95 @@
   <!-- ROOM: CONF-420 (Global Hybrid Arena) -->
   <g id="svg-room-conf-420">
     <rect x="750" y="55" width="210" height="490" fill="#0f172a" stroke="#0284c7" stroke-width="2.5" rx="3"/>
-    <text x="765" y="85" fill="#38bdf8" font-size="14" font-weight="700">CONF-420</text>
-    <text x="765" y="105" fill="#94a3b8" font-size="11">Global Hybrid Arena</text>
-    <text x="765" y="125" fill="#64748b" font-size="10">Cap: 60 • Teams / Zoom / All-Hands</text>
-    <!-- Auditorium Curved Seating Tiers -->
-    <path d="M 780 200 Q 855 240 930 200" fill="none" stroke="#334155" stroke-width="4"/>
-    <path d="M 780 240 Q 855 280 930 240" fill="none" stroke="#334155" stroke-width="4"/>
-    <path d="M 780 280 Q 855 320 930 280" fill="none" stroke="#334155" stroke-width="4"/>
-    <path d="M 780 320 Q 855 360 930 320" fill="none" stroke="#334155" stroke-width="4"/>
-    <!-- Stage Area -->
-    <rect x="800" y="420" width="110" height="60" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
-    <text x="855" y="455" fill="#38bdf8" font-size="10" font-weight="600" text-anchor="middle">MAIN STAGE</text>
-    <!-- Double Doors -->
+    <text x="765" y="80" fill="#38bdf8" font-size="13" font-weight="700">CONF-420</text>
+    <text x="765" y="96" fill="#94a3b8" font-size="10">Global Hybrid Arena</text>
+    <text x="765" y="110" fill="#64748b" font-size="9" font-family="monospace">Cap: 60 • All-Hands</text>
+
+    <!-- AV Sound & Lighting Operator Control Booth (Rear) -->
+    <g transform="translate(775, 120)">
+      <rect x="0" y="0" width="160" height="25" fill="#141e33" stroke="#475569" stroke-width="1"/>
+      <line x1="80" y1="0" x2="80" y2="25" stroke="#334155" stroke-width="1"/>
+      <!-- Dual operator screens and sliders -->
+      <rect x="15" y="4" width="22" height="6" fill="#38bdf8" opacity="0.7"/>
+      <rect x="42" y="4" width="22" height="6" fill="#38bdf8" opacity="0.7"/>
+      <rect x="95" y="4" width="22" height="6" fill="#38bdf8" opacity="0.7"/>
+      <rect x="122" y="4" width="22" height="6" fill="#38bdf8" opacity="0.7"/>
+      <polyline points="20,16 35,16 M 100,16 115,16" stroke="#94a3b8" stroke-width="1"/>
+      <!-- Dual tech chairs -->
+      <circle cx="36" cy="33" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      <circle cx="116" cy="33" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+
+    <!-- Tiered Curved Auditorium Seating Rows (4 Rows with Individual CAD Seat Polylines) -->
+    <!-- Tier 1 -->
+    <path d="M 770 190 Q 855 228 940 190" fill="none" stroke="#475569" stroke-width="1.8"/>
+    <g stroke="#38bdf8" stroke-width="0.8" fill="#1e293b">
+      <rect x="780" y="180" width="14" height="12" rx="2"/>
+      <rect x="802" y="187" width="14" height="12" rx="2"/>
+      <rect x="825" y="193" width="14" height="12" rx="2"/>
+      <rect x="848" y="196" width="14" height="12" rx="2"/>
+      <rect x="871" y="193" width="14" height="12" rx="2"/>
+      <rect x="894" y="187" width="14" height="12" rx="2"/>
+      <rect x="916" y="180" width="14" height="12" rx="2"/>
+    </g>
+
+    <!-- Tier 2 -->
+    <path d="M 770 235 Q 855 273 940 235" fill="none" stroke="#475569" stroke-width="1.8"/>
+    <g stroke="#38bdf8" stroke-width="0.8" fill="#1e293b">
+      <rect x="780" y="225" width="14" height="12" rx="2"/>
+      <rect x="802" y="232" width="14" height="12" rx="2"/>
+      <rect x="825" y="238" width="14" height="12" rx="2"/>
+      <rect x="848" y="241" width="14" height="12" rx="2"/>
+      <rect x="871" y="238" width="14" height="12" rx="2"/>
+      <rect x="894" y="232" width="14" height="12" rx="2"/>
+      <rect x="916" y="225" width="14" height="12" rx="2"/>
+    </g>
+
+    <!-- Tier 3 -->
+    <path d="M 770 280 Q 855 318 940 280" fill="none" stroke="#475569" stroke-width="1.8"/>
+    <g stroke="#38bdf8" stroke-width="0.8" fill="#1e293b">
+      <rect x="780" y="270" width="14" height="12" rx="2"/>
+      <rect x="802" y="277" width="14" height="12" rx="2"/>
+      <rect x="825" y="283" width="14" height="12" rx="2"/>
+      <rect x="848" y="286" width="14" height="12" rx="2"/>
+      <rect x="871" y="283" width="14" height="12" rx="2"/>
+      <rect x="894" y="277" width="14" height="12" rx="2"/>
+      <rect x="916" y="270" width="14" height="12" rx="2"/>
+    </g>
+
+    <!-- Tier 4 -->
+    <path d="M 770 325 Q 855 363 940 325" fill="none" stroke="#475569" stroke-width="1.8"/>
+    <g stroke="#38bdf8" stroke-width="0.8" fill="#1e293b">
+      <rect x="780" y="315" width="14" height="12" rx="2"/>
+      <rect x="802" y="322" width="14" height="12" rx="2"/>
+      <rect x="825" y="328" width="14" height="12" rx="2"/>
+      <rect x="848" y="331" width="14" height="12" rx="2"/>
+      <rect x="871" y="328" width="14" height="12" rx="2"/>
+      <rect x="894" y="322" width="14" height="12" rx="2"/>
+      <rect x="916" y="315" width="14" height="12" rx="2"/>
+    </g>
+
+    <!-- Main Presentation Stage with Speaker Podium, Confidence Monitors & Acoustic Screens -->
+    <rect x="785" y="405" width="140" height="95" rx="8" fill="#141e33" stroke="#38bdf8" stroke-width="1.8"/>
+    <rect x="793" y="413" width="124" height="79" rx="6" fill="none" stroke="#0284c7" stroke-width="0.8" opacity="0.7"/>
+
+    <!-- Speaker Lectern / Podium Polyline -->
+    <polygon points="845,432 865,432 867,444 843,444" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    <polyline points="849,436 861,436" stroke="#94a3b8" stroke-width="1"/>
+    <!-- Presenter mic and document stand -->
+    <circle cx="855" cy="434" r="1.5" fill="#38bdf8"/>
+
+    <!-- Presenter Downstage Confidence Monitors (Angled Wedges) -->
+    <polygon points="815,420 830,420 828,426 813,426" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+    <polygon points="880,420 895,420 897,426 882,426" fill="#0f172a" stroke="#38bdf8" stroke-width="1"/>
+
+    <!-- Stage Acoustic Rear Wall Wings -->
+    <line x1="790" y1="480" x2="820" y2="495" stroke="#64748b" stroke-width="2"/>
+    <line x1="920" y1="480" x2="890" y2="495" stroke="#64748b" stroke-width="2"/>
+
+    <text x="855" y="470" fill="#38bdf8" font-size="10" font-weight="700" letter-spacing="1" text-anchor="middle">MAIN STAGE</text>
+
+    <!-- Double Access Doors -->
     <line x1="750" y1="270" x2="750" y2="330" stroke="#0b1120" stroke-width="4"/>
     <path d="M 750 270 A 30 30 0 0 1 780 300" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2"/>
     <path d="M 750 330 A 30 30 0 0 0 780 300" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2"/>
@@ -98,44 +371,115 @@
   <!-- WORKSTATION POD ZONE: STANDING DESKS (401, 402, 403) -->
   <g id="svg-desks-zone">
     <rect x="330" y="210" width="390" height="95" fill="#0c1322" stroke="#475569" stroke-width="1.5" stroke-dasharray="6 4" rx="4"/>
-    <text x="345" y="230" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="1">HOT DESK &amp; STANDING DESK ROW</text>
+    <text x="345" y="228" fill="#94a3b8" font-size="10" font-weight="700" letter-spacing="1">HOT DESK &amp; STANDING DESK ROW</text>
 
     <!-- DESK-401 -->
     <g id="svg-desk-401">
-      <rect x="345" y="240" width="105" height="52" rx="4" fill="#1e293b" stroke="#0284c7" stroke-width="1.5"/>
-      <text x="355" y="260" fill="#38bdf8" font-size="11" font-weight="700">DESK-401</text>
-      <text x="355" y="275" fill="#94a3b8" font-size="9">Standing • Teams</text>
-      <rect x="425" y="248" width="18" height="14" rx="2" fill="#38bdf8" opacity="0.4"/>
-      <circle cx="397" cy="285" r="4" fill="#64748b"/>
+      <rect x="345" y="238" width="105" height="56" rx="4" fill="#141e33" stroke="#0284c7" stroke-width="1.5"/>
+      <text x="355" y="254" fill="#38bdf8" font-size="10" font-weight="700">DESK-401</text>
+      <text x="355" y="266" fill="#94a3b8" font-size="8">Standing • Teams</text>
+      <!-- Dual Angled 27" Monitors Polyline -->
+      <polyline points="410,244 425,245 425,248 410,247" fill="#38bdf8" opacity="0.8" stroke="#38bdf8" stroke-width="0.8"/>
+      <polyline points="427,245 442,244 442,247 427,248" fill="#38bdf8" opacity="0.8" stroke="#38bdf8" stroke-width="0.8"/>
+      <!-- Monitor Arm Post & Base Notch -->
+      <circle cx="426" cy="246" r="2.2" fill="#94a3b8"/>
+      <!-- Under-desk mobile pedestal cabinet -->
+      <rect x="424" y="268" width="22" height="22" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <line x1="424" y1="275" x2="446" y2="275" stroke="#334155"/>
+      <line x1="431" y1="271" x2="439" y2="271" stroke="#38bdf8" stroke-width="1"/>
+      <!-- CAD Ergonomic Mesh Task Chair with 5-Star Castor Base -->
+      <g transform="translate(382, 266)" stroke="#38bdf8" stroke-width="1" fill="#0f172a">
+        <circle cx="12" cy="12" r="10" fill="#1e293b"/>
+        <!-- Curved backrest & lumbar support -->
+        <path d="M 4 16 Q 12 21 20 16" fill="none" stroke-width="1.6"/>
+        <!-- 5 radiating starbase spokes -->
+        <line x1="12" y1="12" x2="12" y2="3" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="20" y2="8" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="17" y2="19" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="7" y2="19" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="4" y2="8" stroke="#64748b" stroke-width="0.8"/>
+        <!-- Armrests -->
+        <line x1="4" y1="9" x2="4" y2="15"/>
+        <line x1="20" y1="9" x2="20" y2="15"/>
+      </g>
     </g>
 
     <!-- DESK-402 -->
     <g id="svg-desk-402">
-      <rect x="470" y="240" width="105" height="52" rx="4" fill="#1e293b" stroke="#0284c7" stroke-width="1.5"/>
-      <text x="480" y="260" fill="#38bdf8" font-size="11" font-weight="700">DESK-402</text>
-      <text x="480" y="275" fill="#94a3b8" font-size="9">Standing • Zoom</text>
-      <rect x="550" y="248" width="18" height="14" rx="2" fill="#38bdf8" opacity="0.4"/>
-      <circle cx="522" cy="285" r="4" fill="#64748b"/>
+      <rect x="470" y="238" width="105" height="56" rx="4" fill="#141e33" stroke="#0284c7" stroke-width="1.5"/>
+      <text x="480" y="254" fill="#38bdf8" font-size="10" font-weight="700">DESK-402</text>
+      <text x="480" y="266" fill="#94a3b8" font-size="8">Standing • Zoom</text>
+      <!-- Dual Angled 27" Monitors Polyline -->
+      <polyline points="535,244 550,245 550,248 535,247" fill="#38bdf8" opacity="0.8" stroke="#38bdf8" stroke-width="0.8"/>
+      <polyline points="552,245 567,244 567,247 552,248" fill="#38bdf8" opacity="0.8" stroke="#38bdf8" stroke-width="0.8"/>
+      <circle cx="551" cy="246" r="2.2" fill="#94a3b8"/>
+      <!-- Under-desk mobile pedestal -->
+      <rect x="549" y="268" width="22" height="22" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <line x1="549" y1="275" x2="571" y2="275" stroke="#334155"/>
+      <line x1="556" y1="271" x2="564" y2="271" stroke="#38bdf8" stroke-width="1"/>
+      <!-- CAD Ergonomic Mesh Task Chair -->
+      <g transform="translate(507, 266)" stroke="#38bdf8" stroke-width="1" fill="#0f172a">
+        <circle cx="12" cy="12" r="10" fill="#1e293b"/>
+        <path d="M 4 16 Q 12 21 20 16" fill="none" stroke-width="1.6"/>
+        <line x1="12" y1="12" x2="12" y2="3" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="20" y2="8" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="17" y2="19" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="7" y2="19" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="4" y2="8" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="4" y1="9" x2="4" y2="15"/>
+        <line x1="20" y1="9" x2="20" y2="15"/>
+      </g>
     </g>
 
     <!-- DESK-403 -->
     <g id="svg-desk-403">
-      <rect x="595" y="240" width="105" height="52" rx="4" fill="#1e293b" stroke="#0284c7" stroke-width="1.5"/>
-      <text x="605" y="260" fill="#38bdf8" font-size="11" font-weight="700">DESK-403</text>
-      <text x="605" y="275" fill="#94a3b8" font-size="9">Standing • Dual 4K</text>
-      <rect x="675" y="248" width="18" height="14" rx="2" fill="#38bdf8" opacity="0.4"/>
-      <circle cx="647" cy="285" r="4" fill="#64748b"/>
+      <rect x="595" y="238" width="105" height="56" rx="4" fill="#141e33" stroke="#0284c7" stroke-width="1.5"/>
+      <text x="605" y="254" fill="#38bdf8" font-size="10" font-weight="700">DESK-403</text>
+      <text x="605" y="266" fill="#94a3b8" font-size="8">Standing • Dual 4K</text>
+      <!-- Dual Angled 27" Monitors Polyline -->
+      <polyline points="660,244 675,245 675,248 660,247" fill="#38bdf8" opacity="0.8" stroke="#38bdf8" stroke-width="0.8"/>
+      <polyline points="677,245 692,244 692,247 677,248" fill="#38bdf8" opacity="0.8" stroke="#38bdf8" stroke-width="0.8"/>
+      <circle cx="676" cy="246" r="2.2" fill="#94a3b8"/>
+      <!-- Under-desk mobile pedestal -->
+      <rect x="674" y="268" width="22" height="22" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+      <line x1="674" y1="275" x2="696" y2="275" stroke="#334155"/>
+      <line x1="681" y1="271" x2="689" y2="271" stroke="#38bdf8" stroke-width="1"/>
+      <!-- CAD Ergonomic Mesh Task Chair -->
+      <g transform="translate(632, 266)" stroke="#38bdf8" stroke-width="1" fill="#0f172a">
+        <circle cx="12" cy="12" r="10" fill="#1e293b"/>
+        <path d="M 4 16 Q 12 21 20 16" fill="none" stroke-width="1.6"/>
+        <line x1="12" y1="12" x2="12" y2="3" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="20" y2="8" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="17" y2="19" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="7" y2="19" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="12" y1="12" x2="4" y2="8" stroke="#64748b" stroke-width="0.8"/>
+        <line x1="4" y1="9" x2="4" y2="15"/>
+        <line x1="20" y1="9" x2="20" y2="15"/>
+      </g>
     </g>
   </g>
 
   <!-- ROOM: POD-415 (Acoustic Focus Pod) -->
   <g id="svg-room-pod-415">
     <rect x="40" y="280" width="130" height="265" fill="#0f172a" stroke="#0284c7" stroke-width="2" rx="3"/>
-    <text x="55" y="310" fill="#38bdf8" font-size="13" font-weight="700">POD-415</text>
-    <text x="55" y="328" fill="#94a3b8" font-size="11">Acoustic Quiet Pod</text>
-    <text x="55" y="345" fill="#64748b" font-size="10">Cap: 2 • Privacy</text>
-    <!-- Ergonomic Pod Sofa -->
-    <rect x="65" y="420" width="80" height="40" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="55" y="306" fill="#38bdf8" font-size="12" font-weight="700">POD-415</text>
+    <text x="55" y="322" fill="#94a3b8" font-size="10">Acoustic Quiet Pod</text>
+    <text x="55" y="336" fill="#64748b" font-size="8" font-family="monospace">Cap: 2 • Privacy</text>
+
+    <!-- Wall Acoustic Foam Baffle Ribs Polyline -->
+    <polyline points="44,360 49,360 M 44,375 49,375 M 44,390 49,390 M 44,405 49,405 M 44,420 49,420 M 44,435 49,435 M 44,450 49,450 M 44,465 49,465 M 44,480 49,480" stroke="#475569" stroke-width="1.5"/>
+
+    <!-- Opposing Dual Banquette Sofas & Collaboration Table -->
+    <!-- North Sofa -->
+    <rect x="58" y="365" width="85" height="30" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    <line x1="58" y1="375" x2="143" y2="375" stroke="#334155" stroke-width="1"/>
+    <!-- Center Work Table -->
+    <rect x="66" y="410" width="70" height="34" rx="4" fill="#141e33" stroke="#38bdf8" stroke-width="1.2"/>
+    <rect x="91" y="418" width="20" height="15" rx="1.5" fill="#0f172a" stroke="#64748b" stroke-width="0.8"/>
+    <!-- South Sofa -->
+    <rect x="58" y="458" width="85" height="30" rx="4" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+    <line x1="58" y1="478" x2="143" y2="478" stroke="#334155" stroke-width="1"/>
+
     <!-- Door Swing Arc -->
     <path d="M 170 340 A 20 20 0 0 1 150 360" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2"/>
   </g>
@@ -143,12 +487,53 @@
   <!-- ROOM: LAB-430 (Hardware & IoT Lab) -->
   <g id="svg-room-lab-430">
     <rect x="190" y="320" width="240" height="225" fill="#0f172a" stroke="#0284c7" stroke-width="2" rx="3"/>
-    <text x="205" y="345" fill="#38bdf8" font-size="13" font-weight="700">LAB-430</text>
-    <text x="205" y="365" fill="#94a3b8" font-size="11">Hardware &amp; IoT Lab</text>
-    <text x="205" y="382" fill="#64748b" font-size="10">Cap: 12 • Standing Benches</text>
-    <!-- Lab Workbenches -->
-    <rect x="215" y="410" width="90" height="45" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
-    <rect x="325" y="410" width="90" height="45" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="205" y="342" fill="#38bdf8" font-size="12" font-weight="700">LAB-430</text>
+    <text x="205" y="358" fill="#94a3b8" font-size="10">Hardware &amp; IoT Lab</text>
+    <text x="205" y="372" fill="#64748b" font-size="8" font-family="monospace">Cap: 12 • ESD Benches</text>
+
+    <!-- Perimeter L-Shaped ESD Lab Workbench with Equipment Shelf -->
+    <polyline points="196,385 196,535 240,535 240,410 270,410 270,385 196,385" fill="#141e33" stroke="#38bdf8" stroke-width="1.3"/>
+    <!-- Oscilloscope Instrument Footprints -->
+    <rect x="200" y="392" width="24" height="15" fill="#0b1329" stroke="#38bdf8" stroke-width="0.9"/>
+    <line x1="200" y1="400" x2="224" y2="400" stroke="#0284c7" stroke-width="0.6"/>
+    <rect x="200" y="420" width="24" height="16" fill="#0b1329" stroke="#38bdf8" stroke-width="0.9"/>
+    <!-- Soldering Station -->
+    <circle cx="212" cy="450" r="5" fill="#1e293b" stroke="#eab308" stroke-width="1"/>
+    <!-- DC Bench Power Supply -->
+    <rect x="200" y="475" width="24" height="18" fill="#0b1329" stroke="#38bdf8" stroke-width="0.9"/>
+
+    <!-- Central Dual Testing Island Benches -->
+    <!-- Island A -->
+    <g transform="translate(255, 430)">
+      <rect x="0" y="0" width="70" height="42" rx="2" fill="#141e33" stroke="#38bdf8" stroke-width="1.3"/>
+      <!-- Overhead shelf riser spine -->
+      <line x1="0" y1="21" x2="70" y2="21" stroke="#0284c7" stroke-width="1" stroke-dasharray="2 2"/>
+      <!-- Multimeter / Analyzer Footprints -->
+      <rect x="6" y="5" width="18" height="11" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <rect x="44" y="5" width="18" height="11" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <rect x="25" y="25" width="20" height="12" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <!-- Dual Stools with foot rings -->
+      <circle cx="20" cy="52" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      <circle cx="50" cy="52" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+
+    <!-- Island B -->
+    <g transform="translate(345, 430)">
+      <rect x="0" y="0" width="70" height="42" rx="2" fill="#141e33" stroke="#38bdf8" stroke-width="1.3"/>
+      <line x1="0" y1="21" x2="70" y2="21" stroke="#0284c7" stroke-width="1" stroke-dasharray="2 2"/>
+      <rect x="6" y="5" width="18" height="11" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <rect x="44" y="5" width="18" height="11" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <rect x="25" y="25" width="20" height="12" fill="#0b1329" stroke="#94a3b8" stroke-width="0.8"/>
+      <!-- Dual Stools -->
+      <circle cx="20" cy="52" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      <circle cx="50" cy="52" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+
+    <!-- Technician Parts Storage Cabinet along South Wall -->
+    <rect x="340" y="522" width="75" height="18" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
+    <line x1="365" y1="522" x2="365" y2="540" stroke="#334155"/>
+    <line x1="390" y1="522" x2="390" y2="540" stroke="#334155"/>
+
     <!-- Door Swing Arc -->
     <path d="M 400 320 A 20 20 0 0 0 420 340" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 2"/>
   </g>
@@ -156,13 +541,49 @@
   <!-- ROOM: LOUNGE-450 (Breakout Commons) -->
   <g id="svg-room-lounge-450">
     <rect x="450" y="320" width="280" height="225" fill="#0f172a" stroke="#0284c7" stroke-width="2" rx="3"/>
-    <text x="465" y="345" fill="#38bdf8" font-size="13" font-weight="700">LOUNGE-450</text>
-    <text x="465" y="365" fill="#94a3b8" font-size="11">Commons &amp; Team Lounge</text>
-    <text x="465" y="382" fill="#64748b" font-size="10">Cap: 25 • Cafe &amp; Whiteboard</text>
-    <!-- Lounge Sofas & Cafe Tables -->
-    <circle cx="510" cy="430" r="22" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
-    <circle cx="590" cy="430" r="22" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
-    <circle cx="670" cy="430" r="22" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="465" y="342" fill="#38bdf8" font-size="12" font-weight="700">LOUNGE-450</text>
+    <text x="465" y="358" fill="#94a3b8" font-size="10">Commons &amp; Team Lounge</text>
+    <text x="465" y="372" fill="#64748b" font-size="8" font-family="monospace">Cap: 25 • Cafe &amp; Whiteboard</text>
+
+    <!-- L-Shaped Sectional Lounge Modular Sofa with Cushion Seams -->
+    <polygon points="468,390 560,390 560,422 500,422 500,490 468,490" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+    <!-- Cushion Seams -->
+    <line x1="499" y1="390" x2="499" y2="422" stroke="#334155" stroke-width="1"/>
+    <line x1="530" y1="390" x2="530" y2="422" stroke="#334155" stroke-width="1"/>
+    <line x1="468" y1="422" x2="500" y2="422" stroke="#334155" stroke-width="1"/>
+    <line x1="468" y1="456" x2="500" y2="456" stroke="#334155" stroke-width="1"/>
+
+    <!-- Low Modern Rectangular Coffee Table -->
+    <rect x="515" y="435" width="45" height="28" rx="3" fill="#141e33" stroke="#38bdf8" stroke-width="1.2"/>
+
+    <!-- Dual Round Cafe Bistro Tables with 3 Chairs Each -->
+    <!-- Bistro Table 1 -->
+    <g transform="translate(595, 415)">
+      <circle cx="0" cy="0" r="16" fill="#141e33" stroke="#38bdf8" stroke-width="1.3"/>
+      <!-- 3 Cafe chairs -->
+      <circle cx="0" cy="-24" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      <circle cx="-21" cy="12" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      <circle cx="21" cy="12" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+
+    <!-- Bistro Table 2 -->
+    <g transform="translate(595, 485)">
+      <circle cx="0" cy="0" r="16" fill="#141e33" stroke="#38bdf8" stroke-width="1.3"/>
+      <circle cx="0" cy="-24" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      <circle cx="-21" cy="12" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+      <circle cx="21" cy="12" r="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    </g>
+
+    <!-- Kitchenette & Espresso Bar Counter along East Wall -->
+    <rect x="680" y="390" width="42" height="135" fill="#141e33" stroke="#64748b" stroke-width="1.3"/>
+    <!-- Stainless Sink Basin -->
+    <rect x="688" y="415" width="26" height="22" rx="3" fill="#0b1329" stroke="#38bdf8" stroke-width="1"/>
+    <circle cx="701" cy="426" r="2.5" fill="#94a3b8"/>
+    <!-- Espresso Machine -->
+    <rect x="688" y="460" width="26" height="26" rx="2" fill="#1e293b" stroke="#eab308" stroke-width="1"/>
+    <line x1="693" y1="478" x2="709" y2="478" stroke="#eab308" stroke-width="1.2"/>
+    <circle cx="701" cy="468" r="2" fill="#eab308"/>
+
     <!-- Open Access Pathway -->
     <line x1="480" y1="320" x2="560" y2="320" stroke="#0b1120" stroke-width="4"/>
   </g>

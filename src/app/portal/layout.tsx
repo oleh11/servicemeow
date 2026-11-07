@@ -3,6 +3,7 @@
 import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { ThemePickerModal } from "@/components/theme/ThemePickerModal";
+import { PortalLiveChatWidget } from "@/components/chat/PortalLiveChatWidget";
 import { useTheme } from "@/lib/theme-context";
 
 export default function PortalLayout({
@@ -25,6 +26,7 @@ export default function PortalLayout({
       <Navbar />
       <ThemePickerModal />
       <main className="flex-1">{children}</main>
+      <PortalLiveChatWidget />
       <footer
         className="border-t py-6 text-xs text-center transition-colors"
         style={{

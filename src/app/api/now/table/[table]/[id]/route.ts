@@ -32,7 +32,19 @@ export async function GET(
       return NextResponse.json({ error: aclCheck.reason }, { status: 403 });
     }
 
-    if (table === "incident" || table === "task" || table === "change_request" || table === "problem") {
+    if (
+      table === "incident" ||
+      table === "task" ||
+      table === "change_request" ||
+      table === "problem" ||
+      table === "sc_task" ||
+      table === "sc_request" ||
+      table === "sc_req_item" ||
+      table === "change_task" ||
+      table === "rm_story" ||
+      table === "rm_epic" ||
+      table === "rm_project"
+    ) {
       const task = await db.task.findUnique({
         where: { id },
         include: {
@@ -65,6 +77,14 @@ export async function GET(
           approvals: {
             include: { approver: true },
           },
+          checklistItems: {
+            include: { completedBy: { select: { id: true, name: true, email: true } } },
+            orderBy: { sortOrder: "asc" },
+          },
+          evidenceItems: {
+            include: { decidedBy: { select: { id: true, name: true, email: true } } },
+            orderBy: { createdAt: "desc" },
+          },
         },
       });
 
@@ -79,14 +99,26 @@ export async function GET(
         } catch {}
       }
 
-      return NextResponse.json({ result: { ...task, ...custom } });
+      return NextResponse.json({
+        result: {
+          ...task,
+          ...custom,
+          sys_id: task.id,
+          id: task.id,
+          root_cause: task.problem?.rootCause || undefined,
+          workaround: task.problem?.workaround || undefined,
+          is_known_error: task.problem ? task.problem.isKnownError : undefined,
+        },
+      });
     }
 
     if (table === "cmdb_ci") {
       const ci = await db.configurationItem.findUnique({
         where: { id },
         include: {
-          location: { select: { id: true, name: true } },
+          location: { select: { id: true, name: true, fullPath: true } },
+          space: { select: { id: true, name: true, spaceNumber: true } },
+          rack: { select: { id: true, name: true, site: true } },
           parentRelations: { include: { childCi: true } },
           childRelations: { include: { parentCi: true } },
           incidents: { include: { task: true } },
@@ -94,7 +126,76 @@ export async function GET(
         },
       });
       if (!ci) return NextResponse.json({ error: "CI not found" }, { status: 404 });
-      return NextResponse.json({ result: ci });
+      return NextResponse.json({ result: { ...ci, sys_id: ci.id, id: ci.id } });
+    }
+
+    if (table === "kb_knowledge") {
+      const article = await db.knowledgeArticle.findUnique({
+        where: { id },
+        include: { author: { select: { id: true, name: true, email: true } } },
+      });
+      if (!article) return NextResponse.json({ error: "Article not found" }, { status: 404 });
+      return NextResponse.json({
+        result: {
+          sys_id: article.id,
+          id: article.id,
+          number: article.number,
+          title: article.title,
+          short_description: article.title,
+          content: article.content,
+          category: article.category,
+          author_id: article.authorId,
+          author: article.author ? { value: article.author.id, display_value: article.author.name } : null,
+          views: article.views,
+          helpful_votes: article.helpfulVotes,
+          is_published: article.isPublished,
+          published_at: article.publishedAt.toISOString(),
+          sys_created_on: article.createdAt.toISOString(),
+        },
+      });
+    }
+
+    if (table === "kb_knowledge_base") {
+      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      if (!rec) return NextResponse.json({ error: "Knowledge Base not found" }, { status: 404 });
+      let parsed: any = {};
+      try {
+        parsed = JSON.parse(rec.dataJson);
+      } catch {}
+      return NextResponse.json({
+        result: {
+          sys_id: rec.id,
+          id: rec.id,
+          sys_created_on: rec.createdAt.toISOString(),
+          sys_updated_on: rec.updatedAt.toISOString(),
+          ...parsed,
+        },
+      });
+    }
+
+    if (table === "rm_sprint") {
+      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      if (!rec) return NextResponse.json({ error: "Sprint not found" }, { status: 404 });
+      let parsed: any = {};
+      try {
+        parsed = JSON.parse(rec.dataJson);
+      } catch {}
+      return NextResponse.json({
+        result: {
+          sys_id: rec.id,
+          id: rec.id,
+          number: parsed.number || "",
+          name: parsed.name || "",
+          state: parsed.state || "planning",
+          start_date: parsed.startDate || parsed.start_date || "",
+          end_date: parsed.endDate || parsed.end_date || "",
+          capacity_points: parsed.capacityPoints || parsed.capacity_points || 0,
+          goal: parsed.goal || "",
+          sys_created_on: rec.createdAt.toISOString(),
+          sys_updated_on: rec.updatedAt.toISOString(),
+          ...parsed,
+        },
+      });
     }
 
     if (table === "sys_user") {
@@ -249,6 +350,72 @@ export async function GET(
       });
       if (!member) return NextResponse.json({ error: "Membership not found" }, { status: 404 });
       return NextResponse.json({ result: member });
+    }
+
+    if (table === "crm_organization") {
+      const org = await db.crmOrganization.findUnique({
+        where: { id },
+        include: {
+          assignedTo: { select: { id: true, name: true, email: true } },
+          contacts: true,
+          deals: true,
+          tasks: { select: { id: true, number: true, shortDescription: true, priority: true, state: true } },
+        },
+      });
+      if (!org) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+      return NextResponse.json({
+        result: {
+          ...org,
+          sys_id: org.id,
+          assigned_to: org.assignedTo ? { value: org.assignedTo.id, display_value: org.assignedTo.name } : null,
+          sys_created_on: org.createdAt.toISOString(),
+          sys_updated_on: org.updatedAt.toISOString(),
+        },
+      });
+    }
+
+    if (table === "crm_contact") {
+      const contact = await db.crmContact.findUnique({
+        where: { id },
+        include: {
+          organization: true,
+          deals: true,
+          tasks: { select: { id: true, number: true, shortDescription: true, priority: true, state: true } },
+        },
+      });
+      if (!contact) return NextResponse.json({ error: "Contact not found" }, { status: 404 });
+      return NextResponse.json({
+        result: {
+          ...contact,
+          sys_id: contact.id,
+          organization: contact.organization ? { value: contact.organization.id, display_value: contact.organization.name } : null,
+          sys_created_on: contact.createdAt.toISOString(),
+          sys_updated_on: contact.updatedAt.toISOString(),
+        },
+      });
+    }
+
+    if (table === "crm_deal") {
+      const deal = await db.crmDeal.findUnique({
+        where: { id },
+        include: {
+          organization: true,
+          contact: true,
+          assignedTo: { select: { id: true, name: true, email: true } },
+        },
+      });
+      if (!deal) return NextResponse.json({ error: "Deal not found" }, { status: 404 });
+      return NextResponse.json({
+        result: {
+          ...deal,
+          sys_id: deal.id,
+          organization: deal.organization ? { value: deal.organization.id, display_value: deal.organization.name } : null,
+          contact: deal.contact ? { value: deal.contact.id, display_value: deal.contact.name } : null,
+          assigned_to: deal.assignedTo ? { value: deal.assignedTo.id, display_value: deal.assignedTo.name } : null,
+          sys_created_on: deal.createdAt.toISOString(),
+          sys_updated_on: deal.updatedAt.toISOString(),
+        },
+      });
     }
 
     // Dynamic table handling
@@ -542,6 +709,76 @@ export async function PATCH(
       return NextResponse.json({ result: updated });
     }
 
+    if (table === "task_checklist_item" || table === "task_checklist") {
+      const updateData: any = {};
+      if (body.title !== undefined) updateData.title = body.title;
+      if (body.description !== undefined) updateData.description = body.description;
+      if (body.is_mandatory !== undefined) updateData.isMandatory = Boolean(body.is_mandatory);
+      if (body.isMandatory !== undefined) updateData.isMandatory = Boolean(body.isMandatory);
+      if (body.is_completed !== undefined || body.isCompleted !== undefined) {
+        const completed = Boolean(body.is_completed ?? body.isCompleted);
+        updateData.isCompleted = completed;
+        updateData.completedAt = completed ? new Date() : null;
+        updateData.completedById = completed ? callerUserId : null;
+      }
+      if (body.sort_order !== undefined) updateData.sortOrder = parseInt(body.sort_order, 10);
+      if (body.sortOrder !== undefined) updateData.sortOrder = parseInt(body.sortOrder, 10);
+
+      const updated = await db.taskChecklistItem.update({
+        where: { id },
+        data: updateData,
+        include: { completedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
+    }
+
+    if (table === "task_evidence") {
+      const updateData: any = {};
+      if (body.status !== undefined) {
+        updateData.status = body.status;
+        updateData.decidedAt = new Date();
+        updateData.decidedById = body.decided_by_id || body.decidedById || callerUserId;
+      }
+      if (body.is_accepted !== undefined || body.isAccepted !== undefined) {
+        const accepted = Boolean(body.is_accepted ?? body.isAccepted);
+        updateData.status = accepted ? "accepted" : "rejected";
+        updateData.decidedAt = new Date();
+        updateData.decidedById = body.decided_by_id || body.decidedById || callerUserId;
+      }
+      const updated = await db.taskEvidence.update({
+        where: { id },
+        data: updateData,
+        include: { decidedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({
+        result: {
+          ...updated,
+          sys_id: updated.id,
+          isAccepted: updated.status === "accepted",
+          is_accepted: updated.status === "accepted",
+        },
+      });
+    }
+
+    if (table === "cmn_morning_check") {
+      const updateData: any = {};
+      if (body.status !== undefined) {
+        updateData.status = body.status;
+        updateData.checkedAt = new Date();
+        updateData.checkedById = callerUserId;
+      }
+      if (body.notes !== undefined) updateData.notes = body.notes;
+      if (body.incident_id !== undefined) updateData.incidentId = body.incident_id;
+      if (body.incidentId !== undefined) updateData.incidentId = body.incidentId;
+
+      const updated = await db.cmnMorningCheck.update({
+        where: { id },
+        data: updateData,
+        include: { checkedBy: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
+    }
+
     if (table === "cmn_location") {
       const existing = await db.cmnLocation.findUnique({ where: { id } });
       if (!existing) {
@@ -624,9 +861,141 @@ export async function PATCH(
           owner: body.owner !== undefined ? body.owner : undefined,
           locationId: body.location_id !== undefined ? (body.location_id || null) : (body.locationId !== undefined ? (body.locationId || null) : undefined),
           spaceId: body.space_id !== undefined ? (body.space_id || null) : (body.spaceId !== undefined ? (body.spaceId || null) : undefined),
+          rackId: body.rack_id !== undefined ? (body.rack_id || null) : (body.rackId !== undefined ? (body.rackId || null) : undefined),
+          rackUnitStart: body.rack_unit_start !== undefined ? (body.rack_unit_start ? parseInt(body.rack_unit_start, 10) : null) : (body.rackUnitStart !== undefined ? (body.rackUnitStart ? parseInt(body.rackUnitStart, 10) : null) : undefined),
+          rackUnitHeight: body.rack_unit_height !== undefined ? (body.rack_unit_height ? parseInt(body.rack_unit_height, 10) : 1) : (body.rackUnitHeight !== undefined ? (body.rackUnitHeight ? parseInt(body.rackUnitHeight, 10) : 1) : undefined),
         },
       });
-      return NextResponse.json({ result: updated });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id, id: updated.id } });
+    }
+
+    if (table === "kb_knowledge") {
+      const article = await db.knowledgeArticle.findUnique({ where: { id } });
+      if (!article) return NextResponse.json({ error: "Article not found" }, { status: 404 });
+      const updated = await db.knowledgeArticle.update({
+        where: { id },
+        data: {
+          title: body.title !== undefined ? body.title : (body.short_description !== undefined ? body.short_description : undefined),
+          content: body.content !== undefined ? body.content : undefined,
+          category: body.category !== undefined ? body.category : undefined,
+          isPublished: body.is_published !== undefined ? Boolean(body.is_published) : (body.isPublished !== undefined ? Boolean(body.isPublished) : undefined),
+          views: body.views !== undefined ? Number(body.views) : undefined,
+          helpfulVotes: body.helpful_votes !== undefined ? Number(body.helpful_votes) : (body.helpfulVotes !== undefined ? Number(body.helpfulVotes) : undefined),
+        },
+        include: { author: { select: { id: true, name: true, email: true } } },
+      });
+      return NextResponse.json({
+        result: {
+          sys_id: updated.id,
+          id: updated.id,
+          number: updated.number,
+          title: updated.title,
+          short_description: updated.title,
+          content: updated.content,
+          category: updated.category,
+          author_id: updated.authorId,
+          author: updated.author ? { value: updated.author.id, display_value: updated.author.name } : null,
+          is_published: updated.isPublished,
+          views: updated.views,
+          helpful_votes: updated.helpfulVotes,
+          sys_updated_on: updated.createdAt.toISOString(),
+        },
+      });
+    }
+
+    if (table === "kb_knowledge_base") {
+      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      if (!rec) return NextResponse.json({ error: "Knowledge base not found" }, { status: 404 });
+      let currentData: any = {};
+      try {
+        currentData = JSON.parse(rec.dataJson);
+      } catch {}
+      const merged = { ...currentData, ...body };
+      const updated = await db.sysCustomRecord.update({
+        where: { id },
+        data: { dataJson: JSON.stringify(merged) },
+      });
+      return NextResponse.json({
+        result: {
+          sys_id: updated.id,
+          id: updated.id,
+          sys_updated_on: updated.updatedAt.toISOString(),
+          ...merged,
+        },
+      });
+    }
+
+    if (table === "rm_sprint") {
+      const rec = await db.sysCustomRecord.findUnique({ where: { id } });
+      if (!rec) return NextResponse.json({ error: "Sprint not found" }, { status: 404 });
+      let currentData: any = {};
+      try {
+        currentData = JSON.parse(rec.dataJson);
+      } catch {}
+      const merged = { ...currentData, ...body };
+      const updated = await db.sysCustomRecord.update({
+        where: { id },
+        data: { dataJson: JSON.stringify(merged) },
+      });
+      return NextResponse.json({
+        result: {
+          sys_id: updated.id,
+          id: updated.id,
+          sys_updated_on: updated.updatedAt.toISOString(),
+          ...merged,
+        },
+      });
+    }
+
+    if (table === "crm_organization") {
+      const updated = await db.crmOrganization.update({
+        where: { id },
+        data: {
+          name: body.name !== undefined ? body.name : undefined,
+          domain: body.domain !== undefined ? body.domain : undefined,
+          industry: body.industry !== undefined ? body.industry : undefined,
+          tier: body.tier !== undefined ? body.tier : undefined,
+          status: body.status !== undefined ? body.status : undefined,
+          healthScore: body.health_score !== undefined ? Number(body.health_score) : (body.healthScore !== undefined ? Number(body.healthScore) : undefined),
+          assignedToId: body.assigned_to_id !== undefined ? (body.assigned_to_id || null) : (body.assignedToId !== undefined ? (body.assignedToId || null) : undefined),
+        },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
+    }
+
+    if (table === "crm_contact") {
+      const updated = await db.crmContact.update({
+        where: { id },
+        data: {
+          firstName: body.first_name !== undefined ? body.first_name : (body.firstName !== undefined ? body.firstName : undefined),
+          lastName: body.last_name !== undefined ? body.last_name : (body.lastName !== undefined ? body.lastName : undefined),
+          name: body.name !== undefined ? body.name : undefined,
+          email: body.email !== undefined ? body.email : undefined,
+          phone: body.phone !== undefined ? body.phone : undefined,
+          title: body.title !== undefined ? body.title : undefined,
+          isPrimary: body.is_primary !== undefined ? Boolean(body.is_primary) : (body.isPrimary !== undefined ? Boolean(body.isPrimary) : undefined),
+          organizationId: body.organization_id !== undefined ? (body.organization_id || null) : (body.organizationId !== undefined ? (body.organizationId || null) : undefined),
+        },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
+    }
+
+    if (table === "crm_deal") {
+      const updated = await db.crmDeal.update({
+        where: { id },
+        data: {
+          title: body.title !== undefined ? body.title : undefined,
+          amount: body.amount !== undefined ? Number(body.amount) : undefined,
+          stage: body.stage !== undefined ? body.stage : undefined,
+          probability: body.probability !== undefined ? Number(body.probability) : undefined,
+          expectedCloseDate: body.expected_close_date !== undefined ? (body.expected_close_date ? new Date(body.expected_close_date) : null) : (body.expectedCloseDate !== undefined ? (body.expectedCloseDate ? new Date(body.expectedCloseDate) : null) : undefined),
+          organizationId: body.organization_id !== undefined ? (body.organization_id || null) : (body.organizationId !== undefined ? (body.organizationId || null) : undefined),
+          contactId: body.contact_id !== undefined ? (body.contact_id || null) : (body.contactId !== undefined ? (body.contactId || null) : undefined),
+          assignedToId: body.assigned_to_id !== undefined ? (body.assigned_to_id || null) : (body.assignedToId !== undefined ? (body.assignedToId || null) : undefined),
+          notes: body.notes !== undefined ? body.notes : undefined,
+        },
+      });
+      return NextResponse.json({ result: { ...updated, sys_id: updated.id } });
     }
 
     if (table === "sys_user") {
@@ -749,6 +1118,29 @@ export async function PATCH(
 
       // State 6: Resolved, 7: Closed -> Achieve SLA
       if (newState === 6 || newState === 7) {
+        // Enforce Checklist SOP Gatekeeper: Cannot resolve/close if mandatory checklist items are incomplete
+        const incompleteMandatory = await db.taskChecklistItem.findMany({
+          where: {
+            taskId: id,
+            isMandatory: true,
+            isCompleted: false,
+          },
+        });
+
+        if (incompleteMandatory.length > 0) {
+          const itemNames = incompleteMandatory.map((i) => `"${i.title}"`).join(", ");
+          return NextResponse.json(
+            {
+              error: "MANDATORY_CHECKLIST_INCOMPLETE",
+              message: `Cannot resolve or close record: mandatory checklist item(s) ${itemNames} must be completed first.`,
+              code: "MANDATORY_CHECKLIST_INCOMPLETE",
+              incomplete_items: incompleteMandatory.map((i) => i.title),
+              incompleteItems: incompleteMandatory,
+            },
+            { status: 422 }
+          );
+        }
+
         taskUpdateData.closedAt = new Date();
         await db.slaInstance.updateMany({
           where: { taskId: id, state: "in_progress" },
@@ -830,12 +1222,22 @@ export async function PATCH(
     }
 
     // Update problem specific fields if present
-    if (existingTask.problem && (body.root_cause !== undefined || body.rootCause !== undefined || body.workaround !== undefined)) {
-      await db.problem.update({
+    if (table === "problem" || existingTask.problem || body.root_cause !== undefined || body.rootCause !== undefined || body.workaround !== undefined || body.is_known_error !== undefined || body.isKnownError !== undefined) {
+      const rootCause = body.root_cause !== undefined ? body.root_cause : (body.rootCause !== undefined ? body.rootCause : undefined);
+      const workaround = body.workaround !== undefined ? body.workaround : undefined;
+      const isKnownError = body.is_known_error !== undefined ? Boolean(body.is_known_error) : (body.isKnownError !== undefined ? Boolean(body.isKnownError) : undefined);
+      await db.problem.upsert({
         where: { taskId: id },
-        data: {
-          rootCause: body.root_cause !== undefined ? body.root_cause : (body.rootCause !== undefined ? body.rootCause : undefined),
-          workaround: body.workaround !== undefined ? body.workaround : undefined,
+        update: {
+          rootCause: rootCause !== undefined ? rootCause : undefined,
+          workaround: workaround !== undefined ? workaround : undefined,
+          isKnownError: isKnownError !== undefined ? isKnownError : undefined,
+        },
+        create: {
+          taskId: id,
+          rootCause: rootCause || "",
+          workaround: workaround || "",
+          isKnownError: isKnownError || false,
         },
       });
     }
@@ -1041,8 +1443,48 @@ export async function DELETE(
       return NextResponse.json({ result: { status: "deleted", sys_id: id } });
     }
 
+    if (table === "task_checklist_item" || table === "task_checklist") {
+      await db.taskChecklistItem.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "task_evidence") {
+      await db.taskEvidence.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "cmn_morning_check") {
+      await db.cmnMorningCheck.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
     if (table === "cmdb_ci") {
       await db.configurationItem.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "kb_knowledge") {
+      await db.knowledgeArticle.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "kb_knowledge_base" || table === "rm_sprint") {
+      await db.sysCustomRecord.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "crm_organization") {
+      await db.crmOrganization.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "crm_contact") {
+      await db.crmContact.delete({ where: { id } });
+      return NextResponse.json({ result: { status: "deleted", sys_id: id } });
+    }
+
+    if (table === "crm_deal") {
+      await db.crmDeal.delete({ where: { id } });
       return NextResponse.json({ result: { status: "deleted", sys_id: id } });
     }
 

@@ -3,6 +3,7 @@ import path from "path";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
+  devIndicators: false,
   // QuickJS ships a .wasm file; load it from node_modules at runtime instead of bundling it.
   serverExternalPackages: [
     "quickjs-emscripten",
