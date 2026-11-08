@@ -344,11 +344,11 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4">
         <div>
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-blue-600" />
+          <h2 className="text-base font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-[var(--swiss-blue)]" />
             <span>Record Producers (sc_cat_item_producer)</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-[var(--theme-text-secondary)] mt-0.5">
             Configure self-service intake forms with dynamic questions, direct target column mappings, and sandbox script execution.
           </p>
         </div>
@@ -357,14 +357,14 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
           <button
             type="button"
             onClick={loadProducers}
-            className="p-2 border rounded-lg text-slate-500 hover:text-slate-800 transition-colors"
+            className="p-2 border text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 shadow-xs transition-colors"
+            className="sw-btn-primary flex items-center gap-1.5 px-4 py-2 text-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Producer</span>
@@ -374,7 +374,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
 
       {/* Grid of Producers */}
       {producers.length === 0 ? (
-        <div className="p-12 text-center text-xs text-slate-400 border border-dashed rounded-2xl italic">
+        <div className="p-12 text-center text-xs text-[var(--theme-text-secondary)] border border-dashed italic">
           No Record Producers configured yet. Click "New Producer" to build self-service catalog forms.
         </div>
       ) : (
@@ -382,29 +382,29 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
           {producers.map((p) => (
             <div
               key={p.id}
-              className="p-5 rounded-2xl border shadow-xs bg-white hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+              className="p-5 border bg-[var(--theme-card-bg)] transition-all flex flex-col justify-between space-y-4"
             >
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-bold text-sm text-slate-900">{p.name}</h3>
+                  <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">{p.name}</h3>
                   <span
-                    className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                      p.active ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"
+                    className={`text-[10px] uppercase font-bold px-2 py-0.5 ${
+                      p.active ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)]" : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]"
                     }`}
                   >
                     {p.active ? "Active" : "Inactive"}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 text-[11px] font-mono text-blue-700">
-                  <span className="bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--swiss-blue)]">
+                  <span className="bg-[var(--theme-accent-light)] px-2 py-0.5 border border-[var(--swiss-blue)]">
                     Target: {p.targetTable || p.tableName}
                   </span>
-                  <span className="text-slate-400">•</span>
-                  <span className="text-slate-500">{p.category || "General"}</span>
+                  <span className="text-[var(--theme-text-secondary)]">•</span>
+                  <span className="text-[var(--theme-text-secondary)]">{p.category || "General"}</span>
                 </div>
 
-                <p className="text-xs text-slate-600 line-clamp-2">
+                <p className="text-xs text-[var(--theme-text-secondary)] line-clamp-2">
                   {p.description || "No description provided."}
                 </p>
               </div>
@@ -414,17 +414,17 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                   <button
                     type="button"
                     onClick={() => handleOpenVariablesDrawer(p)}
-                    className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-blue-700 rounded-md font-semibold text-[11px] flex items-center gap-1 transition-colors border border-slate-200"
+                    className="sw-btn px-2.5 py-1 text-[11px] flex items-center gap-1"
                     title="Configure intake fields and question variables"
                   >
-                    <Settings className="w-3 h-3 text-blue-600" />
+                    <Settings className="w-3 h-3 text-[var(--swiss-blue)]" />
                     <span>Fields ({p.variables?.length || 0})</span>
                   </button>
 
                   <Link
                     href={`/portal/catalog/producer/${p.id}`}
                     target="_blank"
-                    className="text-blue-600 hover:underline flex items-center gap-1 font-semibold text-[11px]"
+                    className="text-[var(--swiss-blue)] hover:text-[var(--theme-text-primary)] flex items-center gap-1 font-semibold text-[11px]"
                   >
                     <ExternalLink className="w-3 h-3" />
                     <span>Portal</span>
@@ -435,7 +435,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                   <button
                     type="button"
                     onClick={() => handleOpenEdit(p)}
-                    className="p-1.5 text-slate-500 hover:text-blue-600 rounded-md hover:bg-slate-100"
+                    className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-blue)] hover:bg-[var(--theme-accent-light)]"
                     title="Edit Producer"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
@@ -443,7 +443,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                   <button
                     type="button"
                     onClick={() => handleDelete(p.id)}
-                    className="p-1.5 text-slate-500 hover:text-red-600 rounded-md hover:bg-slate-100"
+                    className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)] hover:bg-[var(--theme-accent-light)]"
                     title="Delete Producer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -458,15 +458,15 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
       {/* Modal 1: Create/Edit Record Producer */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl bg-white rounded-2xl border shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[var(--theme-card-bg)] border p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-bold text-sm text-slate-900">
+              <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">
                 {editingId ? "Edit Record Producer" : "Create Record Producer"}
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -475,22 +475,22 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
             <form onSubmit={handleSave} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Producer Name *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Producer Name *</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Report a Security Incident"
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-blue-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-blue)]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Target Table *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Target Table *</label>
                   <select
                     value={targetTable}
                     onChange={(e) => setTargetTable(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-blue-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-blue)]"
                   >
                     <option value="incident">Incident [incident]</option>
                     <option value="change_request">Change Request [change_request]</option>
@@ -507,51 +507,51 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Category</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Category</label>
                   <input
                     type="text"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     placeholder="e.g. Security & Compliance"
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-blue-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-blue)]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Redirect URL</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Redirect URL</label>
                   <input
                     type="text"
                     value={redirectUrl}
                     onChange={(e) => setRedirectUrl(e.target.value)}
                     placeholder="e.g. /workspace/incident/{id}"
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-blue-500 font-mono text-[11px]"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-blue)] font-mono text-[11px]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Description / Help Text</label>
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Description / Help Text</label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Explains what this producer creates..."
-                  className="w-full border rounded-lg p-2.5 text-slate-800 focus:outline-blue-500"
+                  className="w-full border p-2.5 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-blue)]"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="font-semibold text-slate-700 flex items-center gap-1.5">
-                    <Code2 className="w-3.5 h-3.5 text-blue-600" />
+                  <label className="font-semibold text-[var(--theme-text-primary)] flex items-center gap-1.5">
+                    <Code2 className="w-3.5 h-3.5 text-[var(--swiss-blue)]" />
                     <span>Producer Sandbox Script</span>
                   </label>
-                  <span className="text-[10px] font-mono text-slate-400">current, producer, user</span>
+                  <span className="text-[10px] font-mono text-[var(--theme-text-secondary)]">current, producer, user</span>
                 </div>
                 <textarea
                   rows={6}
                   value={producerScript}
                   onChange={(e) => setProducerScript(e.target.value)}
-                  className="w-full font-mono text-xs bg-slate-900 text-emerald-400 rounded-lg p-3 focus:outline-none"
+                  className="bg-neutral-950 text-emerald-400 border border-neutral-800 focus:outline-none focus:border-neutral-500 w-full font-mono text-xs p-3"
                 />
               </div>
 
@@ -560,22 +560,22 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                   type="checkbox"
                   checked={active}
                   onChange={(e) => setActive(e.target.checked)}
-                  className="rounded text-blue-600 focus:ring-blue-500"
+                  className="text-[var(--swiss-blue)] focus:ring-[var(--swiss-blue)]"
                 />
-                <span className="text-slate-700 font-semibold">Active & Available in Catalog</span>
+                <span className="text-[var(--theme-text-primary)] font-semibold">Active & Available in Catalog</span>
               </label>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-full border text-slate-600 hover:bg-slate-50 font-semibold"
+                  className="px-4 py-2 border text-[var(--theme-text-secondary)] hover:bg-[var(--theme-accent-light)] font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-xs"
+                  className="sw-btn-primary px-5 py-2"
                 >
                   Save Producer
                 </button>
@@ -587,22 +587,22 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
 
       {/* Modal 2: Manage Producer Variables Drawer / Dialog */}
       {variablesDrawerOpen && selectedProducerForVars && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border shadow-2xl max-w-2xl w-full p-6 space-y-5 text-xs text-slate-800 max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-[var(--theme-card-bg)] border max-w-2xl w-full p-6 space-y-5 text-xs text-[var(--theme-text-primary)] max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-3">
               <div>
-                <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-blue-600" />
+                <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                  <Settings className="w-4 h-4 text-[var(--swiss-blue)]" />
                   <span>Configure Intake Fields & Variables</span>
                 </h3>
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  Form questions prompted on portal for: <strong className="text-slate-800">{selectedProducerForVars.name}</strong> (Target: <span className="font-mono text-blue-600">{selectedProducerForVars.targetTable}</span>)
+                <p className="text-[11px] text-[var(--theme-text-secondary)] mt-0.5">
+                  Form questions prompted on portal for: <strong className="text-[var(--theme-text-primary)]">{selectedProducerForVars.name}</strong> (Target: <span className="font-mono text-[var(--swiss-blue)]">{selectedProducerForVars.targetTable}</span>)
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setVariablesDrawerOpen(false)}
-                className="text-slate-400 hover:text-slate-700"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -610,13 +610,13 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
 
             {/* Existing Variables List */}
             <div className="space-y-2">
-              <h4 className="font-bold text-slate-700 flex items-center justify-between">
+              <h4 className="font-bold text-[var(--theme-text-primary)] flex items-center justify-between">
                 <span>Active Intake Questions ({selectedProducerForVars.variables?.length || 0})</span>
-                <span className="text-[10px] text-slate-400 font-normal">Requesters see these questions on the portal form</span>
+                <span className="text-[10px] text-[var(--theme-text-secondary)] font-normal">Requesters see these questions on the portal form</span>
               </h4>
 
               {(!selectedProducerForVars.variables || selectedProducerForVars.variables.length === 0) ? (
-                <div className="p-4 bg-slate-50 rounded-xl border border-dashed border-slate-200 text-center text-slate-400 italic">
+                <div className="p-4 bg-[var(--theme-accent-light)] border border-dashed border-[var(--theme-card-border)] text-center text-[var(--theme-text-secondary)] italic">
                   No custom intake fields defined yet. Add your first field question below!
                 </div>
               ) : (
@@ -629,34 +629,34 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                     return (
                       <div
                         key={v.id}
-                        className={`p-3 rounded-xl border flex items-center justify-between gap-3 transition-colors ${
+                        className={`p-3 border flex items-center justify-between gap-3 transition-colors ${
                           isEditing
-                            ? "bg-blue-50/60 border-blue-400"
-                            : "bg-slate-50/70 border-slate-200 hover:border-slate-300"
+                            ? "bg-[var(--theme-accent-light)] border-[var(--swiss-blue)]"
+                            : "bg-[var(--theme-accent-light)] border-[var(--theme-card-border)] hover:border-[var(--theme-text-primary)]"
                         }`}
                       >
                         <div className="space-y-0.5 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-[10px] text-slate-500 font-bold">#{v.order || index + 1}</span>
-                            <span className="font-bold text-slate-900 truncate">{v.label}</span>
+                            <span className="font-mono text-[10px] text-[var(--theme-text-secondary)] font-bold">#{v.order || index + 1}</span>
+                            <span className="font-bold text-[var(--theme-text-primary)] truncate">{v.label}</span>
                             {v.isMandatory && (
-                              <span className="text-[10px] font-bold text-rose-500 font-mono">*Mandatory</span>
+                              <span className="text-[10px] font-bold text-[var(--swiss-red)] font-mono">*Mandatory</span>
                             )}
                             {v.mapToField && (
-                              <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200 flex items-center gap-1">
+                              <span className="text-[10px] font-mono text-[var(--swiss-emerald)] bg-[var(--theme-accent-light)] px-1.5 py-0.2 border border-[var(--swiss-emerald)] flex items-center gap-1">
                                 <Link2 className="w-2.5 h-2.5" />
                                 <span>maps to {v.targetField || v.name}</span>
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
-                            <span>name: <strong className="text-slate-700">{v.name}</strong></span>
+                          <div className="flex items-center gap-2 text-[10px] text-[var(--theme-text-secondary)] font-mono">
+                            <span>name: <strong className="text-[var(--theme-text-primary)]">{v.name}</strong></span>
                             <span>•</span>
-                            <span className="uppercase text-blue-600 font-semibold">{v.varType}</span>
+                            <span className="uppercase text-[var(--swiss-blue)] font-semibold">{v.varType}</span>
                             {v.optionsJson && (
                               <>
                                 <span>•</span>
-                                <span className="text-slate-500 truncate max-w-xs">{v.optionsJson}</span>
+                                <span className="text-[var(--theme-text-secondary)] truncate max-w-xs">{v.optionsJson}</span>
                               </>
                             )}
                           </div>
@@ -667,7 +667,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                             type="button"
                             disabled={isFirst}
                             onClick={() => handleMoveVariable(index, "up")}
-                            className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 rounded"
+                            className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] disabled:opacity-30"
                             title="Move Up"
                           >
                             <ArrowUp className="w-3.5 h-3.5" />
@@ -676,7 +676,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                             type="button"
                             disabled={isLast}
                             onClick={() => handleMoveVariable(index, "down")}
-                            className="p-1 text-slate-400 hover:text-slate-700 disabled:opacity-30 rounded"
+                            className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] disabled:opacity-30"
                             title="Move Down"
                           >
                             <ArrowDown className="w-3.5 h-3.5" />
@@ -684,7 +684,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                           <button
                             type="button"
                             onClick={() => handleEditVariable(v)}
-                            className="p-1 text-slate-400 hover:text-blue-600 rounded ml-1"
+                            className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-blue)] ml-1"
                             title="Edit Field"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -692,7 +692,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                           <button
                             type="button"
                             onClick={() => handleDeleteVariable(v.id)}
-                            className="p-1 text-slate-400 hover:text-rose-600 rounded"
+                            className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)]"
                             title="Delete Field"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -706,16 +706,16 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
             </div>
 
             {/* Add / Edit Variable Form */}
-            <form onSubmit={handleSaveVariable} className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3.5">
+            <form onSubmit={handleSaveVariable} className="bg-[var(--theme-accent-light)] p-4 border border-[var(--theme-card-border)] space-y-3.5">
               <div className="flex items-center justify-between border-b pb-2">
-                <span className="font-bold text-slate-800">
+                <span className="font-bold text-[var(--theme-text-primary)]">
                   {editingVarId ? "Edit Intake Question" : "Add Intake Question"}
                 </span>
                 {editingVarId && (
                   <button
                     type="button"
                     onClick={() => resetVariableForm()}
-                    className="text-[10px] text-blue-600 hover:underline"
+                    className="text-[10px] text-[var(--swiss-blue)] hover:text-[var(--theme-text-primary)]"
                   >
                     Cancel Edit
                   </button>
@@ -724,7 +724,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 mb-1 font-semibold">Field Question Label *</label>
+                  <label className="block text-[var(--theme-text-primary)] mb-1 font-semibold">Field Question Label *</label>
                   <input
                     type="text"
                     required
@@ -736,30 +736,30 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                       }
                     }}
                     placeholder="e.g. Business Impact or Affected CI"
-                    className="w-full bg-white border rounded-lg p-2 text-slate-800 focus:outline-blue-500"
+                    className="sw-input w-full p-2"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 mb-1 font-semibold">Technical Name *</label>
+                  <label className="block text-[var(--theme-text-primary)] mb-1 font-semibold">Technical Name *</label>
                   <input
                     type="text"
                     required
                     value={varName}
                     onChange={(e) => setVarName(e.target.value)}
                     placeholder="e.g. affected_ci"
-                    className="w-full bg-white border rounded-lg p-2 text-slate-800 font-mono focus:outline-blue-500"
+                    className="sw-input w-full p-2 font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-700 mb-1 font-semibold">Field Type</label>
+                  <label className="block text-[var(--theme-text-primary)] mb-1 font-semibold">Field Type</label>
                   <select
                     value={varType}
                     onChange={(e) => setVarType(e.target.value)}
-                    className="w-full bg-white border rounded-lg p-2 text-slate-800 focus:outline-blue-500"
+                    className="sw-input w-full p-2"
                   >
                     <option value="string">Single-line Text</option>
                     <option value="text">Multi-line Text Area</option>
@@ -772,13 +772,13 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 mb-1 font-semibold">Display Sequence</label>
+                  <label className="block text-[var(--theme-text-primary)] mb-1 font-semibold">Display Sequence</label>
                   <input
                     type="number"
                     min="1"
                     value={varOrder}
                     onChange={(e) => setVarOrder(parseInt(e.target.value) || 1)}
-                    className="w-full bg-white border rounded-lg p-2 text-slate-800 focus:outline-blue-500"
+                    className="sw-input w-full p-2"
                   />
                 </div>
 
@@ -788,24 +788,24 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                       type="checkbox"
                       checked={varMandatory}
                       onChange={(e) => setVarMandatory(e.target.checked)}
-                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      className="border-[var(--theme-card-border)] text-[var(--swiss-blue)] focus:ring-[var(--swiss-blue)]"
                     />
-                    <span className="text-slate-700 font-semibold">Mandatory</span>
+                    <span className="text-[var(--theme-text-primary)] font-semibold">Mandatory</span>
                   </label>
                 </div>
               </div>
 
               {/* Dropdown Options Builder */}
               {varType === "select" && (
-                <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-2">
-                  <label className="block text-slate-700 font-semibold text-[11px]">Dropdown Choices</label>
+                <div className="p-3 sw-panel space-y-2">
+                  <label className="block text-[var(--theme-text-primary)] font-semibold text-[11px]">Dropdown Choices</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={choiceInput}
                       onChange={(e) => setChoiceInput(e.target.value)}
                       placeholder="Type choice and press Add (e.g. Production Outage)"
-                      className="flex-1 bg-slate-50 border rounded-lg p-1.5 text-xs text-slate-800"
+                      className="flex-1 bg-[var(--theme-accent-light)] border p-1.5 text-xs text-[var(--theme-text-primary)]"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -816,7 +816,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                     <button
                       type="button"
                       onClick={handleAddChoice}
-                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
+                      className="sw-btn-primary px-3 py-1"
                     >
                       Add
                     </button>
@@ -826,13 +826,13 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                     {varChoices.map((choice) => (
                       <span
                         key={choice}
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 text-[11px]"
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)] text-[11px]"
                       >
                         <span>{choice}</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveChoice(choice)}
-                          className="text-slate-400 hover:text-rose-500"
+                          className="text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)]"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -843,7 +843,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
               )}
 
               {/* Direct Field Mapping Section */}
-              <div className="p-3 bg-white rounded-lg border border-slate-200 space-y-2">
+              <div className="p-3 sw-panel space-y-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -854,9 +854,9 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                         setVarTargetField(varName);
                       }
                     }}
-                    className="rounded text-blue-600 focus:ring-blue-500"
+                    className="text-[var(--swiss-blue)] focus:ring-[var(--swiss-blue)]"
                   />
-                  <span className="font-semibold text-slate-800">
+                  <span className="font-semibold text-[var(--theme-text-primary)]">
                     Directly map question response to target table column
                   </span>
                 </label>
@@ -864,7 +864,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                 {varMapToField && (
                   <div className="pt-2 border-t grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-600 text-[11px] font-semibold mb-1">
+                      <label className="block text-[var(--theme-text-secondary)] text-[11px] font-semibold mb-1">
                         Select Target Column ({selectedProducerForVars.targetTable})
                       </label>
                       <select
@@ -874,7 +874,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                             setVarTargetField(e.target.value);
                           }
                         }}
-                        className="w-full bg-slate-50 border rounded-lg p-2 text-xs text-slate-800"
+                        className="w-full bg-[var(--theme-accent-light)] border p-2 text-xs text-[var(--theme-text-primary)]"
                       >
                         <option value="">-- Choose standard column --</option>
                         {currentSuggestions.map((col) => (
@@ -887,7 +887,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                     </div>
 
                     <div>
-                      <label className="block text-slate-600 text-[11px] font-semibold mb-1">
+                      <label className="block text-[var(--theme-text-secondary)] text-[11px] font-semibold mb-1">
                         Target Field Column Name
                       </label>
                       <input
@@ -895,7 +895,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
                         value={varTargetField}
                         onChange={(e) => setVarTargetField(e.target.value)}
                         placeholder="e.g. short_description or u_custom_field"
-                        className="w-full bg-slate-50 border rounded-lg p-2 text-xs font-mono text-slate-800 focus:outline-blue-500"
+                        className="sw-input w-full p-2 text-xs font-mono"
                       />
                     </div>
                   </div>
@@ -905,7 +905,7 @@ export function RecordProducersTab({ tables }: { tables: any[] }) {
               <button
                 type="submit"
                 disabled={savingVar}
-                className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-colors"
+                className="w-full py-2 bg-[var(--theme-text-primary)] hover:opacity-85 text-[var(--theme-page-bg)] font-semibold flex items-center justify-center gap-1.5 transition-colors"
               >
                 {savingVar ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
                 <span>{editingVarId ? "Update Question" : "Add Question to Form"}</span>

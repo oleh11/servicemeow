@@ -143,11 +143,11 @@ export function ScheduledJobsTab() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4">
         <div>
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-amber-600" />
+          <h2 className="text-base font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
+            <Clock className="w-5 h-5 text-[var(--swiss-amber)]" />
             <span>Scheduled Jobs (sysauto_script)</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-[var(--theme-text-secondary)] mt-0.5">
             Automate recurring platform tasks, audit cleanup, data sanitization, and background processing with the sys_trigger daemon.
           </p>
         </div>
@@ -156,14 +156,14 @@ export function ScheduledJobsTab() {
           <button
             type="button"
             onClick={loadJobs}
-            className="p-2 border rounded-lg text-slate-500 hover:text-slate-800 transition-colors"
+            className="p-2 border text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-amber-600 text-white hover:bg-amber-700 shadow-xs transition-colors"
+            className="sw-btn-primary flex items-center gap-1.5 px-4 py-2 text-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Scheduled Job</span>
@@ -172,7 +172,7 @@ export function ScheduledJobsTab() {
       </div>
 
       {feedbackMsg && (
-        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+        <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] text-xs flex items-center gap-2">
           <CheckCircle className="w-4 h-4" />
           <span>{feedbackMsg}</span>
         </div>
@@ -180,7 +180,7 @@ export function ScheduledJobsTab() {
 
       {/* Grid of Jobs */}
       {jobs.length === 0 ? (
-        <div className="p-12 text-center text-xs text-slate-400 border border-dashed rounded-2xl italic">
+        <div className="p-12 text-center text-xs text-[var(--theme-text-secondary)] border border-dashed italic">
           No Scheduled Jobs configured. Click "New Scheduled Job" to define periodic scripts.
         </div>
       ) : (
@@ -188,33 +188,33 @@ export function ScheduledJobsTab() {
           {jobs.map((job) => (
             <div
               key={job.id}
-              className="p-5 rounded-2xl border shadow-xs bg-white hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+              className="p-5 border bg-[var(--theme-card-bg)] transition-all flex flex-col justify-between space-y-4"
             >
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-bold text-sm text-slate-900">{job.name}</h3>
+                  <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">{job.name}</h3>
                   <span
-                    className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                      job.active ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"
+                    className={`text-[10px] uppercase font-bold px-2 py-0.5 ${
+                      job.active ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)]" : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]"
                     }`}
                   >
                     {job.active ? "Active" : "Inactive"}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 text-[11px] font-mono text-amber-700">
-                  <span className="bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--swiss-amber)]">
+                  <span className="bg-[var(--theme-accent-light)] px-2 py-0.5 border border-[var(--swiss-amber)]">
                     Frequency: {job.interval}
                   </span>
-                  <span className="text-slate-400">•</span>
-                  <span className="text-slate-500">Run As: {job.runAs || "system"}</span>
+                  <span className="text-[var(--theme-text-secondary)]">•</span>
+                  <span className="text-[var(--theme-text-secondary)]">Run As: {job.runAs || "system"}</span>
                 </div>
 
-                <div className="text-[11px] text-slate-400 font-mono">
+                <div className="text-[11px] text-[var(--theme-text-secondary)] font-mono">
                   Last Run: {job.lastRunAt ? new Date(job.lastRunAt).toLocaleString() : "Never"}
                 </div>
 
-                <pre className="text-[10px] font-mono bg-slate-50 p-2 rounded text-slate-700 line-clamp-3">
+                <pre className="text-[10px] font-mono bg-[var(--theme-accent-light)] p-2 text-[var(--theme-text-primary)] line-clamp-3">
                   {job.script}
                 </pre>
               </div>
@@ -224,7 +224,7 @@ export function ScheduledJobsTab() {
                   type="button"
                   onClick={() => handleExecuteNow(job.id, job.name)}
                   disabled={executingId === job.id}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 font-semibold text-[11px]"
+                  className="flex items-center gap-1.5 px-3 py-1 bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] hover:bg-[var(--theme-accent-light)] border border-[var(--swiss-amber)] font-semibold text-[11px]"
                 >
                   <Play className={`w-3 h-3 ${executingId === job.id ? "animate-spin" : ""}`} />
                   <span>{executingId === job.id ? "Running..." : "Execute Now"}</span>
@@ -234,7 +234,7 @@ export function ScheduledJobsTab() {
                   <button
                     type="button"
                     onClick={() => handleOpenEdit(job)}
-                    className="p-1.5 text-slate-500 hover:text-amber-600 rounded-md hover:bg-slate-100"
+                    className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-amber)] hover:bg-[var(--theme-accent-light)]"
                     title="Edit Job"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
@@ -242,7 +242,7 @@ export function ScheduledJobsTab() {
                   <button
                     type="button"
                     onClick={() => handleDelete(job.id)}
-                    className="p-1.5 text-slate-500 hover:text-red-600 rounded-md hover:bg-slate-100"
+                    className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)] hover:bg-[var(--theme-accent-light)]"
                     title="Delete Job"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -257,15 +257,15 @@ export function ScheduledJobsTab() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl bg-white rounded-2xl border shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-xl bg-[var(--theme-card-bg)] border p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-bold text-sm text-slate-900">
+              <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">
                 {editingId ? "Edit Scheduled Job" : "Create Scheduled Job"}
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -273,24 +273,24 @@ export function ScheduledJobsTab() {
 
             <form onSubmit={handleSave} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Job Name *</label>
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Job Name *</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Daily Incident Auto-Close"
-                  className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-amber-500"
+                  className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-amber)]"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Run Frequency *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Run Frequency *</label>
                   <select
                     value={interval}
                     onChange={(e) => setInterval(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-amber-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-amber)]"
                   >
                     <option value="hourly">Hourly</option>
                     <option value="daily">Daily</option>
@@ -299,30 +299,30 @@ export function ScheduledJobsTab() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Run As User</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Run As User</label>
                   <input
                     type="text"
                     value={runAs}
                     onChange={(e) => setRunAs(e.target.value)}
                     placeholder="system / admin"
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-amber-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-amber)]"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="font-semibold text-slate-700 flex items-center gap-1.5">
-                    <Code2 className="w-3.5 h-3.5 text-amber-600" />
+                  <label className="font-semibold text-[var(--theme-text-primary)] flex items-center gap-1.5">
+                    <Code2 className="w-3.5 h-3.5 text-[var(--swiss-amber)]" />
                     <span>Script Sandbox</span>
                   </label>
-                  <span className="text-[10px] font-mono text-slate-400">gs and db available</span>
+                  <span className="text-[10px] font-mono text-[var(--theme-text-secondary)]">gs and db available</span>
                 </div>
                 <textarea
                   rows={8}
                   value={script}
                   onChange={(e) => setScript(e.target.value)}
-                  className="w-full font-mono text-xs bg-slate-900 text-emerald-400 rounded-lg p-3 focus:outline-none"
+                  className="bg-neutral-950 text-emerald-400 border border-neutral-800 focus:outline-none focus:border-neutral-500 w-full font-mono text-xs p-3"
                 />
               </div>
 
@@ -331,22 +331,22 @@ export function ScheduledJobsTab() {
                   type="checkbox"
                   checked={active}
                   onChange={(e) => setActive(e.target.checked)}
-                  className="rounded text-amber-600 focus:ring-amber-500"
+                  className="text-[var(--swiss-amber)] focus:ring-[var(--swiss-amber)]"
                 />
-                <span className="text-slate-700 font-semibold">Active & Armed in Scheduler</span>
+                <span className="text-[var(--theme-text-primary)] font-semibold">Active & Armed in Scheduler</span>
               </label>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-full border text-slate-600 hover:bg-slate-50 font-semibold"
+                  className="px-4 py-2 border text-[var(--theme-text-secondary)] hover:bg-[var(--theme-accent-light)] font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full bg-amber-600 text-white font-semibold hover:bg-amber-700 shadow-xs"
+                  className="sw-btn-primary px-5 py-2"
                 >
                   Save Scheduled Job
                 </button>

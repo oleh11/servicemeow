@@ -305,45 +305,45 @@ export function NavigationTab() {
     <div className="space-y-6">
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 border border-slate-700 animate-in fade-in slide-in-from-bottom-2 text-xs">
-          <CheckCircle className="w-4 h-4 text-emerald-400" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] px-4 py-2.5 flex items-center gap-2 border border-[var(--theme-card-border)] animate-in fade-in slide-in-from-bottom-2 text-xs">
+          <CheckCircle className="w-4 h-4 text-[var(--swiss-emerald)]" />
           <span>{toastMsg}</span>
         </div>
       )}
 
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[var(--theme-card-bg)] p-4 border border-[var(--theme-card-border)]">
         <div>
-          <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Layers className="w-5 h-5 text-amber-500" />
+          <h2 className="text-base font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
+            <Layers className="w-5 h-5 text-[var(--swiss-amber)]" />
             Application Menus & Modules (sys_app_application, sys_app_module)
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="text-xs text-[var(--theme-text-secondary)] mt-0.5">
             Configure the left application navigator tree, customize module links, tables, and filter queries
           </p>
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-64">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[var(--theme-text-secondary)]" />
             <input
               type="text"
               placeholder="Search menus or modules..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-amber-500"
+              className="sw-input w-full pl-8 pr-3 py-1.5 text-xs"
             />
           </div>
           <button
             onClick={fetchMenus}
-            className="p-1.5 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
+            className="p-1.5 border border-[var(--theme-card-border)] hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
           <button
             onClick={openCreateMenuModal}
-            className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs flex items-center gap-1.5 shadow-xs transition-colors shrink-0"
+            className="sw-btn-primary px-3.5 py-1.5 text-xs flex items-center gap-1.5 shrink-0"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Create Menu</span>
@@ -353,15 +353,15 @@ export function NavigationTab() {
 
       {/* Navigation Tree */}
       {loading ? (
-        <div className="py-12 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-          <RefreshCw className="w-4 h-4 animate-spin text-amber-500" />
+        <div className="py-12 text-center text-xs text-[var(--theme-text-secondary)] flex items-center justify-center gap-2">
+          <RefreshCw className="w-4 h-4 animate-spin text-[var(--swiss-amber)]" />
           <span>Loading navigation hierarchy...</span>
         </div>
       ) : filteredMenus.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center">
-          <Layers className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">No Application Menus Found</h3>
-          <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+        <div className="bg-[var(--theme-card-bg)] border border-dashed border-[var(--theme-card-border)] p-12 text-center">
+          <Layers className="w-10 h-10 text-[var(--theme-text-secondary)] mx-auto mb-3" />
+          <h3 className="text-sm font-bold text-[var(--theme-text-primary)]">No Application Menus Found</h3>
+          <p className="text-xs text-[var(--theme-text-secondary)] mt-1 max-w-sm mx-auto">
             Create an Application Menu to add new headers and clickable module links to the sidebar navigator.
           </p>
         </div>
@@ -373,40 +373,40 @@ export function NavigationTab() {
             return (
               <div
                 key={menu.id}
-                className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs overflow-hidden transition-all"
+                className="sw-panel overflow-hidden transition-all"
               >
                 {/* Menu Header Card */}
-                <div className="p-4 bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div className="p-4 bg-[var(--theme-accent-light)] border-b border-[var(--theme-card-border)] flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => toggleExpand(menu.id)}
-                      className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 transition-colors"
+                      className="p-1 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] transition-colors"
                     >
                       {isExpanded ? (
-                        <ChevronDown className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                        <ChevronDown className="w-4 h-4 text-[var(--theme-text-secondary)]" />
                       ) : (
-                        <ChevronRight className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                        <ChevronRight className="w-4 h-4 text-[var(--theme-text-secondary)]" />
                       )}
                     </button>
 
-                    <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] flex items-center justify-center shrink-0">
                       <Layers className="w-4 h-4" />
                     </div>
 
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-slate-900 dark:text-white text-sm">
+                        <h3 className="font-bold text-[var(--theme-text-primary)] text-sm">
                           {menu.title}
                         </h3>
-                        <span className="text-[10px] bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.2 rounded font-mono">
+                        <span className="text-[10px] bg-[var(--theme-card-border)] text-[var(--theme-text-secondary)] px-1.5 py-0.2 font-mono">
                           order: {menu.order}
                         </span>
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[10px] text-[var(--theme-text-secondary)]">
                           ({menu.category})
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 mt-0.5 text-[11px] text-slate-500">
-                        <span>Roles: <strong className="text-slate-700 dark:text-slate-300">{menu.roles}</strong></span>
+                      <div className="flex items-center gap-2 mt-0.5 text-[11px] text-[var(--theme-text-secondary)]">
+                        <span>Roles: <strong className="text-[var(--theme-text-primary)]">{menu.roles}</strong></span>
                         <span>&bull;</span>
                         <span>{menu.modules?.length || 0} module(s)</span>
                       </div>
@@ -416,21 +416,21 @@ export function NavigationTab() {
                   <div className="flex items-center gap-1.5">
                     <button
                       onClick={() => openCreateModuleModal(menu)}
-                      className="px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 text-amber-700 dark:text-amber-300 font-semibold text-xs flex items-center gap-1 transition-colors"
+                      className="px-2.5 py-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] font-semibold text-xs flex items-center gap-1 transition-colors"
                     >
                       <PlusCircle className="w-3.5 h-3.5" />
                       <span>Add Module</span>
                     </button>
                     <button
                       onClick={() => openEditMenuModal(menu)}
-                      className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                      className="p-1.5 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                       title="Edit Application Menu"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDeleteMenu(menu.id, menu.title)}
-                      className="p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/30 text-slate-400 hover:text-rose-600"
+                      className="p-1.5 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)]"
                       title="Delete Application Menu"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -440,9 +440,9 @@ export function NavigationTab() {
 
                 {/* Modules List */}
                 {isExpanded && (
-                  <div className="p-3 bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-slate-800/60">
+                  <div className="p-3 bg-[var(--theme-card-bg)] divide-y divide-[var(--theme-card-border)]">
                     {menu.modules?.length === 0 ? (
-                      <div className="py-6 text-center text-xs text-slate-400">
+                      <div className="py-6 text-center text-xs text-[var(--theme-text-secondary)]">
                         No modules under this menu yet. Click &quot;Add Module&quot; to configure links.
                       </div>
                     ) : (
@@ -461,41 +461,41 @@ export function NavigationTab() {
                         return (
                           <div
                             key={mod.id}
-                            className="py-2.5 px-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/40 rounded-lg group transition-colors"
+                            className="py-2.5 px-3 flex items-center justify-between hover:bg-[var(--theme-accent-light)] group transition-colors"
                           >
                             <div className="flex items-center gap-3">
-                              <span className="w-5 text-center font-mono text-[10px] text-slate-400">
+                              <span className="w-5 text-center font-mono text-[10px] text-[var(--theme-text-secondary)]">
                                 {mod.order}
                               </span>
 
                               <div className="flex items-center gap-2">
-                                <span className="font-semibold text-slate-900 dark:text-white text-xs">
+                                <span className="font-semibold text-[var(--theme-text-primary)] text-xs">
                                   {mod.title}
                                 </span>
-                                <span className="px-1.5 py-0.2 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500">
+                                <span className="px-1.5 py-0.2 text-[10px] font-bold uppercase tracking-wider bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]">
                                   {mod.linkType}
                                 </span>
                               </div>
 
-                              <span className="text-[11px] text-slate-400 font-mono hidden md:inline truncate max-w-sm">
+                              <span className="text-[11px] text-[var(--theme-text-secondary)] font-mono hidden md:inline truncate max-w-sm">
                                 {linkDisplay}
                               </span>
                             </div>
 
                             <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100">
-                              <span className="text-[10px] text-slate-400 mr-2">
+                              <span className="text-[10px] text-[var(--theme-text-secondary)] mr-2">
                                 roles: {mod.roles}
                               </span>
                               <button
                                 onClick={() => openEditModuleModal(menu, mod)}
-                                className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800"
+                                className="p-1 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                                 title="Edit Module"
                               >
                                 <Edit2 className="w-3 h-3" />
                               </button>
                               <button
                                 onClick={() => handleDeleteModule(mod.id, mod.title)}
-                                className="p-1 rounded hover:bg-rose-50 dark:hover:bg-rose-950/30 text-slate-400 hover:text-rose-600"
+                                className="p-1 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)]"
                                 title="Delete Module"
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -515,16 +515,16 @@ export function NavigationTab() {
 
       {/* Menu Modal */}
       {menuModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95">
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-                <Layers className="w-4 h-4 text-amber-500" />
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="sw-panel-strong w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 bg-[var(--theme-accent-light)] border-b border-[var(--theme-card-border)] flex items-center justify-between">
+              <h3 className="font-bold text-[var(--theme-text-primary)] text-sm flex items-center gap-2">
+                <Layers className="w-4 h-4 text-[var(--swiss-amber)]" />
                 {editingMenu ? "Edit Application Menu" : "Create Application Menu"}
               </h3>
               <button
                 onClick={() => setMenuModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-sm font-bold"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-sm font-bold"
               >
                 ✕
               </button>
@@ -532,8 +532,8 @@ export function NavigationTab() {
 
             <form onSubmit={handleSaveMenu} className="p-5 space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Menu Title <span className="text-rose-500">*</span>
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
+                  Menu Title <span className="text-[var(--swiss-red)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -541,37 +541,37 @@ export function NavigationTab() {
                   placeholder="e.g. Facilities Management, Pet Care Tracking"
                   value={menuTitle}
                   onChange={(e) => setMenuTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500"
+                  className="sw-input w-full px-3 py-2"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                     Category
                   </label>
                   <input
                     type="text"
                     value={menuCategory}
                     onChange={(e) => setMenuCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500"
+                    className="sw-input w-full px-3 py-2"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                     Order
                   </label>
                   <input
                     type="number"
                     value={menuOrder}
                     onChange={(e) => setMenuOrder(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500"
+                    className="sw-input w-full px-3 py-2"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                   Roles Allowed (comma-separated)
                 </label>
                 <input
@@ -579,29 +579,29 @@ export function NavigationTab() {
                   placeholder="itil, admin, public"
                   value={menuRoles}
                   onChange={(e) => setMenuRoles(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500"
+                  className="sw-input w-full px-3 py-2"
                 />
               </div>
 
-              <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200/50 dark:border-amber-900/30 text-[11px] text-amber-800 dark:text-amber-300 flex items-start gap-2">
-                <Package className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-amber)] text-[11px] text-[var(--swiss-amber)] flex items-start gap-2">
+                <Package className="w-4 h-4 text-[var(--swiss-amber)] shrink-0 mt-0.5" />
                 <span>
                   <strong>Update Set Tracking:</strong> Creating or modifying this menu will be recorded in the current active Update Set automatically.
                 </span>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--theme-card-border)]">
                 <button
                   type="button"
                   onClick={() => setMenuModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 text-slate-700 font-medium"
+                  className="px-4 py-2 border border-[var(--theme-card-border)] hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !menuTitle}
-                  className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-xs disabled:opacity-50"
+                  className="sw-btn-primary px-4 py-2 disabled:opacity-50"
                 >
                   {submitting ? "Saving..." : editingMenu ? "Save Changes" : "Create Menu"}
                 </button>
@@ -613,21 +613,21 @@ export function NavigationTab() {
 
       {/* Module Modal */}
       {moduleModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95">
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="sw-panel-strong w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95">
+            <div className="p-4 bg-[var(--theme-accent-light)] border-b border-[var(--theme-card-border)] flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-sm flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-amber-500" />
+                <h3 className="font-bold text-[var(--theme-text-primary)] text-sm flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-[var(--swiss-amber)]" />
                   {editingModule ? "Edit Navigation Module" : "Add Navigation Module"}
                 </h3>
-                <span className="text-[11px] text-slate-400">
-                  Application Menu: <strong className="text-slate-700 dark:text-slate-300">{activeMenuForModule?.title}</strong>
+                <span className="text-[11px] text-[var(--theme-text-secondary)]">
+                  Application Menu: <strong className="text-[var(--theme-text-primary)]">{activeMenuForModule?.title}</strong>
                 </span>
               </div>
               <button
                 onClick={() => setModuleModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-sm font-bold"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-sm font-bold"
               >
                 ✕
               </button>
@@ -635,8 +635,8 @@ export function NavigationTab() {
 
             <form onSubmit={handleSaveModule} className="p-5 space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Module Title <span className="text-rose-500">*</span>
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
+                  Module Title <span className="text-[var(--swiss-red)]">*</span>
                 </label>
                 <input
                   type="text"
@@ -644,19 +644,19 @@ export function NavigationTab() {
                   placeholder="e.g. All Work Orders, Create New, Critical P1s"
                   value={modTitle}
                   onChange={(e) => setModTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500"
+                  className="sw-input w-full px-3 py-2"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                     Link Type
                   </label>
                   <select
                     value={modLinkType}
                     onChange={(e: any) => setModLinkType(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500"
+                    className="sw-input w-full px-3 py-2"
                   >
                     <option value="list">List of Records</option>
                     <option value="new">New Record Form</option>
@@ -666,21 +666,21 @@ export function NavigationTab() {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                     Order
                   </label>
                   <input
                     type="number"
                     value={modOrder}
                     onChange={(e) => setModOrder(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500"
+                    className="sw-input w-full px-3 py-2"
                   />
                 </div>
               </div>
 
               {(modLinkType === "list" || modLinkType === "new") && (
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                     Target Table Name
                   </label>
                   <input
@@ -689,14 +689,14 @@ export function NavigationTab() {
                     placeholder="incident, change_request, problem, u_custom"
                     value={modTableName}
                     onChange={(e) => setModTableName(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                    className="sw-input w-full px-3 py-2 font-mono"
                   />
                 </div>
               )}
 
               {modLinkType === "list" && (
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                     Filter Encoded Query (sysparm_query - optional)
                   </label>
                   <input
@@ -704,9 +704,9 @@ export function NavigationTab() {
                     placeholder="priority=1^active=true"
                     value={modFilterQuery}
                     onChange={(e) => setModFilterQuery(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                    className="sw-input w-full px-3 py-2 font-mono"
                   />
-                  <p className="text-[10px] text-slate-400 mt-1">
+                  <p className="text-[10px] text-[var(--theme-text-secondary)] mt-1">
                     Standard encoded query string to pre-filter this module list.
                   </p>
                 </div>
@@ -714,7 +714,7 @@ export function NavigationTab() {
 
               {modLinkType === "url" && (
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                     Target URL / Path
                   </label>
                   <input
@@ -723,13 +723,13 @@ export function NavigationTab() {
                     placeholder="/workspace/dashboard or /portal/catalog"
                     value={modUrl}
                     onChange={(e) => setModUrl(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                    className="sw-input w-full px-3 py-2 font-mono"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                   Roles Allowed
                 </label>
                 <input
@@ -737,29 +737,29 @@ export function NavigationTab() {
                   placeholder="itil, admin, public"
                   value={modRoles}
                   onChange={(e) => setModRoles(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-amber-500"
+                  className="sw-input w-full px-3 py-2"
                 />
               </div>
 
-              <div className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200/50 dark:border-amber-900/30 text-[11px] text-amber-800 dark:text-amber-300 flex items-start gap-2">
-                <Package className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-amber)] text-[11px] text-[var(--swiss-amber)] flex items-start gap-2">
+                <Package className="w-4 h-4 text-[var(--swiss-amber)] shrink-0 mt-0.5" />
                 <span>
                   <strong>Update Set Tracking:</strong> Creating or modifying this module will be recorded in the current active Update Set automatically.
                 </span>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--theme-card-border)]">
                 <button
                   type="button"
                   onClick={() => setModuleModalOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 text-slate-700 font-medium"
+                  className="px-4 py-2 border border-[var(--theme-card-border)] hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !modTitle}
-                  className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-xs disabled:opacity-50"
+                  className="sw-btn-primary px-4 py-2 disabled:opacity-50"
                 >
                   {submitting ? "Saving..." : editingModule ? "Save Changes" : "Add Module"}
                 </button>

@@ -90,12 +90,12 @@ export const CATEGORY_CONFIG: Record<
   TableInfo["category"],
   { label: string; icon: React.ComponentType<{ className?: string }>; color: string }
 > = {
-  workplace: { label: "Workplace & Spatial Locations", icon: Building2, color: "text-indigo-600 dark:text-indigo-400" },
-  agile: { label: "Agile Project Management", icon: Kanban, color: "text-amber-600 dark:text-amber-400" },
-  itil: { label: "ITIL Service Operations", icon: Wrench, color: "text-blue-600 dark:text-blue-400" },
-  cmdb: { label: "CMDB & Infrastructure", icon: Database, color: "text-cyan-600 dark:text-cyan-400" },
-  catalog: { label: "Knowledge & Catalog", icon: BookOpen, color: "text-emerald-600 dark:text-emerald-400" },
-  system: { label: "Users & Security", icon: Users, color: "text-purple-600 dark:text-purple-400" },
+  workplace: { label: "Workplace & Spatial Locations", icon: Building2, color: "text-[var(--theme-text-primary)]" },
+  agile: { label: "Agile Project Management", icon: Kanban, color: "text-[var(--swiss-amber)]" },
+  itil: { label: "ITIL Service Operations", icon: Wrench, color: "text-[var(--swiss-blue)]" },
+  cmdb: { label: "CMDB & Infrastructure", icon: Database, color: "text-[var(--swiss-blue)]" },
+  catalog: { label: "Knowledge & Catalog", icon: BookOpen, color: "text-[var(--swiss-emerald)]" },
+  system: { label: "Users & Security", icon: Users, color: "text-[var(--theme-text-primary)]" },
 };
 
 export const DEFAULT_COLUMNS: Record<string, string[]> = {
@@ -493,13 +493,13 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl border shadow-2xl flex items-center gap-2.5 text-xs font-semibold animate-in fade-in slide-in-from-bottom-3 ${
+          className={`fixed bottom-6 right-6 z-50 px-4 py-3 border flex items-center gap-2.5 text-xs font-semibold animate-in fade-in slide-in-from-bottom-3 ${
             toast.type === "success"
-              ? "bg-emerald-50 dark:bg-emerald-950/90 border-emerald-200 dark:border-emerald-500/50 text-emerald-800 dark:text-emerald-200"
-              : "bg-rose-50 dark:bg-rose-950/90 border-rose-200 dark:border-rose-500/50 text-rose-800 dark:text-rose-200"
+              ? "bg-[var(--theme-accent-light)] border-[var(--swiss-emerald)] text-[var(--swiss-emerald)]"
+              : "bg-[var(--theme-accent-light)] border-[var(--swiss-red)] text-[var(--swiss-red)]"
           }`}
         >
-          {toast.type === "success" ? <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />}
+          {toast.type === "success" ? <CheckCircle2 className="w-4 h-4 text-[var(--swiss-emerald)]" /> : <AlertCircle className="w-4 h-4 text-[var(--swiss-red)]" />}
           <span>{toast.message}</span>
         </div>
       )}
@@ -508,41 +508,41 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
       <div className="flex flex-col lg:flex-row gap-4 items-start">
         {/* LEFT: Table Directory Explorer Sidebar */}
         {showSidebar && (
-          <aside className="w-full lg:w-72 shrink-0 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col max-h-[820px]">
+          <aside className="w-full lg:w-72 shrink-0 sw-panel overflow-hidden flex flex-col max-h-[820px]">
             {/* Sidebar Header */}
-            <div className="p-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 flex items-center justify-between">
+            <div className="sw-panel-header">
               <div className="flex items-center gap-2">
-                <FolderTree className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                <FolderTree className="w-4 h-4 text-[var(--theme-text-primary)]" />
+                <h3 className="sw-section-title">
                   Table Directory
                 </h3>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
+              <span className="sw-badge-solid">
                 {AVAILABLE_TABLES.length} tables
               </span>
             </div>
 
             {/* Sidebar Table Filter Search */}
-            <div className="p-2.5 border-b border-slate-200 dark:border-slate-800">
+            <div className="p-2.5 border-b border-[var(--theme-card-border)]">
               <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[var(--theme-text-secondary)]" />
                 <input
                   type="text"
                   placeholder="Filter tables by name..."
                   value={tableSearch}
                   onChange={(e) => setTableSearch(e.target.value)}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg pl-8 pr-2.5 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-hidden focus:border-indigo-500 transition-colors"
+                  className="sw-input w-full pl-8 pr-2.5 py-1.5 text-xs"
                 />
               </div>
             </div>
 
             {/* Grouped Table List */}
-            <div className="p-2 overflow-y-auto space-y-3 divide-y divide-slate-100 dark:divide-slate-800/40 text-xs">
+            <div className="p-2 overflow-y-auto space-y-3 divide-y divide-[var(--theme-card-border)] text-xs">
               {categoryGroups.map((group) => {
                 const CatIcon = group.config.icon;
                 return (
                   <div key={group.category} className="pt-2.5 first:pt-0">
-                    <div className="flex items-center gap-1.5 px-2 py-1 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center gap-1.5 px-2 py-1 text-[11px] font-bold text-[var(--theme-text-secondary)]">
                       <CatIcon className={`w-3.5 h-3.5 ${group.config.color}`} />
                       <span>{group.config.label}</span>
                     </div>
@@ -555,18 +555,18 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                             key={tbl.name}
                             onClick={() => handleSelectTable(tbl.name)}
                             title={tbl.description}
-                            className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                            className={`w-full text-left px-2.5 py-1.5 flex items-center justify-between text-xs transition-colors cursor-pointer ${
                               isCurrent
-                                ? "bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-700/60 shadow-xs"
-                                : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60 font-medium"
+                                ? "bg-[var(--theme-sidebar-active-bg)] text-[var(--theme-sidebar-active-text)] font-bold border border-[var(--theme-sidebar-active-bg)]"
+                                : "text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] font-medium border border-transparent"
                             }`}
                           >
                             <span className="truncate">{tbl.label.split(" (")[0]}</span>
                             <span
-                              className={`text-[10px] font-mono px-1.5 py-0.2 rounded ml-1 shrink-0 ${
+                              className={`text-[10px] font-mono px-1.5 py-0.2 ml-1 shrink-0 ${
                                 isCurrent
-                                  ? "bg-indigo-100 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200"
-                                  : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+                                  ? "bg-transparent text-[var(--theme-sidebar-active-text)] opacity-80"
+                                  : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]"
                               }`}
                             >
                               {tbl.name}
@@ -585,31 +585,31 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
         {/* RIGHT: Main Excel Data Grid & Controls */}
         <div className="flex-1 min-w-0 space-y-4">
           {/* Top Controls Toolbar Bar */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="sw-panel-strong p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             {/* Table Header & Info */}
             <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={() => setShowSidebar(!showSidebar)}
                 title={showSidebar ? "Hide Table Directory" : "Show Table Directory"}
-                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                className="sw-icon-btn w-9 h-9"
               >
-                <FolderTree className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                <FolderTree className="w-4 h-4" />
               </button>
 
               <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20">
+                <span className="p-2 bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)]">
                   <FileSpreadsheet className="w-5 h-5" />
                 </span>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="font-bold text-slate-900 dark:text-white text-base">
+                    <h2 className="font-extrabold uppercase tracking-tight text-[var(--theme-text-primary)] text-lg">
                       {currentTableMeta?.label || selectedTable}
                     </h2>
-                    <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-semibold">
+                    <span className="sw-code">
                       {records.length} records
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-md">
+                  <p className="text-xs text-[var(--theme-text-secondary)] truncate max-w-md">
                     {currentTableMeta?.description || `Explore and edit live records from table '${selectedTable}'`}
                   </p>
                 </div>
@@ -620,23 +620,23 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
             <div className="flex flex-wrap items-center gap-2">
               {/* Quick Search */}
               <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-[var(--theme-text-secondary)]" />
                 <input
                   type="text"
                   placeholder="Search table rows..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-200 text-xs rounded-lg pl-8 pr-3 py-1.5 focus:border-indigo-500 outline-hidden w-48 sm:w-56"
+                  className="sw-input text-xs pl-8 pr-3 py-1.5 w-48"
                 />
               </div>
 
               {/* Customize Columns Button */}
               <button
                 onClick={() => setColumnModalOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition-colors cursor-pointer"
+                className="sw-btn px-3 py-1.5"
                 title="Personalize and customize visible table columns"
               >
-                <SlidersHorizontal className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                <SlidersHorizontal className="w-3.5 h-3.5" />
                 <span>Columns</span>
               </button>
 
@@ -644,10 +644,10 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
               <button
                 onClick={handleExportCsv}
                 disabled={records.length === 0}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-emerald-300 dark:border-emerald-600/40 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold shadow-xs transition-colors disabled:opacity-40 cursor-pointer"
+                className="sw-btn px-3 py-1.5 disabled:opacity-40 cursor-pointer"
                 title="Extract and download all visible records as CSV"
               >
-                <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <Download className="w-3.5 h-3.5" />
                 <span>Export CSV</span>
               </button>
 
@@ -655,17 +655,17 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
               <button
                 onClick={fetchTableData}
                 disabled={loading}
-                className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+                className="sw-icon-btn w-9 h-9"
                 title="Refresh table records"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-indigo-600 dark:text-indigo-400" : ""}`} />
+                <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin text-[var(--theme-text-primary)]" : ""}`} />
               </button>
 
               {/* Batch Delete */}
               {selectedRowIds.size > 0 && (
                 <button
                   onClick={handleBatchDelete}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer animate-in fade-in"
+                  className="sw-btn-danger px-3 py-1.5 animate-in fade-in"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Delete ({selectedRowIds.size})</span>
@@ -675,7 +675,7 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
               {/* Add Row Button */}
               <button
                 onClick={() => setIsAddRowOpen(true)}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs shadow-indigo-600/30 transition-all cursor-pointer"
+                className="sw-btn-primary px-3.5 py-1.5"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>+ Add Record</span>
@@ -684,47 +684,47 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
           </div>
 
           {/* Excel Data Grid Container */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+          <div className="sw-panel overflow-hidden flex flex-col">
             {loading ? (
-              <div className="py-24 text-center text-slate-500 dark:text-slate-400 flex flex-col items-center justify-center gap-3">
-                <RefreshCw className="w-8 h-8 text-indigo-600 dark:text-indigo-400 animate-spin" />
+              <div className="py-24 text-center text-[var(--theme-text-secondary)] flex flex-col items-center justify-center gap-3">
+                <RefreshCw className="w-8 h-8 text-[var(--theme-text-primary)] animate-spin" />
                 <p className="text-sm font-medium">Loading {selectedTable} data records...</p>
               </div>
             ) : error ? (
-              <div className="p-8 text-center text-rose-600 dark:text-rose-400">
+              <div className="p-8 text-center text-[var(--swiss-red)]">
                 <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-80" />
                 <p className="text-sm font-bold">{error}</p>
                 <button
                   onClick={fetchTableData}
-                  className="mt-3 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-white cursor-pointer"
+                  className="sw-btn mt-3 px-3 py-1.5"
                 >
                   Retry
                 </button>
               </div>
             ) : filteredRecords.length === 0 ? (
-              <div className="py-20 text-center text-slate-500 dark:text-slate-400">
-                <FileSpreadsheet className="w-10 h-10 mx-auto text-slate-400 dark:text-slate-600 mb-2 opacity-60" />
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">No records found in table '{selectedTable}'</p>
-                <p className="text-xs text-slate-500 mt-1">Click "+ Add Record" above to append the first row or clear filters.</p>
+              <div className="py-20 text-center text-[var(--theme-text-secondary)]">
+                <FileSpreadsheet className="w-10 h-10 mx-auto text-[var(--theme-text-secondary)] mb-2 opacity-60" />
+                <p className="text-sm font-semibold text-[var(--theme-text-primary)]">No records found in table '{selectedTable}'</p>
+                <p className="text-xs text-[var(--theme-text-secondary)] mt-1">Click "+ Add Record" above to append the first row or clear filters.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto max-h-[650px] scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-slate-100 dark:scrollbar-track-slate-900">
-                <table className="w-full text-left border-collapse text-xs">
+              <div className="overflow-x-auto max-h-[650px] scrollbar-thin">
+                <table className="sw-table w-full text-left border-collapse text-xs">
                   {/* Header */}
-                  <thead className="sticky top-0 bg-slate-50 dark:bg-slate-950 z-20 border-b border-slate-200 dark:border-slate-800 shadow-xs">
+                  <thead className="sticky top-0 bg-[var(--theme-card-bg)] z-20">
                     <tr>
                       {/* Select All Checkbox */}
-                      <th className="py-2.5 px-3 w-10 text-center border-r border-slate-200 dark:border-slate-800/80">
+                      <th className="py-2.5 px-3 w-10 text-center border-r border-[var(--theme-card-border)]">
                         <input
                           type="checkbox"
                           checked={selectedRowIds.size === paginatedRecords.length && paginatedRecords.length > 0}
                           onChange={toggleSelectAll}
-                          className="rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-indigo-600 focus:ring-0 cursor-pointer"
+                          className="border-[var(--theme-card-border)] bg-[var(--theme-card-bg)] text-[var(--theme-text-primary)] focus:ring-0 cursor-pointer"
                         />
                       </th>
 
                       {/* Row Index # */}
-                      <th className="py-2.5 px-2.5 w-12 text-slate-500 font-mono text-[10px] text-center border-r border-slate-200 dark:border-slate-800/80">
+                      <th className="py-2.5 px-2.5 w-12 text-[var(--theme-text-secondary)] font-mono text-[10px] text-center border-r border-[var(--theme-card-border)]">
                         #
                       </th>
 
@@ -742,16 +742,16 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                                 setSortDirection("asc");
                               }
                             }}
-                            className="py-2.5 px-3 font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-800/80 select-none hover:bg-slate-100 dark:hover:bg-slate-900 cursor-pointer transition-colors whitespace-nowrap"
+                            className="py-2.5 px-3 font-mono text-[11px] font-semibold text-[var(--theme-text-primary)] border-r border-[var(--theme-card-border)] select-none hover:bg-[var(--theme-accent-light)] cursor-pointer transition-colors whitespace-nowrap"
                           >
                             <div className="flex items-center justify-between gap-2">
                               <span className="capitalize">{col.replace(/_/g, " ")}</span>
-                              <span className="text-slate-400">
+                              <span className="text-[var(--theme-text-secondary)]">
                                 {isSorted ? (
                                   sortDirection === "asc" ? (
-                                    <ArrowUp className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                                    <ArrowUp className="w-3 h-3 text-[var(--theme-text-primary)]" />
                                   ) : (
-                                    <ArrowDown className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                                    <ArrowDown className="w-3 h-3 text-[var(--theme-text-primary)]" />
                                   )
                                 ) : (
                                   <ArrowUpDown className="w-2.5 h-2.5 opacity-40 hover:opacity-100" />
@@ -763,14 +763,14 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                       })}
 
                       {/* Actions Column */}
-                      <th className="py-2.5 px-3 w-16 text-center text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase">
+                      <th className="py-2.5 px-3 w-16 text-center text-[10px] font-mono text-[var(--theme-text-secondary)] uppercase">
                         Actions
                       </th>
                     </tr>
                   </thead>
 
                   {/* Body */}
-                  <tbody className="divide-y divide-slate-200 dark:divide-slate-800/60 font-sans">
+                  <tbody className="divide-y divide-[var(--theme-card-border)] font-sans">
                     {paginatedRecords.map((row, idx) => {
                       const rowId = row.id || row.sys_id;
                       const isSelected = selectedRowIds.has(rowId);
@@ -781,22 +781,22 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                           key={rowId}
                           className={`transition-colors group ${
                             isSelected
-                              ? "bg-indigo-50/80 dark:bg-indigo-950/20"
-                              : "hover:bg-slate-50/80 dark:hover:bg-slate-800/40"
+                              ? "bg-[var(--theme-accent-light)]"
+                              : "hover:bg-[var(--theme-accent-light)]"
                           }`}
                         >
                           {/* Checkbox */}
-                          <td className="py-2 px-3 text-center border-r border-slate-200 dark:border-slate-800/40">
+                          <td className="py-2 px-3 text-center border-r border-[var(--theme-card-border)]">
                             <input
                               type="checkbox"
                               checked={isSelected}
                               onChange={() => toggleSelectRow(rowId)}
-                              className="rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-indigo-600 focus:ring-0 cursor-pointer"
+                              className="border-[var(--theme-card-border)] bg-[var(--theme-card-bg)] text-[var(--theme-text-primary)] focus:ring-0 cursor-pointer"
                             />
                           </td>
 
                           {/* Line Number */}
-                          <td className="py-2 px-2.5 text-center text-slate-500 font-mono text-[10px] border-r border-slate-200 dark:border-slate-800/40">
+                          <td className="py-2 px-2.5 text-center text-[var(--theme-text-secondary)] font-mono text-[10px] border-r border-[var(--theme-card-border)]">
                             {globalIdx}
                           </td>
 
@@ -824,8 +824,8 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                                     setEditingCell({ rowId, column: col, value: rawVal ?? "" });
                                   }
                                 }}
-                                className={`py-1.5 px-3 border-r border-slate-200 dark:border-slate-800/40 relative transition-all ${
-                                  isSuccess ? "bg-emerald-50 dark:bg-emerald-950/50 ring-1 ring-emerald-500" : ""
+                                className={`py-1.5 px-3 border-r border-[var(--theme-card-border)] relative transition-all ${
+                                  isSuccess ? "bg-[var(--theme-accent-light)] ring-1 ring-[var(--swiss-emerald)]" : ""
                                 }`}
                               >
                                 {isEditing ? (
@@ -845,14 +845,14 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                                         }
                                       }}
                                       onBlur={() => handleInlineSave(rowId, col, editingCell.value)}
-                                      className="w-full bg-white dark:bg-slate-950 border border-indigo-500 text-slate-900 dark:text-white text-xs px-2 py-1 rounded outline-hidden shadow-xs"
+                                      className="w-full bg-[var(--theme-card-bg)] border border-[var(--theme-text-primary)] text-[var(--theme-text-primary)] text-xs px-2 py-1 outline-hidden"
                                     />
                                     <button
                                       onMouseDown={(e) => {
                                         e.preventDefault();
                                         handleInlineSave(rowId, col, editingCell.value);
                                       }}
-                                      className="p-1 rounded bg-indigo-600 text-white hover:bg-indigo-500 cursor-pointer"
+                                      className="p-1 bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] hover:opacity-85 cursor-pointer"
                                     >
                                       <Check className="w-3 h-3" />
                                     </button>
@@ -862,19 +862,19 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                                     <span
                                       className={`truncate max-w-xs ${
                                         col === "number"
-                                          ? "font-mono font-bold text-indigo-600 dark:text-indigo-400"
+                                          ? "font-mono font-bold text-[var(--theme-text-primary)]"
                                           : isPriorityCol
-                                          ? "font-mono font-semibold text-amber-600 dark:text-amber-300"
+                                          ? "font-mono font-semibold text-[var(--swiss-amber)]"
                                           : isStateCol
-                                          ? "text-slate-800 dark:text-slate-200 font-medium"
-                                          : "text-slate-700 dark:text-slate-300"
+                                          ? "text-[var(--theme-text-primary)] font-medium"
+                                          : "text-[var(--theme-text-primary)]"
                                       }`}
                                       title={String(displayVal ?? "")}
                                     >
                                       {displayVal !== null && displayVal !== undefined && displayVal !== "" ? (
                                         String(displayVal)
                                       ) : (
-                                        <span className="text-slate-400 italic">null</span>
+                                        <span className="text-[var(--theme-text-secondary)] italic">null</span>
                                       )}
                                     </span>
 
@@ -882,7 +882,7 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                                     {col !== "id" && col !== "sys_id" && col !== "number" && (
                                       <button
                                         onClick={() => setEditingCell({ rowId, column: col, value: rawVal ?? "" })}
-                                        className="opacity-0 group-hover/cell:opacity-100 p-0.5 rounded text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-opacity cursor-pointer"
+                                        className="opacity-0 group-hover/cell:opacity-100 p-0.5 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] transition-opacity cursor-pointer"
                                         title="Double click or click to edit inline"
                                       >
                                         <Edit2 className="w-2.5 h-2.5" />
@@ -898,7 +898,7 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                           <td className="py-1.5 px-3 text-center whitespace-nowrap">
                             <button
                               onClick={() => handleDeleteRow(rowId)}
-                              className="p-1 rounded hover:bg-rose-50 dark:hover:bg-rose-500/20 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors cursor-pointer"
+                              className="p-1 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)] transition-colors cursor-pointer"
                               title="Delete Record"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -913,17 +913,17 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
             )}
 
             {/* Footer Pagination Bar */}
-            <div className="p-3 bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400 font-mono">
+            <div className="p-3 bg-[var(--theme-accent-light)] border-t border-[var(--theme-card-border)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--theme-text-secondary)] font-mono">
               <div>
                 Showing{" "}
-                <strong className="text-slate-900 dark:text-white">
+                <strong className="text-[var(--theme-text-primary)]">
                   {filteredRecords.length > 0 ? (currentPage - 1) * pageSize + 1 : 0}
                 </strong>{" "}
                 to{" "}
-                <strong className="text-slate-900 dark:text-white">
+                <strong className="text-[var(--theme-text-primary)]">
                   {Math.min(currentPage * pageSize, filteredRecords.length)}
                 </strong>{" "}
-                of <strong className="text-slate-900 dark:text-white">{filteredRecords.length}</strong> total records
+                of <strong className="text-[var(--theme-text-primary)]">{filteredRecords.length}</strong> total records
               </div>
 
               <div className="flex items-center gap-3">
@@ -935,7 +935,7 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                       setPageSize(parseInt(e.target.value, 10));
                       setCurrentPage(1);
                     }}
-                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-white rounded px-2 py-0.5"
+                    className="sw-panel text-[var(--theme-text-primary)] px-2 py-0.5"
                   >
                     <option value={15}>15</option>
                     <option value={25}>25</option>
@@ -948,7 +948,7 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="p-1 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white disabled:opacity-40 cursor-pointer"
+                    className="p-1 sw-panel text-[var(--theme-text-primary)] hover:text-[var(--theme-text-primary)] disabled:opacity-40 cursor-pointer"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
@@ -958,7 +958,7 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="p-1 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white disabled:opacity-40 cursor-pointer"
+                    className="p-1 sw-panel text-[var(--theme-text-primary)] hover:text-[var(--theme-text-primary)] disabled:opacity-40 cursor-pointer"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -971,34 +971,34 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
 
       {/* MODAL 1: Customize Columns View Personalizer */}
       {columnModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 text-slate-900 dark:text-slate-100">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="sw-panel-strong p-6 max-w-lg w-full space-y-4 animate-in fade-in zoom-in-95 text-[var(--theme-text-primary)]">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                <h3 className="font-bold text-slate-900 dark:text-white text-base">Customize View Columns</h3>
+                <SlidersHorizontal className="w-5 h-5 text-[var(--theme-text-primary)]" />
+                <h3 className="font-bold text-[var(--theme-text-primary)] text-base">Customize View Columns</h3>
               </div>
               <button
                 onClick={() => setColumnModalOpen(false)}
-                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-[var(--theme-text-secondary)]">
               Select which database fields should appear in the live grid view for{" "}
-              <strong className="text-slate-800 dark:text-white font-mono">{selectedTable}</strong>. Preferences are saved automatically.
+              <strong className="text-[var(--theme-text-primary)] font-mono">{selectedTable}</strong>. Preferences are saved automatically.
             </p>
 
             {/* Column Checkboxes Grid */}
-            <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto p-2 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-950/60">
+            <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto p-2 border border-[var(--theme-card-border)] bg-[var(--theme-accent-light)]">
               {availableColumns.map((col) => {
                 const isChecked = visibleColumns.includes(col);
                 return (
                   <label
                     key={col}
-                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800/60 cursor-pointer text-xs"
+                    className="flex items-center gap-2 p-2 hover:bg-[var(--theme-accent-light)] cursor-pointer text-xs"
                   >
                     <input
                       type="checkbox"
@@ -1012,22 +1012,22 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                           setVisibleColumns([...visibleColumns, col]);
                         }
                       }}
-                      className="rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-indigo-600 focus:ring-0"
+                      className="border-[var(--theme-card-border)] bg-[var(--theme-card-bg)] text-[var(--theme-text-primary)] focus:ring-0"
                     />
-                    <span className="font-mono text-slate-700 dark:text-slate-200 capitalize">{col.replace(/_/g, " ")}</span>
+                    <span className="font-mono text-[var(--theme-text-primary)] capitalize">{col.replace(/_/g, " ")}</span>
                   </label>
                 );
               })}
             </div>
 
-            <div className="flex items-center justify-between pt-3 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between pt-3 border-t border-[var(--theme-card-border)]">
               <button
                 type="button"
                 onClick={() => {
                   const defaults = DEFAULT_COLUMNS[selectedTable] || availableColumns.slice(0, 6);
                   saveCustomizedColumns(defaults);
                 }}
-                className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white cursor-pointer"
+                className="flex items-center gap-1.5 text-xs text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset to Defaults</span>
@@ -1036,7 +1036,7 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
               <button
                 type="button"
                 onClick={() => saveCustomizedColumns(visibleColumns)}
-                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 cursor-pointer"
+                className="sw-btn-primary px-4 py-2 text-xs cursor-pointer"
               >
                 Save &amp; Apply View
               </button>
@@ -1047,26 +1047,26 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
 
       {/* MODAL 2: Add New Record Quick Form */}
       {isAddRowOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
           <form
             onSubmit={handleCreateRow}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 text-slate-900 dark:text-slate-100"
+            className="sw-panel-strong p-6 max-w-lg w-full space-y-4 animate-in fade-in zoom-in-95 text-[var(--theme-text-primary)]"
           >
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
               <div className="flex items-center gap-2">
-                <Plus className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                <h3 className="font-bold text-slate-900 dark:text-white text-base">Add New Record into '{selectedTable}'</h3>
+                <Plus className="w-5 h-5 text-[var(--theme-text-primary)]" />
+                <h3 className="font-bold text-[var(--theme-text-primary)] text-base">Add New Record into '{selectedTable}'</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsAddRowOpen(false)}
-                className="p-1 rounded text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-[var(--theme-text-secondary)]">
               Enter the field values below to append a new live record directly to the database.
             </p>
 
@@ -1074,8 +1074,8 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
               {/* Primary Short Description / Name */}
               {selectedTable.startsWith("rm_") || currentTableMeta?.superClass === "task" ? (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Short Description <span className="text-rose-500">*</span>
+                  <label className="sw-label">
+                    Short Description <span className="text-[var(--swiss-red)]">*</span>
                   </label>
                   <input
                     type="text"
@@ -1083,13 +1083,13 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                     placeholder="Brief description of the record..."
                     value={newRowData.short_description || ""}
                     onChange={(e) => setNewRowData({ ...newRowData, short_description: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-lg px-3 py-2 outline-hidden focus:border-indigo-500"
+                    className="sw-input w-full text-xs px-3 py-2"
                   />
                 </div>
               ) : (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Record Name <span className="text-rose-500">*</span>
+                  <label className="sw-label">
+                    Record Name <span className="text-[var(--swiss-red)]">*</span>
                   </label>
                   <input
                     type="text"
@@ -1097,7 +1097,7 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                     placeholder="Unique name..."
                     value={newRowData.name || ""}
                     onChange={(e) => setNewRowData({ ...newRowData, name: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-lg px-3 py-2 outline-hidden focus:border-indigo-500"
+                    className="sw-input w-full text-xs px-3 py-2"
                   />
                 </div>
               )}
@@ -1106,11 +1106,11 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
               {selectedTable === "rm_story" && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Story Points</label>
+                    <label className="sw-label">Story Points</label>
                     <select
                       value={newRowData.story_points || 3}
                       onChange={(e) => setNewRowData({ ...newRowData, story_points: parseInt(e.target.value, 10) })}
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-lg px-3 py-2 outline-hidden"
+                      className="w-full bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] text-xs px-3 py-2 outline-hidden"
                     >
                       {[1, 2, 3, 5, 8, 13, 21].map((pts) => (
                         <option key={pts} value={pts}>
@@ -1120,11 +1120,11 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Priority</label>
+                    <label className="sw-label">Priority</label>
                     <select
                       value={newRowData.priority || 3}
                       onChange={(e) => setNewRowData({ ...newRowData, priority: parseInt(e.target.value, 10) })}
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-lg px-3 py-2 outline-hidden"
+                      className="w-full bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] text-xs px-3 py-2 outline-hidden"
                     >
                       <option value={1}>1 - Critical</option>
                       <option value={2}>2 - High</option>
@@ -1139,24 +1139,24 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
               {selectedTable === "cmn_space" && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Space Number</label>
+                    <label className="sw-label">Space Number</label>
                     <input
                       type="text"
                       placeholder="e.g. 402, W-12"
                       value={newRowData.space_number || ""}
                       onChange={(e) => setNewRowData({ ...newRowData, space_number: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-lg px-3 py-2 outline-hidden"
+                      className="w-full bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] text-xs px-3 py-2 outline-hidden"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Capacity</label>
+                    <label className="sw-label">Capacity</label>
                     <input
                       type="number"
                       min={1}
                       placeholder="e.g. 8"
                       value={newRowData.capacity || 4}
                       onChange={(e) => setNewRowData({ ...newRowData, capacity: parseInt(e.target.value, 10) })}
-                      className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-lg px-3 py-2 outline-hidden"
+                      className="w-full bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] text-xs px-3 py-2 outline-hidden"
                     />
                   </div>
                 </div>
@@ -1164,29 +1164,29 @@ export function TableDataEditorTab({ initialTable = "cmn_space", isPortalView = 
 
               {/* Description / Content */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Description / Notes</label>
+                <label className="sw-label">Description / Notes</label>
                 <textarea
                   rows={3}
                   placeholder="Additional context or details..."
                   value={newRowData.description || ""}
                   onChange={(e) => setNewRowData({ ...newRowData, description: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs rounded-lg px-3 py-2 outline-hidden focus:border-indigo-500"
+                  className="sw-input w-full text-xs px-3 py-2"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[var(--theme-card-border)]">
               <button
                 type="button"
                 onClick={() => setIsAddRowOpen(false)}
-                className="px-3.5 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 font-medium cursor-pointer"
+                className="px-3.5 py-2 border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] text-xs hover:bg-[var(--theme-accent-light)] font-medium cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={creatingRow}
-                className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 flex items-center gap-1.5 cursor-pointer"
+                className="sw-btn-primary px-4 py-2 text-xs flex items-center gap-1.5 cursor-pointer"
               >
                 {creatingRow ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                 <span>Save to Database</span>

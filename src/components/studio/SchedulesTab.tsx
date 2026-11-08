@@ -146,11 +146,11 @@ export function SchedulesTab() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4">
         <div>
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-emerald-600" />
+          <h2 className="text-base font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
+            <Calendar className="w-5 h-5 text-[var(--swiss-emerald)]" />
             <span>SLA Schedules & Business Calendars (cmn_schedule)</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-[var(--theme-text-secondary)] mt-0.5">
             Define 8x5, 24x7, and custom business hours for SLA breach calculations, maintenance blackout periods, and CAB approvals.
           </p>
         </div>
@@ -159,14 +159,14 @@ export function SchedulesTab() {
           <button
             type="button"
             onClick={loadSchedules}
-            className="p-2 border rounded-lg text-slate-500 hover:text-slate-800 transition-colors"
+            className="p-2 border text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs transition-colors"
+            className="sw-btn-primary flex items-center gap-1.5 px-4 py-2 text-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Schedule</span>
@@ -175,9 +175,9 @@ export function SchedulesTab() {
       </div>
 
       {/* Interactive SLA Breach Calculator Widget */}
-      <div className="p-5 rounded-2xl border bg-slate-50 space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-          <Calculator className="w-3.5 h-3.5 text-emerald-600" />
+      <div className="p-5 border bg-[var(--theme-accent-light)] space-y-3">
+        <h3 className="sw-section-title flex items-center gap-1.5">
+          <Calculator className="w-3.5 h-3.5 text-[var(--swiss-emerald)]" />
           <span>Interactive SLA Breach Simulator</span>
         </h3>
 
@@ -185,7 +185,7 @@ export function SchedulesTab() {
           <select
             value={calcScheduleId}
             onChange={(e) => setCalcScheduleId(e.target.value)}
-            className="bg-white border rounded-lg px-3 py-2 text-slate-800 focus:outline-emerald-500"
+            className="sw-input px-3 py-2"
           >
             {schedules.map((s) => (
               <option key={s.id} value={s.id}>
@@ -200,15 +200,15 @@ export function SchedulesTab() {
               min="1"
               value={calcDurationHours}
               onChange={(e) => setCalcDurationHours(Number(e.target.value))}
-              className="bg-white border rounded-lg px-3 py-2 text-slate-800 w-24 focus:outline-emerald-500"
+              className="sw-input px-3 py-2 w-24"
             />
-            <span className="text-slate-600 font-medium">Target Hours SLA</span>
+            <span className="text-[var(--theme-text-secondary)] font-medium">Target Hours SLA</span>
           </div>
 
           <button
             type="button"
             onClick={handleCalculateBreach}
-            className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 text-white font-semibold hover:bg-emerald-700 shadow-xs"
+            className="sw-btn-primary flex items-center justify-center gap-1.5 px-4 py-2"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Project Breach Deadline</span>
@@ -216,7 +216,7 @@ export function SchedulesTab() {
         </div>
 
         {calcResult && (
-          <div className="p-3 bg-white border rounded-xl text-xs font-mono text-emerald-800 flex items-center gap-2">
+          <div className="p-3 bg-[var(--theme-card-bg)] border text-xs font-mono text-[var(--swiss-emerald)] flex items-center gap-2">
             <strong>Projected Breach Deadline:</strong> {calcResult}
           </div>
         )}
@@ -224,7 +224,7 @@ export function SchedulesTab() {
 
       {/* Grid of Schedules */}
       {schedules.length === 0 ? (
-        <div className="p-12 text-center text-xs text-slate-400 border border-dashed rounded-2xl italic">
+        <div className="p-12 text-center text-xs text-[var(--theme-text-secondary)] border border-dashed italic">
           No schedules defined. Click "New Schedule" to configure 8x5 or 24x7 calendars.
         </div>
       ) : (
@@ -232,21 +232,21 @@ export function SchedulesTab() {
           {schedules.map((sched) => (
             <div
               key={sched.id}
-              className="p-5 rounded-2xl border shadow-xs bg-white hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+              className="p-5 border bg-[var(--theme-card-bg)] transition-all flex flex-col justify-between space-y-4"
             >
               <div className="space-y-2">
                 <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-bold text-sm text-slate-900">{sched.name}</h3>
-                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                  <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">{sched.name}</h3>
+                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)]">
                     {sched.type}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 text-[11px] font-mono text-slate-600">
+                <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--theme-text-secondary)]">
                   <span>TZ: {sched.timezone}</span>
                 </div>
 
-                <div className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border space-y-1">
+                <div className="text-xs text-[var(--theme-text-secondary)] bg-[var(--theme-accent-light)] p-2.5 border space-y-1">
                   <div className="flex justify-between">
                     <span>Working Hours:</span>
                     <strong>
@@ -264,7 +264,7 @@ export function SchedulesTab() {
                 <button
                   type="button"
                   onClick={() => handleOpenEdit(sched)}
-                  className="p-1.5 text-slate-500 hover:text-emerald-600 rounded-md hover:bg-slate-100"
+                  className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-emerald)] hover:bg-[var(--theme-accent-light)]"
                   title="Edit Schedule"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
@@ -272,7 +272,7 @@ export function SchedulesTab() {
                 <button
                   type="button"
                   onClick={() => handleDelete(sched.id)}
-                  className="p-1.5 text-slate-500 hover:text-red-600 rounded-md hover:bg-slate-100"
+                  className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)] hover:bg-[var(--theme-accent-light)]"
                   title="Delete Schedule"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -286,15 +286,15 @@ export function SchedulesTab() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-white rounded-2xl border shadow-2xl p-6 space-y-4">
+          <div className="w-full max-w-lg bg-[var(--theme-card-bg)] border p-6 space-y-4">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-bold text-sm text-slate-900">
+              <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">
                 {editingId ? "Edit Schedule" : "Create Business Schedule"}
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -302,24 +302,24 @@ export function SchedulesTab() {
 
             <form onSubmit={handleSave} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Schedule Name *</label>
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Schedule Name *</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. 8x5 North America Business Hours"
-                  className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-emerald-500"
+                  className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-emerald)]"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Schedule Type *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Schedule Type *</label>
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-emerald-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-emerald)]"
                   >
                     <option value="8x5">8x5 Standard Business Hours</option>
                     <option value="24x7">24x7 Continuous Global</option>
@@ -327,11 +327,11 @@ export function SchedulesTab() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Timezone *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Timezone *</label>
                   <select
                     value={timezone}
                     onChange={(e) => setTimezone(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-emerald-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-emerald)]"
                   >
                     <option value="America/New_York">America/New_York (US Eastern)</option>
                     <option value="America/Chicago">America/Chicago (US Central)</option>
@@ -345,21 +345,21 @@ export function SchedulesTab() {
               {type !== "24x7" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block font-semibold text-slate-700 mb-1">Start Time (Daily)</label>
+                    <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Start Time (Daily)</label>
                     <input
                       type="time"
                       value={validFrom}
                       onChange={(e) => setValidFrom(e.target.value)}
-                      className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-emerald-500"
+                      className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-emerald)]"
                     />
                   </div>
                   <div>
-                    <label className="block font-semibold text-slate-700 mb-1">End Time (Daily)</label>
+                    <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">End Time (Daily)</label>
                     <input
                       type="time"
                       value={validTo}
                       onChange={(e) => setValidTo(e.target.value)}
-                      className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-emerald-500"
+                      className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-emerald)]"
                     />
                   </div>
                 </div>
@@ -370,9 +370,9 @@ export function SchedulesTab() {
                   type="checkbox"
                   checked={excludeWeekends}
                   onChange={(e) => setExcludeWeekends(e.target.checked)}
-                  className="rounded text-emerald-600 focus:ring-emerald-500"
+                  className="text-[var(--swiss-emerald)] focus:ring-[var(--swiss-emerald)]"
                 />
-                <span className="text-slate-700 font-semibold">
+                <span className="text-[var(--theme-text-primary)] font-semibold">
                   Exclude Saturdays & Sundays from SLA countdown
                 </span>
               </label>
@@ -381,13 +381,13 @@ export function SchedulesTab() {
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-full border text-slate-600 hover:bg-slate-50 font-semibold"
+                  className="px-4 py-2 border text-[var(--theme-text-secondary)] hover:bg-[var(--theme-accent-light)] font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full bg-emerald-600 text-white font-semibold hover:bg-emerald-700 shadow-xs"
+                  className="sw-btn-primary px-5 py-2"
                 >
                   Save Schedule
                 </button>

@@ -115,13 +115,13 @@ interface ReservationItem {
 }
 
 const CAPABILITY_OPTIONS = [
-  { key: "teams", label: "Microsoft Teams Rooms", icon: Video, color: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
-  { key: "zoom", label: "Zoom Rooms", icon: Video, color: "text-sky-400 bg-sky-500/10 border-sky-500/20" },
-  { key: "standing_desk", label: "Ergonomic Standing Desk", icon: Sliders, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
-  { key: "whiteboard", label: "Smart / Physical Whiteboard", icon: Edit3, color: "text-purple-400 bg-purple-500/10 border-purple-500/20" },
-  { key: "4k_projector", label: "4K Laser Projector / Display", icon: Tv, color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
-  { key: "telepresence", label: "Cisco Telepresence Dual-Cam", icon: Monitor, color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20" },
-  { key: "dual_monitor", label: "Dual 4K USB-C Hub Monitors", icon: Monitor, color: "text-teal-400 bg-teal-500/10 border-teal-500/20" },
+  { key: "teams", label: "Microsoft Teams Rooms", icon: Video, color: "text-[var(--swiss-blue)] bg-[var(--theme-accent-light)] border-[var(--swiss-blue)]" },
+  { key: "zoom", label: "Zoom Rooms", icon: Video, color: "text-[var(--swiss-blue)] bg-[var(--theme-accent-light)] border-[var(--swiss-blue)]" },
+  { key: "standing_desk", label: "Ergonomic Standing Desk", icon: Sliders, color: "text-[var(--swiss-emerald)] bg-[var(--theme-accent-light)] border-[var(--swiss-emerald)]" },
+  { key: "whiteboard", label: "Smart / Physical Whiteboard", icon: Edit3, color: "text-[var(--theme-text-primary)] bg-[var(--theme-accent-light)] border-[var(--theme-card-border)]" },
+  { key: "4k_projector", label: "4K Laser Projector / Display", icon: Tv, color: "text-[var(--swiss-amber)] bg-[var(--theme-accent-light)] border-[var(--swiss-amber)]" },
+  { key: "telepresence", label: "Cisco Telepresence Dual-Cam", icon: Monitor, color: "text-[var(--swiss-blue)] bg-[var(--theme-accent-light)] border-[var(--swiss-blue)]" },
+  { key: "dual_monitor", label: "Dual 4K USB-C Hub Monitors", icon: Monitor, color: "text-[var(--swiss-emerald)] bg-[var(--theme-accent-light)] border-[var(--swiss-emerald)]" },
 ];
 
 const SPACE_TYPES = [
@@ -553,37 +553,38 @@ export function WorkplaceConfigTab() {
       {/* Toast Feedback */}
       {feedback && (
         <div
-          className={`p-3.5 rounded-xl border flex items-center justify-between text-xs font-medium animate-in fade-in duration-200 ${
+          className={`p-3.5 border flex items-center justify-between text-xs font-medium animate-in fade-in duration-200 ${
             feedback.type === "success"
-              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
-              : "bg-rose-500/10 border-rose-500/30 text-rose-300"
+              ? "bg-[var(--theme-accent-light)] border-[var(--swiss-emerald)] text-[var(--swiss-emerald)]"
+              : "bg-[var(--theme-accent-light)] border-[var(--swiss-red)] text-[var(--swiss-red)]"
           }`}
         >
           <div className="flex items-center gap-2">
             {feedback.type === "success" ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <CheckCircle2 className="w-4 h-4 text-[var(--swiss-emerald)]" />
             ) : (
-              <AlertCircle className="w-4 h-4 text-rose-400" />
+              <AlertCircle className="w-4 h-4 text-[var(--swiss-red)]" />
             )}
             <span>{feedback.message}</span>
           </div>
-          <button onClick={() => setFeedback(null)} className="text-slate-400 hover:text-white">
+          <button onClick={() => setFeedback(null)} className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]">
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
 
       {/* Header Banner */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="sw-page-header">
         <div className="space-y-1.5">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold">
+          <div className="sw-eyebrow">
+            <span className="sw-eyebrow-tag">WORKPLACE</span>
             <Building2 className="w-3.5 h-3.5" />
             <span>Workplace Hub &amp; Facility Management Console</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+          <h2 className="sw-title text-2xl md:text-3xl">
             Workplace & Reservations Configuration
           </h2>
-          <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
+          <p className="sw-subtitle leading-relaxed">
             Manage the complete enterprise spatial hierarchy across all 6 tiers, configure room & desk capabilities (Teams, Zoom, Standing desks), assign architectural SVG floorplans, and govern reservation booking windows.
           </p>
         </div>
@@ -592,7 +593,7 @@ export function WorkplaceConfigTab() {
           <button
             onClick={loadAllWorkplaceData}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium border border-slate-700 transition-colors"
+            className="sw-btn"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
             <span>Reload</span>
@@ -600,7 +601,7 @@ export function WorkplaceConfigTab() {
 
           <Link
             href="/workspace/reservations"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs transition-colors"
+            className="sw-btn-primary"
           >
             <Eye className="w-3.5 h-3.5" />
             <span>Live Booking Hub</span>
@@ -610,58 +611,58 @@ export function WorkplaceConfigTab() {
       </div>
 
       {/* Navigation Sub-Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-800/80 pb-2 overflow-x-auto scrollbar-none">
+      <div className="sw-tabs flex-nowrap border-b border-[var(--theme-card-border)] pb-2 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setSubTab("space_console")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`whitespace-nowrap ${
             subTab === "space_console"
-              ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-xs"
-              : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              ? "sw-tab-active"
+              : "sw-tab"
           }`}
         >
-          <Compass className="w-4 h-4 text-emerald-400" />
+          <Compass className="w-4 h-4" />
           <span>Space Console</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-500/30 text-emerald-200 font-mono">
+          <span className="px-1.5 py-0.2 text-[10px] border border-current font-mono">
             CAD Vectors
           </span>
         </button>
 
         <button
           onClick={() => setSubTab("spaces")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`whitespace-nowrap ${
             subTab === "spaces"
-              ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-xs"
-              : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              ? "sw-tab-active"
+              : "sw-tab"
           }`}
         >
           <Box className="w-4 h-4" />
           <span>Spaces & Room Capabilities</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-500/30 text-indigo-200">
+          <span className="px-1.5 py-0.2 text-[10px] bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)]">
             {spaces.length}
           </span>
         </button>
 
         <button
           onClick={() => setSubTab("floors")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`whitespace-nowrap ${
             subTab === "floors"
-              ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-xs"
-              : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              ? "sw-tab-active"
+              : "sw-tab"
           }`}
         >
           <Layers className="w-4 h-4" />
           <span>Floors & Floorplan Blueprints</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-slate-300">
+          <span className="px-1.5 py-0.2 text-[10px] bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)]">
             {floors.length}
           </span>
         </button>
 
         <button
           onClick={() => setSubTab("hierarchy")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`whitespace-nowrap ${
             subTab === "hierarchy"
-              ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-xs"
-              : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              ? "sw-tab-active"
+              : "sw-tab"
           }`}
         >
           <Compass className="w-4 h-4" />
@@ -670,30 +671,30 @@ export function WorkplaceConfigTab() {
 
         <button
           onClick={() => setSubTab("reservations")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`whitespace-nowrap ${
             subTab === "reservations"
-              ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-xs"
-              : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              ? "sw-tab-active"
+              : "sw-tab"
           }`}
         >
           <Calendar className="w-4 h-4" />
           <span>Reservations & Policy Governance</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-slate-300">
+          <span className="px-1.5 py-0.2 text-[10px] bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)]">
             {reservations.length}
           </span>
         </button>
 
         <button
           onClick={() => setSubTab("cad_mapper")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+          className={`whitespace-nowrap ${
             subTab === "cad_mapper"
-              ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-xs"
-              : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              ? "sw-tab-active"
+              : "sw-tab"
           }`}
         >
-          <Square className="w-4 h-4 text-cyan-400" />
+          <Square className="w-4 h-4 text-[var(--swiss-blue)]" />
           <span>CAD Drawing &amp; Room Mapper</span>
-          <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-cyan-500/30 text-cyan-200 font-mono">
+          <span className="px-1.5 py-0.2 text-[10px] bg-[var(--theme-accent-light)] text-[var(--swiss-blue)] font-mono">
             Visual CAD
           </span>
         </button>
@@ -704,7 +705,7 @@ export function WorkplaceConfigTab() {
       {/* ========================================================================= */}
       {subTab === "space_console" && (
         <div className="space-y-4">
-          <SpaceConsole className="rounded-2xl border border-slate-800 shadow-xl overflow-hidden" />
+          <SpaceConsole className="border border-[var(--theme-card-border)] overflow-hidden" />
         </div>
       )}
 
@@ -714,23 +715,23 @@ export function WorkplaceConfigTab() {
       {subTab === "spaces" && (
         <div className="space-y-4">
           {/* Controls Bar */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[var(--theme-card-bg)] p-3 border border-[var(--theme-card-border)]">
             <div className="flex items-center gap-2 flex-1 max-w-md">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Search className="w-4 h-4 text-[var(--theme-text-secondary)] absolute left-3 top-2.5" />
                 <input
                   type="text"
                   placeholder="Search space name, number, department..."
                   value={spaceSearch}
                   onChange={(e) => setSpaceSearch(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="sw-input w-full pl-9 pr-3 py-1.5 text-xs"
                 />
               </div>
 
               <select
                 value={spaceTypeFilter}
                 onChange={(e) => setSpaceTypeFilter(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+                className="sw-input px-2.5 py-1.5 text-xs"
               >
                 <option value="all">All Types</option>
                 {SPACE_TYPES.map((t) => (
@@ -741,7 +742,7 @@ export function WorkplaceConfigTab() {
               <select
                 value={capabilityFilter}
                 onChange={(e) => setCapabilityFilter(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+                className="sw-input px-2.5 py-1.5 text-xs"
               >
                 <option value="all">All Capabilities</option>
                 {CAPABILITY_OPTIONS.map((c) => (
@@ -752,7 +753,7 @@ export function WorkplaceConfigTab() {
 
             <button
               onClick={() => handleOpenSpaceModal()}
-              className="flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors shrink-0"
+              className="sw-btn-primary flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add New Space</span>
@@ -761,7 +762,7 @@ export function WorkplaceConfigTab() {
 
           {/* Quick Capability Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0">
+            <span className="text-[11px] font-bold text-[var(--theme-text-secondary)] uppercase tracking-wider shrink-0">
               Capability Highlights:
             </span>
             {CAPABILITY_OPTIONS.map((cap) => {
@@ -773,15 +774,15 @@ export function WorkplaceConfigTab() {
                 <button
                   key={cap.key}
                   onClick={() => setCapabilityFilter(isSelected ? "all" : cap.key)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-medium transition-all shrink-0 ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1 border text-[11px] font-medium transition-all shrink-0 ${
                     isSelected
-                      ? "bg-indigo-500 text-white border-indigo-400 shadow-xs"
-                      : "bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-800"
+                      ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] border-[var(--theme-text-primary)]"
+                      : "bg-[var(--theme-card-bg)] border-[var(--theme-card-border)] text-[var(--theme-text-primary)] hover:border-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)]"
                   }`}
                 >
                   <Icon className="w-3 h-3" />
                   <span>{cap.label}</span>
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-black/30">
+                  <span className="px-1.5 py-0.2 text-[9px] bg-black/30">
                     {count}
                   </span>
                 </button>
@@ -790,11 +791,11 @@ export function WorkplaceConfigTab() {
           </div>
 
           {/* Spaces Table */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
+          <div className="sw-panel overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="sw-table w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-950/80 border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
+                  <tr className="bg-[var(--theme-page-bg)] border-b border-[var(--theme-card-border)] text-[11px] uppercase tracking-wider text-[var(--theme-text-secondary)]">
                     <th className="py-3 px-4 font-bold">Space / Room</th>
                     <th className="py-3 px-4 font-bold">Location & Floor</th>
                     <th className="py-3 px-4 font-bold">Type</th>
@@ -804,10 +805,10 @@ export function WorkplaceConfigTab() {
                     <th className="py-3 px-4 font-bold text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-[var(--theme-card-border)]">
                   {filteredSpaces.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-12 text-center text-slate-500 text-xs">
+                      <td colSpan={7} className="py-12 text-center text-[var(--theme-text-secondary)] text-xs">
                         No spaces match the active query. Click &quot;Add New Space&quot; to configure one.
                       </td>
                     </tr>
@@ -815,41 +816,41 @@ export function WorkplaceConfigTab() {
                     filteredSpaces.map((space) => {
                       const sCaps = parseCaps(space.capabilities);
                       return (
-                        <tr key={space.id} className="hover:bg-slate-800/40 transition-colors group">
+                        <tr key={space.id} className="hover:bg-[var(--theme-accent-light)] transition-colors group">
                           <td className="py-3.5 px-4 font-medium">
                             <div className="flex items-center gap-2.5">
-                              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                              <div className="w-8 h-8 bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] flex items-center justify-center font-bold text-xs shrink-0">
                                 {space.spaceType === "Hot Desk" ? "D" : "R"}
                               </div>
                               <div>
-                                <div className="font-bold text-white text-xs">{space.name}</div>
-                                <div className="text-[10px] font-mono text-slate-400">
+                                <div className="font-bold text-[var(--theme-text-primary)] text-xs">{space.name}</div>
+                                <div className="text-[10px] font-mono text-[var(--theme-text-secondary)]">
                                   {space.spaceNumber} &bull; {space.department || "General"}
                                 </div>
                               </div>
                             </div>
                           </td>
 
-                          <td className="py-3.5 px-4 text-slate-300">
+                          <td className="py-3.5 px-4 text-[var(--theme-text-primary)]">
                             <div>{space.floor?.name || "Unassigned Floor"}</div>
-                            <div className="text-[10px] text-slate-500">
+                            <div className="text-[10px] text-[var(--theme-text-secondary)]">
                               {space.floor?.building?.name || "Corporate Building"}
                             </div>
                           </td>
 
                           <td className="py-3.5 px-4">
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                            <span className="px-2 py-0.5 text-[10px] font-bold bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)]">
                               {space.spaceType}
                             </span>
                           </td>
 
-                          <td className="py-3.5 px-4 text-slate-300">
+                          <td className="py-3.5 px-4 text-[var(--theme-text-primary)]">
                             <div className="flex items-center gap-1 font-mono">
-                              <Users className="w-3 h-3 text-slate-500" />
+                              <Users className="w-3 h-3 text-[var(--theme-text-secondary)]" />
                               <span>{space.capacity} {space.capacity === 1 ? "seat" : "seats"}</span>
                             </div>
                             {space.squareFeet && (
-                              <div className="text-[10px] text-slate-500">{space.squareFeet} sq ft</div>
+                              <div className="text-[10px] text-[var(--theme-text-secondary)]">{space.squareFeet} sq ft</div>
                             )}
                           </td>
 
@@ -864,10 +865,10 @@ export function WorkplaceConfigTab() {
                                     type="button"
                                     onClick={() => handleToggleCapability(space, cap.key)}
                                     title={`Click to ${hasCap ? "disable" : "enable"} ${cap.label}`}
-                                    className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border transition-all flex items-center gap-1 ${
+                                    className={`px-2 py-0.5 text-[10px] font-semibold border transition-all flex items-center gap-1 ${
                                       hasCap
                                         ? cap.color
-                                        : "bg-slate-950 text-slate-500 border-slate-800/80 hover:border-slate-700 opacity-60 hover:opacity-100"
+                                        : "bg-[var(--theme-page-bg)] text-[var(--theme-text-secondary)] border-[var(--theme-card-border)] hover:border-[var(--theme-text-primary)] opacity-60 hover:opacity-100"
                                     }`}
                                   >
                                     <span>{cap.label.split(" ")[0]}</span>
@@ -880,12 +881,12 @@ export function WorkplaceConfigTab() {
 
                           <td className="py-3.5 px-4">
                             <span
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                                 space.status === "available"
-                                  ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]"
                                   : space.status === "occupied"
-                                  ? "bg-amber-500/15 text-amber-400 border border-amber-500/20"
-                                  : "bg-rose-500/15 text-rose-400 border border-rose-500/20"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] border border-[var(--swiss-amber)]"
+                                  : "bg-[var(--theme-accent-light)] text-[var(--swiss-red)] border border-[var(--swiss-red)]"
                               }`}
                             >
                               {space.status}
@@ -895,7 +896,7 @@ export function WorkplaceConfigTab() {
                           <td className="py-3.5 px-4 text-right">
                             <button
                               onClick={() => handleOpenSpaceModal(space)}
-                              className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors inline-flex items-center gap-1"
+                              className="sw-btn px-2.5 py-1 text-xs inline-flex items-center gap-1"
                             >
                               <Edit3 className="w-3 h-3" />
                               <span>Edit</span>
@@ -926,54 +927,54 @@ export function WorkplaceConfigTab() {
               return (
                 <div
                   key={floor.id}
-                  className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 shadow-xs hover:border-slate-700 transition-all flex flex-col justify-between space-y-4"
+                  className="sw-panel p-5 hover:border-[var(--theme-text-primary)] transition-all flex flex-col justify-between space-y-4"
                 >
                   <div className="space-y-3">
                     <div className="flex items-start justify-between">
-                      <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">
+                      <div className="w-10 h-10 bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] flex items-center justify-center font-bold text-sm">
                         L{floor.floorNumber}
                       </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-800 text-slate-300">
+                      <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)]">
                         {floor.code}
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="font-bold text-white text-sm">{floor.name}</h3>
-                      <p className="text-xs text-slate-400">
+                      <h3 className="font-bold text-[var(--theme-text-primary)] text-sm">{floor.name}</h3>
+                      <p className="text-xs text-[var(--theme-text-secondary)]">
                         {floor.building?.name || "Corporate Building"} &bull; {floor.building?.campus?.name || "Main Campus"}
                       </p>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-800/80 grid grid-cols-3 gap-2 text-center text-xs">
-                      <div className="bg-slate-950 p-2 rounded-lg border border-slate-800/60">
-                        <div className="text-[10px] text-slate-500">Total Spaces</div>
-                        <div className="font-bold text-white mt-0.5">{floorSpaces.length}</div>
+                    <div className="pt-2 border-t border-[var(--theme-card-border)] grid grid-cols-3 gap-2 text-center text-xs">
+                      <div className="bg-[var(--theme-page-bg)] p-2 border border-[var(--theme-card-border)]">
+                        <div className="text-[10px] text-[var(--theme-text-secondary)]">Total Spaces</div>
+                        <div className="font-bold text-[var(--theme-text-primary)] mt-0.5">{floorSpaces.length}</div>
                       </div>
-                      <div className="bg-slate-950 p-2 rounded-lg border border-slate-800/60">
-                        <div className="text-[10px] text-slate-500">Teams Rooms</div>
-                        <div className="font-bold text-blue-400 mt-0.5">{teamsRoomsCount}</div>
+                      <div className="bg-[var(--theme-page-bg)] p-2 border border-[var(--theme-card-border)]">
+                        <div className="text-[10px] text-[var(--theme-text-secondary)]">Teams Rooms</div>
+                        <div className="font-bold text-[var(--swiss-blue)] mt-0.5">{teamsRoomsCount}</div>
                       </div>
-                      <div className="bg-slate-950 p-2 rounded-lg border border-slate-800/60">
-                        <div className="text-[10px] text-slate-500">Standing Desks</div>
-                        <div className="font-bold text-emerald-400 mt-0.5">{standingDesksCount}</div>
+                      <div className="bg-[var(--theme-page-bg)] p-2 border border-[var(--theme-card-border)]">
+                        <div className="text-[10px] text-[var(--theme-text-secondary)]">Standing Desks</div>
+                        <div className="font-bold text-[var(--swiss-emerald)] mt-0.5">{standingDesksCount}</div>
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <div className="text-[11px] font-medium text-slate-400 flex items-center justify-between">
+                      <div className="text-[11px] font-medium text-[var(--theme-text-secondary)] flex items-center justify-between">
                         <span>SVG Blueprint:</span>
-                        <span className="font-mono text-indigo-300 text-[10px] truncate max-w-[180px]">
+                        <span className="font-mono text-[var(--theme-text-primary)] text-[10px] truncate max-w-[180px]">
                           {floor.floorplanSvgUrl || "None"}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-2 border-t border-slate-800/60">
+                  <div className="flex items-center gap-2 pt-2 border-t border-[var(--theme-card-border)]">
                     <button
                       onClick={() => setPreviewFloor(floor)}
-                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors flex items-center justify-center gap-1"
+                      className="sw-btn flex-1 px-2.5 py-1.5 text-xs flex items-center justify-center gap-1"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>Preview</span>
@@ -983,7 +984,7 @@ export function WorkplaceConfigTab() {
                         setTargetFloorForCad(floor.id);
                         setSubTab("cad_mapper");
                       }}
-                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 px-2.5 py-1.5 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-blue)] border border-[var(--swiss-blue)] text-xs font-semibold transition-colors flex items-center justify-center gap-1"
                       title="Draw and Map Room Hotspots on CAD Drawing"
                     >
                       <Square className="w-3.5 h-3.5" />
@@ -991,7 +992,7 @@ export function WorkplaceConfigTab() {
                     </button>
                     <button
                       onClick={() => handleOpenFloorModal(floor)}
-                      className="flex-1 px-2.5 py-1.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-semibold shadow-xs transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 px-2.5 py-1.5 bg-[var(--theme-accent-light)] hover:opacity-85 text-[var(--theme-text-primary)] text-xs font-semibold transition-colors flex items-center justify-center gap-1"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                       <span>Edit</span>
@@ -1012,28 +1013,28 @@ export function WorkplaceConfigTab() {
           {/* 6-Tier Metric Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { tier: 1, label: "Regions", count: hierarchyCounts.regions, icon: Map, color: "text-rose-400", table: "cmn_region" },
-              { tier: 2, label: "States / Prov", count: hierarchyCounts.states, icon: MapPin, color: "text-amber-400", table: "cmn_state" },
-              { tier: 3, label: "Campuses", count: hierarchyCounts.campuses, icon: Building2, color: "text-emerald-400", table: "cmn_campus" },
-              { tier: 4, label: "Buildings", count: hierarchyCounts.buildings, icon: Building2, color: "text-cyan-400", table: "cmn_building" },
-              { tier: 5, label: "Floors & Levels", count: hierarchyCounts.floors, icon: Layers, color: "text-blue-400", table: "cmn_floor" },
-              { tier: 6, label: "Spaces & Rooms", count: hierarchyCounts.spaces, icon: Box, color: "text-indigo-400", table: "cmn_space" },
+              { tier: 1, label: "Regions", count: hierarchyCounts.regions, icon: Map, color: "text-[var(--swiss-red)]", table: "cmn_region" },
+              { tier: 2, label: "States / Prov", count: hierarchyCounts.states, icon: MapPin, color: "text-[var(--swiss-amber)]", table: "cmn_state" },
+              { tier: 3, label: "Campuses", count: hierarchyCounts.campuses, icon: Building2, color: "text-[var(--swiss-emerald)]", table: "cmn_campus" },
+              { tier: 4, label: "Buildings", count: hierarchyCounts.buildings, icon: Building2, color: "text-[var(--swiss-blue)]", table: "cmn_building" },
+              { tier: 5, label: "Floors & Levels", count: hierarchyCounts.floors, icon: Layers, color: "text-[var(--swiss-blue)]", table: "cmn_floor" },
+              { tier: 6, label: "Spaces & Rooms", count: hierarchyCounts.spaces, icon: Box, color: "text-[var(--theme-text-primary)]", table: "cmn_space" },
             ].map((t) => {
               const Icon = t.icon;
               return (
                 <div
                   key={t.tier}
-                  className="bg-slate-900/60 border border-slate-800 rounded-xl p-3.5 shadow-xs relative overflow-hidden"
+                  className="sw-panel p-3.5 relative overflow-hidden"
                 >
-                  <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                  <div className="flex items-center justify-between text-xs text-[var(--theme-text-secondary)] mb-1">
                     <span className="font-bold text-[10px] uppercase tracking-wider">Tier {t.tier}</span>
                     <Icon className={`w-3.5 h-3.5 ${t.color}`} />
                   </div>
-                  <div className="text-xl font-black text-white">{t.count}</div>
-                  <div className="text-xs font-semibold text-slate-300 mt-0.5">{t.label}</div>
+                  <div className="text-xl font-black text-[var(--theme-text-primary)]">{t.count}</div>
+                  <div className="text-xs font-semibold text-[var(--theme-text-primary)] mt-0.5">{t.label}</div>
                   <Link
                     href={`/workspace/${t.table}`}
-                    className="inline-flex items-center gap-1 text-[10px] font-mono text-indigo-400 hover:text-indigo-300 mt-2"
+                    className="inline-flex items-center gap-1 text-[10px] font-mono text-[var(--theme-text-primary)] hover:underline mt-2"
                   >
                     <span>View {t.table}</span>
                     <ArrowUpRight className="w-2.5 h-2.5" />
@@ -1044,17 +1045,17 @@ export function WorkplaceConfigTab() {
           </div>
 
           {/* Interactive Spatial Tree View */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-6 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="sw-panel p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
               <div>
-                <h3 className="font-bold text-white text-sm">Enterprise Spatial Tree Explorer</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="font-bold text-[var(--theme-text-primary)] text-sm">Enterprise Spatial Tree Explorer</h3>
+                <p className="text-xs text-[var(--theme-text-secondary)]">
                   Full parent-child relationship breakdown from global Region down to Space/Room
                 </p>
               </div>
               <Link
                 href="/workspace/spaces"
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors flex items-center gap-1"
+                className="sw-btn px-3 py-1.5 text-xs flex items-center gap-1"
               >
                 <Compass className="w-3.5 h-3.5" />
                 <span>Full Screen Spatial Explorer</span>
@@ -1063,64 +1064,64 @@ export function WorkplaceConfigTab() {
 
             <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
               {(Array.isArray(treeData) ? treeData : []).map((region) => (
-                <div key={region.id} className="border border-slate-800 rounded-xl bg-slate-950/40 p-3.5 space-y-2">
-                  <div className="flex items-center justify-between font-bold text-xs text-rose-300">
+                <div key={region.id} className="border border-[var(--theme-card-border)] bg-[var(--theme-page-bg)] p-3.5 space-y-2">
+                  <div className="flex items-center justify-between font-bold text-xs text-[var(--swiss-red)]">
                     <span className="flex items-center gap-2">
                       <Map className="w-3.5 h-3.5" />
                       <span>{region.name} ({region.code})</span>
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    <span className="sw-badge-red text-[10px] px-2 py-0.5">
                       Tier 1 Region
                     </span>
                   </div>
 
-                  <div className="pl-4 border-l border-slate-800 space-y-2">
+                  <div className="pl-4 border-l border-[var(--theme-card-border)] space-y-2">
                     {(region.states || []).map((state: any) => (
                       <div key={state.id} className="space-y-2">
-                        <div className="flex items-center justify-between text-xs font-semibold text-amber-300">
+                        <div className="flex items-center justify-between text-xs font-semibold text-[var(--swiss-amber)]">
                           <span className="flex items-center gap-1.5">
                             <MapPin className="w-3 h-3" />
                             <span>{state.name} ({state.code})</span>
                           </span>
-                          <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400">
+                          <span className="text-[10px] px-1.5 py-0.2 bg-[var(--theme-accent-light)] text-[var(--swiss-amber)]">
                             Tier 2 State
                           </span>
                         </div>
 
-                        <div className="pl-4 border-l border-slate-800 space-y-2">
+                        <div className="pl-4 border-l border-[var(--theme-card-border)] space-y-2">
                           {(state.campuses || []).map((campus: any) => (
                             <div key={campus.id} className="space-y-2">
-                              <div className="flex items-center justify-between text-xs font-semibold text-emerald-300">
+                              <div className="flex items-center justify-between text-xs font-semibold text-[var(--swiss-emerald)]">
                                 <span className="flex items-center gap-1.5">
                                   <Building2 className="w-3 h-3" />
                                   <span>{campus.name} ({campus.code})</span>
                                 </span>
-                                <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400">
+                                <span className="text-[10px] px-1.5 py-0.2 bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)]">
                                   Tier 3 Campus
                                 </span>
                               </div>
 
-                              <div className="pl-4 border-l border-slate-800 space-y-2">
+                              <div className="pl-4 border-l border-[var(--theme-card-border)] space-y-2">
                                 {(campus.buildings || []).map((bld: any) => (
                                   <div key={bld.id} className="space-y-1.5">
-                                    <div className="flex items-center justify-between text-xs text-cyan-300">
+                                    <div className="flex items-center justify-between text-xs text-[var(--swiss-blue)]">
                                       <span className="flex items-center gap-1.5">
                                         <Building2 className="w-3 h-3" />
                                         <span className="font-medium">{bld.name} ({bld.code})</span>
                                       </span>
-                                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-400">
+                                      <span className="text-[10px] px-1.5 py-0.2 bg-[var(--theme-accent-light)] text-[var(--swiss-blue)]">
                                         Tier 4 Building
                                       </span>
                                     </div>
 
-                                    <div className="pl-4 border-l border-slate-800 space-y-1">
+                                    <div className="pl-4 border-l border-[var(--theme-card-border)] space-y-1">
                                       {(bld.floors || []).map((fl: any) => (
-                                        <div key={fl.id} className="text-xs text-slate-300 flex items-center justify-between py-0.5">
-                                          <span className="flex items-center gap-1.5 text-slate-400">
-                                            <Layers className="w-3 h-3 text-blue-400" />
+                                        <div key={fl.id} className="text-xs text-[var(--theme-text-primary)] flex items-center justify-between py-0.5">
+                                          <span className="flex items-center gap-1.5 text-[var(--theme-text-secondary)]">
+                                            <Layers className="w-3 h-3 text-[var(--swiss-blue)]" />
                                             <span>{fl.name} &bull; {fl.spaces?.length || 0} spaces</span>
                                           </span>
-                                          <span className="text-[10px] font-mono text-slate-500">
+                                          <span className="text-[10px] font-mono text-[var(--theme-text-secondary)]">
                                             Tier 5 &bull; {fl.floorplanSvgUrl || "No SVG blueprint"}
                                           </span>
                                         </div>
@@ -1148,80 +1149,80 @@ export function WorkplaceConfigTab() {
       {subTab === "reservations" && (
         <div className="space-y-6">
           {/* Policy Settings Panel */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="sw-panel p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
               <div>
-                <h3 className="font-bold text-white text-sm flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-indigo-400" />
+                <h3 className="font-bold text-[var(--theme-text-primary)] text-sm flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-[var(--theme-text-primary)]" />
                   <span>Workplace Booking Policies & Governance Rules</span>
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--theme-text-secondary)]">
                   Global limits enforced across employee self-service bookings
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => showFeedback("success", "Workplace policies successfully committed to sys_properties!")}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors"
+                className="sw-btn-primary px-3 py-1.5 text-xs"
               >
                 Save Policies
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-1">
-                <label className="text-slate-400 font-medium">Max Meeting Room Duration (Hours)</label>
+              <div className="bg-[var(--theme-page-bg)] p-3 border border-[var(--theme-card-border)] space-y-1">
+                <label className="text-[var(--theme-text-secondary)] font-medium">Max Meeting Room Duration (Hours)</label>
                 <input
                   type="number"
                   value={policies.maxMeetingHours}
                   onChange={(e) => setPolicies({ ...policies, maxMeetingHours: parseInt(e.target.value) || 1 })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white font-mono"
+                  className="w-full sw-panel p-1.5 text-[var(--theme-text-primary)] font-mono"
                 />
-                <span className="text-[10px] text-slate-500">Prevents conference room monopolization</span>
+                <span className="text-[10px] text-[var(--theme-text-secondary)]">Prevents conference room monopolization</span>
               </div>
 
-              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-1">
-                <label className="text-slate-400 font-medium">Max Hot Desk Duration (Hours)</label>
+              <div className="bg-[var(--theme-page-bg)] p-3 border border-[var(--theme-card-border)] space-y-1">
+                <label className="text-[var(--theme-text-secondary)] font-medium">Max Hot Desk Duration (Hours)</label>
                 <input
                   type="number"
                   value={policies.maxDeskHours}
                   onChange={(e) => setPolicies({ ...policies, maxDeskHours: parseInt(e.target.value) || 1 })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white font-mono"
+                  className="w-full sw-panel p-1.5 text-[var(--theme-text-primary)] font-mono"
                 />
-                <span className="text-[10px] text-slate-500">Standard 8-hour workday hot desk reservation</span>
+                <span className="text-[10px] text-[var(--theme-text-secondary)]">Standard 8-hour workday hot desk reservation</span>
               </div>
 
-              <div className="bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-1">
-                <label className="text-slate-400 font-medium">Auto-Release Grace Period (Minutes)</label>
+              <div className="bg-[var(--theme-page-bg)] p-3 border border-[var(--theme-card-border)] space-y-1">
+                <label className="text-[var(--theme-text-secondary)] font-medium">Auto-Release Grace Period (Minutes)</label>
                 <input
                   type="number"
                   value={policies.autoReleaseMinutes}
                   onChange={(e) => setPolicies({ ...policies, autoReleaseMinutes: parseInt(e.target.value) || 5 })}
-                  className="w-full bg-slate-900 border border-slate-700 rounded p-1.5 text-white font-mono"
+                  className="w-full sw-panel p-1.5 text-[var(--theme-text-primary)] font-mono"
                 />
-                <span className="text-[10px] text-slate-500">Ghost meeting prevention: releases un-checked-in rooms</span>
+                <span className="text-[10px] text-[var(--theme-text-secondary)]">Ghost meeting prevention: releases un-checked-in rooms</span>
               </div>
             </div>
           </div>
 
           {/* Reservation Log Controls */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[var(--theme-card-bg)] p-3 border border-[var(--theme-card-border)]">
             <div className="flex items-center gap-2 flex-1 max-w-md">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <Search className="w-4 h-4 text-[var(--theme-text-secondary)] absolute left-3 top-2.5" />
                 <input
                   type="text"
                   placeholder="Search reservation number, title, user, space..."
                   value={reservationSearch}
                   onChange={(e) => setReservationSearch(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="sw-input w-full pl-9 pr-3 py-1.5 text-xs"
                 />
               </div>
 
               <select
                 value={reservationStatusFilter}
                 onChange={(e) => setReservationStatusFilter(e.target.value)}
-                className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500"
+                className="sw-input px-2.5 py-1.5 text-xs"
               >
                 <option value="all">All Statuses</option>
                 <option value="confirmed">Confirmed</option>
@@ -1229,17 +1230,17 @@ export function WorkplaceConfigTab() {
                 <option value="cancelled">Cancelled</option>
               </select>
 
-              <div className="flex items-center p-0.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px]" title="Toggle 12-Hour AM/PM vs. 24-Hour Military Time">
+              <div className="flex items-center p-0.5 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[11px]" title="Toggle 12-Hour AM/PM vs. 24-Hour Military Time">
                 <button
                   type="button"
                   onClick={() => {
                     setTimeFormat("12h");
                     try { localStorage.setItem("servicemeow_time_format", "12h"); } catch {}
                   }}
-                  className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                  className={`px-2 py-0.5 transition-all cursor-pointer ${
                     timeFormat === "12h"
-                      ? "bg-indigo-600 text-white font-semibold shadow-xs"
-                      : "text-slate-400 hover:text-slate-200"
+                      ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] font-semibold"
+                      : "text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                   }`}
                 >
                   12H
@@ -1250,10 +1251,10 @@ export function WorkplaceConfigTab() {
                     setTimeFormat("24h");
                     try { localStorage.setItem("servicemeow_time_format", "24h"); } catch {}
                   }}
-                  className={`px-2 py-0.5 rounded transition-all cursor-pointer ${
+                  className={`px-2 py-0.5 transition-all cursor-pointer ${
                     timeFormat === "24h"
-                      ? "bg-indigo-600 text-white font-semibold shadow-xs"
-                      : "text-slate-400 hover:text-slate-200"
+                      ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] font-semibold"
+                      : "text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                   }`}
                 >
                   24H
@@ -1263,11 +1264,11 @@ export function WorkplaceConfigTab() {
           </div>
 
           {/* Reservations Table */}
-          <div className="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden shadow-xs">
+          <div className="sw-panel overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
+              <table className="sw-table w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-950/80 border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
+                  <tr className="bg-[var(--theme-page-bg)] border-b border-[var(--theme-card-border)] text-[11px] uppercase tracking-wider text-[var(--theme-text-secondary)]">
                     <th className="py-3 px-4 font-bold">Reservation</th>
                     <th className="py-3 px-4 font-bold">Space / Room</th>
                     <th className="py-3 px-4 font-bold">Reserved By</th>
@@ -1276,10 +1277,10 @@ export function WorkplaceConfigTab() {
                     <th className="py-3 px-4 font-bold text-right">Admin Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-[var(--theme-card-border)]">
                   {filteredReservations.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="py-12 text-center text-slate-500 text-xs">
+                      <td colSpan={6} className="py-12 text-center text-[var(--theme-text-secondary)] text-xs">
                         No active reservations found.
                       </td>
                     </tr>
@@ -1289,40 +1290,40 @@ export function WorkplaceConfigTab() {
                       const end = new Date(r.endTime);
 
                       return (
-                        <tr key={r.id} className="hover:bg-slate-800/40 transition-colors">
+                        <tr key={r.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
                           <td className="py-3 px-4">
-                            <div className="font-mono font-bold text-indigo-400">{r.number}</div>
-                            <div className="font-semibold text-white mt-0.5">{r.title}</div>
-                            <div className="text-[10px] text-slate-400 capitalize">{r.meetingType} &bull; {r.attendeesCount} pax</div>
+                            <div className="font-mono font-bold text-[var(--theme-text-primary)]">{r.number}</div>
+                            <div className="font-semibold text-[var(--theme-text-primary)] mt-0.5">{r.title}</div>
+                            <div className="text-[10px] text-[var(--theme-text-secondary)] capitalize">{r.meetingType} &bull; {r.attendeesCount} pax</div>
                           </td>
 
                           <td className="py-3 px-4">
-                            <div className="font-bold text-slate-200">{r.space?.name || "Assigned Space"}</div>
-                            <div className="text-[10px] text-slate-500">
+                            <div className="font-bold text-[var(--theme-text-primary)]">{r.space?.name || "Assigned Space"}</div>
+                            <div className="text-[10px] text-[var(--theme-text-secondary)]">
                               {r.space?.spaceNumber} &bull; {r.space?.floor?.name}
                             </div>
                           </td>
 
                           <td className="py-3 px-4">
-                            <div className="font-medium text-slate-200">{r.reservedBy?.name || "Enterprise User"}</div>
-                            <div className="text-[10px] font-mono text-slate-500">{r.reservedBy?.email}</div>
+                            <div className="font-medium text-[var(--theme-text-primary)]">{r.reservedBy?.name || "Enterprise User"}</div>
+                            <div className="text-[10px] font-mono text-[var(--theme-text-secondary)]">{r.reservedBy?.email}</div>
                           </td>
 
-                          <td className="py-3 px-4 text-slate-300">
+                          <td className="py-3 px-4 text-[var(--theme-text-primary)]">
                             <div>{start.toLocaleDateString()}</div>
-                            <div className="text-[10px] font-mono text-slate-400">
+                            <div className="text-[10px] font-mono text-[var(--theme-text-secondary)]">
                               {formatDateTimeSlot(start, timeFormat)} &ndash; {formatDateTimeSlot(end, timeFormat)}
                             </div>
                           </td>
 
                           <td className="py-3 px-4">
                             <span
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                                 r.status === "confirmed"
-                                  ? "bg-blue-500/15 text-blue-400 border border-blue-500/20"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-blue)] border border-[var(--swiss-blue)]"
                                   : r.status === "checked_in"
-                                  ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                                  : "bg-slate-700/50 text-slate-400 border border-slate-600/50 line-through"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]"
+                                  : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] border border-[var(--theme-card-border)] line-through"
                               }`}
                             >
                               {r.status}
@@ -1333,7 +1334,7 @@ export function WorkplaceConfigTab() {
                             {r.status === "confirmed" && (
                               <button
                                 onClick={() => handleReservationAction(r, "checked_in")}
-                                className="px-2 py-1 rounded bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 text-[10px] font-bold border border-emerald-500/30 transition-colors"
+                                className="px-2 py-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] text-[10px] font-bold border border-[var(--swiss-emerald)] transition-colors"
                               >
                                 Check In
                               </button>
@@ -1341,7 +1342,7 @@ export function WorkplaceConfigTab() {
                             {r.status !== "cancelled" && (
                               <button
                                 onClick={() => handleReservationAction(r, "cancelled")}
-                                className="px-2 py-1 rounded bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 text-[10px] font-bold border border-rose-500/30 transition-colors"
+                                className="px-2 py-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-red)] text-[10px] font-bold border border-[var(--swiss-red)] transition-colors"
                               >
                                 Cancel
                               </button>
@@ -1372,18 +1373,18 @@ export function WorkplaceConfigTab() {
       {/* MODAL: SPACE CREATE / EDIT                                               */}
       {/* ========================================================================= */}
       {spaceModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-in fade-in duration-200">
+          <div className="sw-panel-strong w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 space-y-5">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
               <div className="flex items-center gap-2">
-                <Box className="w-5 h-5 text-indigo-400" />
-                <h3 className="font-bold text-white text-base">
+                <Box className="w-5 h-5 text-[var(--theme-text-primary)]" />
+                <h3 className="font-bold text-[var(--theme-text-primary)] text-base">
                   {editingSpaceId ? `Edit Space: ${spaceForm.name}` : "Add New Space / Room"}
                 </h3>
               </div>
               <button
                 onClick={() => setSpaceModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1392,36 +1393,36 @@ export function WorkplaceConfigTab() {
             <form onSubmit={handleSaveSpace} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Space Name *</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Space Name *</label>
                   <input
                     type="text"
                     required
                     value={spaceForm.name}
                     onChange={(e) => setSpaceForm({ ...spaceForm, name: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
+                    className="sw-input w-full p-2"
                     placeholder="e.g., Executive Boardroom 402"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Space / Room Number *</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Space / Room Number *</label>
                   <input
                     type="text"
                     required
                     value={spaceForm.spaceNumber}
                     onChange={(e) => setSpaceForm({ ...spaceForm, spaceNumber: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
+                    className="sw-input w-full p-2"
                     placeholder="e.g., CONF-402 or DESK-410"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Floor Level *</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Floor Level *</label>
                   <select
                     required
                     value={spaceForm.floorId}
                     onChange={(e) => setSpaceForm({ ...spaceForm, floorId: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
+                    className="sw-input w-full p-2"
                   >
                     {floors.map((fl) => (
                       <option key={fl.id} value={fl.id}>
@@ -1432,11 +1433,11 @@ export function WorkplaceConfigTab() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Space Type</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Space Type</label>
                   <select
                     value={spaceForm.spaceType}
                     onChange={(e) => setSpaceForm({ ...spaceForm, spaceType: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
+                    className="sw-input w-full p-2"
                   >
                     {SPACE_TYPES.map((t) => (
                       <option key={t} value={t}>{t}</option>
@@ -1445,42 +1446,42 @@ export function WorkplaceConfigTab() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Capacity (People)</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Capacity (People)</label>
                   <input
                     type="number"
                     min="1"
                     value={spaceForm.capacity}
                     onChange={(e) => setSpaceForm({ ...spaceForm, capacity: parseInt(e.target.value) || 1 })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="sw-input w-full p-2 font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Square Footage (Sq Ft)</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Square Footage (Sq Ft)</label>
                   <input
                     type="number"
                     value={spaceForm.squareFeet}
                     onChange={(e) => setSpaceForm({ ...spaceForm, squareFeet: parseInt(e.target.value) || 0 })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500 font-mono"
+                    className="sw-input w-full p-2 font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Allocated Department</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Allocated Department</label>
                   <input
                     type="text"
                     value={spaceForm.department}
                     onChange={(e) => setSpaceForm({ ...spaceForm, department: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
+                    className="sw-input w-full p-2"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Initial Status</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Initial Status</label>
                   <select
                     value={spaceForm.status}
                     onChange={(e) => setSpaceForm({ ...spaceForm, status: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-indigo-500"
+                    className="sw-input w-full p-2"
                   >
                     <option value="available">Available</option>
                     <option value="occupied">Occupied</option>
@@ -1490,8 +1491,8 @@ export function WorkplaceConfigTab() {
               </div>
 
               {/* Capabilities Multi-Check */}
-              <div className="space-y-2 pt-2 border-t border-slate-800">
-                <label className="text-slate-300 font-semibold block">
+              <div className="space-y-2 pt-2 border-t border-[var(--theme-card-border)]">
+                <label className="text-[var(--theme-text-primary)] font-semibold block">
                   Configured Hardware & Collaboration Capabilities
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1501,10 +1502,10 @@ export function WorkplaceConfigTab() {
                     return (
                       <label
                         key={cap.key}
-                        className={`flex items-center gap-2.5 p-2 rounded-lg border cursor-pointer transition-colors ${
+                        className={`flex items-center gap-2.5 p-2 border cursor-pointer transition-colors ${
                           isChecked
-                            ? "bg-indigo-500/10 border-indigo-500/30 text-white"
-                            : "bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-300"
+                            ? "bg-[var(--theme-accent-light)] border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
+                            : "bg-[var(--theme-page-bg)] border-[var(--theme-card-border)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                         }`}
                       >
                         <input
@@ -1520,9 +1521,9 @@ export function WorkplaceConfigTab() {
                               });
                             }
                           }}
-                          className="rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500"
+                          className="border-[var(--theme-card-border)] bg-[var(--theme-card-bg)] text-[var(--theme-text-primary)] focus:ring-[var(--theme-text-primary)]"
                         />
-                        <Icon className="w-3.5 h-3.5 text-indigo-400" />
+                        <Icon className="w-3.5 h-3.5 text-[var(--theme-text-primary)]" />
                         <span className="font-medium text-xs">{cap.label}</span>
                       </label>
                     );
@@ -1531,77 +1532,77 @@ export function WorkplaceConfigTab() {
               </div>
 
               {/* Architectural SVG Floorplan Coordinates */}
-              <div className="space-y-2 pt-2 border-t border-slate-800">
-                <label className="text-slate-300 font-semibold block">
+              <div className="space-y-2 pt-2 border-t border-[var(--theme-card-border)]">
+                <label className="text-[var(--theme-text-primary)] font-semibold block">
                   Architectural SVG Blueprint Coordinates (0-100% Canvas Box)
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="space-y-1">
-                    <label className="text-slate-400 text-[11px]">X Pos (%)</label>
+                    <label className="text-[var(--theme-text-secondary)] text-[11px]">X Pos (%)</label>
                     <input
                       type="number"
                       step="0.1"
                       value={spaceForm.floorplanX}
                       onChange={(e) => setSpaceForm({ ...spaceForm, floorplanX: parseFloat(e.target.value) || 0 })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-white font-mono"
+                      className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-1.5 text-[var(--theme-text-primary)] font-mono"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-slate-400 text-[11px]">Y Pos (%)</label>
+                    <label className="text-[var(--theme-text-secondary)] text-[11px]">Y Pos (%)</label>
                     <input
                       type="number"
                       step="0.1"
                       value={spaceForm.floorplanY}
                       onChange={(e) => setSpaceForm({ ...spaceForm, floorplanY: parseFloat(e.target.value) || 0 })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-white font-mono"
+                      className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-1.5 text-[var(--theme-text-primary)] font-mono"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-slate-400 text-[11px]">Width (%)</label>
+                    <label className="text-[var(--theme-text-secondary)] text-[11px]">Width (%)</label>
                     <input
                       type="number"
                       step="0.1"
                       value={spaceForm.floorplanWidth}
                       onChange={(e) => setSpaceForm({ ...spaceForm, floorplanWidth: parseFloat(e.target.value) || 0 })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-white font-mono"
+                      className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-1.5 text-[var(--theme-text-primary)] font-mono"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-slate-400 text-[11px]">Height (%)</label>
+                    <label className="text-[var(--theme-text-secondary)] text-[11px]">Height (%)</label>
                     <input
                       type="number"
                       step="0.1"
                       value={spaceForm.floorplanHeight}
                       onChange={(e) => setSpaceForm({ ...spaceForm, floorplanHeight: parseFloat(e.target.value) || 0 })}
-                      className="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-white font-mono"
+                      className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-1.5 text-[var(--theme-text-primary)] font-mono"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1 pt-1">
-                  <label className="text-slate-400 text-[11px]">SVG Element ID</label>
+                  <label className="text-[var(--theme-text-secondary)] text-[11px]">SVG Element ID</label>
                   <input
                     type="text"
                     value={spaceForm.svgElementId}
                     onChange={(e) => setSpaceForm({ ...spaceForm, svgElementId: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded p-1.5 text-white font-mono"
+                    className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-1.5 text-[var(--theme-text-primary)] font-mono"
                     placeholder="e.g., svg-room-conf-402"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[var(--theme-card-border)]">
                 <button
                   type="button"
                   onClick={() => setSpaceModalOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                  className="sw-btn px-4 py-2 text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                  className="sw-btn-primary px-5 py-2 text-xs flex items-center gap-1.5"
                 >
                   {saving && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                   <span>{editingSpaceId ? "Update Space" : "Create Space"}</span>
@@ -1616,18 +1617,18 @@ export function WorkplaceConfigTab() {
       {/* MODAL: FLOOR BLUEPRINT CONFIG                                            */}
       {/* ========================================================================= */}
       {floorModalOpen && editingFloor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-in fade-in duration-200">
+          <div className="sw-panel-strong w-full max-w-lg p-6 space-y-5">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
               <div className="flex items-center gap-2">
-                <Layers className="w-5 h-5 text-indigo-400" />
-                <h3 className="font-bold text-white text-base">
+                <Layers className="w-5 h-5 text-[var(--theme-text-primary)]" />
+                <h3 className="font-bold text-[var(--theme-text-primary)] text-base">
                   Floorplan Blueprint: {floorForm.name}
                 </h3>
               </div>
               <button
                 onClick={() => setFloorModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1635,77 +1636,77 @@ export function WorkplaceConfigTab() {
 
             <form onSubmit={handleSaveFloor} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold">Floor Name</label>
+                <label className="text-[var(--theme-text-primary)] font-semibold">Floor Name</label>
                 <input
                   type="text"
                   required
                   value={floorForm.name}
                   onChange={(e) => setFloorForm({ ...floorForm, name: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-medium"
+                  className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-2 text-[var(--theme-text-primary)] font-medium"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Floor Code</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Floor Code</label>
                   <input
                     type="text"
                     required
                     value={floorForm.code}
                     onChange={(e) => setFloorForm({ ...floorForm, code: e.target.value })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-mono"
+                    className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-2 text-[var(--theme-text-primary)] font-mono"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-300 font-semibold">Level Number</label>
+                  <label className="text-[var(--theme-text-primary)] font-semibold">Level Number</label>
                   <input
                     type="number"
                     required
                     value={floorForm.floorNumber}
                     onChange={(e) => setFloorForm({ ...floorForm, floorNumber: parseInt(e.target.value) || 1 })}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-mono"
+                    className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-2 text-[var(--theme-text-primary)] font-mono"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold">Architectural SVG File Path / URL</label>
+                <label className="text-[var(--theme-text-primary)] font-semibold">Architectural SVG File Path / URL</label>
                 <input
                   type="text"
                   required
                   value={floorForm.floorplanSvgUrl}
                   onChange={(e) => setFloorForm({ ...floorForm, floorplanSvgUrl: e.target.value })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-mono"
+                  className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-2 text-[var(--theme-text-primary)] font-mono"
                   placeholder="/blueprints/tech_tower_l4.svg"
                 />
-                <span className="text-[10px] text-slate-500">
+                <span className="text-[10px] text-[var(--theme-text-secondary)]">
                   Bundled blueprint: <code>/blueprints/tech_tower_l4.svg</code>
                 </span>
               </div>
 
               <div className="space-y-1">
-                <label className="text-slate-300 font-semibold">Total Floor Area (Sq Ft)</label>
+                <label className="text-[var(--theme-text-primary)] font-semibold">Total Floor Area (Sq Ft)</label>
                 <input
                   type="number"
                   value={floorForm.areaSqFt}
                   onChange={(e) => setFloorForm({ ...floorForm, areaSqFt: parseInt(e.target.value) || 0 })}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-mono"
+                  className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-2 text-[var(--theme-text-primary)] font-mono"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[var(--theme-card-border)]">
                 <button
                   type="button"
                   onClick={() => setFloorModalOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                  className="sw-btn px-4 py-2 text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                  className="sw-btn-primary px-5 py-2 text-xs flex items-center gap-1.5"
                 >
                   {saving && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
                   <span>Save Blueprint</span>
@@ -1720,30 +1721,30 @@ export function WorkplaceConfigTab() {
       {/* DRAWER / MODAL: SVG BLUEPRINT PREVIEW                                     */}
       {/* ========================================================================= */}
       {previewFloor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-200">
+          <div className="sw-panel-strong w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-[var(--theme-card-border)] flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Layers className="w-5 h-5 text-indigo-400" />
+                <Layers className="w-5 h-5 text-[var(--theme-text-primary)]" />
                 <div>
-                  <h3 className="font-bold text-white text-sm">
+                  <h3 className="font-bold text-[var(--theme-text-primary)] text-sm">
                     Architectural Blueprint: {previewFloor.name}
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-mono">
+                  <p className="text-[10px] text-[var(--theme-text-secondary)] font-mono">
                     {previewFloor.floorplanSvgUrl || "/blueprints/tech_tower_l4.svg"}
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setPreviewFloor(null)}
-                className="text-slate-400 hover:text-white"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 bg-slate-950 flex-1 overflow-auto flex items-center justify-center">
-              <div className="w-full max-w-3xl aspect-[1000/600] border border-slate-800 rounded-xl overflow-hidden shadow-lg bg-slate-900">
+            <div className="p-6 bg-[var(--theme-page-bg)] flex-1 overflow-auto flex items-center justify-center">
+              <div className="w-full max-w-3xl aspect-[1000/600] border border-[var(--theme-card-border)] overflow-hidden bg-[var(--theme-card-bg)]">
                 <iframe
                   src={previewFloor.floorplanSvgUrl || "/blueprints/tech_tower_l4.svg"}
                   className="w-full h-full border-0 pointer-events-none"
@@ -1752,13 +1753,13 @@ export function WorkplaceConfigTab() {
               </div>
             </div>
 
-            <div className="p-3.5 border-t border-slate-800 flex items-center justify-between text-xs bg-slate-900">
-              <span className="text-slate-400">
+            <div className="p-3.5 border-t border-[var(--theme-card-border)] flex items-center justify-between text-xs bg-[var(--theme-card-bg)]">
+              <span className="text-[var(--theme-text-secondary)]">
                 Spaces mapped: {spaces.filter((s) => s.floorId === previewFloor.id).length} rooms/desks
               </span>
               <button
                 onClick={() => setPreviewFloor(null)}
-                className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold"
+                className="sw-btn px-4 py-1.5 text-xs"
               >
                 Close Preview
               </button>

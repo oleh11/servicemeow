@@ -218,22 +218,22 @@ export function ChatConfigStudio() {
   const activeCannedCount = cannedResponses.filter((c) => c.active).length;
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-6 font-sans text-white">
+    <div className="p-8 max-w-7xl mx-auto space-y-6 font-sans text-[var(--theme-text-primary)]">
       {/* Studio Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--theme-card-border)] pb-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2 py-0.5 bg-red-600 text-white font-mono text-[10px] font-bold">
+            <span className="px-2 py-0.5 bg-[var(--swiss-red)] text-white font-mono text-[10px] font-bold">
               SYS_LIVE_CHAT
             </span>
-            <span className="text-xs font-mono text-slate-400">
+            <span className="text-xs font-mono text-[var(--theme-text-secondary)]">
               Omnichannel Support & Dispatch Engine
             </span>
           </div>
-          <h2 className="text-xl font-bold uppercase tracking-wider text-white">
+          <h2 className="text-xl font-bold uppercase tracking-wider text-[var(--theme-text-primary)]">
             Live Agent Chat Configuration
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[var(--theme-text-secondary)] mt-1">
             Configure customer intake queues, assignment routing groups, agent capacity limits, and /shortcut canned macros.
           </p>
         </div>
@@ -241,7 +241,7 @@ export function ChatConfigStudio() {
         <div className="flex items-center gap-2">
           <Link
             href="/workspace/chat"
-            className="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-colors"
+            className="sw-btn-primary px-3.5 py-2 text-xs flex items-center gap-2"
           >
             <MessageSquare className="w-3.5 h-3.5" />
             <span>Launch Agent Cockpit</span>
@@ -249,7 +249,7 @@ export function ChatConfigStudio() {
           </Link>
           <button
             onClick={loadConfig}
-            className="p-2 bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 hover:text-white"
+            className="p-2 sw-panel hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] hover:text-[var(--theme-text-primary)]"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
@@ -259,37 +259,37 @@ export function ChatConfigStudio() {
 
       {/* Live KPI Summary Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 bg-slate-900 border border-slate-800">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+        <div className="p-4 sw-panel">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--theme-text-secondary)]">
             01 / Intake Queues
           </div>
-          <div className="text-xl font-bold font-mono text-white mt-1">
-            {activeQueuesCount} <span className="text-xs text-slate-500">/ {queues.length} Active</span>
+          <div className="text-xl font-bold font-mono text-[var(--theme-text-primary)] mt-1">
+            {activeQueuesCount} <span className="text-xs text-[var(--theme-text-secondary)]">/ {queues.length} Active</span>
           </div>
         </div>
-        <div className="p-4 bg-slate-900 border border-slate-800">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+        <div className="p-4 sw-panel">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--theme-text-secondary)]">
             02 / Canned Macros
           </div>
-          <div className="text-xl font-bold font-mono text-white mt-1">
-            {activeCannedCount} <span className="text-xs text-slate-500">Shortcuts</span>
+          <div className="text-xl font-bold font-mono text-[var(--theme-text-primary)] mt-1">
+            {activeCannedCount} <span className="text-xs text-[var(--theme-text-secondary)]">Shortcuts</span>
           </div>
         </div>
-        <div className="p-4 bg-slate-900 border border-slate-800">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+        <div className="p-4 sw-panel">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--theme-text-secondary)]">
             03 / Agent Capacity
           </div>
-          <div className="text-xl font-bold font-mono text-white mt-1">
-            {config.maxConcurrentChatsPerAgent} <span className="text-xs text-slate-500">Chats / Fulfiller</span>
+          <div className="text-xl font-bold font-mono text-[var(--theme-text-primary)] mt-1">
+            {config.maxConcurrentChatsPerAgent} <span className="text-xs text-[var(--theme-text-secondary)]">Chats / Fulfiller</span>
           </div>
         </div>
-        <div className="p-4 bg-slate-900 border border-slate-800">
-          <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
+        <div className="p-4 sw-panel">
+          <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--theme-text-secondary)]">
             04 / Portal Widget
           </div>
           <div className="text-xl font-bold font-mono mt-1 flex items-center gap-2">
-            <span className={`w-2.5 h-2.5 rounded-full ${config.enabled ? "bg-green-500" : "bg-slate-500"}`} />
-            <span className={config.enabled ? "text-green-400" : "text-slate-400"}>
+            <span className={`w-2.5 h-2.5 ${config.enabled ? "bg-[var(--swiss-emerald)]" : "bg-[var(--theme-card-border)]"}`} />
+            <span className={config.enabled ? "text-[var(--swiss-emerald)]" : "text-[var(--theme-text-secondary)]"}>
               {config.enabled ? "ONLINE" : "DISABLED"}
             </span>
           </div>
@@ -297,16 +297,16 @@ export function ChatConfigStudio() {
       </div>
 
       {/* Sub Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-800 text-xs font-bold uppercase tracking-wider">
+      <div className="flex items-center gap-2 border-b border-[var(--theme-card-border)] text-xs font-bold uppercase tracking-wider">
         <button
           onClick={() => setActiveTab("queues")}
           className={`px-4 py-2.5 border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === "queues"
-              ? "border-red-500 text-white bg-slate-900/50"
-              : "border-transparent text-slate-400 hover:text-white"
+              ? "border-[var(--swiss-red)] text-[var(--theme-text-primary)] bg-[var(--theme-card-bg)]"
+              : "border-transparent text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
           }`}
         >
-          <Layers className="w-4 h-4 text-red-500" />
+          <Layers className="w-4 h-4 text-[var(--swiss-red)]" />
           <span>Support Queues ({queues.length})</span>
         </button>
 
@@ -314,11 +314,11 @@ export function ChatConfigStudio() {
           onClick={() => setActiveTab("canned")}
           className={`px-4 py-2.5 border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === "canned"
-              ? "border-red-500 text-white bg-slate-900/50"
-              : "border-transparent text-slate-400 hover:text-white"
+              ? "border-[var(--swiss-red)] text-[var(--theme-text-primary)] bg-[var(--theme-card-bg)]"
+              : "border-transparent text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
           }`}
         >
-          <Sparkles className="w-4 h-4 text-amber-400" />
+          <Sparkles className="w-4 h-4 text-[var(--swiss-amber)]" />
           <span>Canned Macros ({cannedResponses.length})</span>
         </button>
 
@@ -326,11 +326,11 @@ export function ChatConfigStudio() {
           onClick={() => setActiveTab("settings")}
           className={`px-4 py-2.5 border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === "settings"
-              ? "border-red-500 text-white bg-slate-900/50"
-              : "border-transparent text-slate-400 hover:text-white"
+              ? "border-[var(--swiss-red)] text-[var(--theme-text-primary)] bg-[var(--theme-card-bg)]"
+              : "border-transparent text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
           }`}
         >
-          <Settings className="w-4 h-4 text-indigo-400" />
+          <Settings className="w-4 h-4 text-[var(--theme-text-primary)]" />
           <span>Global Routing & Capacity</span>
         </button>
       </div>
@@ -339,7 +339,7 @@ export function ChatConfigStudio() {
       {activeTab === "queues" && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--theme-text-secondary)]">
               Queues route portal callers to designated fulfiller assignment groups with custom wait thresholds.
             </p>
             <button
@@ -356,16 +356,16 @@ export function ChatConfigStudio() {
                 });
                 setQueueModalOpen(true);
               }}
-              className="px-3.5 py-2 bg-white hover:bg-slate-200 text-slate-950 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+              className="sw-btn-primary px-3.5 py-2 text-xs uppercase tracking-wider flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Add Support Queue</span>
             </button>
           </div>
 
-          <div className="border border-slate-800 bg-slate-900/60 overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-900 border-b border-slate-800 font-bold uppercase text-slate-400">
+          <div className="sw-panel overflow-x-auto">
+            <table className="sw-table w-full text-left text-xs border-collapse">
+              <thead className="bg-[var(--theme-card-bg)] border-b border-[var(--theme-card-border)] font-bold uppercase text-[var(--theme-text-secondary)]">
                 <tr>
                   <th className="p-3.5">Queue Name</th>
                   <th className="p-3.5">System Code</th>
@@ -376,36 +376,36 @@ export function ChatConfigStudio() {
                   <th className="p-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80">
+              <tbody className="divide-y divide-[var(--theme-card-border)]">
                 {queues.map((q) => (
-                  <tr key={q.id} className="hover:bg-slate-800/50 transition-colors">
-                    <td className="p-3.5 font-bold text-white">
+                  <tr key={q.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
+                    <td className="p-3.5 font-bold text-[var(--theme-text-primary)]">
                       {q.name}
                     </td>
-                    <td className="p-3.5 font-mono text-slate-400">
+                    <td className="p-3.5 font-mono text-[var(--theme-text-secondary)]">
                       {q.code}
                     </td>
                     <td className="p-3.5">
                       {q.assignmentGroup ? (
-                        <span className="px-2 py-0.5 bg-slate-800 border border-slate-700 text-slate-200">
+                        <span className="px-2 py-0.5 bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]">
                           {q.assignmentGroup.name}
                         </span>
                       ) : (
-                        <span className="text-slate-400">All Available ITIL</span>
+                        <span className="text-[var(--theme-text-secondary)]">All Available ITIL</span>
                       )}
                     </td>
-                    <td className="p-3.5 font-mono text-slate-300">
+                    <td className="p-3.5 font-mono text-[var(--theme-text-primary)]">
                       {q.maxWaitSeconds}s
                     </td>
-                    <td className="p-3.5 font-mono text-slate-300">
+                    <td className="p-3.5 font-mono text-[var(--theme-text-primary)]">
                       #{q.priority}
                     </td>
                     <td className="p-3.5">
                       <span
                         className={`px-2 py-0.5 text-[10px] font-bold uppercase ${
                           q.active
-                            ? "bg-green-950/80 text-green-300 border border-green-800"
-                            : "bg-slate-800 text-slate-400 border border-slate-700"
+                            ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]"
+                            : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] border border-[var(--theme-card-border)]"
                         }`}
                       >
                         {q.active ? "Active" : "Disabled"}
@@ -417,14 +417,14 @@ export function ChatConfigStudio() {
                           setEditingQueue(q);
                           setQueueModalOpen(true);
                         }}
-                        className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-white"
+                        className="p-1.5 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                         title="Edit Queue"
                       >
                         <Edit2 className="w-3.5 h-3.5 inline" />
                       </button>
                       <button
                         onClick={() => handleDeleteQueue(q.id)}
-                        className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-red-400"
+                        className="p-1.5 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)]"
                         title="Delete Queue"
                       >
                         <Trash2 className="w-3.5 h-3.5 inline" />
@@ -442,11 +442,11 @@ export function ChatConfigStudio() {
       {activeTab === "canned" && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--theme-text-secondary)]">
               Canned responses allow agents to insert standardized greetings, diagnostics, and closing messages with{" "}
-              <code className="text-red-400 font-mono">/shortcuts</code> and variables like{" "}
-              <code className="text-amber-300 font-mono">{"{{caller_name}}"}</code> or{" "}
-              <code className="text-amber-300 font-mono">{"{{agent_name}}"}</code>.
+              <code className="text-[var(--swiss-red)] font-mono">/shortcuts</code> and variables like{" "}
+              <code className="text-[var(--swiss-amber)] font-mono">{"{{caller_name}}"}</code> or{" "}
+              <code className="text-[var(--swiss-amber)] font-mono">{"{{agent_name}}"}</code>.
             </p>
             <button
               onClick={() => {
@@ -459,16 +459,16 @@ export function ChatConfigStudio() {
                 });
                 setCannedModalOpen(true);
               }}
-              className="px-3.5 py-2 bg-white hover:bg-slate-200 text-slate-950 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+              className="sw-btn-primary px-3.5 py-2 text-xs uppercase tracking-wider flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Add Canned Macro</span>
             </button>
           </div>
 
-          <div className="border border-slate-800 bg-slate-900/60 overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-900 border-b border-slate-800 font-bold uppercase text-slate-400">
+          <div className="sw-panel overflow-x-auto">
+            <table className="sw-table w-full text-left text-xs border-collapse">
+              <thead className="bg-[var(--theme-card-bg)] border-b border-[var(--theme-card-border)] font-bold uppercase text-[var(--theme-text-secondary)]">
                 <tr>
                   <th className="p-3.5">Shortcut</th>
                   <th className="p-3.5">Title</th>
@@ -478,27 +478,27 @@ export function ChatConfigStudio() {
                   <th className="p-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/80">
+              <tbody className="divide-y divide-[var(--theme-card-border)]">
                 {cannedResponses.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-800/50 transition-colors">
-                    <td className="p-3.5 font-mono font-bold text-red-400">
+                  <tr key={c.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
+                    <td className="p-3.5 font-mono font-bold text-[var(--swiss-red)]">
                       {c.shortcut}
                     </td>
-                    <td className="p-3.5 font-bold text-white">
+                    <td className="p-3.5 font-bold text-[var(--theme-text-primary)]">
                       {c.title}
                     </td>
-                    <td className="p-3.5 uppercase text-[10px] text-slate-400 font-mono">
+                    <td className="p-3.5 uppercase text-[10px] text-[var(--theme-text-secondary)] font-mono">
                       {c.category}
                     </td>
-                    <td className="p-3.5 max-w-md truncate text-slate-300">
+                    <td className="p-3.5 max-w-md truncate text-[var(--theme-text-primary)]">
                       {c.message}
                     </td>
                     <td className="p-3.5">
                       <span
                         className={`px-2 py-0.5 text-[10px] font-bold uppercase ${
                           c.active
-                            ? "bg-green-950/80 text-green-300 border border-green-800"
-                            : "bg-slate-800 text-slate-400 border border-slate-700"
+                            ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]"
+                            : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] border border-[var(--theme-card-border)]"
                         }`}
                       >
                         {c.active ? "Active" : "Disabled"}
@@ -510,14 +510,14 @@ export function ChatConfigStudio() {
                           setEditingCanned(c);
                           setCannedModalOpen(true);
                         }}
-                        className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-white"
+                        className="p-1.5 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                         title="Edit Macro"
                       >
                         <Edit2 className="w-3.5 h-3.5 inline" />
                       </button>
                       <button
                         onClick={() => handleDeleteCanned(c.id)}
-                        className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-red-400"
+                        className="p-1.5 hover:bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)]"
                         title="Delete Macro"
                       >
                         <Trash2 className="w-3.5 h-3.5 inline" />
@@ -534,18 +534,18 @@ export function ChatConfigStudio() {
       {/* TAB 3: Global Routing & Settings */}
       {activeTab === "settings" && (
         <form onSubmit={handleSaveSettings} className="space-y-6 max-w-2xl">
-          <div className="border border-slate-800 p-6 space-y-5 bg-slate-900">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-white border-b border-slate-800 pb-3">
+          <div className="border border-[var(--theme-card-border)] p-6 space-y-5 bg-[var(--theme-card-bg)]">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--theme-text-primary)] border-b border-[var(--theme-card-border)] pb-3">
               Fulfiller Dispatch & Concurrency Limits
             </h3>
 
             {/* Master Toggle */}
             <div className="flex items-center justify-between">
               <div>
-                <label className="text-xs font-bold uppercase text-white block">
+                <label className="text-xs font-bold uppercase text-[var(--theme-text-primary)] block">
                   Enable Live Agent Chat
                 </label>
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-[var(--theme-text-secondary)]">
                   Controls whether the floating chat widget is visible on the Self-Service Portal.
                 </span>
               </div>
@@ -553,16 +553,16 @@ export function ChatConfigStudio() {
                 type="checkbox"
                 checked={config.enabled}
                 onChange={(e) => setConfig({ ...config, enabled: e.target.checked })}
-                className="w-4 h-4 accent-red-600"
+                className="w-4 h-4 accent-[var(--swiss-red)]"
               />
             </div>
 
             {/* Max Concurrent Chats */}
             <div>
-              <label className="text-xs font-bold uppercase text-white block mb-1">
+              <label className="text-xs font-bold uppercase text-[var(--theme-text-primary)] block mb-1">
                 Max Concurrent Chats per Agent: {config.maxConcurrentChatsPerAgent}
               </label>
-              <span className="text-[11px] text-slate-400 block mb-2">
+              <span className="text-[11px] text-[var(--theme-text-secondary)] block mb-2">
                 Prevents fulfiller overload. Incoming chats will hold in queue once an agent hits capacity.
               </span>
               <input
@@ -573,13 +573,13 @@ export function ChatConfigStudio() {
                 onChange={(e) =>
                   setConfig({ ...config, maxConcurrentChatsPerAgent: Number(e.target.value) })
                 }
-                className="w-full accent-red-600"
+                className="w-full accent-[var(--swiss-red)]"
               />
             </div>
 
             {/* Inactivity Abandon Timeout */}
             <div>
-              <label className="text-xs font-bold uppercase text-white block mb-1">
+              <label className="text-xs font-bold uppercase text-[var(--theme-text-primary)] block mb-1">
                 Auto-Abandon Inactivity Timeout (Seconds)
               </label>
               <input
@@ -588,17 +588,17 @@ export function ChatConfigStudio() {
                 onChange={(e) =>
                   setConfig({ ...config, autoAbandonTimeoutSeconds: Number(e.target.value) })
                 }
-                className="w-full p-2.5 text-xs bg-slate-950 border border-slate-700 text-white"
+                className="w-full p-2.5 text-xs bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
               />
             </div>
 
             {/* Sound Alerts */}
             <div className="flex items-center justify-between">
               <div>
-                <label className="text-xs font-bold uppercase text-white block">
+                <label className="text-xs font-bold uppercase text-[var(--theme-text-primary)] block">
                   Audible Queue Alerts
                 </label>
-                <span className="text-[11px] text-slate-400">
+                <span className="text-[11px] text-[var(--theme-text-secondary)]">
                   Plays audio chime in Fulfiller Workspace when a new caller enters the queue.
                 </span>
               </div>
@@ -606,13 +606,13 @@ export function ChatConfigStudio() {
                 type="checkbox"
                 checked={config.soundNotifications}
                 onChange={(e) => setConfig({ ...config, soundNotifications: e.target.checked })}
-                className="w-4 h-4 accent-red-600"
+                className="w-4 h-4 accent-[var(--swiss-red)]"
               />
             </div>
 
             {/* Operating Schedule */}
             <div>
-              <label className="text-xs font-bold uppercase text-white block mb-1">
+              <label className="text-xs font-bold uppercase text-[var(--theme-text-primary)] block mb-1">
                 Operating Schedule Coverage
               </label>
               <input
@@ -622,7 +622,7 @@ export function ChatConfigStudio() {
                   setConfig({ ...config, operatingHoursSchedule: e.target.value })
                 }
                 placeholder="e.g. 24x7 Enterprise Support"
-                className="w-full p-2.5 text-xs bg-slate-950 border border-slate-700 text-white"
+                className="w-full p-2.5 text-xs bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
               />
             </div>
           </div>
@@ -630,13 +630,13 @@ export function ChatConfigStudio() {
           <div className="flex items-center gap-3">
             <button
               type="submit"
-              className="px-6 py-2.5 bg-white hover:bg-slate-200 text-slate-950 text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+              className="sw-btn-primary px-6 py-2.5 text-xs uppercase tracking-wider flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
               <span>Save Chat Settings</span>
             </button>
             {saveSuccess && (
-              <span className="text-xs text-green-400 font-bold flex items-center gap-1">
+              <span className="text-xs text-[var(--swiss-emerald)] font-bold flex items-center gap-1">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Configuration Saved</span>
               </span>
@@ -647,20 +647,20 @@ export function ChatConfigStudio() {
 
       {/* Queue Modal */}
       {queueModalOpen && editingQueue && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-900 border border-slate-700 w-full max-w-lg p-6 space-y-4 text-white">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="sw-panel-strong w-full max-w-lg p-6 space-y-4 text-[var(--theme-text-primary)]">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--theme-text-primary)]">
                 {editingQueue.id ? "Edit Support Queue" : "New Support Queue"}
               </h3>
               <button onClick={() => setQueueModalOpen(false)}>
-                <X className="w-4 h-4 text-slate-400 hover:text-white" />
+                <X className="w-4 h-4 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]" />
               </button>
             </div>
 
             <form onSubmit={handleSaveQueue} className="space-y-3 text-xs">
               <div>
-                <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                   Queue Name
                 </label>
                 <input
@@ -668,12 +668,12 @@ export function ChatConfigStudio() {
                   required
                   value={editingQueue.name || ""}
                   onChange={(e) => setEditingQueue({ ...editingQueue, name: e.target.value })}
-                  className="w-full p-2 bg-slate-950 border border-slate-700 text-white"
+                  className="w-full p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
                 />
               </div>
 
               <div>
-                <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                   Unique Code
                 </label>
                 <input
@@ -686,12 +686,12 @@ export function ChatConfigStudio() {
                       code: e.target.value.toLowerCase().replace(/\s+/g, "_"),
                     })
                   }
-                  className="w-full p-2 font-mono bg-slate-950 border border-slate-700 text-white"
+                  className="w-full p-2 font-mono bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
                 />
               </div>
 
               <div>
-                <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                   Assignment Group
                 </label>
                 <select
@@ -702,7 +702,7 @@ export function ChatConfigStudio() {
                       assignmentGroupId: e.target.value || undefined,
                     })
                   }
-                  className="w-full p-2 bg-slate-950 border border-slate-700 text-white"
+                  className="w-full p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
                 >
                   <option value="">Any Available ITIL Agent</option>
                   {groups.map((g) => (
@@ -715,7 +715,7 @@ export function ChatConfigStudio() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                  <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                     Max Wait (Seconds)
                   </label>
                   <input
@@ -727,11 +727,11 @@ export function ChatConfigStudio() {
                         maxWaitSeconds: Number(e.target.value),
                       })
                     }
-                    className="w-full p-2 bg-slate-950 border border-slate-700 text-white"
+                    className="w-full p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
                   />
                 </div>
                 <div>
-                  <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                  <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                     Priority
                   </label>
                   <input
@@ -743,13 +743,13 @@ export function ChatConfigStudio() {
                         priority: Number(e.target.value),
                       })
                     }
-                    className="w-full p-2 bg-slate-950 border border-slate-700 text-white"
+                    className="w-full p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                   Automated Welcome Greeting
                 </label>
                 <textarea
@@ -758,7 +758,7 @@ export function ChatConfigStudio() {
                   onChange={(e) =>
                     setEditingQueue({ ...editingQueue, welcomeMessage: e.target.value })
                   }
-                  className="w-full p-2 bg-slate-950 border border-slate-700 text-white resize-none"
+                  className="w-full p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] resize-none"
                 />
               </div>
 
@@ -770,24 +770,24 @@ export function ChatConfigStudio() {
                   onChange={(e) =>
                     setEditingQueue({ ...editingQueue, active: e.target.checked })
                   }
-                  className="w-4 h-4 accent-red-600"
+                  className="w-4 h-4 accent-[var(--swiss-red)]"
                 />
-                <label htmlFor="queueActive" className="font-bold uppercase text-[11px] text-slate-200">
+                <label htmlFor="queueActive" className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)]">
                   Queue Active
                 </label>
               </div>
 
-              <div className="pt-3 flex justify-end gap-2 border-t border-slate-800">
+              <div className="pt-3 flex justify-end gap-2 border-t border-[var(--theme-card-border)]">
                 <button
                   type="button"
                   onClick={() => setQueueModalOpen(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-white font-bold uppercase text-xs"
+                  className="px-4 py-2 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] font-bold uppercase text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-white hover:bg-slate-200 text-slate-950 font-bold uppercase text-xs"
+                  className="sw-btn-primary px-5 py-2 uppercase text-xs"
                 >
                   Save Queue
                 </button>
@@ -799,21 +799,21 @@ export function ChatConfigStudio() {
 
       {/* Canned Macro Modal */}
       {cannedModalOpen && editingCanned && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-900 border border-slate-700 w-full max-w-lg p-6 space-y-4 text-white">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-white">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="sw-panel-strong w-full max-w-lg p-6 space-y-4 text-[var(--theme-text-primary)]">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-[var(--theme-text-primary)]">
                 {editingCanned.id ? "Edit Canned Macro" : "New Canned Macro"}
               </h3>
               <button onClick={() => setCannedModalOpen(false)}>
-                <X className="w-4 h-4 text-slate-400 hover:text-white" />
+                <X className="w-4 h-4 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]" />
               </button>
             </div>
 
             <form onSubmit={handleSaveCanned} className="space-y-3 text-xs">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                  <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                     Shortcut (e.g. /greet)
                   </label>
                   <input
@@ -823,11 +823,11 @@ export function ChatConfigStudio() {
                     onChange={(e) =>
                       setEditingCanned({ ...editingCanned, shortcut: e.target.value })
                     }
-                    className="w-full p-2 font-mono bg-slate-950 border border-slate-700 text-white"
+                    className="w-full p-2 font-mono bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
                   />
                 </div>
                 <div>
-                  <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                  <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                     Category
                   </label>
                   <select
@@ -835,7 +835,7 @@ export function ChatConfigStudio() {
                     onChange={(e) =>
                       setEditingCanned({ ...editingCanned, category: e.target.value })
                     }
-                    className="w-full p-2 bg-slate-950 border border-slate-700 text-white"
+                    className="w-full p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
                   >
                     <option value="general">General</option>
                     <option value="troubleshooting">Troubleshooting</option>
@@ -845,7 +845,7 @@ export function ChatConfigStudio() {
               </div>
 
               <div>
-                <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                   Title
                 </label>
                 <input
@@ -856,12 +856,12 @@ export function ChatConfigStudio() {
                     setEditingCanned({ ...editingCanned, title: e.target.value })
                   }
                   placeholder="e.g. Friendly Initial Greeting"
-                  className="w-full p-2 bg-slate-950 border border-slate-700 text-white"
+                  className="w-full p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)]"
                 />
               </div>
 
               <div>
-                <label className="font-bold uppercase text-[11px] text-slate-300 block mb-1">
+                <label className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)] block mb-1">
                   Message Body (Supports {"{{caller_name}}"}, {"{{agent_name}}"}, {"{{chat_number}}"})
                 </label>
                 <textarea
@@ -872,7 +872,7 @@ export function ChatConfigStudio() {
                     setEditingCanned({ ...editingCanned, message: e.target.value })
                   }
                   placeholder="Template text inserted when agent triggers macro..."
-                  className="w-full p-2 bg-slate-950 border border-slate-700 text-white resize-none"
+                  className="w-full p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] resize-none"
                 />
               </div>
 
@@ -884,24 +884,24 @@ export function ChatConfigStudio() {
                   onChange={(e) =>
                     setEditingCanned({ ...editingCanned, active: e.target.checked })
                   }
-                  className="w-4 h-4 accent-red-600"
+                  className="w-4 h-4 accent-[var(--swiss-red)]"
                 />
-                <label htmlFor="cannedActive" className="font-bold uppercase text-[11px] text-slate-200">
+                <label htmlFor="cannedActive" className="font-bold uppercase text-[11px] text-[var(--theme-text-primary)]">
                   Macro Active
                 </label>
               </div>
 
-              <div className="pt-3 flex justify-end gap-2 border-t border-slate-800">
+              <div className="pt-3 flex justify-end gap-2 border-t border-[var(--theme-card-border)]">
                 <button
                   type="button"
                   onClick={() => setCannedModalOpen(false)}
-                  className="px-4 py-2 text-slate-400 hover:text-white font-bold uppercase text-xs"
+                  className="px-4 py-2 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] font-bold uppercase text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-white hover:bg-slate-200 text-slate-950 font-bold uppercase text-xs"
+                  className="sw-btn-primary px-5 py-2 uppercase text-xs"
                 >
                   Save Macro
                 </button>

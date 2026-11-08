@@ -26,6 +26,40 @@ export interface WorkspaceTab {
   isDirty?: boolean;
 }
 
+// Readable tab titles for routes named after tables (e.g. /workspace/cmn_location)
+const ROUTE_TITLES: Record<string, string> = {
+  cmn_location: "Locations",
+  locations: "Locations",
+  cmn_region: "Regions",
+  cmn_state: "States / Provinces",
+  cmn_campus: "Campuses",
+  cmn_building: "Buildings",
+  cmn_floor: "Floors",
+  cmn_space: "Spaces & Rooms",
+  cmn_reservation: "Reservations",
+  cmdb_ci: "Configuration Items",
+  kb_knowledge: "Knowledge",
+  problem: "Problems",
+  sc_task: "Catalog Tasks",
+  rm_story: "Stories",
+  rm_epic: "Epics",
+  rm_sprint: "Sprints",
+  task_board: "Task Board",
+  "task-board": "Task Board",
+  "morning-checks": "Morning Checks",
+};
+
+function routeTitle(segment: string): string {
+  return (
+    ROUTE_TITLES[segment] ??
+    segment
+      .split(/[_-]+/)
+      .filter(Boolean)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ")
+  );
+}
+
 const DEFAULT_TABS: WorkspaceTab[] = [
   {
     id: "dashboard",
@@ -93,7 +127,14 @@ export function WorkspaceTabBar() {
       } else {
         const parts = pathname.split("/").filter(Boolean);
         const lastPart = parts[parts.length - 1];
-        title = lastPart ? lastPart.charAt(0).toUpperCase() + lastPart.slice(1) : "Tab";
+        const parent = parts[parts.length - 2];
+        if (lastPart === "new" && parent && parent !== "workspace") {
+          title = `New: ${routeTitle(parent)}`;
+        } else if (parent && ROUTE_TITLES[parent]) {
+          title = routeTitle(parent); // a record page, e.g. /workspace/cmn_state/<id>
+        } else {
+          title = lastPart ? routeTitle(lastPart) : "Tab";
+        }
       }
 
       return [
@@ -168,9 +209,9 @@ export function WorkspaceTabBar() {
             <Link
               key={tab.id}
               href={tab.href}
-              className={`group flex items-center gap-2 px-3 py-1.5 rounded-t-lg transition-all border-b-2 text-xs font-medium whitespace-nowrap ${
+              className={`group flex items-center gap-2 px-3 py-1.5 transition-all border-b-2 text-xs font-medium whitespace-nowrap ${
                 isActive
-                  ? "bg-white dark:bg-slate-900 border-[var(--md-sys-color-primary,#0b57d0)] text-[var(--md-sys-color-primary,#0b57d0)] shadow-xs"
+                  ? "bg-white dark:bg-neutral-950 border-[var(--md-sys-color-primary,#0b57d0)] text-[var(--md-sys-color-primary,#0b57d0)] font-bold"
                   : "border-transparent text-slate-600 dark:text-slate-400 hover:bg-black/5 dark:hover:bg-white/5"
               }`}
             >

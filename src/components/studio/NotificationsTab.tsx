@@ -166,24 +166,24 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
       {/* Sub-Tab Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4">
         <div>
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Mail className="w-5 h-5 text-rose-600" />
+          <h2 className="text-base font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
+            <Mail className="w-5 h-5 text-[var(--swiss-red)]" />
             <span>Email Notifications & Event Registry</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-[var(--theme-text-secondary)] mt-0.5">
             Configure sysevent_email_action notification templates with &#36;{'{'}token{'}'} dynamic evaluation and monitor the sysevent bus.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="bg-slate-100 p-0.5 rounded-lg flex text-xs font-semibold">
+          <div className="bg-[var(--theme-accent-light)] p-0.5 flex text-xs font-semibold">
             <button
               type="button"
               onClick={() => setSubTab("notifications")}
-              className={`px-3 py-1.5 rounded-md transition-all ${
+              className={`px-3 py-1.5 transition-all ${
                 subTab === "notifications"
-                  ? "bg-white text-slate-900 shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
+                  ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)]"
+                  : "text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               }`}
             >
               Email Rules ({notifications.length})
@@ -191,10 +191,10 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
             <button
               type="button"
               onClick={() => setSubTab("events")}
-              className={`px-3 py-1.5 rounded-md transition-all ${
+              className={`px-3 py-1.5 transition-all ${
                 subTab === "events"
-                  ? "bg-white text-slate-900 shadow-xs"
-                  : "text-slate-600 hover:text-slate-900"
+                  ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)]"
+                  : "text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               }`}
             >
               Event Registry ({events.length})
@@ -204,7 +204,7 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
           <button
             type="button"
             onClick={loadData}
-            className="p-2 border rounded-lg text-slate-500 hover:text-slate-800 transition-colors"
+            className="p-2 border text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
@@ -213,7 +213,7 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
             <button
               type="button"
               onClick={handleOpenCreate}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-rose-600 text-white hover:bg-rose-700 shadow-xs transition-colors"
+              className="sw-btn-primary flex items-center gap-1.5 px-4 py-2 text-xs"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>New Email Rule</span>
@@ -225,7 +225,7 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
       {/* Notifications Tab Content */}
       {subTab === "notifications" ? (
         notifications.length === 0 ? (
-          <div className="p-12 text-center text-xs text-slate-400 border border-dashed rounded-2xl italic">
+          <div className="p-12 text-center text-xs text-[var(--theme-text-secondary)] border border-dashed italic">
             No Email Notifications configured. Click "New Email Rule" to create templates.
           </div>
         ) : (
@@ -233,33 +233,33 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
             {notifications.map((n) => (
               <div
                 key={n.id}
-                className="p-5 rounded-2xl border shadow-xs bg-white hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                className="p-5 border bg-[var(--theme-card-bg)] transition-all flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-2">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-bold text-sm text-slate-900">{n.name}</h3>
+                    <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">{n.name}</h3>
                     <span
-                      className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                        n.active ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"
+                      className={`text-[10px] uppercase font-bold px-2 py-0.5 ${
+                        n.active ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)]" : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]"
                       }`}
                     >
                       {n.active ? "Active" : "Inactive"}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-[11px] font-mono text-rose-700">
-                    <span className="bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                  <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--swiss-red)]">
+                    <span className="bg-[var(--theme-accent-light)] px-2 py-0.5 border border-[var(--swiss-red)]">
                       Table: {n.tableName}
                     </span>
-                    <span className="text-slate-400">•</span>
-                    <span className="text-slate-600 font-semibold">{n.eventName}</span>
+                    <span className="text-[var(--theme-text-secondary)]">•</span>
+                    <span className="text-[var(--theme-text-secondary)] font-semibold">{n.eventName}</span>
                   </div>
 
-                  <div className="text-xs font-medium text-slate-800 bg-slate-50 p-2 rounded border truncate">
+                  <div className="text-xs font-medium text-[var(--theme-text-primary)] bg-[var(--theme-accent-light)] p-2 border truncate">
                     <strong>Subject:</strong> {n.subject}
                   </div>
 
-                  <p className="text-xs text-slate-600 line-clamp-3 font-mono text-[11px]">
+                  <p className="text-xs text-[var(--theme-text-secondary)] line-clamp-3 font-mono text-[11px]">
                     {n.body}
                   </p>
                 </div>
@@ -268,7 +268,7 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
                   <button
                     type="button"
                     onClick={() => handleOpenEdit(n)}
-                    className="p-1.5 text-slate-500 hover:text-rose-600 rounded-md hover:bg-slate-100"
+                    className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)] hover:bg-[var(--theme-accent-light)]"
                     title="Edit Rule"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
@@ -276,7 +276,7 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
                   <button
                     type="button"
                     onClick={() => handleDelete(n.id)}
-                    className="p-1.5 text-slate-500 hover:text-red-600 rounded-md hover:bg-slate-100"
+                    className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)] hover:bg-[var(--theme-accent-light)]"
                     title="Delete Rule"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -290,9 +290,9 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
         /* Event Registry & Test Dispatcher */
         <div className="space-y-6">
           {/* Dispatch Tester Card */}
-          <div className="p-5 rounded-2xl border bg-slate-50 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-amber-600" />
+          <div className="p-5 border bg-[var(--theme-accent-light)] space-y-3">
+            <h3 className="sw-section-title flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-[var(--swiss-amber)]" />
               <span>Simulate / Enqueue Platform Event (gs.eventQueue)</span>
             </h3>
 
@@ -303,26 +303,26 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
                 value={testEventName}
                 onChange={(e) => setTestEventName(e.target.value)}
                 placeholder="Event Name (e.g. incident.created)"
-                className="bg-white border rounded-lg px-3 py-2 font-mono text-slate-800 focus:outline-rose-500"
+                className="sw-input px-3 py-2 font-mono"
               />
               <input
                 type="text"
                 value={testParm1}
                 onChange={(e) => setTestParm1(e.target.value)}
                 placeholder="parm1 (e.g. recipient email)"
-                className="bg-white border rounded-lg px-3 py-2 text-slate-800 focus:outline-rose-500"
+                className="sw-input px-3 py-2"
               />
               <input
                 type="text"
                 value={testParm2}
                 onChange={(e) => setTestParm2(e.target.value)}
                 placeholder="parm2 (e.g. extra context)"
-                className="bg-white border rounded-lg px-3 py-2 text-slate-800 focus:outline-rose-500"
+                className="sw-input px-3 py-2"
               />
               <button
                 type="submit"
                 disabled={dispatching}
-                className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-rose-600 text-white font-semibold hover:bg-rose-700 shadow-xs"
+                className="sw-btn-primary flex items-center justify-center gap-1.5 px-4 py-2"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{dispatching ? "Sending..." : "Enqueue Event"}</span>
@@ -330,14 +330,14 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
             </form>
 
             {dispatchMsg && (
-              <div className="text-xs font-semibold text-emerald-700 mt-1">{dispatchMsg}</div>
+              <div className="text-xs font-semibold text-[var(--swiss-emerald)] mt-1">{dispatchMsg}</div>
             )}
           </div>
 
           {/* Events Log Table */}
-          <div className="border rounded-2xl overflow-hidden shadow-xs bg-white">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-600 font-semibold text-[11px] border-b">
+          <div className="border overflow-hidden bg-[var(--theme-card-bg)]">
+            <table className="sw-table w-full text-left text-xs">
+              <thead className="bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] font-semibold text-[11px] border-b">
                 <tr>
                   <th className="p-3">Event Name</th>
                   <th className="p-3">Table</th>
@@ -351,30 +351,30 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
               <tbody className="divide-y text-[11px]">
                 {events.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-slate-400 italic">
+                    <td colSpan={7} className="p-8 text-center text-[var(--theme-text-secondary)] italic">
                       No events currently logged in sysevent table.
                     </td>
                   </tr>
                 ) : (
                   events.map((evt) => (
-                    <tr key={evt.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="p-3 font-mono font-bold text-rose-700">{evt.name}</td>
-                      <td className="p-3 font-mono text-slate-600">{evt.tableName || "—"}</td>
-                      <td className="p-3 font-mono text-slate-400 max-w-[120px] truncate">
+                    <tr key={evt.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
+                      <td className="p-3 font-mono font-bold text-[var(--swiss-red)]">{evt.name}</td>
+                      <td className="p-3 font-mono text-[var(--theme-text-secondary)]">{evt.tableName || "—"}</td>
+                      <td className="p-3 font-mono text-[var(--theme-text-secondary)] max-w-[120px] truncate">
                         {evt.instanceId || "—"}
                       </td>
-                      <td className="p-3 text-slate-700 truncate max-w-[140px]">{evt.parm1 || "—"}</td>
-                      <td className="p-3 text-slate-700 truncate max-w-[140px]">{evt.parm2 || "—"}</td>
+                      <td className="p-3 text-[var(--theme-text-primary)] truncate max-w-[140px]">{evt.parm1 || "—"}</td>
+                      <td className="p-3 text-[var(--theme-text-primary)] truncate max-w-[140px]">{evt.parm2 || "—"}</td>
                       <td className="p-3">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            evt.processed ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                          className={`px-2 py-0.5 text-[10px] font-bold ${
+                            evt.processed ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)]" : "bg-[var(--theme-accent-light)] text-[var(--swiss-amber)]"
                           }`}
                         >
                           {evt.processed ? "Processed" : "Pending"}
                         </span>
                       </td>
-                      <td className="p-3 text-slate-400 font-mono">
+                      <td className="p-3 text-[var(--theme-text-secondary)] font-mono">
                         {new Date(evt.createdAt).toLocaleString()}
                       </td>
                     </tr>
@@ -389,15 +389,15 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl bg-white rounded-2xl border shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-xl bg-[var(--theme-card-bg)] border p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-bold text-sm text-slate-900">
+              <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">
                 {editingId ? "Edit Email Notification" : "Create Email Notification"}
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -406,22 +406,22 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
             <form onSubmit={handleSave} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Notification Name *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Notification Name *</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Incident Assigned Notification"
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-rose-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-red)]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Target Table *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Target Table *</label>
                   <select
                     value={tableName}
                     onChange={(e) => setTableName(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-rose-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-red)]"
                   >
                     <option value="incident">Incident [incident]</option>
                     <option value="change_request">Change Request [change_request]</option>
@@ -432,19 +432,19 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Trigger Event (sysevent) *</label>
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Trigger Event (sysevent) *</label>
                 <input
                   type="text"
                   required
                   value={eventName}
                   onChange={(e) => setEventName(e.target.value)}
                   placeholder="incident.created, change.approved"
-                  className="w-full border rounded-lg px-3 py-2 font-mono text-slate-800 focus:outline-rose-500"
+                  className="w-full border px-3 py-2 font-mono text-[var(--theme-text-primary)] focus:outline-[var(--swiss-red)]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                   Email Subject Template (supports &#36;{'{'}field{'}'}) *
                 </label>
                 <input
@@ -452,19 +452,19 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
                   required
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 text-slate-800 font-mono text-xs focus:outline-rose-500"
+                  className="w-full border px-3 py-2 text-[var(--theme-text-primary)] font-mono text-xs focus:outline-[var(--swiss-red)]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">
                   Email Body Template (supports &#36;{'{'}number{'}'}, &#36;{'{'}short_description{'}'}, &#36;{'{'}priority{'}'})
                 </label>
                 <textarea
                   rows={6}
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
-                  className="w-full font-mono text-xs border rounded-lg p-3 text-slate-800 bg-slate-50 focus:outline-rose-500"
+                  className="sw-input w-full font-mono text-xs p-3"
                 />
               </div>
 
@@ -473,22 +473,22 @@ export function NotificationsTab({ tables }: { tables: any[] }) {
                   type="checkbox"
                   checked={active}
                   onChange={(e) => setActive(e.target.checked)}
-                  className="rounded text-rose-600 focus:ring-rose-500"
+                  className="text-[var(--swiss-red)] focus:ring-[var(--swiss-red)]"
                 />
-                <span className="text-slate-700 font-semibold">Active & Listening to Events</span>
+                <span className="text-[var(--theme-text-primary)] font-semibold">Active & Listening to Events</span>
               </label>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-full border text-slate-600 hover:bg-slate-50 font-semibold"
+                  className="px-4 py-2 border text-[var(--theme-text-secondary)] hover:bg-[var(--theme-accent-light)] font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full bg-rose-600 text-white font-semibold hover:bg-rose-700 shadow-xs"
+                  className="sw-btn-primary px-5 py-2"
                 >
                   Save Notification
                 </button>

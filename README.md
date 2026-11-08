@@ -1,7 +1,7 @@
 # ServiceMeow 🐾
 
 <p align="center">
-  <img src="docs/assets/hero-banner.jpg" alt="ServiceMeow Banner" width="100%" style="border-radius: 12px; border: 1px solid #1e293b;" />
+  <img src="docs/assets/hero-banner.png" alt="ServiceMeow Space Console" width="100%" style="border-radius: 12px; border: 1px solid #1e293b;" />
 </p>
 
 <p align="center">
@@ -443,6 +443,16 @@ High-performance, memory-safe native Rust microservices engineered for CPU-bound
   - `npm run rust:daemon` — Launch Axum 0.8 HTTP daemon
   - `npm run rust:build` — Compile optimized release binary
 
+### 25. More Operations Screens
+
+| Executive Dashboard (`/workspace/dashboard`) | Visual Task Board (`/workspace/task-board`) |
+| :---: | :---: |
+| <img src="docs/assets/dashboard-showcase.png" alt="Executive ITIL Dashboard" width="100%" /> | <img src="docs/assets/task-board-showcase.png" alt="Visual Task Board" width="100%" /> |
+| **Reports & Analytics (`/workspace/reports`)** | **Live Agent Chat (`/workspace/chat`)** |
+| <img src="docs/assets/reports-showcase.png" alt="Ad-hoc Report Builder" width="100%" /> | <img src="docs/assets/live-chat-showcase.png" alt="Live Agent Chat Cockpit" width="100%" /> |
+
+> All screenshots are captured from a running instance by `npm run capture:screenshots` (see `scripts/capture-real-screenshots.js`). Each image comes from its own page or view.
+
 ---
 
 ## 🚀 Quick Start with Docker Compose
@@ -513,7 +523,7 @@ npm run worker
 ServiceMeow includes a full test suite with **144 passing tests across 20 Vitest test suites** plus **6 native Rust integration tests** covering cryptographic signing, password hashing, rate limiting, system table ACL default-deny, QuickJS WASM sandbox security boundaries, role-based persona navigation segregation, spatial entity operations, the 6-tier Workplace Hub spatial hierarchy, CAD floorplan manipulation, modular administrator roles, search ranking, agile / CMDB / knowledge entity integrity, **Watchtower attention stream aggregation**, **Mandatory SOP Checklist Gatekeeper HTTP 422 enforcement**, **Shift Morning Checks operational rounds with 1-click incident escalation**, **CRM Customer 360 & Deal Pipelines**, **Automated Load-Balancing & Quantitative Change Risk Scoring**, and **Targeted Rust Core Engine Microservices & Client Bridge**.
 
 ```bash
-# Run Vitest test suite (144 passing tests across 20 files)
+# Run Vitest test suite (175 passing tests across 22 files)
 npm run test
 
 # Run native Rust integration test suite (6 passing integration tests)

@@ -47,8 +47,8 @@ const SPATIAL_META: Record<string, MetaInfo> = {
     tier: "Tier 1 • Continental / Geographical Region",
     tierNum: 1,
     icon: MapIcon,
-    color: "text-purple-400",
-    badgeBg: "bg-purple-500/10 border-purple-500/30 text-purple-400",
+    color: "text-[var(--theme-text-primary)]",
+    badgeBg: "bg-[var(--theme-accent-light)] border-[var(--theme-card-border)] text-[var(--theme-text-primary)]",
     childTable: "cmn_state",
     childLabel: "States & Provinces",
   },
@@ -57,8 +57,8 @@ const SPATIAL_META: Record<string, MetaInfo> = {
     tier: "Tier 2 • State or Provincial Jurisdiction",
     tierNum: 2,
     icon: MapPin,
-    color: "text-blue-400",
-    badgeBg: "bg-blue-500/10 border-blue-500/30 text-blue-400",
+    color: "text-[var(--swiss-blue)]",
+    badgeBg: "bg-[var(--theme-accent-light)] border-[var(--swiss-blue)] text-[var(--swiss-blue)]",
     parentTable: "cmn_region",
     parentField: "regionId",
     parentLabel: "Parent Region",
@@ -70,8 +70,8 @@ const SPATIAL_META: Record<string, MetaInfo> = {
     tier: "Tier 3 • Facility Campus & Site Grounds",
     tierNum: 3,
     icon: Building2,
-    color: "text-indigo-400",
-    badgeBg: "bg-indigo-500/10 border-indigo-500/30 text-indigo-400",
+    color: "text-[var(--theme-text-primary)]",
+    badgeBg: "bg-[var(--theme-accent-light)] border-[var(--theme-card-border)] text-[var(--theme-text-primary)]",
     parentTable: "cmn_state",
     parentField: "stateId",
     parentLabel: "State / Province",
@@ -83,8 +83,8 @@ const SPATIAL_META: Record<string, MetaInfo> = {
     tier: "Tier 4 • Physical Structure / Pavilion",
     tierNum: 4,
     icon: Building,
-    color: "text-amber-400",
-    badgeBg: "bg-amber-500/10 border-amber-500/30 text-amber-400",
+    color: "text-[var(--swiss-amber)]",
+    badgeBg: "bg-[var(--theme-accent-light)] border-[var(--swiss-amber)] text-[var(--swiss-amber)]",
     parentTable: "cmn_campus",
     parentField: "campusId",
     parentLabel: "Parent Campus",
@@ -96,8 +96,8 @@ const SPATIAL_META: Record<string, MetaInfo> = {
     tier: "Tier 5 • Architectural Story / Floorplate",
     tierNum: 5,
     icon: Layers,
-    color: "text-emerald-400",
-    badgeBg: "bg-emerald-500/10 border-emerald-500/30 text-emerald-400",
+    color: "text-[var(--swiss-emerald)]",
+    badgeBg: "bg-[var(--theme-accent-light)] border-[var(--swiss-emerald)] text-[var(--swiss-emerald)]",
     parentTable: "cmn_building",
     parentField: "buildingId",
     parentLabel: "Parent Building",
@@ -109,8 +109,8 @@ const SPATIAL_META: Record<string, MetaInfo> = {
     tier: "Tier 6 • Usable Spatial Unit / Room / Desk",
     tierNum: 6,
     icon: Box,
-    color: "text-cyan-400",
-    badgeBg: "bg-cyan-500/10 border-cyan-500/30 text-cyan-400",
+    color: "text-[var(--swiss-blue)]",
+    badgeBg: "bg-[var(--theme-accent-light)] border-[var(--swiss-blue)] text-[var(--swiss-blue)]",
     parentTable: "cmn_floor",
     parentField: "floorId",
     parentLabel: "Parent Floor",
@@ -120,8 +120,8 @@ const SPATIAL_META: Record<string, MetaInfo> = {
     tier: "Enterprise Hierarchy • Unified Location Model",
     tierNum: 0,
     icon: Compass,
-    color: "text-indigo-400",
-    badgeBg: "bg-indigo-500/10 border-indigo-500/30 text-indigo-400",
+    color: "text-[var(--theme-text-primary)]",
+    badgeBg: "bg-[var(--theme-accent-light)] border-[var(--theme-card-border)] text-[var(--theme-text-primary)]",
     parentTable: "cmn_location",
     parentField: "parentId",
     parentLabel: "Parent Location",
@@ -131,8 +131,8 @@ const SPATIAL_META: Record<string, MetaInfo> = {
     tier: "Workplace Operations • Room & Desk Booking",
     tierNum: 0,
     icon: Calendar,
-    color: "text-violet-400",
-    badgeBg: "bg-violet-500/10 border-violet-500/30 text-violet-400",
+    color: "text-[var(--theme-text-primary)]",
+    badgeBg: "bg-[var(--theme-accent-light)] border-[var(--theme-card-border)] text-[var(--theme-text-primary)]",
     parentTable: "cmn_space",
     parentField: "spaceId",
     parentLabel: "Booked Space / Room",
@@ -157,8 +157,8 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
     tier: "Spatial Entity",
     tierNum: 0,
     icon: MapPin,
-    color: "text-slate-400",
-    badgeBg: "bg-slate-800 text-slate-300 border-slate-700",
+    color: "text-[var(--theme-text-secondary)]",
+    badgeBg: "bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border-[var(--theme-card-border)]",
   };
 
   const IconComponent = meta.icon;
@@ -522,8 +522,8 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
-        <p className="text-xs font-mono text-slate-400">Loading {meta.title} record details...</p>
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--theme-text-primary)] border-t-transparent animate-spin" />
+        <p className="text-xs font-mono text-[var(--theme-text-secondary)]">Loading {meta.title} record details...</p>
       </div>
     );
   }
@@ -532,41 +532,41 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
     <div className="space-y-6 pb-20">
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-emerald-950/95 border border-emerald-500/40 text-emerald-300 text-xs font-medium shadow-2xl animate-in fade-in slide-in-from-bottom-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-2.5 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] text-xs font-medium animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-[var(--swiss-emerald)] shrink-0" />
           <span>{toastMsg}</span>
         </div>
       )}
 
       {/* Header & Navigation */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="sw-page-header">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
             <Link
               href={`/workspace/${tableName}`}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-medium transition-colors"
+              className="sw-btn-ghost -ml-2"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to {meta.title} List</span>
             </Link>
-            <span className="text-slate-600 font-mono text-xs">•</span>
-            <span className="font-mono text-[11px] text-slate-500 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800">
+            <span className="text-[var(--theme-text-secondary)] font-mono text-xs">•</span>
+            <span className="sw-code">
               sys_table: {tableName}
             </span>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-xl border ${meta.badgeBg}`}>
+            <div className={`p-2.5 border ${meta.badgeBg}`}>
               <IconComponent className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+              <h1 className="sw-title text-2xl md:text-3xl flex flex-wrap items-center gap-2">
                 <span>{isNew ? `New ${meta.title}` : name || code || "Record Detail"}</span>
-                <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border ${meta.badgeBg}`}>
+                <span className={`sw-badge tracking-normal ${meta.badgeBg}`}>
                   {meta.tier}
                 </span>
               </h1>
-              <p className="text-xs text-slate-400">
+              <p className="sw-subtitle">
                 {isNew
                   ? `Configure and create a new ${meta.title} in the workplace spatial topology.`
                   : `Managing spatial entity (${code || recordId}) with relational links and child assets.`}
@@ -582,7 +582,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
               type="button"
               onClick={handleDelete}
               disabled={deleting}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold transition-all disabled:opacity-50 cursor-pointer"
+              className="sw-btn-danger"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>{deleting ? "Deleting..." : "Delete"}</span>
@@ -591,7 +591,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
 
           <Link
             href={`/workspace/${tableName}`}
-            className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-medium text-slate-300 hover:text-white transition-colors"
+            className="sw-btn"
           >
             Cancel
           </Link>
@@ -600,7 +600,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all disabled:opacity-50 cursor-pointer"
+            className="sw-btn-primary"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? "Saving..." : isNew ? `Create ${meta.title}` : "Save Changes"}</span>
@@ -610,8 +610,8 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
 
       {/* Error Alert */}
       {errorMsg && (
-        <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs">
-          <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 p-4 bg-[var(--theme-accent-light)] border border-[var(--swiss-red)] text-[var(--swiss-red)] text-xs">
+          <AlertCircle className="w-4 h-4 text-[var(--swiss-red)] shrink-0 mt-0.5" />
           <div className="flex-1">
             <strong className="font-semibold">Validation Notice: </strong>
             <span>{errorMsg}</span>
@@ -623,9 +623,9 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
       <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left / Primary Column: Fields */}
         <div className="lg:col-span-8 space-y-6">
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-6">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-3 flex items-center gap-2">
-              <FolderTree className="w-4 h-4 text-indigo-400" />
+          <div className="p-6 sw-panel-strong space-y-6">
+            <h3 className="sw-section-title border-b border-[var(--theme-card-border)] pb-3 flex items-center gap-2">
+              <FolderTree className="w-4 h-4 text-[var(--theme-text-primary)]" />
               <span>General Entity Information</span>
             </h3>
 
@@ -633,8 +633,8 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName !== "cmn_reservation" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    {meta.title} Name <span className="text-rose-400">*</span>
+                  <label className="sw-label">
+                    {meta.title} Name <span className="text-[var(--swiss-red)]">*</span>
                   </label>
                   <input
                     type="text"
@@ -656,14 +656,14 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                         ? "e.g. Robotic Surgery Suite 1"
                         : "Name"
                     }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs font-medium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="sw-label">
                     {tableName === "cmn_space" ? "Space / Room Number" : "Unique Code"}{" "}
-                    <span className="text-rose-400">*</span>
+                    <span className="text-[var(--swiss-red)]">*</span>
                   </label>
                   <input
                     type="text"
@@ -685,9 +685,9 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                         ? "e.g. FL-03"
                         : "e.g. OR-302"
                     }
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                   />
-                  <p className="text-[11px] text-slate-500 mt-1">
+                  <p className="text-[11px] text-[var(--theme-text-secondary)] mt-1">
                     System identifier used for spatial matching and Table API integration.
                   </p>
                 </div>
@@ -697,11 +697,11 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {/* Parent Hierarchy Selector (if table has a parent tier) */}
             {meta.parentTable && (
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center justify-between">
+                <label className="block text-xs font-semibold text-[var(--theme-text-primary)] mb-1.5 flex items-center justify-between">
                   <span>{meta.parentLabel} (Hierarchical Ancestor)</span>
                   <Link
                     href={`/workspace/${meta.parentTable}`}
-                    className="text-[11px] text-indigo-400 hover:underline inline-flex items-center gap-1"
+                    className="text-[11px] text-[var(--theme-text-primary)] hover:underline inline-flex items-center gap-1"
                   >
                     <span>Browse {meta.parentTable.replace("cmn_", "")}</span>
                     <ExternalLink className="w-3 h-3" />
@@ -710,7 +710,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                 <select
                   value={parentId}
                   onChange={(e) => setParentId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-medium"
+                  className="sw-input w-full px-3.5 py-2.5 text-xs cursor-pointer font-medium"
                 >
                   <option value="">-- Select {meta.parentLabel} --</option>
                   {parentOptions.map((opt) => (
@@ -719,7 +719,7 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                     </option>
                   ))}
                 </select>
-                <p className="text-[11px] text-slate-500 mt-1">
+                <p className="text-[11px] text-[var(--theme-text-secondary)] mt-1">
                   Establishes the foreign key relationship and parent-child hierarchy in the spatial topology.
                 </p>
               </div>
@@ -729,13 +729,13 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_state" && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Country</label>
+                  <label className="sw-label">Country</label>
                   <input
                     type="text"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                     placeholder="e.g. United States or US"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs"
                   />
                 </div>
               </div>
@@ -745,13 +745,13 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_region" && (
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Description</label>
+                  <label className="sw-label">Description</label>
                   <textarea
                     rows={3}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Provide operational scope, timezones, and regional facility notes..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs"
                   />
                 </div>
                 <div className="flex items-center gap-2 pt-1">
@@ -760,9 +760,9 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                     id="region-active"
                     checked={active}
                     onChange={(e) => setActive(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-indigo-500"
+                    className="w-4 h-4 border-[var(--theme-card-border)] bg-[var(--theme-page-bg)] text-[var(--theme-text-primary)] focus:ring-[var(--theme-text-primary)]"
                   />
-                  <label htmlFor="region-active" className="text-xs font-medium text-slate-300 cursor-pointer">
+                  <label htmlFor="region-active" className="text-xs font-medium text-[var(--theme-text-primary)] cursor-pointer">
                     Active Region (Available for state and campus assignments)
                   </label>
                 </div>
@@ -773,60 +773,60 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_campus" && (
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Street Address</label>
+                  <label className="sw-label">Street Address</label>
                   <input
                     type="text"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="e.g. 500 Parnassus Ave"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
+                    <label className="sw-label">City</label>
                     <input
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="e.g. San Francisco"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Zip / Postal Code</label>
+                    <label className="sw-label">Zip / Postal Code</label>
                     <input
                       type="text"
                       value={zipCode}
                       onChange={(e) => setZipCode(e.target.value)}
                       placeholder="e.g. 94143"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Latitude</label>
+                    <label className="sw-label">Latitude</label>
                     <input
                       type="number"
                       step="any"
                       value={latitude}
                       onChange={(e) => setLatitude(e.target.value)}
                       placeholder="e.g. 37.7631"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Longitude</label>
+                    <label className="sw-label">Longitude</label>
                     <input
                       type="number"
                       step="any"
                       value={longitude}
                       onChange={(e) => setLongitude(e.target.value)}
                       placeholder="e.g. -122.4578"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
                 </div>
@@ -837,11 +837,11 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_building" && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Building Type</label>
+                  <label className="sw-label">Building Type</label>
                   <select
                     value={buildingType}
                     onChange={(e) => setBuildingType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs font-medium"
                   >
                     <option value="hospital">Hospital / Acute Care</option>
                     <option value="clinic">Outpatient Clinic</option>
@@ -852,25 +852,25 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Floors Count</label>
+                  <label className="sw-label">Floors Count</label>
                   <input
                     type="number"
                     min={1}
                     value={floorsCount}
                     onChange={(e) => setFloorsCount(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Total Area (Sq Ft)</label>
+                  <label className="sw-label">Total Area (Sq Ft)</label>
                   <input
                     type="number"
                     step="any"
                     value={totalAreaSqFt}
                     onChange={(e) => setTotalAreaSqFt(e.target.value)}
                     placeholder="e.g. 150000"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                   />
                 </div>
               </div>
@@ -881,31 +881,31 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
               <div className="space-y-4 pt-2">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Floor Level Number</label>
+                    <label className="sw-label">Floor Level Number</label>
                     <input
                       type="number"
                       value={floorNumber}
                       onChange={(e) => setFloorNumber(e.target.value)}
                       placeholder="e.g. 3 (0 for Ground, -1 for Basement)"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Floor Area (Sq Ft)</label>
+                    <label className="sw-label">Floor Area (Sq Ft)</label>
                     <input
                       type="number"
                       step="any"
                       value={areaSqFt}
                       onChange={(e) => setAreaSqFt(e.target.value)}
                       placeholder="e.g. 24000"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  <label className="sw-label">
                     Floorplan CAD / SVG Drawing URL
                   </label>
                   <input
@@ -913,9 +913,9 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                     value={floorplanSvgUrl}
                     onChange={(e) => setFloorplanSvgUrl(e.target.value)}
                     placeholder="e.g. /floorplans/tech_tower_l4.svg"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                   />
-                  <p className="text-[11px] text-slate-500 mt-1">
+                  <p className="text-[11px] text-[var(--theme-text-secondary)] mt-1">
                     Used by the CAD / Drawing Floorplan view for room coordinates and spatial hotspot mapping.
                   </p>
                 </div>
@@ -927,11 +927,11 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
               <div className="space-y-4 pt-2">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Space Type</label>
+                    <label className="sw-label">Space Type</label>
                     <select
                       value={spaceType}
                       onChange={(e) => setSpaceType(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-medium"
                     >
                       <option value="room">Standard Meeting Room</option>
                       <option value="operating_room">Operating Suite (OR)</option>
@@ -946,11 +946,11 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Occupancy Status</label>
+                    <label className="sw-label">Occupancy Status</label>
                     <select
                       value={status}
                       onChange={(e) => setStatus(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-medium"
                     >
                       <option value="available">Available</option>
                       <option value="occupied">Occupied</option>
@@ -961,45 +961,45 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Maximum Capacity</label>
+                    <label className="sw-label">Maximum Capacity</label>
                     <input
                       type="number"
                       min={1}
                       value={capacity}
                       onChange={(e) => setCapacity(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Department</label>
+                    <label className="sw-label">Department</label>
                     <input
                       type="text"
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
                       placeholder="e.g. Surgical Services, Critical Care, Engineering"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Room Size (Sq Ft)</label>
+                    <label className="sw-label">Room Size (Sq Ft)</label>
                     <input
                       type="number"
                       step="any"
                       value={squareFeet}
                       onChange={(e) => setSquareFeet(e.target.value)}
                       placeholder="e.g. 650"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
                 </div>
 
                 {/* Amenities / Capabilities Selection */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-2">
+                  <label className="sw-label">
                     Equipped Amenities & Hardware Capabilities
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -1010,10 +1010,10 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                           key={amenity.id}
                           type="button"
                           onClick={() => toggleAmenity(amenity.id)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                          className={`px-3 py-1.5 text-xs font-medium border transition-all ${
                             isSelected
-                              ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/30"
-                              : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-white"
+                              ? "bg-[var(--theme-text-primary)] border-[var(--theme-text-primary)] text-[var(--theme-page-bg)]"
+                              : "bg-[var(--theme-page-bg)] border-[var(--theme-card-border)] text-[var(--theme-text-secondary)] hover:border-[var(--theme-text-primary)] hover:text-[var(--theme-text-primary)]"
                           }`}
                         >
                           {amenity.label}
@@ -1029,11 +1029,11 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_location" && (
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Location Tier</label>
+                  <label className="sw-label">Location Tier</label>
                   <select
                     value={locationType}
                     onChange={(e) => setLocationType(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs font-medium"
                   >
                     <option value="region">Region (Tier 1)</option>
                     <option value="state">State / Province (Tier 2)</option>
@@ -1049,46 +1049,46 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Street Address</label>
+                    <label className="sw-label">Street Address</label>
                     <input
                       type="text"
                       value={street}
                       onChange={(e) => setStreet(e.target.value)}
                       placeholder="e.g. 100 Innovation Way"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">City</label>
+                    <label className="sw-label">City</label>
                     <input
                       type="text"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="e.g. San Jose"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">State / Province</label>
+                    <label className="sw-label">State / Province</label>
                     <input
                       type="text"
                       value={locState}
                       onChange={(e) => setLocState(e.target.value)}
                       placeholder="e.g. CA"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Country</label>
+                    <label className="sw-label">Country</label>
                     <input
                       type="text"
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
                       placeholder="e.g. United States"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs"
                     />
                   </div>
                 </div>
@@ -1099,8 +1099,8 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
             {tableName === "cmn_reservation" && (
               <div className="space-y-4 pt-2">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Meeting / Reservation Subject <span className="text-rose-400">*</span>
+                  <label className="sw-label">
+                    Meeting / Reservation Subject <span className="text-[var(--swiss-red)]">*</span>
                   </label>
                   <input
                     type="text"
@@ -1108,50 +1108,50 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     placeholder="e.g. Cardiovascular Surgical Planning"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                    className="sw-input w-full px-3.5 py-2.5 text-xs font-medium"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Start Time</label>
+                    <label className="sw-label">Start Time</label>
                     <input
                       type="datetime-local"
                       required
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">End Time</label>
+                    <label className="sw-label">End Time</label>
                     <input
                       type="datetime-local"
                       required
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Attendees Count</label>
+                    <label className="sw-label">Attendees Count</label>
                     <input
                       type="number"
                       min={1}
                       value={attendeesCount}
                       onChange={(e) => setAttendeesCount(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-indigo-500 transition-all"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-mono"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">Status</label>
+                    <label className="sw-label">Status</label>
                     <select
                       value={reservationStatus}
                       onChange={(e) => setReservationStatus(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-indigo-500 transition-all font-medium"
+                      className="sw-input w-full px-3.5 py-2.5 text-xs font-medium"
                     >
                       <option value="confirmed">Confirmed</option>
                       <option value="pending">Pending Approval</option>
@@ -1167,46 +1167,46 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
         {/* Right Column: Spatial Hierarchy Context Card & Child Assets */}
         <div className="lg:col-span-4 space-y-6">
           {/* Spatial Hierarchy Card */}
-          <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2 pb-2 border-b border-slate-800">
-              <Compass className="w-4 h-4 text-indigo-400" />
+          <div className="p-5 sw-panel space-y-4">
+            <h3 className="sw-section-title flex items-center gap-2 pb-2 border-b border-[var(--theme-card-border)]">
+              <Compass className="w-4 h-4 text-[var(--theme-text-primary)]" />
               <span>Spatial Hierarchy Placement</span>
             </h3>
 
             <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-950/60 border border-slate-800">
-                <span className="text-slate-400">Classification Tier</span>
-                <span className="font-semibold text-white">{meta.tierNum > 0 ? `Tier ${meta.tierNum}` : "Entity"}</span>
+              <div className="flex items-center justify-between p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)]">
+                <span className="text-[var(--theme-text-secondary)]">Classification Tier</span>
+                <span className="font-semibold text-[var(--theme-text-primary)]">{meta.tierNum > 0 ? `Tier ${meta.tierNum}` : "Entity"}</span>
               </div>
-              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-950/60 border border-slate-800">
-                <span className="text-slate-400">Database Schema</span>
-                <span className="font-mono text-[11px] text-indigo-400">{tableName}</span>
+              <div className="flex items-center justify-between p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)]">
+                <span className="text-[var(--theme-text-secondary)]">Database Schema</span>
+                <span className="font-mono text-[11px] text-[var(--theme-text-primary)]">{tableName}</span>
               </div>
               {meta.parentLabel && (
-                <div className="flex items-center justify-between p-2 rounded-lg bg-slate-950/60 border border-slate-800">
-                  <span className="text-slate-400">{meta.parentLabel}</span>
-                  <span className="font-semibold text-white truncate max-w-[150px]">
+                <div className="flex items-center justify-between p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)]">
+                  <span className="text-[var(--theme-text-secondary)]">{meta.parentLabel}</span>
+                  <span className="font-semibold text-[var(--theme-text-primary)] truncate max-w-[150px]">
                     {parentOptions.find((p) => p.id === parentId)?.name || <span className="opacity-50">Not Set</span>}
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="p-3 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-[11px] text-indigo-300">
+            <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[11px] text-[var(--theme-text-primary)]">
               💡 <strong>Connected Workplace Architecture:</strong> Changes made here reflect immediately across the CAD floorplan view, daily calendar matrix, and unified location hierarchy (`cmn_location`).
             </div>
           </div>
 
           {/* Child Records Card (in Edit Mode) */}
           {!isNew && meta.childTable && (
-            <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-3">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="p-5 sw-panel space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-[var(--theme-card-border)]">
+                <h3 className="sw-section-title">
                   {meta.childLabel} ({childRecords.length})
                 </h3>
                 <Link
                   href={`/workspace/${meta.childTable}/new`}
-                  className="inline-flex items-center gap-1 text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold"
+                  className="inline-flex items-center gap-1 text-[11px] text-[var(--theme-text-primary)] hover:underline font-semibold"
                 >
                   <Plus className="w-3 h-3" />
                   <span>Add New</span>
@@ -1214,19 +1214,19 @@ export function SpatialRecordForm({ tableName, recordId }: SpatialRecordFormProp
               </div>
 
               {childRecords.length === 0 ? (
-                <p className="text-xs text-slate-500 italic py-2">No child assets linked yet.</p>
+                <p className="text-xs text-[var(--theme-text-secondary)] italic py-2">No child assets linked yet.</p>
               ) : (
                 <div className="space-y-1.5 max-h-[300px] overflow-y-auto pr-1">
                   {childRecords.map((child: any) => (
                     <Link
                       key={child.id}
                       href={`/workspace/${meta.childTable}/${child.id}`}
-                      className="flex items-center justify-between p-2 rounded-lg bg-slate-950 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-800/50 transition-all text-xs group"
+                      className="flex items-center justify-between p-2 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] hover:border-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] transition-all text-xs group"
                     >
-                      <span className="text-slate-200 font-medium group-hover:text-indigo-300 truncate">
+                      <span className="text-[var(--theme-text-primary)] font-medium group-hover:underline truncate">
                         {child.name || child.spaceNumber || child.code}
                       </span>
-                      <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-indigo-400 shrink-0" />
+                      <ExternalLink className="w-3 h-3 text-[var(--theme-text-secondary)] group-hover:underline shrink-0" />
                     </Link>
                   ))}
                 </div>

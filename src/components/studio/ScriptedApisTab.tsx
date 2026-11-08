@@ -150,11 +150,11 @@ export function ScriptedApisTab() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-4">
         <div>
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Globe className="w-5 h-5 text-teal-600" />
+          <h2 className="text-base font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
+            <Globe className="w-5 h-5 text-[var(--swiss-emerald)]" />
             <span>Scripted REST APIs (sys_ws_definition & sys_ws_operation)</span>
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-[var(--theme-text-secondary)] mt-0.5">
             Build custom web service micro-endpoints hosted dynamically at /api/custom/... with sandbox request/response evaluation.
           </p>
         </div>
@@ -163,14 +163,14 @@ export function ScriptedApisTab() {
           <button
             type="button"
             onClick={loadDefinitions}
-            className="p-2 border rounded-lg text-slate-500 hover:text-slate-800 transition-colors"
+            className="p-2 border text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-teal-600 text-white hover:bg-teal-700 shadow-xs transition-colors"
+            className="sw-btn-primary flex items-center gap-1.5 px-4 py-2 text-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New REST API</span>
@@ -180,7 +180,7 @@ export function ScriptedApisTab() {
 
       {/* Grid of Definitions */}
       {definitions.length === 0 ? (
-        <div className="p-12 text-center text-xs text-slate-400 border border-dashed rounded-2xl italic">
+        <div className="p-12 text-center text-xs text-[var(--theme-text-secondary)] border border-dashed italic">
           No Scripted REST APIs configured. Click "New REST API" to build custom web service endpoints.
         </div>
       ) : (
@@ -192,28 +192,28 @@ export function ScriptedApisTab() {
             return (
               <div
                 key={def.id}
-                className="p-5 rounded-2xl border shadow-xs bg-white hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                className="p-5 border bg-[var(--theme-card-bg)] transition-all flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-2">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-bold text-sm text-slate-900">{def.name}</h3>
+                    <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">{def.name}</h3>
                     <span
-                      className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${
-                        def.active ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"
+                      className={`text-[10px] uppercase font-bold px-2 py-0.5 ${
+                        def.active ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)]" : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]"
                       }`}
                     >
                       {def.active ? "Active" : "Inactive"}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 text-[11px] font-mono text-teal-700">
-                    <span className="bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                  <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--swiss-emerald)]">
+                    <span className="bg-[var(--theme-accent-light)] px-2 py-0.5 border border-[var(--swiss-emerald)]">
                       {op?.httpMethod || "GET"}
                     </span>
-                    <span className="text-slate-600 truncate">{endpointPath}</span>
+                    <span className="text-[var(--theme-text-secondary)] truncate">{endpointPath}</span>
                   </div>
 
-                  <pre className="text-[10px] font-mono bg-slate-50 p-2 rounded text-slate-700 line-clamp-3">
+                  <pre className="text-[10px] font-mono bg-[var(--theme-accent-light)] p-2 text-[var(--theme-text-primary)] line-clamp-3">
                     {op?.operationScript || "No script attached"}
                   </pre>
                 </div>
@@ -222,13 +222,13 @@ export function ScriptedApisTab() {
                   <button
                     type="button"
                     onClick={() => handleOpenTest(def)}
-                    className="inline-flex items-center gap-1.5 text-teal-600 hover:text-teal-800 font-semibold text-[11px]"
+                    className="inline-flex items-center gap-1.5 text-[var(--swiss-emerald)] hover:text-[var(--swiss-emerald)] font-semibold text-[11px]"
                   >
                     <Play className="w-3.5 h-3.5" />
                     <span>Test Endpoint</span>
                   </button>
 
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-[10px] font-mono text-[var(--theme-text-secondary)]">
                     {def.operations?.length || 0} op(s)
                   </span>
                 </div>
@@ -241,13 +241,13 @@ export function ScriptedApisTab() {
       {/* Create Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl bg-white rounded-2xl border shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-[var(--theme-card-bg)] border p-6 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-bold text-sm text-slate-900">Create Scripted REST API</h3>
+              <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">Create Scripted REST API</h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -255,49 +255,49 @@ export function ScriptedApisTab() {
 
             <form onSubmit={handleSave} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">API Name *</label>
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">API Name *</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Cluster Health Monitoring API"
-                  className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-teal-500"
+                  className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-emerald)]"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Namespace *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Namespace *</label>
                   <input
                     type="text"
                     required
                     value={namespace}
                     onChange={(e) => setNamespace(e.target.value)}
                     placeholder="api / v1"
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 font-mono focus:outline-teal-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] font-mono focus:outline-[var(--swiss-emerald)]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Service ID (Path) *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Service ID (Path) *</label>
                   <input
                     type="text"
                     required
                     value={serviceId}
                     onChange={(e) => setServiceId(e.target.value)}
                     placeholder="monitoring"
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 font-mono focus:outline-teal-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] font-mono focus:outline-[var(--swiss-emerald)]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t pt-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">HTTP Method *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">HTTP Method *</label>
                   <select
                     value={httpMethod}
                     onChange={(e) => setHttpMethod(e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 focus:outline-teal-500 font-bold"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] focus:outline-[var(--swiss-emerald)] font-bold"
                   >
                     <option value="GET">GET</option>
                     <option value="POST">POST</option>
@@ -306,28 +306,28 @@ export function ScriptedApisTab() {
                   </select>
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-700 mb-1">Operation Resource Name *</label>
+                  <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Operation Resource Name *</label>
                   <input
                     type="text"
                     required
                     value={operationName}
                     onChange={(e) => setOperationName(e.target.value)}
                     placeholder="healthCheck"
-                    className="w-full border rounded-lg px-3 py-2 text-slate-800 font-mono focus:outline-teal-500"
+                    className="w-full border px-3 py-2 text-[var(--theme-text-primary)] font-mono focus:outline-[var(--swiss-emerald)]"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="font-semibold text-slate-700">Handler Script (process(request, response))</label>
-                  <span className="text-[10px] font-mono text-slate-400">sandbox execution</span>
+                  <label className="font-semibold text-[var(--theme-text-primary)]">Handler Script (process(request, response))</label>
+                  <span className="text-[10px] font-mono text-[var(--theme-text-secondary)]">sandbox execution</span>
                 </div>
                 <textarea
                   rows={8}
                   value={script}
                   onChange={(e) => setScript(e.target.value)}
-                  className="w-full font-mono text-xs bg-slate-900 text-teal-400 rounded-lg p-3 focus:outline-none"
+                  className="bg-neutral-950 text-emerald-400 border border-neutral-800 focus:outline-none focus:border-neutral-500 w-full font-mono text-xs p-3"
                 />
               </div>
 
@@ -336,22 +336,22 @@ export function ScriptedApisTab() {
                   type="checkbox"
                   checked={active}
                   onChange={(e) => setActive(e.target.checked)}
-                  className="rounded text-teal-600 focus:ring-teal-500"
+                  className="text-[var(--swiss-emerald)] focus:ring-[var(--swiss-emerald)]"
                 />
-                <span className="text-slate-700 font-semibold">Active & Routing Requests</span>
+                <span className="text-[var(--theme-text-primary)] font-semibold">Active & Routing Requests</span>
               </label>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 rounded-full border text-slate-600 hover:bg-slate-50 font-semibold"
+                  className="px-4 py-2 border text-[var(--theme-text-secondary)] hover:bg-[var(--theme-accent-light)] font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-xs"
+                  className="sw-btn-primary px-5 py-2"
                 >
                   Save Scripted API
                 </button>
@@ -364,18 +364,18 @@ export function ScriptedApisTab() {
       {/* Test Playground Modal */}
       {testModalOpen && selectedDef && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl bg-white rounded-2xl border shadow-2xl p-6 space-y-4">
+          <div className="w-full max-w-xl bg-[var(--theme-card-bg)] border p-6 space-y-4">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
-                <Terminal className="w-5 h-5 text-teal-600" />
-                <h3 className="font-bold text-sm text-slate-900">
+                <Terminal className="w-5 h-5 text-[var(--swiss-emerald)]" />
+                <h3 className="font-bold text-sm text-[var(--theme-text-primary)]">
                   Live Endpoint Tester: {selectedDef.name}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setTestModalOpen(false)}
-                className="text-slate-400 hover:text-slate-700"
+                className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -383,12 +383,12 @@ export function ScriptedApisTab() {
 
             <div className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Target Endpoint URL</label>
+                <label className="block font-semibold text-[var(--theme-text-primary)] mb-1">Target Endpoint URL</label>
                 <input
                   type="text"
                   value={testUrl}
                   onChange={(e) => setTestUrl(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 text-slate-800 font-mono focus:outline-teal-500"
+                  className="w-full border px-3 py-2 text-[var(--theme-text-primary)] font-mono focus:outline-[var(--swiss-emerald)]"
                 />
               </div>
 
@@ -397,7 +397,7 @@ export function ScriptedApisTab() {
                   type="button"
                   onClick={handleExecuteLiveTest}
                   disabled={testing}
-                  className="flex items-center gap-2 px-5 py-2 rounded-full bg-teal-600 text-white font-semibold hover:bg-teal-700 shadow-xs"
+                  className="sw-btn-primary flex items-center gap-2 px-5 py-2"
                 >
                   <Play className="w-3.5 h-3.5" />
                   <span>{testing ? "Sending Request..." : "Send HTTP Request"}</span>
@@ -405,8 +405,8 @@ export function ScriptedApisTab() {
               </div>
 
               {testResponse && (
-                <div className="p-4 rounded-xl bg-slate-900 text-teal-400 font-mono text-xs space-y-2">
-                  <div className="text-[10px] uppercase font-bold text-slate-400 border-b border-slate-700 pb-1">
+                <div className="bg-neutral-950 text-emerald-400 border border-neutral-800 focus:outline-none focus:border-neutral-500 p-4 font-mono text-xs space-y-2">
+                  <div className="text-[10px] uppercase font-bold text-[var(--theme-text-secondary)] border-b border-[var(--theme-card-border)] pb-1">
                     HTTP Response (Status: {testResponse.status || 200})
                   </div>
                   <pre className="overflow-x-auto whitespace-pre-wrap">

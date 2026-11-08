@@ -74,7 +74,7 @@ export function Navbar() {
         { label: "Employee Portal", href: "/portal", icon: Compass },
         { label: "Service Catalog", href: "/portal/catalog", icon: ShoppingBag },
         { label: "Book Room or Desk", href: "/portal/reservations", icon: Building2 },
-        { label: "Floorplan & Spaces", href: "/portal/reservations?view=floorplan", icon: Layers },
+        { label: "Floorplan & Spaces", href: "/portal/spaces", icon: Layers },
         { label: "Track Requests", href: "/portal/my-tickets", icon: Ticket },
         { label: "Knowledge Base", href: "/portal/knowledge", icon: BookOpen },
         { label: "System Status", href: "/portal/status", icon: ShieldCheck },
@@ -183,26 +183,26 @@ export function Navbar() {
 
       {/* Privileged user viewing employee portal notification bar */}
       {!isEmployee && isPortalSurface && !isImpersonating && (
-        <div className="w-full bg-slate-900/95 border-b border-slate-800 text-slate-300 px-4 sm:px-6 py-1.5 text-xs flex items-center justify-between z-30">
+        <div className="w-full bg-neutral-950 text-neutral-300 px-4 sm:px-6 py-1.5 text-xs font-mono uppercase tracking-wider flex items-center justify-between z-30">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span className="w-2 h-2 bg-[#00875a]" />
             <span>
-              You are previewing the <strong className="text-white">Employee Frontend Portal</strong>.
+              Previewing the <strong className="text-white">Employee Portal</strong>
             </span>
           </div>
           <div className="flex items-center gap-2">
             <Link
               href="/workspace"
-              className="px-2.5 py-0.5 rounded bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 font-semibold border border-sky-500/30 transition-colors"
+              className="px-2.5 py-0.5 font-bold text-white border border-neutral-600 hover:border-white transition-colors"
             >
-              Fulfiller Workspace &rarr;
+              02 / Operations &rarr;
             </Link>
             {isAdmin && (
               <Link
                 href="/studio"
-                className="px-2.5 py-0.5 rounded bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-semibold border border-purple-500/30 transition-colors"
+                className="px-2.5 py-0.5 font-bold text-white border border-neutral-600 hover:border-white transition-colors"
               >
-                Admin Backend &rarr;
+                03 / Studio &rarr;
               </Link>
             )}
           </div>
@@ -215,7 +215,7 @@ export function Navbar() {
       >
         <div className="w-full px-4 sm:px-6 flex items-center justify-between h-16">
           {/* Left: Swiss Brand & Navigation */}
-          <div className="flex items-center space-x-4 lg:space-x-6 min-w-0">
+          <div className="flex items-center space-x-4 lg:space-x-6 min-w-0 flex-1 overflow-hidden">
             {/* Logo */}
             <Link
               href={isEmployee ? "/portal" : "/workspace"}
@@ -237,7 +237,7 @@ export function Navbar() {
             <div className="hidden lg:flex items-center border-l border-neutral-200 dark:border-neutral-800 pl-4 space-x-1">
               <Link
                 href="/portal"
-                className={`px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase transition-colors ${
+                className={`px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase whitespace-nowrap shrink-0 transition-colors ${
                   isPortalSurface
                     ? "bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs"
                     : "text-neutral-500 hover:text-neutral-950 dark:hover:text-white"
@@ -249,7 +249,7 @@ export function Navbar() {
               {!isEmployee && (
                 <Link
                   href="/workspace"
-                  className={`px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase transition-colors ${
+                  className={`px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase whitespace-nowrap shrink-0 transition-colors ${
                     isWorkspaceSurface
                       ? "bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs"
                       : "text-neutral-500 hover:text-neutral-950 dark:hover:text-white"
@@ -262,7 +262,7 @@ export function Navbar() {
               {isAdmin && (
                 <Link
                   href="/studio"
-                  className={`px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase transition-colors ${
+                  className={`px-3 py-1 text-xs font-mono font-bold tracking-wider uppercase whitespace-nowrap shrink-0 transition-colors ${
                     isStudioSurface
                       ? "bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-xs"
                       : "text-neutral-500 hover:text-neutral-950 dark:hover:text-white"
@@ -275,7 +275,7 @@ export function Navbar() {
 
             {/* Navigation Tabs (Portal surface only - Workspace and Studio have dedicated Sidebars) */}
             {isPortalSurface && (
-              <nav className="hidden 2xl:flex items-center space-x-1 border-l border-neutral-200 dark:border-neutral-800 pl-4">
+              <nav className="hidden 2xl:flex items-center space-x-1 border-l border-neutral-200 dark:border-neutral-800 pl-4 min-w-0 overflow-x-auto">
                 {navLinks.map((item) => {
                   const Icon = item.icon;
                   const isActive =
@@ -287,14 +287,17 @@ export function Navbar() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`flex items-center space-x-1.5 px-2.5 py-1 text-xs font-medium transition-all ${
+                      title={item.label}
+                      aria-label={item.label}
+                      className={`flex items-center space-x-1.5 px-2.5 py-1 text-xs font-medium whitespace-nowrap shrink-0 transition-all ${
                         isActive
                           ? "font-bold border-b-2 border-neutral-950 dark:border-white text-neutral-950 dark:text-white"
                           : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5 shrink-0" />
-                      <span>{item.label}</span>
+                      {/* All labels only fit on very wide screens; otherwise just the current page's */}
+                      <span className={isActive ? "" : "hidden min-[1880px]:inline"}>{item.label}</span>
                     </Link>
                   );
                 })}

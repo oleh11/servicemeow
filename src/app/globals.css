@@ -81,6 +81,125 @@ body {
 }
 
 /* ==================================================== */
+/* SWISS THEMES: map legacy Material 3 tokens            */
+/* Components that still read --md-sys-color-* follow   */
+/* the Swiss palette instead of M3 blue/lavender.       */
+/* ==================================================== */
+html[data-color-theme="swiss"] {
+  --md-sys-color-primary: #0a0a0a;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #f4f4f6;
+  --md-sys-color-on-primary-container: #0a0a0a;
+  --md-sys-color-secondary-container: #f4f4f6;
+  --md-sys-color-on-secondary-container: #0a0a0a;
+  --md-sys-color-background: #ffffff;
+  --md-sys-color-surface: #ffffff;
+  --md-sys-color-surface-container-lowest: #ffffff;
+  --md-sys-color-surface-container-low: #fbfbfb;
+  --md-sys-color-surface-container: #f7f7f8;
+  --md-sys-color-surface-container-high: #f0f0f2;
+  --md-sys-color-surface-container-highest: #e8e8ea;
+  --md-sys-color-on-surface: #0a0a0a;
+  --md-sys-color-on-surface-variant: #6e6e73;
+  --md-sys-color-outline: #8e8e93;
+  --md-sys-color-outline-variant: #e5e5e7;
+}
+
+html[data-color-theme="swiss_dark"] {
+  --md-sys-color-primary: #f5f5f7;
+  --md-sys-color-on-primary: #0a0a0a;
+  --md-sys-color-primary-container: #1c1c1e;
+  --md-sys-color-on-primary-container: #f5f5f7;
+  --md-sys-color-secondary-container: #1c1c1e;
+  --md-sys-color-on-secondary-container: #f5f5f7;
+  --md-sys-color-background: #0a0a0a;
+  --md-sys-color-surface: #0a0a0a;
+  --md-sys-color-surface-container-lowest: #0a0a0a;
+  --md-sys-color-surface-container-low: #111111;
+  --md-sys-color-surface-container: #161616;
+  --md-sys-color-surface-container-high: #1c1c1e;
+  --md-sys-color-surface-container-highest: #262626;
+  --md-sys-color-on-surface: #f5f5f7;
+  --md-sys-color-on-surface-variant: #8e8e93;
+  --md-sys-color-outline: #6e6e73;
+  --md-sys-color-outline-variant: #262626;
+}
+
+/* ==================================================== */
+/* SWISS UI PRIMITIVES (sw-*)                           */
+/* Use these instead of ad-hoc colors so every surface  */
+/* matches and follows the light/dark theme.            */
+/* ==================================================== */
+@layer components {
+  /* Page shell */
+  .sw-page { @apply p-6 md:p-8 space-y-8 w-full mx-auto max-w-7xl min-h-full; background: var(--theme-page-bg); color: var(--theme-text-primary); }
+  .sw-page-wide { @apply max-w-[1700px]; }
+  .sw-page-header { @apply pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4; border-bottom: 2px solid var(--theme-text-primary); }
+  .sw-eyebrow { @apply flex items-center gap-2 mb-1 font-mono text-xs uppercase font-bold; color: var(--theme-text-secondary); }
+  .sw-eyebrow-tag { @apply font-mono text-xs uppercase font-extrabold px-2 py-0.5; background: var(--theme-text-primary); color: var(--theme-page-bg); }
+  .sw-title { @apply text-3xl md:text-4xl font-extrabold tracking-tight uppercase; color: var(--theme-text-primary); }
+  .sw-subtitle { @apply text-xs sm:text-sm mt-1 max-w-3xl; color: var(--theme-text-secondary); }
+  .sw-section-title { @apply font-mono text-xs uppercase font-bold tracking-widest flex items-center gap-2; color: var(--theme-text-primary); }
+
+  /* Surfaces */
+  .sw-panel { border: 1px solid var(--theme-card-border); background: var(--theme-card-bg); }
+  .sw-panel-strong { border: 2px solid var(--theme-text-primary); background: var(--theme-card-bg); }
+  .sw-panel-header { @apply px-4 py-3 flex items-center justify-between gap-3; border-bottom: 1px solid var(--theme-card-border); }
+  .sw-divider { border-color: var(--theme-card-border); }
+  .sw-muted { color: var(--theme-text-secondary); }
+
+  /* Buttons */
+  .sw-btn { @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-mono uppercase font-bold transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed; border: 1px solid var(--theme-text-primary); color: var(--theme-text-primary); background: var(--theme-card-bg); }
+  .sw-btn:hover:not(:disabled) { background: var(--theme-accent-light); }
+  .sw-btn-primary { @apply sw-btn; background: var(--theme-text-primary); color: var(--theme-page-bg); }
+  .sw-btn-primary:hover:not(:disabled) { background: var(--theme-text-primary); opacity: 0.85; }
+  .sw-btn-danger { @apply sw-btn; border-color: var(--swiss-red); color: var(--swiss-red); }
+  .sw-btn-danger:hover:not(:disabled) { background: var(--swiss-red); color: #ffffff; }
+  .sw-btn-ghost { @apply inline-flex items-center justify-center gap-1.5 px-2 py-1 text-xs font-mono uppercase font-bold transition-colors cursor-pointer; color: var(--theme-text-secondary); }
+  .sw-btn-ghost:hover { color: var(--theme-text-primary); background: var(--theme-accent-light); }
+  .sw-icon-btn { @apply inline-flex items-center justify-center w-8 h-8 transition-colors cursor-pointer; border: 1px solid var(--theme-card-border); color: var(--theme-text-primary); background: var(--theme-card-bg); }
+  .sw-icon-btn:hover { border-color: var(--theme-text-primary); }
+
+  /* Segmented tabs / view switchers */
+  .sw-tabs { @apply flex flex-wrap items-center gap-2; }
+  .sw-tab { @apply flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase font-bold transition-colors border cursor-pointer; background: var(--theme-card-bg); color: var(--theme-text-secondary); border-color: var(--theme-card-border); }
+  .sw-tab:hover { border-color: var(--theme-text-primary); color: var(--theme-text-primary); }
+  .sw-tab-active { @apply sw-tab; background: var(--theme-text-primary); color: var(--theme-page-bg); border-color: var(--theme-text-primary); }
+  .sw-tab-active:hover { color: var(--theme-page-bg); }
+
+  /* Form controls */
+  .sw-label { @apply block font-mono text-[11px] uppercase font-bold tracking-wider mb-1; color: var(--theme-text-secondary); }
+  .sw-input { @apply px-3 py-2 text-sm outline-none transition-colors; background: var(--theme-card-bg); color: var(--theme-text-primary); border: 1px solid var(--theme-card-border); }
+  .sw-input:focus { border-color: var(--theme-text-primary); }
+  .sw-input::placeholder { color: var(--theme-text-secondary); }
+
+  /* Badges & stats */
+  .sw-badge { @apply inline-flex items-center gap-1 px-2 py-0.5 font-mono text-[11px] font-bold uppercase whitespace-nowrap; border: 1px solid var(--theme-card-border); color: var(--theme-text-primary); background: var(--theme-accent-light); }
+  .sw-badge-solid { @apply sw-badge; background: var(--theme-text-primary); color: var(--theme-page-bg); border-color: var(--theme-text-primary); }
+  .sw-badge-red { @apply sw-badge; color: var(--swiss-red); border-color: var(--swiss-red); background: transparent; }
+  .sw-badge-blue { @apply sw-badge; color: var(--swiss-blue); border-color: var(--swiss-blue); background: transparent; }
+  .sw-badge-green { @apply sw-badge; color: var(--swiss-emerald); border-color: var(--swiss-emerald); background: transparent; }
+  .sw-badge-amber { @apply sw-badge; color: var(--swiss-amber); border-color: var(--swiss-amber); background: transparent; }
+  .sw-code { @apply font-mono text-[11px] px-1.5 py-0.5; color: var(--theme-text-secondary); border: 1px solid var(--theme-card-border); }
+  .sw-stat { @apply px-4 py-3 flex flex-col gap-1; border: 1px solid var(--theme-card-border); background: var(--theme-card-bg); }
+  .sw-stat-label { @apply font-mono text-[11px] uppercase font-bold tracking-wider; color: var(--theme-text-secondary); }
+  .sw-stat-value { @apply text-2xl font-extrabold tracking-tight; color: var(--theme-text-primary); }
+
+  /* Tables */
+  .sw-table { @apply w-full text-sm; }
+  .sw-table th { @apply text-left font-mono text-[11px] uppercase font-bold tracking-wider px-3 py-2.5; color: var(--theme-text-secondary); border-bottom: 2px solid var(--theme-text-primary); }
+  .sw-table td { @apply px-3 py-2.5 align-middle; border-bottom: 1px solid var(--theme-card-border); }
+  .sw-table tbody tr:hover { background: var(--theme-accent-light); }
+  .sw-row-selected { background: var(--theme-text-primary) !important; color: var(--theme-page-bg); }
+
+  /* Sidebar / explorer lists */
+  .sw-nav-item { @apply w-full flex items-center gap-2 px-3 py-2 text-sm text-left transition-colors cursor-pointer; color: var(--theme-text-primary); }
+  .sw-nav-item:hover { background: var(--theme-accent-light); }
+  .sw-nav-item-active { @apply sw-nav-item font-bold; background: var(--theme-sidebar-active-bg); color: var(--theme-sidebar-active-text); }
+  .sw-nav-item-active:hover { background: var(--theme-sidebar-active-bg); }
+}
+
+/* ==================================================== */
 /* DARK THEME MODE (Swiss Stark Contrast)               */
 /* ==================================================== */
 [data-theme-mode="dark"] {

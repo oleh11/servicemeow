@@ -362,20 +362,20 @@ export function CatalogItemsTab() {
   return (
     <div className="space-y-6">
       {/* Module Overview Banner & Action Controls */}
-      <div className="bg-slate-950 rounded-2xl border border-slate-800 p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+            <div className="w-8 h-8 bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] flex items-center justify-center border border-[var(--swiss-emerald)]">
               <ShoppingBag className="w-4 h-4" />
             </div>
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
+            <h2 className="text-base font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
               <span>Service Catalog Items</span>
-              <code className="text-xs font-mono font-normal bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+              <code className="text-xs font-mono font-normal bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] px-2 py-0.5 border border-[var(--theme-card-border)]">
                 sc_cat_item
               </code>
             </h2>
           </div>
-          <p className="text-xs text-slate-400 mt-1 max-w-2xl">
+          <p className="text-xs text-[var(--theme-text-secondary)] mt-1 max-w-2xl">
             Configure orderable catalog products and services published on the Employee Portal. Define custom fulfillment variables (RAM, storage, account names, justifications), delivery SLAs, and prices.
           </p>
         </div>
@@ -384,22 +384,22 @@ export function CatalogItemsTab() {
           <Link
             href="/portal/catalog"
             target="_blank"
-            className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors border border-slate-700"
+            className="sw-btn px-3.5 py-2 text-xs flex items-center gap-1.5"
           >
-            <Eye className="w-3.5 h-3.5 text-cyan-400" />
+            <Eye className="w-3.5 h-3.5 text-[var(--swiss-blue)]" />
             <span>Open Portal Catalog</span>
-            <ExternalLink className="w-3 h-3 text-slate-400" />
+            <ExternalLink className="w-3 h-3 text-[var(--theme-text-secondary)]" />
           </Link>
           <button
             onClick={loadItems}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition-colors border border-slate-700"
+            className="p-2 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-card-border)] text-[var(--theme-text-primary)] text-xs transition-colors border border-[var(--theme-card-border)]"
             title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
           <button
             onClick={handleOpenCreateItem}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs flex items-center gap-1.5 shadow-md shadow-emerald-950/40 transition-colors"
+            className="sw-btn-primary px-4 py-2 text-xs flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>New Catalog Item</span>
@@ -413,10 +413,10 @@ export function CatalogItemsTab() {
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
           <button
             onClick={() => setCategoryFilter("all")}
-            className={`px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors ${
+            className={`px-3 py-1.5 font-medium whitespace-nowrap transition-colors ${
               categoryFilter === "all"
-                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold"
-                : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+                ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] border border-[var(--theme-text-primary)] font-bold"
+                : "bg-[var(--theme-card-bg)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] border border-[var(--theme-card-border)]"
             }`}
           >
             All Categories ({items.length})
@@ -427,14 +427,14 @@ export function CatalogItemsTab() {
               <button
                 key={cat}
                 onClick={() => setCategoryFilter(cat)}
-                className={`px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                   categoryFilter === cat
-                    ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold"
-                    : "bg-slate-900 text-slate-400 hover:text-white border border-slate-800"
+                    ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] border border-[var(--theme-text-primary)] font-bold"
+                    : "bg-[var(--theme-card-bg)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] border border-[var(--theme-card-border)]"
                 }`}
               >
                 <span>{cat}</span>
-                <span className="text-[10px] bg-slate-800 px-1.5 py-0.2 rounded-full font-mono text-slate-400">
+                <span className="text-[10px] bg-[var(--theme-accent-light)] px-1.5 py-0.2 font-mono text-[var(--theme-text-secondary)]">
                   {count}
                 </span>
               </button>
@@ -448,21 +448,21 @@ export function CatalogItemsTab() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Filter catalog items..."
-          className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 min-w-[220px]"
+          className="sw-input px-3 py-1.5 text-xs min-w-[220px]"
         />
       </div>
 
       {/* Catalog Items Grid */}
       {filteredItems.length === 0 ? (
-        <div className="bg-slate-950 rounded-2xl border border-slate-800 p-12 text-center space-y-3">
-          <ShoppingBag className="w-10 h-10 text-slate-600 mx-auto" />
-          <h3 className="text-sm font-bold text-slate-300">No Catalog Items Found</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+        <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-12 text-center space-y-3">
+          <ShoppingBag className="w-10 h-10 text-[var(--theme-text-secondary)] mx-auto" />
+          <h3 className="text-sm font-bold text-[var(--theme-text-primary)]">No Catalog Items Found</h3>
+          <p className="text-xs text-[var(--theme-text-secondary)] max-w-sm mx-auto">
             Create your first service catalog request item to make hardware, software, or access requests available on the portal.
           </p>
           <button
             onClick={handleOpenCreateItem}
-            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg text-xs inline-flex items-center gap-1.5"
+            className="sw-btn-primary px-4 py-2 text-xs inline-flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Create Item</span>
@@ -475,23 +475,23 @@ export function CatalogItemsTab() {
             return (
               <div
                 key={item.id}
-                className={`bg-slate-950 rounded-xl border transition-all flex flex-col justify-between overflow-hidden group ${
+                className={`bg-[var(--theme-page-bg)] border transition-all flex flex-col justify-between overflow-hidden group ${
                   item.active
-                    ? "border-slate-800 hover:border-slate-700 shadow-xs"
-                    : "border-slate-800/50 opacity-60 bg-slate-950/40"
+                    ? "border-[var(--theme-card-border)] hover:border-[var(--theme-text-primary)]"
+                    : "border-[var(--theme-card-border)] opacity-60 bg-[var(--theme-page-bg)]"
                 }`}
               >
                 <div className="p-5 space-y-3.5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                      <div className="w-10 h-10 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] flex items-center justify-center">
                         <IconComponent className="w-5 h-5" />
                       </div>
                       <div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400/80">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--swiss-emerald)]">
                           {item.category}
                         </span>
-                        <h3 className="text-sm font-bold text-white leading-snug group-hover:text-emerald-300 transition-colors">
+                        <h3 className="text-sm font-bold text-[var(--theme-text-primary)] leading-snug group-hover:text-[var(--theme-text-primary)] transition-colors">
                           {item.name}
                         </h3>
                       </div>
@@ -501,48 +501,48 @@ export function CatalogItemsTab() {
                       type="button"
                       onClick={() => handleToggleActive(item)}
                       title={item.active ? "Click to deactivate" : "Click to activate"}
-                      className="text-slate-400 hover:text-white"
+                      className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]"
                     >
                       {item.active ? (
-                        <span className="text-[10px] font-bold uppercase font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        <span className="text-[10px] font-bold uppercase font-mono px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]">
                           Active
                         </span>
                       ) : (
-                        <span className="text-[10px] font-bold uppercase font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                        <span className="text-[10px] font-bold uppercase font-mono px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] border border-[var(--theme-card-border)]">
                           Draft
                         </span>
                       )}
                     </button>
                   </div>
 
-                  <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[var(--theme-text-secondary)] line-clamp-2 leading-relaxed">
                     {item.shortDescription}
                   </p>
 
-                  <div className="flex items-center gap-4 text-xs font-mono text-slate-400 pt-1 border-t border-slate-900">
+                  <div className="flex items-center gap-4 text-xs font-mono text-[var(--theme-text-secondary)] pt-1 border-t border-[var(--theme-card-border)]">
                     <div className="flex items-center gap-1">
-                      <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
-                      <span className="text-white font-bold">
+                      <DollarSign className="w-3.5 h-3.5 text-[var(--theme-text-primary)]" />
+                      <span className="text-[var(--theme-text-primary)] font-bold">
                         {item.price === 0 ? "Free" : `$${item.price.toLocaleString()}`}
                       </span>
                     </div>
                     <div className="flex items-center gap-1 text-[11px]">
-                      <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                      <Clock className="w-3.5 h-3.5 text-[var(--swiss-blue)]" />
                       <span>{item.deliveryDays}d delivery</span>
                     </div>
                     <div className="flex items-center gap-1 text-[11px]">
-                      <Layers className="w-3.5 h-3.5 text-purple-400" />
+                      <Layers className="w-3.5 h-3.5 text-[var(--theme-text-primary)]" />
                       <span>{item.variables?.length || 0} variables</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Card Action Footer */}
-                <div className="px-4 py-2.5 bg-slate-900/80 border-t border-slate-800 flex items-center justify-between text-xs">
+                <div className="px-4 py-2.5 bg-[var(--theme-card-bg)] border-t border-[var(--theme-card-border)] flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenVariablesDrawer(item)}
-                      className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 rounded font-semibold text-[11px] flex items-center gap-1 transition-colors border border-slate-700"
+                      className="sw-btn px-2.5 py-1 text-[11px] flex items-center gap-1"
                     >
                       <Settings className="w-3 h-3" />
                       <span>Variables ({item.variables?.length || 0})</span>
@@ -550,7 +550,7 @@ export function CatalogItemsTab() {
                     <Link
                       href={`/portal/catalog/${item.id}`}
                       target="_blank"
-                      className="p-1.5 text-slate-400 hover:text-cyan-300 transition-colors"
+                      className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-blue)] transition-colors"
                       title="Test live in Portal"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -560,14 +560,14 @@ export function CatalogItemsTab() {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleOpenEditItem(item)}
-                      className="p-1.5 text-slate-400 hover:text-white transition-colors"
+                      className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] transition-colors"
                       title="Edit Item Details"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => handleDeleteItem(item.id, item.name)}
-                      className="p-1.5 text-slate-400 hover:text-rose-400 transition-colors"
+                      className="p-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)] transition-colors"
                       title="Delete Item"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -582,38 +582,38 @@ export function CatalogItemsTab() {
 
       {/* Modal 1: Create / Edit Catalog Item */}
       {itemModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-5 text-xs text-white max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+          <div className="sw-panel-strong max-w-xl w-full p-6 space-y-5 text-xs text-[var(--theme-text-primary)] max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
               <h3 className="font-bold text-sm flex items-center gap-2">
-                <ShoppingBag className="w-4 h-4 text-emerald-400" />
+                <ShoppingBag className="w-4 h-4 text-[var(--theme-text-primary)]" />
                 <span>{editingItemId ? "Edit Catalog Item" : "Create New Catalog Item"}</span>
               </h3>
-              <button onClick={() => setItemModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setItemModalOpen(false)} className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSaveItem} className="space-y-4">
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Item Title *</label>
+                <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Item Title *</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. MacBook Pro 16-inch M3 Max"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-emerald-500"
+                  className="sw-input w-full p-2.5"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Category</label>
+                  <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Category</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-emerald-500"
+                    className="sw-input w-full p-2.5"
                   >
                     {CATEGORIES.map((c) => (
                       <option key={c} value={c}>
@@ -624,11 +624,11 @@ export function CatalogItemsTab() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Icon</label>
+                  <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Icon</label>
                   <select
                     value={icon}
                     onChange={(e) => setIcon(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-emerald-500"
+                    className="sw-input w-full p-2.5"
                   >
                     {ICON_OPTIONS.map((i) => (
                       <option key={i.name} value={i.name}>
@@ -641,51 +641,51 @@ export function CatalogItemsTab() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Price ($ USD)</label>
+                  <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Price ($ USD)</label>
                   <input
                     type="number"
                     step="0.01"
                     min="0"
                     value={price}
                     onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-emerald-500"
+                    className="sw-input w-full p-2.5"
                   />
-                  <span className="text-[10px] text-slate-500">Set 0 for free/entitled catalog items</span>
+                  <span className="text-[10px] text-[var(--theme-text-secondary)]">Set 0 for free/entitled catalog items</span>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Delivery SLA (Days)</label>
+                  <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Delivery SLA (Days)</label>
                   <input
                     type="number"
                     min="1"
                     value={deliveryDays}
                     onChange={(e) => setDeliveryDays(parseInt(e.target.value) || 1)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-emerald-500"
+                    className="sw-input w-full p-2.5"
                   />
-                  <span className="text-[10px] text-slate-500">Business days fulfillment commitment</span>
+                  <span className="text-[10px] text-[var(--theme-text-secondary)]">Business days fulfillment commitment</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Short Summary *</label>
+                <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Short Summary *</label>
                 <input
                   type="text"
                   required
                   value={shortDescription}
                   onChange={(e) => setShortDescription(e.target.value)}
                   placeholder="One sentence description visible on catalog card"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-emerald-500"
+                  className="sw-input w-full p-2.5"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1 font-semibold">Detailed Description</label>
+                <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Detailed Description</label>
                 <textarea
                   rows={3}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Full specifications, procurement terms, eligibility criteria..."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-emerald-500"
+                  className="sw-input w-full p-2.5"
                 />
               </div>
 
@@ -695,25 +695,25 @@ export function CatalogItemsTab() {
                   id="activeToggle"
                   checked={active}
                   onChange={(e) => setActive(e.target.checked)}
-                  className="rounded border-slate-800 bg-slate-950 text-emerald-500 focus:ring-emerald-500"
+                  className="border-[var(--theme-card-border)] bg-[var(--theme-page-bg)] text-[var(--swiss-emerald)] focus:ring-[var(--swiss-emerald)]"
                 />
-                <label htmlFor="activeToggle" className="text-slate-300 font-medium cursor-pointer">
+                <label htmlFor="activeToggle" className="text-[var(--theme-text-primary)] font-medium cursor-pointer">
                   Publish to Employee Portal (Active)
                 </label>
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-end gap-2 pt-3 border-t border-[var(--theme-card-border)]">
                 <button
                   type="button"
                   onClick={() => setItemModalOpen(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-semibold"
+                  className="sw-btn px-4 py-2"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingItem}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold flex items-center gap-1.5"
+                  className="sw-btn-primary px-4 py-2 flex items-center gap-1.5"
                 >
                   {savingItem ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>Save Catalog Item</span>
@@ -726,32 +726,32 @@ export function CatalogItemsTab() {
 
       {/* Modal 2: Manage Variables Drawer / Dialog */}
       {variablesDrawerOpen && selectedItemForVars && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 space-y-5 text-xs text-white max-h-[92vh] overflow-y-auto shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 bg-black/75 flex items-center justify-center p-4">
+          <div className="sw-panel-strong max-w-2xl w-full p-6 space-y-5 text-xs text-[var(--theme-text-primary)] max-h-[92vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
               <div>
                 <h3 className="font-bold text-sm flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-emerald-400" />
+                  <Settings className="w-4 h-4 text-[var(--theme-text-primary)]" />
                   <span>Configure Form Variables (item_option_new)</span>
                 </h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  Questions prompted to the requester for: <strong className="text-white">{selectedItemForVars.name}</strong>
+                <p className="text-[11px] text-[var(--theme-text-secondary)] mt-0.5">
+                  Questions prompted to the requester for: <strong className="text-[var(--theme-text-primary)]">{selectedItemForVars.name}</strong>
                 </p>
               </div>
-              <button onClick={() => setVariablesDrawerOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setVariablesDrawerOpen(false)} className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)]">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Existing Variables List */}
             <div className="space-y-2">
-              <h4 className="font-bold text-slate-300 flex items-center justify-between">
+              <h4 className="font-bold text-[var(--theme-text-primary)] flex items-center justify-between">
                 <span>Active Questions ({selectedItemForVars.variables?.length || 0})</span>
-                <span className="text-[10px] text-slate-500 font-normal">Requesters see these fields on the order form</span>
+                <span className="text-[10px] text-[var(--theme-text-secondary)] font-normal">Requesters see these fields on the order form</span>
               </h4>
 
               {(!selectedItemForVars.variables || selectedItemForVars.variables.length === 0) ? (
-                <div className="p-4 bg-slate-950 rounded-lg border border-slate-800 text-center text-slate-400 italic">
+                <div className="p-4 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] text-center text-[var(--theme-text-secondary)] italic">
                   No questions configured yet. Add your first variable below!
                 </div>
               ) : (
@@ -761,28 +761,28 @@ export function CatalogItemsTab() {
                     return (
                       <div
                         key={v.id}
-                        className={`p-3 rounded-lg border flex items-center justify-between gap-3 ${
+                        className={`p-3 border flex items-center justify-between gap-3 ${
                           isEditing
-                            ? "bg-slate-850 border-emerald-500/80"
-                            : "bg-slate-950 border-slate-800 hover:border-slate-700"
+                            ? "bg-[var(--theme-accent-light)] border-[var(--theme-text-primary)]"
+                            : "bg-[var(--theme-page-bg)] border-[var(--theme-card-border)] hover:border-[var(--theme-text-primary)]"
                         }`}
                       >
                         <div className="space-y-0.5 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-[10px] text-slate-500 font-bold">#{v.order || index + 1}</span>
-                            <span className="font-bold text-white truncate">{v.label}</span>
+                            <span className="font-mono text-[10px] text-[var(--theme-text-secondary)] font-bold">#{v.order || index + 1}</span>
+                            <span className="font-bold text-[var(--theme-text-primary)] truncate">{v.label}</span>
                             {v.isMandatory && (
-                              <span className="text-[10px] font-bold text-rose-400 font-mono">*Mandatory</span>
+                              <span className="text-[10px] font-bold text-[var(--swiss-red)] font-mono">*Mandatory</span>
                             )}
                           </div>
-                          <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
-                            <span>name: <strong className="text-slate-300">{v.name}</strong></span>
+                          <div className="flex items-center gap-2 text-[10px] text-[var(--theme-text-secondary)] font-mono">
+                            <span>name: <strong className="text-[var(--theme-text-primary)]">{v.name}</strong></span>
                             <span>•</span>
-                            <span className="uppercase text-emerald-400">{v.varType}</span>
+                            <span className="uppercase text-[var(--swiss-emerald)]">{v.varType}</span>
                             {v.optionsJson && (
                               <>
                                 <span>•</span>
-                                <span className="text-slate-400 truncate max-w-xs">{v.optionsJson}</span>
+                                <span className="text-[var(--theme-text-secondary)] truncate max-w-xs">{v.optionsJson}</span>
                               </>
                             )}
                           </div>
@@ -793,7 +793,7 @@ export function CatalogItemsTab() {
                             type="button"
                             disabled={index === 0}
                             onClick={() => handleMoveVariable(index, "up")}
-                            className="p-1 text-slate-400 hover:text-white disabled:opacity-30 rounded"
+                            className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] disabled:opacity-30"
                             title="Move Up"
                           >
                             <ArrowUp className="w-3.5 h-3.5" />
@@ -802,7 +802,7 @@ export function CatalogItemsTab() {
                             type="button"
                             disabled={index === selectedItemForVars.variables.length - 1}
                             onClick={() => handleMoveVariable(index, "down")}
-                            className="p-1 text-slate-400 hover:text-white disabled:opacity-30 rounded"
+                            className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] disabled:opacity-30"
                             title="Move Down"
                           >
                             <ArrowDown className="w-3.5 h-3.5" />
@@ -810,7 +810,7 @@ export function CatalogItemsTab() {
                           <button
                             type="button"
                             onClick={() => handleEditVariable(v)}
-                            className="p-1 text-slate-400 hover:text-white ml-1"
+                            className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] ml-1"
                             title="Edit Variable"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -818,7 +818,7 @@ export function CatalogItemsTab() {
                           <button
                             type="button"
                             onClick={() => handleDeleteVariable(v.id)}
-                            className="p-1 text-slate-400 hover:text-rose-400"
+                            className="p-1 text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)]"
                             title="Delete Variable"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -832,16 +832,16 @@ export function CatalogItemsTab() {
             </div>
 
             {/* Add / Edit Variable Form */}
-            <form onSubmit={handleSaveVariable} className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3.5">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span className="font-bold text-slate-200">
+            <form onSubmit={handleSaveVariable} className="bg-[var(--theme-page-bg)] p-4 border border-[var(--theme-card-border)] space-y-3.5">
+              <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-2">
+                <span className="font-bold text-[var(--theme-text-primary)]">
                   {editingVarId ? "Edit Form Question" : "Add Form Question"}
                 </span>
                 {editingVarId && (
                   <button
                     type="button"
                     onClick={resetVariableForm}
-                    className="text-[10px] text-slate-400 hover:text-white underline"
+                    className="text-[10px] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] underline"
                   >
                     Cancel Edit
                   </button>
@@ -850,7 +850,7 @@ export function CatalogItemsTab() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Field Label (Question) *</label>
+                  <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Field Label (Question) *</label>
                   <input
                     type="text"
                     required
@@ -862,30 +862,30 @@ export function CatalogItemsTab() {
                       }
                     }}
                     placeholder="e.g. Storage Capacity"
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-white focus:outline-emerald-500"
+                    className="sw-input w-full p-2"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Technical Name *</label>
+                  <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Technical Name *</label>
                   <input
                     type="text"
                     required
                     value={varName}
                     onChange={(e) => setVarName(e.target.value)}
                     placeholder="e.g. storage_capacity"
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-white font-mono focus:outline-emerald-500"
+                    className="sw-input w-full p-2 font-mono"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Type</label>
+                  <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Type</label>
                   <select
                     value={varType}
                     onChange={(e) => setVarType(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-white focus:outline-emerald-500"
+                    className="sw-input w-full p-2"
                   >
                     <option value="string">Text Input</option>
                     <option value="select">Dropdown Choice</option>
@@ -897,13 +897,13 @@ export function CatalogItemsTab() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Display Order</label>
+                  <label className="block text-[var(--theme-text-secondary)] mb-1 font-semibold">Display Order</label>
                   <input
                     type="number"
                     min="1"
                     value={varOrder}
                     onChange={(e) => setVarOrder(parseInt(e.target.value) || 1)}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-white focus:outline-emerald-500"
+                    className="sw-input w-full p-2"
                   />
                 </div>
 
@@ -913,24 +913,24 @@ export function CatalogItemsTab() {
                       type="checkbox"
                       checked={varMandatory}
                       onChange={(e) => setVarMandatory(e.target.checked)}
-                      className="rounded border-slate-800 bg-slate-900 text-emerald-500"
+                      className="border-[var(--theme-card-border)] bg-[var(--theme-card-bg)] text-[var(--swiss-emerald)]"
                     />
-                    <span className="text-slate-300 font-semibold">Mandatory</span>
+                    <span className="text-[var(--theme-text-primary)] font-semibold">Mandatory</span>
                   </label>
                 </div>
               </div>
 
               {/* Dropdown Options Builder */}
               {varType === "select" && (
-                <div className="p-3 bg-slate-900/60 rounded-lg border border-slate-800 space-y-2">
-                  <label className="block text-slate-300 font-semibold text-[11px]">Dropdown Choices</label>
+                <div className="p-3 sw-panel space-y-2">
+                  <label className="block text-[var(--theme-text-primary)] font-semibold text-[11px]">Dropdown Choices</label>
                   <div className="flex gap-2">
                     <input
                       type="text"
                       value={choiceInput}
                       onChange={(e) => setChoiceInput(e.target.value)}
                       placeholder="Type choice and click Add (e.g. 1 TB SSD)"
-                      className="flex-1 bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-xs text-white"
+                      className="flex-1 bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-1.5 text-xs text-[var(--theme-text-primary)]"
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -941,7 +941,7 @@ export function CatalogItemsTab() {
                     <button
                       type="button"
                       onClick={handleAddChoice}
-                      className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-semibold"
+                      className="sw-btn-primary px-3 py-1"
                     >
                       Add
                     </button>
@@ -951,13 +951,13 @@ export function CatalogItemsTab() {
                     {varChoices.map((choice) => (
                       <span
                         key={choice}
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-200 border border-slate-700 text-[11px]"
+                        className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)] text-[11px]"
                       >
                         <span>{choice}</span>
                         <button
                           type="button"
                           onClick={() => handleRemoveChoice(choice)}
-                          className="text-slate-400 hover:text-rose-400"
+                          className="text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)]"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -970,7 +970,7 @@ export function CatalogItemsTab() {
               <button
                 type="submit"
                 disabled={savingVar}
-                className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg flex items-center justify-center gap-1.5"
+                className="w-full py-2 bg-[var(--theme-text-primary)] hover:opacity-85 text-white font-semibold flex items-center justify-center gap-1.5"
               >
                 {savingVar ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
                 <span>{editingVarId ? "Update Question" : "Add Question to Form"}</span>

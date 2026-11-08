@@ -178,35 +178,35 @@ export default function PortalSpacesPage() {
       case "vacant":
       case "available":
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]">
+            <span className="w-1.5 h-1.5 bg-[var(--swiss-emerald)] animate-pulse"></span>
             Available
           </span>
         );
       case "occupied":
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)]">
+            <span className="w-1.5 h-1.5 bg-[var(--theme-card-border)]"></span>
             Occupied
           </span>
         );
       case "reserved":
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] border border-[var(--swiss-amber)]">
+            <span className="w-1.5 h-1.5 bg-[var(--swiss-amber)]"></span>
             Reserved
           </span>
         );
       case "maintenance":
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+          <span className="sw-badge-red inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs">
+            <span className="w-1.5 h-1.5 bg-[var(--swiss-red)]"></span>
             Under Maintenance
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)]">
             {status}
           </span>
         );
@@ -214,17 +214,17 @@ export default function PortalSpacesPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="sw-page">
       {/* Swiss Header */}
-      <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 border-b-2 border-black pb-5">
+      <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 border-b-2 border-[var(--theme-text-primary)] pb-5">
         <div>
           <div className="flex items-baseline gap-3">
-            <span className="font-mono text-sm font-bold text-emerald-600">03 /</span>
-            <h1 className="text-3xl font-extrabold tracking-tight uppercase text-black">
+            <span className="font-mono text-sm font-bold text-[var(--theme-text-secondary)]">03 /</span>
+            <h1 className="text-3xl font-extrabold tracking-tight uppercase text-[var(--theme-text-primary)]">
               Campus Maps &amp; Space Directory
             </h1>
           </div>
-          <p className="text-xs sm:text-sm text-neutral-600 mt-1 max-w-2xl">
+          <p className="text-xs sm:text-sm text-[var(--theme-text-secondary)] mt-1 max-w-2xl">
             Explore corporate campuses, office levels, conference rooms, video collaboration suites, and ergonomic desks across 6 tiers.
           </p>
         </div>
@@ -232,13 +232,13 @@ export default function PortalSpacesPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/portal"
-            className="px-4 py-2 border border-black text-xs font-mono uppercase font-bold text-black hover:bg-neutral-100 transition-colors"
+            className="sw-btn"
           >
             &larr; Back to Home
           </Link>
           <Link
             href="/portal/reservations"
-            className="px-4 py-2 bg-black hover:bg-neutral-800 text-white text-xs font-mono uppercase font-bold transition-colors flex items-center gap-1.5"
+            className="sw-btn-primary"
           >
             <CalendarCheck2 className="w-4 h-4" />
             <span>Book a Space &rarr;</span>
@@ -247,14 +247,14 @@ export default function PortalSpacesPage() {
       </div>
 
       {/* 6-Tier Hierarchy Breadcrumb Navigator */}
-      <div className="p-4 border-2 border-black bg-white flex flex-wrap items-center gap-2.5 text-sm">
-        <span className="text-xs font-mono font-bold uppercase tracking-wider text-black mr-1 flex items-center gap-1.5">
-          <Compass className="w-3.5 h-3.5 text-black" /> Spatial Navigator:
+      <div className="p-4 border-2 border-[var(--theme-text-primary)] bg-[var(--theme-card-bg)] flex flex-wrap items-center gap-2.5 text-sm">
+        <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--theme-text-primary)] mr-1 flex items-center gap-1.5">
+          <Compass className="w-3.5 h-3.5 text-[var(--theme-text-primary)]" /> Spatial Navigator:
         </span>
 
         {/* Region */}
         <div className="flex items-center gap-1.5">
-          <Map className="w-3.5 h-3.5 text-slate-400" />
+          <Map className="w-3.5 h-3.5 text-[var(--theme-text-secondary)]" />
           <select
             value={activeRegion?.id || ""}
             onChange={(e) => {
@@ -273,7 +273,7 @@ export default function PortalSpacesPage() {
                 }
               }
             }}
-            className="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors outline-hidden cursor-pointer"
+            className="sw-input px-2.5 py-1.5 text-xs font-medium cursor-pointer"
           >
             {data?.tree.map((r) => (
               <option key={r.id} value={r.id}>
@@ -283,11 +283,11 @@ export default function PortalSpacesPage() {
           </select>
         </div>
 
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600 shrink-0" />
+        <ChevronRight className="w-3.5 h-3.5 text-[var(--theme-text-secondary)] shrink-0" />
 
         {/* State */}
         <div className="flex items-center gap-1.5">
-          <MapPin className="w-3.5 h-3.5 text-slate-400" />
+          <MapPin className="w-3.5 h-3.5 text-[var(--theme-text-secondary)]" />
           <select
             value={activeState?.id || ""}
             onChange={(e) => {
@@ -303,7 +303,7 @@ export default function PortalSpacesPage() {
                 }
               }
             }}
-            className="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors outline-hidden cursor-pointer"
+            className="sw-input px-2.5 py-1.5 text-xs font-medium cursor-pointer"
           >
             {activeRegion?.states.map((s) => (
               <option key={s.id} value={s.id}>
@@ -313,11 +313,11 @@ export default function PortalSpacesPage() {
           </select>
         </div>
 
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600 shrink-0" />
+        <ChevronRight className="w-3.5 h-3.5 text-[var(--theme-text-secondary)] shrink-0" />
 
         {/* Campus */}
         <div className="flex items-center gap-1.5">
-          <Building2 className="w-3.5 h-3.5 text-slate-400" />
+          <Building2 className="w-3.5 h-3.5 text-[var(--theme-text-secondary)]" />
           <select
             value={activeCampus?.id || ""}
             onChange={(e) => {
@@ -330,7 +330,7 @@ export default function PortalSpacesPage() {
                 }
               }
             }}
-            className="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors outline-hidden cursor-pointer"
+            className="sw-input px-2.5 py-1.5 text-xs font-medium cursor-pointer"
           >
             {activeState?.campuses.map((c) => (
               <option key={c.id} value={c.id}>
@@ -340,11 +340,11 @@ export default function PortalSpacesPage() {
           </select>
         </div>
 
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600 shrink-0" />
+        <ChevronRight className="w-3.5 h-3.5 text-[var(--theme-text-secondary)] shrink-0" />
 
         {/* Building */}
         <div className="flex items-center gap-1.5">
-          <Building className="w-3.5 h-3.5 text-slate-400" />
+          <Building className="w-3.5 h-3.5 text-[var(--theme-text-secondary)]" />
           <select
             value={activeBuilding?.id || ""}
             onChange={(e) => {
@@ -354,7 +354,7 @@ export default function PortalSpacesPage() {
                 setSelectedFloorId(b.floors[0].id);
               }
             }}
-            className="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors outline-hidden cursor-pointer"
+            className="sw-input px-2.5 py-1.5 text-xs font-medium cursor-pointer"
           >
             {activeCampus?.buildings.map((b) => (
               <option key={b.id} value={b.id}>
@@ -364,15 +364,15 @@ export default function PortalSpacesPage() {
           </select>
         </div>
 
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-slate-600 shrink-0" />
+        <ChevronRight className="w-3.5 h-3.5 text-[var(--theme-text-secondary)] shrink-0" />
 
         {/* Floor */}
         <div className="flex items-center gap-1.5">
-          <Layers className="w-3.5 h-3.5 text-slate-400" />
+          <Layers className="w-3.5 h-3.5 text-[var(--theme-text-secondary)]" />
           <select
             value={activeFloor?.id || ""}
             onChange={(e) => setSelectedFloorId(e.target.value)}
-            className="bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors outline-hidden cursor-pointer"
+            className="sw-input px-2.5 py-1.5 text-xs font-medium cursor-pointer"
           >
             {activeBuilding?.floors.map((f) => (
               <option key={f.id} value={f.id}>
@@ -386,7 +386,7 @@ export default function PortalSpacesPage() {
       {/* Floor Levels Bar */}
       {activeBuilding && (
         <div className="flex items-center gap-2 overflow-x-auto pb-1">
-          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5 shrink-0">
+          <span className="text-xs font-semibold text-[var(--theme-text-secondary)] uppercase tracking-wider flex items-center gap-1.5 shrink-0">
             <Layers className="w-3.5 h-3.5" /> Levels:
           </span>
           <div className="flex items-center gap-2">
@@ -396,16 +396,16 @@ export default function PortalSpacesPage() {
                 <button
                   key={fl.id}
                   onClick={() => setSelectedFloorId(fl.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+                  className={`px-3 py-1.5 text-xs font-medium transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
                     isSelected
-                      ? "bg-indigo-600 dark:bg-indigo-500 text-white shadow-xs font-bold ring-2 ring-indigo-500/20"
-                      : "border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80 shadow-xs"
+                      ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] font-bold ring-2 ring-[var(--theme-text-primary)]"
+                      : "sw-panel text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)]"
                   }`}
                 >
                   <span>Level {fl.floorNumber}</span>
                   <span className="opacity-80">({fl.name})</span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-medium ${
-                    isSelected ? "bg-white/20 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                  <span className={`text-[10px] px-1.5 py-0.5 font-mono font-medium ${
+                    isSelected ? "bg-transparent text-[var(--theme-page-bg)] border border-[var(--theme-page-bg)]" : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]"
                   }`}>
                     {fl.spaces.length} spaces
                   </span>
@@ -417,23 +417,23 @@ export default function PortalSpacesPage() {
       )}
 
       {/* Search and Filters */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 sw-panel">
         <div className="flex items-center gap-2 w-full sm:w-auto flex-1">
           <div className="relative flex-1 max-w-sm">
-            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-[var(--theme-text-secondary)]" />
             <input
               type="text"
               placeholder="Search rooms, desks, departments..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all"
+              className="sw-input w-full pl-9 pr-3 py-1.5 text-xs"
             />
           </div>
 
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="border border-slate-300 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 px-3 py-1.5 text-xs font-medium focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-hidden transition-all cursor-pointer"
+            className="sw-input px-3 py-1.5 text-xs font-medium cursor-pointer"
           >
             <option value="all">All Space Types</option>
             <option value="Conference Room">Conference Rooms</option>
@@ -445,22 +445,22 @@ export default function PortalSpacesPage() {
           </select>
         </div>
 
-        <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-          Showing <strong className="text-slate-900 dark:text-slate-100 tabular-nums">{filteredSpaces.length}</strong> spaces on Floor {activeFloor?.floorNumber || 4}
+        <div className="text-xs text-[var(--theme-text-secondary)] font-medium">
+          Showing <strong className="text-[var(--theme-text-primary)] tabular-nums">{filteredSpaces.length}</strong> spaces on Floor {activeFloor?.floorNumber || 4}
         </div>
       </div>
 
       {/* Spaces Grid */}
       {loading ? (
-        <div className="flex items-center justify-center py-20 text-slate-400 gap-3">
-          <RefreshCw className="w-6 h-6 animate-spin text-indigo-500" />
+        <div className="flex items-center justify-center py-20 text-[var(--theme-text-secondary)] gap-3">
+          <RefreshCw className="w-6 h-6 animate-spin text-[var(--theme-text-primary)]" />
           <span>Loading spatial directory...</span>
         </div>
       ) : filteredSpaces.length === 0 ? (
-        <div className="p-12 text-center text-slate-400 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl bg-white dark:bg-slate-900 shadow-xs">
+        <div className="p-12 text-center text-[var(--theme-text-secondary)] border border-dashed border-[var(--theme-card-border)] bg-[var(--theme-card-bg)]">
           <Box className="w-10 h-10 mx-auto opacity-30 mb-2" />
-          <p className="font-semibold text-slate-800 dark:text-slate-200">No rooms or desks found</p>
-          <p className="text-xs mt-1 text-slate-500 dark:text-slate-400">Try resetting search filters or selecting another building floor</p>
+          <p className="font-semibold text-[var(--theme-text-primary)]">No rooms or desks found</p>
+          <p className="text-xs mt-1 text-[var(--theme-text-secondary)]">Try resetting search filters or selecting another building floor</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -468,46 +468,46 @@ export default function PortalSpacesPage() {
             return (
               <div
                 key={sp.id}
-                className="group p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs hover:shadow-md hover:border-indigo-500/40 dark:hover:border-indigo-500/40 transition-all flex flex-col justify-between space-y-4"
+                className="group p-5 sw-panel hover:border-[var(--theme-text-primary)] transition-all flex flex-col justify-between space-y-4"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/60">
+                      <span className="text-xs font-mono font-bold px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)]">
                         {sp.spaceNumber}
                       </span>
-                      <h3 className="font-bold text-base text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors mt-2">
+                      <h3 className="font-bold text-base text-[var(--theme-text-primary)] group-hover:underline transition-colors mt-2">
                         {sp.name}
                       </h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-xs text-[var(--theme-text-secondary)] mt-0.5">
                         {activeBuilding?.name} &bull; Floor {activeFloor?.floorNumber}
                       </p>
                     </div>
                     {getStatusBadge(sp.status)}
                   </div>
 
-                  <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-2 gap-2 text-xs">
+                  <div className="mt-3.5 pt-3 border-t border-[var(--theme-card-border)] grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="block text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider">Type</span>
-                      <span className="font-semibold text-slate-800 dark:text-slate-200">{sp.spaceType}</span>
+                      <span className="block text-[10px] uppercase font-semibold text-[var(--theme-text-secondary)] tracking-wider">Type</span>
+                      <span className="font-semibold text-[var(--theme-text-primary)]">{sp.spaceType}</span>
                     </div>
                     <div>
-                      <span className="block text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 tracking-wider">Capacity</span>
-                      <span className="font-semibold text-slate-800 dark:text-slate-200">{sp.capacity} Persons</span>
+                      <span className="block text-[10px] uppercase font-semibold text-[var(--theme-text-secondary)] tracking-wider">Capacity</span>
+                      <span className="font-semibold text-[var(--theme-text-primary)]">{sp.capacity} Persons</span>
                     </div>
                   </div>
 
                   {sp.department && (
-                    <div className="mt-2.5 text-xs text-slate-500 dark:text-slate-400">
-                      Department: <strong className="text-slate-700 dark:text-slate-300 font-medium">{sp.department}</strong>
+                    <div className="mt-2.5 text-xs text-[var(--theme-text-secondary)]">
+                      Department: <strong className="text-[var(--theme-text-primary)] font-medium">{sp.department}</strong>
                     </div>
                   )}
                 </div>
 
-                <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+                <div className="pt-3.5 border-t border-[var(--theme-card-border)] flex items-center justify-between gap-2">
                   <Link
                     href={`/portal/reservations?search=${encodeURIComponent(sp.spaceNumber)}`}
-                    className="flex-1 py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white text-xs font-semibold shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                    className="sw-btn-primary flex-1 py-2 px-3 text-xs flex items-center justify-center gap-1.5"
                   >
                     <Calendar className="w-3.5 h-3.5" />
                     <span>Reserve Space</span>
@@ -516,9 +516,9 @@ export default function PortalSpacesPage() {
                   <Link
                     href="/portal/reservations?view=floorplan"
                     title="View on Architectural Schematic"
-                    className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shadow-xs"
+                    className="p-2 border border-[var(--theme-card-border)] text-[var(--theme-text-secondary)] hover:bg-[var(--theme-accent-light)] hover:text-[var(--theme-text-primary)] transition-colors"
                   >
-                    <Layers className="w-4 h-4 text-indigo-500" />
+                    <Layers className="w-4 h-4 text-[var(--theme-text-primary)]" />
                   </Link>
                 </div>
               </div>

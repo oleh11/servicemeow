@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export type ColorThemeId =
+  | "swiss"
+  | "swiss_dark"
   | "material3"
   | "polaris"
   | "midnight"
@@ -43,7 +45,62 @@ export interface ColorThemeDefinition {
   previewSwatches: [string, string, string, string]; // [Header, Sidebar, Accent, Canvas]
 }
 
+// The app is designed in the Swiss Grid style (see globals.css); other themes are optional skins.
+export const DEFAULT_COLOR_THEME: ColorThemeId = "swiss";
+
 export const COLOR_THEMES: Record<ColorThemeId, ColorThemeDefinition> = {
+  swiss: {
+    id: "swiss",
+    name: "Swiss Grid (Default)",
+    tagline: "International Typographic Style: white surfaces, black rules, sharp edges",
+    isDark: false,
+    colors: {
+      primary: "#0a0a0a",
+      primaryHover: "#1f1f1f",
+      primaryLight: "#f4f4f6",
+      glow: "none",
+      headerBg: "#ffffff",
+      headerText: "#0a0a0a",
+      headerBorder: "#e5e5e7",
+      sidebarBg: "#fbfbfb",
+      sidebarText: "#1d1d1f",
+      sidebarBorder: "#e5e5e7",
+      sidebarActiveBg: "#0a0a0a",
+      sidebarActiveText: "#ffffff",
+      pageBg: "#ffffff",
+      cardBg: "#ffffff",
+      cardBorder: "#e5e5e7",
+      textPrimary: "#0a0a0a",
+      textSecondary: "#6e6e73",
+    },
+    previewSwatches: ["#ffffff", "#0a0a0a", "#eb0029", "#f4f4f6"],
+  },
+  swiss_dark: {
+    id: "swiss_dark",
+    name: "Swiss Grid Dark",
+    tagline: "The Swiss Grid layout inverted: black surfaces, white rules",
+    isDark: true,
+    colors: {
+      primary: "#f5f5f7",
+      primaryHover: "#d1d1d6",
+      primaryLight: "#1c1c1e",
+      glow: "none",
+      headerBg: "#0a0a0a",
+      headerText: "#f5f5f7",
+      headerBorder: "#262626",
+      sidebarBg: "#111111",
+      sidebarText: "#d1d1d6",
+      sidebarBorder: "#262626",
+      sidebarActiveBg: "#ffffff",
+      sidebarActiveText: "#0a0a0a",
+      pageBg: "#0a0a0a",
+      cardBg: "#111111",
+      cardBorder: "#262626",
+      textPrimary: "#f5f5f7",
+      textSecondary: "#8e8e93",
+    },
+    previewSwatches: ["#0a0a0a", "#ffffff", "#eb0029", "#1c1c1e"],
+  },
   material3: {
     id: "material3",
     name: "Material Design 3 (M3)",
@@ -304,7 +361,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [colorTheme, setColorThemeState] = useState<ColorThemeId>("material3");
+  const [colorTheme, setColorThemeState] = useState<ColorThemeId>(DEFAULT_COLOR_THEME);
   const [layoutMode, setLayoutModeState] = useState<LayoutMode>("sidebar");
   const [densityMode, setDensityModeState] = useState<DensityMode>("comfortable");
   const [themePickerOpen, setThemePickerOpen] = useState(false);
@@ -317,7 +374,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (savedTheme && COLOR_THEMES[savedTheme]) {
         setColorThemeState(savedTheme);
       } else {
-        setColorThemeState("material3");
+        setColorThemeState(DEFAULT_COLOR_THEME);
       }
       const savedLayout = localStorage.getItem("servicemeow_layout_mode") as LayoutMode | null;
       if (savedLayout && ["sidebar", "top_ribbon", "compact_rail", "floating_dock"].includes(savedLayout)) {
@@ -337,7 +394,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof document === "undefined") return;
 
-    const themeDef = COLOR_THEMES[colorTheme] || COLOR_THEMES.polaris;
+    const themeDef = COLOR_THEMES[colorTheme] || COLOR_THEMES[DEFAULT_COLOR_THEME];
     const root = document.documentElement;
 
     // Set DOM data attributes
@@ -396,12 +453,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetToDefaults = () => {
-    setColorThemeState("material3");
+    setColorThemeState(DEFAULT_COLOR_THEME);
     setLayoutModeState("sidebar");
     setDensityModeState("comfortable");
   };
 
-  const currentThemeDef = COLOR_THEMES[colorTheme] || COLOR_THEMES.material3;
+  const currentThemeDef = COLOR_THEMES[colorTheme] || COLOR_THEMES[DEFAULT_COLOR_THEME];
 
   return (
     <ThemeContext.Provider

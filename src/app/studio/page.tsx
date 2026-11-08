@@ -1249,7 +1249,7 @@ function StudioContent() {
     label: r.name,
     sublabel: r.label && r.label !== r.name ? r.label : r.description || undefined,
     badge: r.elevatedPrivilege ? "Elevated" : undefined,
-    badgeColor: r.elevatedPrivilege ? "bg-amber-500/20 text-amber-300 border-amber-500/30" : undefined,
+    badgeColor: r.elevatedPrivilege ? "bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] border-[var(--swiss-amber)]" : undefined,
   }));
 
   const groupSelectOptions: MultiSelectOption[] = groupsList.map((g) => ({
@@ -1257,7 +1257,7 @@ function StudioContent() {
     label: g.name,
     sublabel: g.description || undefined,
     badge: `${g.memberCount || (g.members ? g.members.length : 0)} members`,
-    badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+    badgeColor: "bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border-[var(--theme-card-border)]",
   }));
 
   const userSelectOptions: MultiSelectOption[] = usersList.map((u) => ({
@@ -1603,29 +1603,29 @@ function StudioContent() {
   // Security Enforcement Gate: Non-admin and non-delegated admin personas cannot access Admin Studio
   if (!isDelegatedAdmin) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      <div className="min-h-screen bg-[var(--theme-page-bg)] text-[var(--theme-text-primary)] flex flex-col font-sans">
         <Navbar />
         <ThemePickerModal />
         <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-16 flex flex-col items-center justify-center text-center">
-          <div className="w-20 h-20 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mb-6 shadow-2xl shadow-rose-950/50">
-            <Lock className="w-10 h-10 text-rose-400" />
+          <div className="w-20 h-20 bg-[var(--theme-accent-light)] border border-[var(--swiss-red)] flex items-center justify-center mb-6">
+            <Lock className="w-10 h-10 text-[var(--swiss-red)]" />
           </div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-mono uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[var(--theme-accent-light)] border border-[var(--swiss-red)] text-[var(--swiss-red)] text-xs font-mono uppercase tracking-wider mb-4">
             <Shield className="w-3.5 h-3.5" />
             <span>403 Forbidden • Access Control Restriction</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-3">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-[var(--theme-text-primary)] tracking-tight mb-3">
             Administrator Privileges Required
           </h1>
-          <p className="text-slate-400 text-sm max-w-lg mb-8">
-            The ServiceMeow <span className="text-slate-200 font-semibold">Studio &amp; Admin Center</span> is restricted to platform administrators (<code className="text-rose-300 bg-slate-900 px-1.5 py-0.5 rounded font-mono text-xs">admin</code>) and delegated module administrators (<code className="text-indigo-300 bg-slate-900 px-1.5 py-0.5 rounded font-mono text-xs">workplace_admin</code>, <code className="text-cyan-300 bg-slate-900 px-1.5 py-0.5 rounded font-mono text-xs">catalog_admin</code>, etc.).
+          <p className="text-[var(--theme-text-secondary)] text-sm max-w-lg mb-8">
+            The ServiceMeow <span className="text-[var(--theme-text-primary)] font-semibold">Studio &amp; Admin Center</span> is restricted to platform administrators (<code className="text-[var(--swiss-red)] bg-[var(--theme-card-bg)] px-1.5 py-0.5 font-mono text-xs">admin</code>) and delegated module administrators (<code className="text-[var(--theme-text-primary)] bg-[var(--theme-card-bg)] px-1.5 py-0.5 font-mono text-xs">workplace_admin</code>, <code className="text-[var(--swiss-blue)] bg-[var(--theme-card-bg)] px-1.5 py-0.5 font-mono text-xs">catalog_admin</code>, etc.).
           </p>
 
           {/* Current Persona Security Context Card */}
-          <div className="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-xl p-5 mb-8 text-left shadow-xl">
-            <div className="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-3">
+          <div className="w-full max-w-md sw-panel-strong p-5 mb-8 text-left">
+            <div className="text-[11px] font-mono text-[var(--theme-text-secondary)] uppercase tracking-wider mb-3">
               Active Security Context
             </div>
             <div className="flex items-center justify-between">
@@ -1633,30 +1633,30 @@ function StudioContent() {
                 <img
                   src={currentUser.avatar || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=64"}
                   alt={currentUser.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-700"
+                  className="w-10 h-10 object-cover ring-2 ring-[var(--theme-card-border)]"
                 />
                 <div>
-                  <div className="font-semibold text-white text-sm">{currentUser.name}</div>
-                  <div className="text-xs text-slate-400">{currentUser.email}</div>
+                  <div className="font-semibold text-[var(--theme-text-primary)] text-sm">{currentUser.name}</div>
+                  <div className="text-xs text-[var(--theme-text-secondary)]">{currentUser.email}</div>
                 </div>
               </div>
               <div className="text-right">
-                <span className="inline-block px-2.5 py-1 rounded bg-slate-800 text-slate-300 text-xs font-mono font-bold uppercase border border-slate-700">
+                <span className="inline-block px-2.5 py-1 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] text-xs font-mono font-bold uppercase border border-[var(--theme-card-border)]">
                   {currentUser.role}
                 </span>
                 {currentUser.department && (
-                  <div className="text-[11px] text-slate-500 mt-1">{currentUser.department}</div>
+                  <div className="text-[11px] text-[var(--theme-text-secondary)] mt-1">{currentUser.department}</div>
                 )}
               </div>
             </div>
 
             {isImpersonating && (
-              <div className="mt-4 pt-3 border-t border-slate-800 text-xs text-amber-300/90 bg-amber-500/10 p-3 rounded-lg border border-amber-500/20 flex items-start gap-2.5">
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div className="mt-4 pt-3 border-t border-[var(--theme-card-border)] text-xs text-[var(--swiss-amber)] bg-[var(--theme-accent-light)] p-3 border border-[var(--swiss-amber)] flex items-start gap-2.5">
+                <AlertTriangle className="w-4 h-4 text-[var(--swiss-amber)] shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-amber-200">Impersonation Session Active</p>
-                  <p className="text-slate-400 text-[11px] mt-0.5">
-                    You are currently impersonating <span className="text-white font-medium">{currentUser.name}</span>. Administrative access to schema, ACLs, and business rules is suspended during impersonation to maintain audit fidelity.
+                  <p className="font-semibold text-[var(--swiss-amber)]">Impersonation Session Active</p>
+                  <p className="text-[var(--theme-text-secondary)] text-[11px] mt-0.5">
+                    You are currently impersonating <span className="text-[var(--theme-text-primary)] font-medium">{currentUser.name}</span>. Administrative access to schema, ACLs, and business rules is suspended during impersonation to maintain audit fidelity.
                   </p>
                 </div>
               </div>
@@ -1669,7 +1669,7 @@ function StudioContent() {
               <button
                 type="button"
                 onClick={() => endImpersonation()}
-                className="px-5 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-2 shadow-lg shadow-amber-950/40 transition-all hover:scale-105 cursor-pointer"
+                className="px-5 py-2.5 bg-[var(--swiss-amber)] text-white font-bold text-xs flex items-center gap-2 transition-all cursor-pointer"
               >
                 <UserCheck className="w-4 h-4" />
                 <span>End Impersonation & Restore Admin</span>
@@ -1679,18 +1679,18 @@ function StudioContent() {
             <button
               type="button"
               onClick={() => router.push("/workspace")}
-              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-lg text-xs flex items-center gap-2 transition-colors border border-slate-700 cursor-pointer"
+              className="sw-btn px-4 py-2.5 text-xs flex items-center gap-2 cursor-pointer"
             >
-              <LayoutDashboard className="w-4 h-4 text-emerald-400" />
+              <LayoutDashboard className="w-4 h-4 text-[var(--theme-text-primary)]" />
               <span>Go to Agent Workspace</span>
             </button>
 
             <button
               type="button"
               onClick={() => router.push("/portal")}
-              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-lg text-xs flex items-center gap-2 transition-colors border border-slate-700 cursor-pointer"
+              className="sw-btn px-4 py-2.5 text-xs flex items-center gap-2 cursor-pointer"
             >
-              <Compass className="w-4 h-4 text-cyan-400" />
+              <Compass className="w-4 h-4 text-[var(--swiss-blue)]" />
               <span>Go to Employee Portal</span>
             </button>
           </div>
@@ -1761,12 +1761,12 @@ function StudioContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col font-sans">
+    <div className="min-h-screen bg-[var(--theme-page-bg)] text-[var(--theme-text-primary)] flex flex-col font-sans">
       <Navbar />
       <ThemePickerModal />
 
       {/* Top Studio Control Bar */}
-      <div className="border-b border-slate-800 bg-slate-900/95 backdrop-blur-md sticky top-14 z-30 px-3 sm:px-6 py-2.5">
+      <div className="border-b-2 border-[var(--theme-text-primary)] bg-[var(--theme-page-bg)] sticky top-14 z-30 px-3 sm:px-6 py-2.5">
         <div className="max-w-[1720px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Left: Branding, Sidebar Toggle & Active Breadcrumbs */}
           <div className="flex items-center gap-3 min-w-0">
@@ -1775,32 +1775,32 @@ function StudioContent() {
                 type="button"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 title={isSidebarOpen ? "Collapse Studio Explorer" : "Expand Studio Explorer"}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 transition-colors shrink-0 cursor-pointer"
+                className="sw-icon-btn shrink-0"
               >
                 {isSidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeft className="w-4 h-4" />}
               </button>
             )}
 
             <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
+              <div className="w-7 h-7 bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] flex items-center justify-center shrink-0">
                 <Cat className="w-4 h-4" />
               </div>
-              <div className="flex items-center gap-1.5 text-xs min-w-0 truncate">
-                <span className="font-bold text-slate-200 tracking-tight hidden sm:inline">Studio</span>
-                <span className="text-slate-600 hidden sm:inline">/</span>
-                <span className="text-slate-400 hidden md:inline truncate">
+              <div className="flex items-center gap-1.5 text-xs font-mono uppercase min-w-0 truncate">
+                <span className="sw-eyebrow-tag hidden sm:inline">Studio</span>
+                <span className="text-[var(--theme-text-secondary)] hidden sm:inline">/</span>
+                <span className="text-[var(--theme-text-secondary)] hidden md:inline truncate">
                   {STUDIO_CATEGORIES.find((c) => c.id === activeModuleMeta.category)?.label}
                 </span>
-                <span className="text-slate-600 hidden md:inline">/</span>
-                <div className="flex items-center gap-1.5 font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/30 truncate">
+                <span className="text-[var(--theme-text-secondary)] hidden md:inline">/</span>
+                <div className="flex items-center gap-1.5 font-bold text-[var(--theme-text-primary)] px-2.5 py-1 border border-[var(--theme-text-primary)] truncate">
                   <activeModuleMeta.icon className="w-3.5 h-3.5 shrink-0" />
                   <span className="truncate">{activeModuleMeta.title}</span>
                 </div>
-                <code className="text-[10px] font-mono text-slate-400 bg-slate-800/80 border border-slate-700/60 px-1.5 py-0.5 rounded hidden lg:inline shrink-0">
+                <code className="sw-code normal-case hidden lg:inline shrink-0">
                   {activeModuleMeta.tableCode}
                 </code>
                 {!isPlatformAdmin && (
-                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
+                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)] shrink-0">
                     Delegated: {currentUser.role}
                   </span>
                 )}
@@ -1812,26 +1812,26 @@ function StudioContent() {
           <div className="flex items-center gap-2.5 justify-end">
             {/* Quick Search */}
             <div className="relative min-w-[200px] sm:min-w-[260px]">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 text-[var(--theme-text-secondary)] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Jump to module... (⌘K)"
-                className="w-full bg-slate-950/80 border border-slate-800 hover:border-slate-700 rounded-lg pl-8 pr-12 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all shadow-inner"
+                className="sw-input w-full pl-8 pr-12 py-1.5 text-xs"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                 {searchQuery ? (
                   <button
                     type="button"
                     onClick={() => setSearchQuery("")}
-                    className="text-slate-400 hover:text-white p-0.5 cursor-pointer"
+                    className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] p-0.5 cursor-pointer"
                   >
                     <X className="w-3 h-3" />
                   </button>
                 ) : (
-                  <kbd className="text-[9px] font-mono text-slate-400 bg-slate-800 border border-slate-700 px-1 py-0.2 rounded hidden sm:inline-block">
+                  <kbd className="text-[9px] font-mono text-[var(--theme-text-secondary)] bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] px-1 py-0.2 hidden sm:inline-block">
                     ⌘K
                   </kbd>
                 )}
@@ -1839,15 +1839,15 @@ function StudioContent() {
             </div>
 
             {/* View Mode Toggle: Workbench vs Grid Launcher */}
-            <div className="flex items-center bg-slate-950 border border-slate-800 p-0.5 rounded-lg shrink-0">
+            <div className="sw-tabs flex-nowrap gap-1 shrink-0">
               <button
                 type="button"
                 onClick={() => setLayoutMode("workbench")}
                 title="Workbench View (IDE side-by-side with Studio Explorer)"
-                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                className={`px-3 py-1.5 ${
                   layoutMode === "workbench"
-                    ? "bg-slate-800 text-emerald-400 shadow-xs"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "sw-tab-active"
+                    : "sw-tab"
                 }`}
               >
                 <Columns3 className="w-3.5 h-3.5" />
@@ -1857,10 +1857,10 @@ function StudioContent() {
                 type="button"
                 onClick={() => setLayoutMode("grid")}
                 title="Launcher Grid (Visual catalog overview of all 20 modules)"
-                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                className={`px-3 py-1.5 ${
                   layoutMode === "grid"
-                    ? "bg-slate-800 text-emerald-400 shadow-xs"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "sw-tab-active"
+                    : "sw-tab"
                 }`}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
@@ -1875,21 +1875,21 @@ function StudioContent() {
         <div className="max-w-[1720px] mx-auto w-full px-3 sm:px-6 py-4 flex-1 flex gap-4 items-start">
           {/* Studio Explorer Left Sidebar */}
           {isSidebarOpen && (
-            <aside className="w-72 shrink-0 bg-slate-900/90 border border-slate-800/80 rounded-xl overflow-hidden shadow-xl sticky top-28 max-h-[calc(100vh-8.5rem)] flex flex-col">
+            <aside className="w-72 shrink-0 sw-panel overflow-hidden sticky top-28 max-h-[calc(100vh-8.5rem)] flex flex-col">
               {/* Sidebar Header */}
-              <div className="p-3 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/40">
+              <div className="sw-panel-header">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+                  <span className="sw-section-title">
                     Studio Explorer
                   </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-slate-800 text-emerald-400 font-bold border border-slate-700/60">
+                  <span className="sw-badge-solid">
                     {STUDIO_MODULES.length}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsSidebarOpen(false)}
-                  className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 transition-colors cursor-pointer"
+                  className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] p-1 hover:bg-[var(--theme-accent-light)] transition-colors cursor-pointer"
                   title="Collapse Studio Explorer"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -1926,20 +1926,20 @@ function StudioContent() {
                             [cat.id]: !prev[cat.id],
                           }))
                         }
-                        className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-colors group cursor-pointer text-left"
+                        className="w-full flex items-center justify-between px-2 py-1.5 text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] transition-colors group cursor-pointer text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <CatIcon className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-400 transition-colors" />
-                          <span className="text-xs font-semibold tracking-wide text-slate-300">
+                          <CatIcon className="w-3.5 h-3.5 text-[var(--theme-text-secondary)] group-hover:text-[var(--theme-text-primary)] transition-colors" />
+                          <span className="text-xs font-semibold tracking-wide text-[var(--theme-text-primary)]">
                             {cat.label}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] font-mono text-slate-400 px-1.5 py-0.2 rounded-full bg-slate-800/80">
+                          <span className="text-[10px] font-mono text-[var(--theme-text-secondary)] px-1.5 py-0.2 bg-[var(--theme-accent-light)]">
                             {matchingModules.length}
                           </span>
                           <ChevronDown
-                            className={`w-3.5 h-3.5 text-slate-400 transition-transform ${
+                            className={`w-3.5 h-3.5 text-[var(--theme-text-secondary)] transition-transform ${
                               isCollapsed ? "-rotate-90" : ""
                             }`}
                           />
@@ -1959,24 +1959,24 @@ function StudioContent() {
                                 key={mod.id}
                                 type="button"
                                 onClick={() => selectModule(mod.id)}
-                                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-left transition-all group cursor-pointer relative ${
+                                className={`w-full flex items-center justify-between px-2.5 py-2 text-left transition-all group cursor-pointer relative ${
                                   isActive
-                                    ? "bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-500/40 shadow-xs"
-                                    : "text-slate-300 hover:bg-slate-800/60 hover:text-white border border-transparent"
+                                    ? "bg-[var(--theme-sidebar-active-bg)] text-[var(--theme-sidebar-active-text)] font-semibold border border-[var(--theme-sidebar-active-bg)]"
+                                    : "text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] hover:text-[var(--theme-text-primary)] border border-transparent"
                                 }`}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
                                   {isActive && (
-                                    <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-emerald-400 rounded-r" />
+                                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--swiss-red)]" />
                                   )}
                                   <Icon
                                     className={`w-3.5 h-3.5 shrink-0 transition-colors ${
-                                      isActive ? "text-emerald-400" : "text-slate-400 group-hover:text-slate-200"
+                                      isActive ? "text-[var(--theme-sidebar-active-text)]" : "text-[var(--theme-text-secondary)] group-hover:text-[var(--theme-text-primary)]"
                                     }`}
                                   />
                                   <div className="truncate">
                                     <div className="text-xs truncate">{mod.title}</div>
-                                    <div className="text-[10px] font-mono text-slate-400 truncate">
+                                    <div className="text-[10px] font-mono text-[var(--theme-text-secondary)] truncate">
                                       {mod.tableCode}
                                     </div>
                                   </div>
@@ -1984,10 +1984,10 @@ function StudioContent() {
 
                                 {typeof badgeCount === "number" && badgeCount > 0 && (
                                   <span
-                                    className={`shrink-0 text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full border ${
+                                    className={`shrink-0 text-[10px] font-mono font-bold px-1.5 py-0.2 border ${
                                       isActive
-                                        ? "bg-emerald-500/30 text-emerald-200 border-emerald-500/40"
-                                        : "bg-slate-800 text-slate-400 border-slate-700/60"
+                                        ? "bg-transparent text-[var(--theme-sidebar-active-text)] border-[var(--theme-sidebar-active-text)]"
+                                        : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] border-[var(--theme-card-border)]"
                                     }`}
                                   >
                                     {badgeCount}
@@ -2008,26 +2008,26 @@ function StudioContent() {
           {/* Main Workbench Canvas Area */}
           <main className="flex-1 min-w-0 space-y-4">
             {/* Active module context mini-bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-900/80 border border-slate-800/80 rounded-xl px-4 py-3 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sw-panel-strong px-4 py-3">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30 shrink-0">
+                <div className="w-8 h-8 bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] flex items-center justify-center shrink-0">
                   <activeModuleMeta.icon className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h2 className="text-sm font-bold text-white tracking-tight">
+                    <h2 className="text-base font-extrabold uppercase text-[var(--theme-text-primary)] tracking-tight">
                       {activeModuleMeta.title}
                     </h2>
-                    <code className="text-[10px] font-mono text-emerald-300 bg-emerald-500/10 border border-emerald-500/25 px-1.5 py-0.5 rounded">
+                    <code className="sw-code">
                       {activeModuleMeta.tableCode}
                     </code>
                     {typeof getModuleBadgeCount(activeTab) === "number" && (
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                      <span className="sw-badge">
                         {getModuleBadgeCount(activeTab)} records
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-400 line-clamp-1 mt-0.5">
+                  <p className="text-xs text-[var(--theme-text-secondary)] line-clamp-1 mt-0.5">
                     {activeModuleMeta.description}
                   </p>
                 </div>
@@ -2037,9 +2037,9 @@ function StudioContent() {
                 <button
                   type="button"
                   onClick={() => setIsSidebarOpen(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 text-xs bg-slate-800 text-slate-300 hover:text-white rounded-lg border border-slate-700 shrink-0 cursor-pointer"
+                  className="sw-btn shrink-0"
                 >
-                  <PanelLeft className="w-3.5 h-3.5 text-emerald-400" />
+                  <PanelLeft className="w-3.5 h-3.5 text-[var(--theme-text-primary)]" />
                   <span>Show Studio Explorer</span>
                 </button>
               )}
@@ -2055,15 +2055,15 @@ function StudioContent() {
         {/* ==================================================== */}
         {activeTab === "schema" && (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 space-y-3">
+            <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Table className="w-3.5 h-3.5 text-emerald-400" />
+                <h2 className="sw-section-title flex items-center gap-1.5">
+                  <Table className="w-3.5 h-3.5 text-[var(--theme-text-primary)]" />
                   <span>Tables ({tables.length})</span>
                 </h2>
                 <button
                   onClick={() => setNewTableModalOpen(true)}
-                  className="flex items-center gap-1 px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-bold transition-colors shadow-xs"
+                  className="sw-btn-primary flex items-center gap-1 px-2 py-1 text-[11px]"
                   title="Create New Table"
                 >
                   <Plus className="w-3 h-3" />
@@ -2076,25 +2076,25 @@ function StudioContent() {
                   <button
                     key={t.id || t.name}
                     onClick={() => setSelectedTable(t.name)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors flex items-center justify-between ${
+                    className={`w-full text-left px-3 py-2 text-xs transition-colors flex items-center justify-between ${
                       selectedTable === t.name
-                        ? "bg-emerald-600 text-white font-bold"
-                        : "text-slate-300 hover:bg-slate-800/80"
+                        ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] font-bold"
+                        : "text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)]"
                     }`}
                   >
                     <div className="truncate">
                       <span>{t.label}</span>
-                      <span className="block text-[10px] font-mono text-slate-400 opacity-80">
+                      <span className="block text-[10px] font-mono text-[var(--theme-text-secondary)] opacity-80">
                         {t.name}
                       </span>
                     </div>
                     {t.isCustom && (
-                      <span className="text-[9px] bg-slate-900 text-amber-300 px-1 py-0.2 rounded border border-amber-500/40">
+                      <span className="text-[9px] bg-[var(--theme-card-bg)] text-[var(--swiss-amber)] px-1 py-0.2 border border-[var(--swiss-amber)]">
                         custom
                       </span>
                     )}
                     {t.superClass && (
-                      <span className="text-[9px] bg-slate-800 text-emerald-300 px-1 py-0.2 rounded border border-slate-700 ml-1">
+                      <span className="text-[9px] bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] px-1 py-0.2 border border-[var(--theme-card-border)] ml-1">
                         ext: {t.superClass}
                       </span>
                     )}
@@ -2104,26 +2104,26 @@ function StudioContent() {
             </div>
 
             <div className="lg:col-span-3 space-y-6">
-              <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-xl">
-                <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+              <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] overflow-hidden">
+                <div className="p-4 border-b border-[var(--theme-card-border)] flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Database className="w-4 h-4 text-emerald-400" />
-                      <span>Schema Dictionary: <strong className="font-mono text-emerald-400">{selectedTable}</strong></span>
+                    <h3 className="text-sm font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
+                      <Database className="w-4 h-4 text-[var(--theme-text-primary)]" />
+                      <span>Schema Dictionary: <strong className="font-mono text-[var(--swiss-emerald)]">{selectedTable}</strong></span>
                     </h3>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-[var(--theme-text-secondary)]">
                       Fields defined in sys_dictionary for this table (includes inherited and extended fields)
                     </p>
                   </div>
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-xs font-mono text-[var(--theme-text-secondary)]">
                     {schema?.columns?.length || 0} Columns Registered
                   </span>
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
+                  <table className="sw-table w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-900 border-b border-slate-800 text-[10px] uppercase font-mono text-slate-400">
+                      <tr className="bg-[var(--theme-card-bg)] border-b border-[var(--theme-card-border)] text-[10px] uppercase font-mono text-[var(--theme-text-secondary)]">
                         <th className="py-2.5 px-3">Column Label</th>
                         <th className="py-2.5 px-3">Column Name</th>
                         <th className="py-2.5 px-3">Type</th>
@@ -2134,49 +2134,49 @@ function StudioContent() {
                         <th className="py-2.5 px-3 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+                    <tbody className="divide-y divide-[var(--theme-card-border)] font-mono text-[11px]">
                       {schemaLoading ? (
                         <tr>
-                          <td colSpan={8} className="py-8 text-center text-slate-500 italic">
+                          <td colSpan={8} className="py-8 text-center text-[var(--theme-text-secondary)] italic">
                             Loading schema from sys_dictionary...
                           </td>
                         </tr>
                       ) : (
                         schema?.columns?.map((col: any) => (
-                          <tr key={col.id || col.columnName} className="hover:bg-slate-900/60 transition-colors">
-                            <td className="py-2 px-3 font-sans font-medium text-slate-200">
+                          <tr key={col.id || col.columnName} className="hover:bg-[var(--theme-accent-light)] transition-colors">
+                            <td className="py-2 px-3 font-sans font-medium text-[var(--theme-text-primary)]">
                               {col.columnLabel}
                             </td>
-                            <td className="py-2 px-3 text-emerald-400">{col.columnName}</td>
-                            <td className="py-2 px-3 text-slate-400">{col.columnType}</td>
+                            <td className="py-2 px-3 text-[var(--swiss-emerald)]">{col.columnName}</td>
+                            <td className="py-2 px-3 text-[var(--theme-text-secondary)]">{col.columnType}</td>
                             <td className="py-2 px-3">
                               {col.isMandatory ? (
-                                <span className="text-rose-400 font-bold">true</span>
+                                <span className="text-[var(--swiss-red)] font-bold">true</span>
                               ) : (
-                                <span className="text-slate-600">false</span>
+                                <span className="text-[var(--theme-text-secondary)]">false</span>
                               )}
                             </td>
                             <td className="py-2 px-3">
                               {col.isReadOnly ? (
-                                <span className="text-amber-400">true</span>
+                                <span className="text-[var(--swiss-amber)]">true</span>
                               ) : (
-                                <span className="text-slate-600">false</span>
+                                <span className="text-[var(--theme-text-secondary)]">false</span>
                               )}
                             </td>
-                            <td className="py-2 px-3 text-slate-400 truncate max-w-xs">
+                            <td className="py-2 px-3 text-[var(--theme-text-secondary)] truncate max-w-xs">
                               {col.defaultVal || "-"}
                             </td>
                             <td className="py-2 px-3">
                               {col.isCustom ? (
-                                <span className="text-emerald-400 font-bold">u_custom</span>
+                                <span className="text-[var(--swiss-emerald)] font-bold">u_custom</span>
                               ) : (
-                                <span className="text-slate-500">sys_base</span>
+                                <span className="text-[var(--theme-text-secondary)]">sys_base</span>
                               )}
                             </td>
                             <td className="py-2 px-3 text-right">
                               <button
                                 onClick={() => openEditColumn(col)}
-                                className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                                className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-card-border)] text-[var(--theme-text-primary)] transition-colors"
                                 title="Edit Column Dictionary"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
@@ -2191,19 +2191,19 @@ function StudioContent() {
               </div>
 
               {/* Add Custom Field Form */}
-              <div className="bg-slate-950 rounded-xl border border-slate-800 p-5 space-y-4">
+              <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-5 space-y-4">
                 <div>
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Plus className="w-4 h-4 text-emerald-400" />
-                    <span>Add Dynamic Custom Field to <strong className="font-mono text-emerald-400">{selectedTable}</strong></span>
+                  <h3 className="text-sm font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
+                    <Plus className="w-4 h-4 text-[var(--theme-text-primary)]" />
+                    <span>Add Dynamic Custom Field to <strong className="font-mono text-[var(--swiss-emerald)]">{selectedTable}</strong></span>
                   </h3>
-                  <p className="text-xs text-slate-400">
-                    Instantly registers a new custom attribute (<code className="text-emerald-400 font-mono">u_[name]</code>) in the Data Dictionary.
+                  <p className="text-xs text-[var(--theme-text-secondary)]">
+                    Instantly registers a new custom attribute (<code className="text-[var(--swiss-emerald)] font-mono">u_[name]</code>) in the Data Dictionary.
                   </p>
                 </div>
 
                 {schemaSuccessMsg && (
-                  <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300 text-xs flex items-center gap-2">
+                  <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] text-xs flex items-center gap-2">
                     <CheckCircle className="w-4 h-4" />
                     <span>{schemaSuccessMsg}</span>
                   </div>
@@ -2211,7 +2211,7 @@ function StudioContent() {
 
                 <form onSubmit={handleAddField} className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
                   <div>
-                    <label className="block text-slate-300 font-medium mb-1">Field Label</label>
+                    <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Field Label</label>
                     <input
                       type="text"
                       required
@@ -2223,14 +2223,14 @@ function StudioContent() {
                         }
                       }}
                       placeholder="e.g. Asset Barcode"
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                      className="sw-input w-full px-2.5 py-1.5"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-medium mb-1">Column Name</label>
+                    <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Column Name</label>
                     <div className="flex items-center">
-                      <span className="bg-slate-800 border border-r-0 border-slate-700 px-2 py-1.5 text-slate-400 font-mono text-[11px] rounded-l">
+                      <span className="bg-[var(--theme-accent-light)] border border-r-0 border-[var(--theme-card-border)] px-2 py-1.5 text-[var(--theme-text-secondary)] font-mono text-[11px]">
                         u_
                       </span>
                       <input
@@ -2239,17 +2239,17 @@ function StudioContent() {
                         value={newColumnName}
                         onChange={(e) => setNewColumnName(e.target.value.toLowerCase().replace(/\s+/g, "_"))}
                         placeholder="asset_barcode"
-                        className="w-full bg-slate-900 border border-slate-700 rounded-r px-2 py-1.5 text-white font-mono text-[11px] focus:outline-emerald-500"
+                        className="sw-input w-full px-2 py-1.5 font-mono text-[11px]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-medium mb-1">Data Type</label>
+                    <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Data Type</label>
                     <select
                       value={newColumnType}
                       onChange={(e) => setNewColumnType(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                      className="sw-input w-full px-2.5 py-1.5"
                     >
                       <option value="string">String (VARCHAR)</option>
                       <option value="integer">Integer (INT)</option>
@@ -2262,12 +2262,12 @@ function StudioContent() {
                   </div>
 
                   <div className="flex items-end space-x-2">
-                    <label className="flex items-center space-x-1.5 text-slate-300 cursor-pointer pb-2">
+                    <label className="flex items-center space-x-1.5 text-[var(--theme-text-primary)] cursor-pointer pb-2">
                       <input
                         type="checkbox"
                         checked={isMandatory}
                         onChange={(e) => setIsMandatory(e.target.checked)}
-                        className="rounded text-emerald-500 focus:ring-emerald-400"
+                        className="text-[var(--swiss-emerald)] focus:ring-[var(--swiss-emerald)]"
                       />
                       <span>Mandatory</span>
                     </label>
@@ -2275,7 +2275,7 @@ function StudioContent() {
                     <button
                       type="submit"
                       disabled={addingField}
-                      className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded text-xs transition-colors shadow-xs disabled:opacity-50"
+                      className="sw-btn-primary flex-1 py-1.5 px-3 text-xs disabled:opacity-50"
                     >
                       {addingField ? "Saving..." : "+ Add Column"}
                     </button>
@@ -2286,16 +2286,16 @@ function StudioContent() {
 
             {/* Modal: Edit Column */}
             {editColModalOpen && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                      <Edit3 className="w-4 h-4 text-emerald-400" />
-                      <span>Edit Column: <code className="text-emerald-400">{editingColName}</code></span>
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] max-w-md w-full p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+                    <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                      <Edit3 className="w-4 h-4 text-[var(--theme-text-primary)]" />
+                      <span>Edit Column: <code className="text-[var(--swiss-emerald)]">{editingColName}</code></span>
                     </h3>
                     <button
                       onClick={() => setEditColModalOpen(false)}
-                      className="text-slate-400 hover:text-white text-xs font-bold"
+                      className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs font-bold"
                     >
                       ✕
                     </button>
@@ -2303,61 +2303,61 @@ function StudioContent() {
 
                   <form onSubmit={handleSaveColumn} className="space-y-3 text-xs">
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Column Label *</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Column Label *</label>
                       <input
                         type="text"
                         required
                         value={editingColLabel}
                         onChange={(e) => setEditingColLabel(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                        className="sw-input w-full px-2.5 py-1.5"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Default Value</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Default Value</label>
                       <input
                         type="text"
                         value={editingColDefault}
                         onChange={(e) => setEditingColDefault(e.target.value)}
                         placeholder="e.g. 1 or normal"
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white font-mono"
+                        className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)] font-mono"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 pt-1">
-                      <label className="flex items-center space-x-2 text-slate-300 cursor-pointer bg-slate-900 p-2.5 rounded border border-slate-800">
+                      <label className="flex items-center space-x-2 text-[var(--theme-text-primary)] cursor-pointer bg-[var(--theme-card-bg)] p-2.5 border border-[var(--theme-card-border)]">
                         <input
                           type="checkbox"
                           checked={editingColMandatory}
                           onChange={(e) => setEditingColMandatory(e.target.checked)}
-                          className="rounded text-emerald-500 focus:ring-emerald-400"
+                          className="text-[var(--swiss-emerald)] focus:ring-[var(--swiss-emerald)]"
                         />
                         <span className="font-semibold">Mandatory</span>
                       </label>
 
-                      <label className="flex items-center space-x-2 text-slate-300 cursor-pointer bg-slate-900 p-2.5 rounded border border-slate-800">
+                      <label className="flex items-center space-x-2 text-[var(--theme-text-primary)] cursor-pointer bg-[var(--theme-card-bg)] p-2.5 border border-[var(--theme-card-border)]">
                         <input
                           type="checkbox"
                           checked={editingColReadOnly}
                           onChange={(e) => setEditingColReadOnly(e.target.checked)}
-                          className="rounded text-amber-500 focus:ring-amber-400"
+                          className="text-[var(--swiss-amber)] focus:ring-[var(--swiss-amber)]"
                         />
                         <span className="font-semibold">Read Only</span>
                       </label>
                     </div>
 
-                    <div className="border-t border-slate-800 pt-3 flex justify-end space-x-2">
+                    <div className="border-t border-[var(--theme-card-border)] pt-3 flex justify-end space-x-2">
                       <button
                         type="button"
                         onClick={() => setEditColModalOpen(false)}
-                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300"
+                        className="sw-btn px-3 py-1.5"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={editingColSaving}
-                        className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-xs disabled:opacity-50"
+                        className="sw-btn-primary px-4 py-1.5 disabled:opacity-50"
                       >
                         {editingColSaving ? "Saving..." : "Update Column"}
                       </button>
@@ -2369,16 +2369,16 @@ function StudioContent() {
 
             {/* Modal: Create New Table */}
             {newTableModalOpen && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                      <Plus className="w-4 h-4 text-emerald-400" />
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] max-w-md w-full p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+                    <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                      <Plus className="w-4 h-4 text-[var(--theme-text-primary)]" />
                       <span>Create New Table (sys_db_object)</span>
                     </h3>
                     <button
                       onClick={() => setNewTableModalOpen(false)}
-                      className="text-slate-400 hover:text-white text-xs font-bold"
+                      className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs font-bold"
                     >
                       ✕
                     </button>
@@ -2386,7 +2386,7 @@ function StudioContent() {
 
                   <form onSubmit={handleCreateTable} className="space-y-3 text-xs">
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Table Label *</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Table Label *</label>
                       <input
                         type="text"
                         required
@@ -2398,14 +2398,14 @@ function StudioContent() {
                           }
                         }}
                         placeholder="e.g. Hardware Inventory"
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                        className="sw-input w-full px-2.5 py-1.5"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Table Name *</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Table Name *</label>
                       <div className="flex items-center">
-                        <span className="bg-slate-800 border border-r-0 border-slate-700 px-2 py-1.5 text-slate-400 font-mono text-[11px] rounded-l">
+                        <span className="bg-[var(--theme-accent-light)] border border-r-0 border-[var(--theme-card-border)] px-2 py-1.5 text-[var(--theme-text-secondary)] font-mono text-[11px]">
                           u_
                         </span>
                         <input
@@ -2414,17 +2414,17 @@ function StudioContent() {
                           value={newTableName}
                           onChange={(e) => setNewTableName(e.target.value.toLowerCase().replace(/\s+/g, "_"))}
                           placeholder="hardware_inventory"
-                          className="w-full bg-slate-900 border border-slate-700 rounded-r px-2 py-1.5 text-white font-mono text-[11px] focus:outline-emerald-500"
+                          className="sw-input w-full px-2 py-1.5 font-mono text-[11px]"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Extends Table (Super Class)</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Extends Table (Super Class)</label>
                       <select
                         value={newTableSuperClass}
                         onChange={(e) => setNewTableSuperClass(e.target.value)}
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                        className="sw-input w-full px-2.5 py-1.5"
                       >
                         <option value="task">task (Inherits Number, Priority, State, SLA, Fulfillers)</option>
                         <option value="none">None (Standalone Custom Application Table)</option>
@@ -2432,28 +2432,28 @@ function StudioContent() {
                     </div>
 
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Description</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Description</label>
                       <textarea
                         rows={2}
                         value={newTableDesc}
                         onChange={(e) => setNewTableDesc(e.target.value)}
                         placeholder="Purpose and business context for this table..."
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                        className="sw-input w-full px-2.5 py-1.5"
                       />
                     </div>
 
-                    <div className="border-t border-slate-800 pt-3 flex justify-end space-x-2">
+                    <div className="border-t border-[var(--theme-card-border)] pt-3 flex justify-end space-x-2">
                       <button
                         type="button"
                         onClick={() => setNewTableModalOpen(false)}
-                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300"
+                        className="sw-btn px-3 py-1.5"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={newTableSaving}
-                        className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-xs disabled:opacity-50"
+                        className="sw-btn-primary px-4 py-1.5 disabled:opacity-50"
                       >
                         {newTableSaving ? "Registering..." : "Create Table"}
                       </button>
@@ -2471,19 +2471,19 @@ function StudioContent() {
         {activeTab === "acls" && (
           <div className="space-y-4">
             {aclMsg && (
-              <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300 text-xs flex items-center gap-2">
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] text-xs flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>{aclMsg}</span>
               </div>
             )}
 
-            <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center space-x-3">
-                <label className="text-xs text-slate-400 font-semibold">Filter Table:</label>
+                <label className="text-xs text-[var(--theme-text-secondary)] font-semibold">Filter Table:</label>
                 <select
                   value={aclTableFilter}
                   onChange={(e) => setAclTableFilter(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"
+                  className="sw-panel px-2.5 py-1 text-xs text-[var(--theme-text-primary)]"
                 >
                   <option value="">All Tables</option>
                   {tables.map((t) => (
@@ -2492,7 +2492,7 @@ function StudioContent() {
                     </option>
                   ))}
                 </select>
-                <span className="text-xs text-slate-400 font-mono">
+                <span className="text-xs text-[var(--theme-text-secondary)] font-mono">
                   {aclsList.filter((a) => !aclTableFilter || a.tableName === aclTableFilter).length} Security ACLs
                 </span>
               </div>
@@ -2500,17 +2500,17 @@ function StudioContent() {
               <button
                 type="button"
                 onClick={openAddAcl}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-xs transition-colors shadow-md"
+                className="sw-btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>+ Create ACL</span>
               </button>
             </div>
 
-            <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-xl">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] overflow-hidden">
+              <table className="sw-table w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-900 border-b border-slate-800 text-[10px] uppercase font-mono text-slate-400">
+                  <tr className="bg-[var(--theme-card-bg)] border-b border-[var(--theme-card-border)] text-[10px] uppercase font-mono text-[var(--theme-text-secondary)]">
                     <th className="py-3 px-4">ACL Name</th>
                     <th className="py-3 px-3">Operation</th>
                     <th className="py-3 px-3">Table Name</th>
@@ -2520,42 +2520,42 @@ function StudioContent() {
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+                <tbody className="divide-y divide-[var(--theme-card-border)] font-mono text-[11px]">
                   {aclsLoading ? (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-slate-500 italic">
+                      <td colSpan={7} className="py-8 text-center text-[var(--theme-text-secondary)] italic">
                         Loading Access Control Lists from sys_security_acl...
                       </td>
                     </tr>
                   ) : aclsList
                       .filter((a) => !aclTableFilter || a.tableName === aclTableFilter)
                       .map((acl) => (
-                        <tr key={acl.id} className="hover:bg-slate-900/60 transition-colors">
-                          <td className="py-3 px-4 font-sans font-semibold text-slate-100">
+                        <tr key={acl.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
+                          <td className="py-3 px-4 font-sans font-semibold text-[var(--theme-text-primary)]">
                             {acl.name}
                             {acl.description && (
-                              <span className="block text-[10px] font-sans text-slate-400 font-normal">
+                              <span className="block text-[10px] font-sans text-[var(--theme-text-secondary)] font-normal">
                                 {acl.description}
                               </span>
                             )}
                           </td>
                           <td className="py-3 px-3">
                             <span
-                              className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${
+                              className={`px-2 py-0.5 text-[10px] uppercase font-bold border ${
                                 acl.operation === "read"
-                                  ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-blue)] border-[var(--swiss-blue)]"
                                   : acl.operation === "write"
-                                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] border-[var(--swiss-amber)]"
                                   : acl.operation === "create"
-                                  ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                                  : "bg-rose-500/20 text-rose-300 border-rose-500/40"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border-[var(--swiss-emerald)]"
+                                  : "bg-[var(--theme-accent-light)] text-[var(--swiss-red)] border-[var(--swiss-red)]"
                               }`}
                             >
                               {acl.operation}
                             </span>
                           </td>
-                          <td className="py-3 px-3 text-emerald-400 font-bold">{acl.tableName}</td>
-                          <td className="py-3 px-3 text-slate-400">{acl.fieldName || "*"}</td>
+                          <td className="py-3 px-3 text-[var(--swiss-emerald)] font-bold">{acl.tableName}</td>
+                          <td className="py-3 px-3 text-[var(--theme-text-secondary)]">{acl.fieldName || "*"}</td>
                           <td className="py-3 px-3">
                             <div className="flex flex-wrap gap-1">
                               {(acl.roleRequired || "")
@@ -2565,7 +2565,7 @@ function StudioContent() {
                                 .map((r: string) => (
                                   <span
                                     key={r}
-                                    className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] font-bold uppercase"
+                                    className="px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)] text-[10px] font-bold uppercase"
                                   >
                                     {r}
                                   </span>
@@ -2575,10 +2575,10 @@ function StudioContent() {
                           <td className="py-3 px-3">
                             <button
                               onClick={() => handleToggleAcl(acl)}
-                              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              className={`px-2 py-0.5 text-[10px] font-bold ${
                                 acl.active
-                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                                  : "bg-slate-800 text-slate-500 border border-slate-700"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]"
+                                  : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] border border-[var(--theme-card-border)]"
                               }`}
                             >
                               {acl.active ? "ACTIVE" : "INACTIVE"}
@@ -2588,14 +2588,14 @@ function StudioContent() {
                             <div className="flex items-center justify-end space-x-1.5">
                               <button
                                 onClick={() => openEditAcl(acl)}
-                                className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                                className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-card-border)] text-[var(--theme-text-primary)] transition-colors"
                                 title="Edit ACL"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteAcl(acl.id)}
-                                className="p-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 transition-colors"
+                                className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-red)] transition-colors"
                                 title="Delete ACL"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -2610,16 +2610,16 @@ function StudioContent() {
 
             {/* Modal: Create/Edit ACL */}
             {aclModalOpen && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-emerald-400" />
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] max-w-lg w-full p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+                    <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-[var(--theme-text-primary)]" />
                       <span>{editingAclId ? "Edit Access Control List (ACL)" : "Create Access Control List (ACL)"}</span>
                     </h3>
                     <button
                       onClick={() => setAclModalOpen(false)}
-                      className="text-slate-400 hover:text-white text-xs font-bold"
+                      className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs font-bold"
                     >
                       ✕
                     </button>
@@ -2627,24 +2627,24 @@ function StudioContent() {
 
                   <form onSubmit={handleSaveAcl} className="space-y-3 text-xs">
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">ACL Rule Name *</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">ACL Rule Name *</label>
                       <input
                         type="text"
                         required
                         value={aclName}
                         onChange={(e) => setAclName(e.target.value)}
                         placeholder="e.g. incident.read"
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white font-mono"
+                        className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)] font-mono"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-slate-300 font-medium mb-1">Operation *</label>
+                        <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Operation *</label>
                         <select
                           value={aclOp}
                           onChange={(e) => setAclOp(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                          className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)]"
                         >
                           <option value="read">read (Query / View)</option>
                           <option value="write">write (Update / Save)</option>
@@ -2654,26 +2654,26 @@ function StudioContent() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-300 font-medium mb-1">Target Table *</label>
+                        <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Target Table *</label>
                         <input
                           type="text"
                           required
                           value={aclTable}
                           onChange={(e) => setAclTable(e.target.value)}
                           placeholder="e.g. incident or *"
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white font-mono"
+                          className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)] font-mono"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Field (* for table-level)</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Field (* for table-level)</label>
                       <input
                         type="text"
                         value={aclField}
                         onChange={(e) => setAclField(e.target.value)}
                         placeholder="* or specific field"
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white font-mono"
+                        className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)] font-mono"
                       />
                     </div>
 
@@ -2689,38 +2689,38 @@ function StudioContent() {
                     </div>
 
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Description / Policy Purpose</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Description / Policy Purpose</label>
                       <input
                         type="text"
                         value={aclDesc}
                         onChange={(e) => setAclDesc(e.target.value)}
                         placeholder="Security access justification..."
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                        className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)]"
                       />
                     </div>
 
-                    <label className="flex items-center space-x-2 text-slate-300 cursor-pointer pt-1">
+                    <label className="flex items-center space-x-2 text-[var(--theme-text-primary)] cursor-pointer pt-1">
                       <input
                         type="checkbox"
                         checked={aclActive}
                         onChange={(e) => setAclActive(e.target.checked)}
-                        className="rounded text-emerald-500 focus:ring-emerald-400"
+                        className="text-[var(--swiss-emerald)] focus:ring-[var(--swiss-emerald)]"
                       />
                       <span>Active (Enforce this ACL in Table API & Forms)</span>
                     </label>
 
-                    <div className="border-t border-slate-800 pt-3 flex justify-end space-x-2">
+                    <div className="border-t border-[var(--theme-card-border)] pt-3 flex justify-end space-x-2">
                       <button
                         type="button"
                         onClick={() => setAclModalOpen(false)}
-                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300"
+                        className="sw-btn px-3 py-1.5"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={aclSaving}
-                        className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-xs disabled:opacity-50"
+                        className="sw-btn-primary px-4 py-1.5 disabled:opacity-50"
                       >
                         {aclSaving ? "Saving..." : editingAclId ? "Update ACL" : "Create ACL"}
                       </button>
@@ -2741,39 +2741,39 @@ function StudioContent() {
         {activeTab === "users" && (
           <div className="space-y-4">
             {userMsg && (
-              <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300 text-xs flex items-center gap-2">
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] text-xs flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>{userMsg}</span>
               </div>
             )}
             {groupMsg && (
-              <div className="p-3 bg-purple-500/20 border border-purple-500/40 rounded-lg text-purple-300 text-xs flex items-center gap-2">
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] text-xs flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>{groupMsg}</span>
               </div>
             )}
             {roleMsg && (
-              <div className="p-3 bg-amber-500/20 border border-amber-500/40 rounded-lg text-amber-300 text-xs flex items-center gap-2">
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-amber)] text-[var(--swiss-amber)] text-xs flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>{roleMsg}</span>
               </div>
             )}
 
             {/* Sub-Tabs: Users vs Groups vs Roles */}
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setUserSubTab("users")}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+                  className={`px-4 py-2 text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                     userSubTab === "users"
-                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-xs"
-                      : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
+                      ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] border border-[var(--theme-text-primary)]"
+                      : "text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] border border-transparent"
                   }`}
                 >
                   <Users className="w-3.5 h-3.5" />
                   <span>Users (sys_user)</span>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">
+                  <span className="text-[10px] px-1.5 py-0.2 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] font-mono">
                     {usersList.length}
                   </span>
                 </button>
@@ -2781,15 +2781,15 @@ function StudioContent() {
                 <button
                   type="button"
                   onClick={() => setUserSubTab("groups")}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+                  className={`px-4 py-2 text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                     userSubTab === "groups"
-                      ? "bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-xs"
-                      : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
+                      ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] border border-[var(--theme-text-primary)]"
+                      : "text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] border border-transparent"
                   }`}
                 >
                   <Shield className="w-3.5 h-3.5" />
                   <span>Groups (sys_user_group)</span>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">
+                  <span className="text-[10px] px-1.5 py-0.2 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] font-mono">
                     {groupsList.length}
                   </span>
                 </button>
@@ -2797,15 +2797,15 @@ function StudioContent() {
                 <button
                   type="button"
                   onClick={() => setUserSubTab("roles")}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+                  className={`px-4 py-2 text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
                     userSubTab === "roles"
-                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-xs"
-                      : "text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent"
+                      ? "bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] border border-[var(--swiss-amber)]"
+                      : "text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] border border-transparent"
                   }`}
                 >
                   <Key className="w-3.5 h-3.5" />
                   <span>Role Definitions (sys_user_role)</span>
-                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">
+                  <span className="text-[10px] px-1.5 py-0.2 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] font-mono">
                     {rolesList.length}
                   </span>
                 </button>
@@ -2815,7 +2815,7 @@ function StudioContent() {
             {/* SUB-TAB 1: USERS */}
             {userSubTab === "users" && (
               <>
-                <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center space-x-3">
                     <div className="relative w-64">
                       <input
@@ -2823,10 +2823,10 @@ function StudioContent() {
                         value={userSearch}
                         onChange={(e) => setUserSearch(e.target.value)}
                         placeholder="Search by name, email, department..."
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-emerald-500"
+                        className="sw-input w-full px-3 py-1.5 text-xs"
                       />
                     </div>
-                    <span className="text-xs text-slate-400 font-mono">
+                    <span className="text-xs text-[var(--theme-text-secondary)] font-mono">
                       {usersList.length} Registered Users
                     </span>
                   </div>
@@ -2834,17 +2834,17 @@ function StudioContent() {
                   <button
                     type="button"
                     onClick={openAddUser}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-xs transition-colors shadow-md cursor-pointer"
+                    className="sw-btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs cursor-pointer"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     <span>+ Add User</span>
                   </button>
                 </div>
 
-                <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-xl">
-                  <table className="w-full text-left text-xs border-collapse">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] overflow-hidden">
+                  <table className="sw-table w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-900 border-b border-slate-800 text-[10px] uppercase font-mono text-slate-400">
+                      <tr className="bg-[var(--theme-card-bg)] border-b border-[var(--theme-card-border)] text-[10px] uppercase font-mono text-[var(--theme-text-secondary)]">
                         <th className="py-3 px-4">User</th>
                         <th className="py-3 px-3">Role</th>
                         <th className="py-3 px-3">Department</th>
@@ -2853,10 +2853,10 @@ function StudioContent() {
                         <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-[var(--theme-card-border)]">
                       {usersLoading ? (
                         <tr>
-                          <td colSpan={6} className="py-8 text-center text-slate-500 italic">
+                          <td colSpan={6} className="py-8 text-center text-[var(--theme-text-secondary)] italic">
                             Loading users from sys_user...
                           </td>
                         </tr>
@@ -2868,31 +2868,31 @@ function StudioContent() {
                             (u.department && u.department.toLowerCase().includes(userSearch.toLowerCase()))
                           )
                           .map((u) => (
-                            <tr key={u.id} className="hover:bg-slate-900/60 transition-colors">
+                            <tr key={u.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
                               <td className="py-2.5 px-4">
                                 <div className="flex items-center space-x-3">
                                   <img
                                     src={u.avatar || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=64"}
                                     alt={u.name}
-                                    className="w-8 h-8 rounded-full object-cover ring-1 ring-slate-700"
+                                    className="w-8 h-8 object-cover ring-1 ring-[var(--theme-card-border)]"
                                   />
                                   <div>
-                                    <span className="font-semibold text-slate-100 block">{u.name}</span>
-                                    <span className="text-[11px] font-mono text-slate-400">{u.email}</span>
+                                    <span className="font-semibold text-[var(--theme-text-primary)] block">{u.name}</span>
+                                    <span className="text-[11px] font-mono text-[var(--theme-text-secondary)]">{u.email}</span>
                                   </div>
                                 </div>
                               </td>
                               <td className="py-2.5 px-3">
                                 <div className="flex flex-wrap items-center gap-1">
                                   <span
-                                    className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
+                                    className={`text-[10px] font-bold uppercase px-2 py-0.5 border ${
                                       u.role === "admin"
-                                        ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
+                                        ? "bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border-[var(--theme-card-border)]"
                                         : u.role === "itil"
-                                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                                        ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border-[var(--swiss-emerald)]"
                                         : u.role === "cab_approver"
-                                        ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                                        : "bg-slate-800 text-slate-300 border-slate-700"
+                                        ? "bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] border-[var(--swiss-amber)]"
+                                        : "bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border-[var(--theme-card-border)]"
                                     }`}
                                   >
                                     {u.role}
@@ -2909,16 +2909,16 @@ function StudioContent() {
                                       .map((r: string) => (
                                         <span
                                           key={r}
-                                          className="text-[9px] font-semibold uppercase px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono"
+                                          className="text-[9px] font-semibold uppercase px-1.5 py-0.2 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)] font-mono"
                                         >
                                           +{r}
                                         </span>
                                       ))}
                                 </div>
                               </td>
-                              <td className="py-2.5 px-3 text-slate-300">
+                              <td className="py-2.5 px-3 text-[var(--theme-text-primary)]">
                                 <span>{u.department || "General"}</span>
-                                {u.title && <span className="block text-[10px] text-slate-500">{u.title}</span>}
+                                {u.title && <span className="block text-[10px] text-[var(--theme-text-secondary)]">{u.title}</span>}
                               </td>
                               <td className="py-2.5 px-3">
                                 <div className="flex flex-wrap gap-1">
@@ -2926,35 +2926,35 @@ function StudioContent() {
                                     u.groups.map((g: any) => (
                                       <span
                                         key={g.id}
-                                        className="bg-slate-800 text-slate-300 text-[10px] px-1.5 py-0.2 rounded border border-slate-700"
+                                        className="bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] text-[10px] px-1.5 py-0.2 border border-[var(--theme-card-border)]"
                                       >
                                         {g.name}
                                       </span>
                                     ))
                                   ) : (
-                                    <span className="text-slate-600 text-[11px] italic">No groups</span>
+                                    <span className="text-[var(--theme-text-secondary)] text-[11px] italic">No groups</span>
                                   )}
                                 </div>
                               </td>
                               <td className="py-2.5 px-3">
                                 {u.active !== false ? (
-                                  <span className="text-emerald-400 text-xs font-semibold">● Active</span>
+                                  <span className="text-[var(--swiss-emerald)] text-xs font-semibold">● Active</span>
                                 ) : (
-                                  <span className="text-slate-500 text-xs">○ Inactive</span>
+                                  <span className="text-[var(--theme-text-secondary)] text-xs">○ Inactive</span>
                                 )}
                               </td>
                               <td className="py-2.5 px-4 text-right">
                                 <div className="flex items-center justify-end space-x-1.5">
                                   <button
                                     onClick={() => openEditUser(u)}
-                                    className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+                                    className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-card-border)] text-[var(--theme-text-primary)] transition-colors cursor-pointer"
                                     title="Edit User"
                                   >
                                     <Edit3 className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteUser(u.id)}
-                                    className="p-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 transition-colors cursor-pointer"
+                                    className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-red)] transition-colors cursor-pointer"
                                     title="Delete User"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -2969,16 +2969,16 @@ function StudioContent() {
 
                 {/* User Edit/Add Modal */}
                 {userModalOpen && (
-                  <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                          <Users className="w-4 h-4 text-emerald-400" />
+                  <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                    <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] max-w-lg w-full p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                      <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+                        <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                          <Users className="w-4 h-4 text-[var(--theme-text-primary)]" />
                           <span>{editingUserId ? "Edit User Record" : "Add New User to Platform"}</span>
                         </h3>
                         <button
                           onClick={() => setUserModalOpen(false)}
-                          className="text-slate-400 hover:text-white text-xs font-bold cursor-pointer"
+                          className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs font-bold cursor-pointer"
                         >
                           ✕
                         </button>
@@ -2987,36 +2987,36 @@ function StudioContent() {
                       <form onSubmit={handleSaveUser} className="space-y-3 text-xs">
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-slate-300 font-medium mb-1">Full Name *</label>
+                            <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Full Name *</label>
                             <input
                               type="text"
                               required
                               value={userName}
                               onChange={(e) => setUserName(e.target.value)}
                               placeholder="e.g. Whiskers McPaws"
-                              className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                              className="sw-input w-full px-2.5 py-1.5"
                             />
                           </div>
                           <div>
-                            <label className="block text-slate-300 font-medium mb-1">Email Address *</label>
+                            <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Email Address *</label>
                             <input
                               type="email"
                               required
                               value={userEmail}
                               onChange={(e) => setUserEmail(e.target.value)}
                               placeholder="whiskers@servicemeow.io"
-                              className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                              className="sw-input w-full px-2.5 py-1.5"
                             />
                           </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-slate-300 font-medium mb-1">Role (RBAC) *</label>
+                            <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Role (RBAC) *</label>
                             <select
                               value={userRole}
                               onChange={(e) => setUserRole(e.target.value)}
-                              className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                              className="sw-input w-full px-2.5 py-1.5"
                             >
                               <option value="admin">Admin (Full Studio & Meta Control)</option>
                               <option value="itil">ITIL (Incident Commander / Technician)</option>
@@ -3026,38 +3026,38 @@ function StudioContent() {
                           </div>
 
                           <div>
-                            <label className="block text-slate-300 font-medium mb-1">Department</label>
+                            <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Department</label>
                             <input
                               type="text"
                               value={userDept}
                               onChange={(e) => setUserDept(e.target.value)}
                               placeholder="IT Infrastructure"
-                              className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                              className="sw-input w-full px-2.5 py-1.5"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-slate-300 font-medium mb-1">Job Title</label>
+                          <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Job Title</label>
                           <input
                             type="text"
                             value={userTitle}
                             onChange={(e) => setUserTitle(e.target.value)}
                             placeholder="Lead SRE Cat / Senior Incident Specialist"
-                            className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                            className="sw-input w-full px-2.5 py-1.5"
                           />
                         </div>
 
                         {/* Profile Picture / Avatar */}
-                        <div className="bg-slate-900 p-2.5 rounded-lg border border-slate-800 space-y-2">
-                          <label className="block text-slate-300 font-medium text-xs">
+                        <div className="bg-[var(--theme-card-bg)] p-2.5 border border-[var(--theme-card-border)] space-y-2">
+                          <label className="block text-[var(--theme-text-primary)] font-medium text-xs">
                             Profile Picture / Avatar
                           </label>
                           <div className="flex items-center gap-3">
                             <img
                               src={userAvatar || DEFAULT_AVATAR}
                               alt="Avatar Preview"
-                              className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/40 bg-slate-800 flex-shrink-0"
+                              className="w-12 h-12 object-cover ring-2 ring-[var(--swiss-emerald)] bg-[var(--theme-accent-light)] flex-shrink-0"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).src = DEFAULT_AVATAR;
                               }}
@@ -3068,11 +3068,11 @@ function StudioContent() {
                                 value={userAvatar}
                                 onChange={(e) => setUserAvatar(e.target.value)}
                                 placeholder="Paste image URL (https://...)"
-                                className="w-full bg-slate-950 border border-slate-700 rounded px-2.5 py-1 text-white text-[11px] focus:outline-emerald-500 font-mono"
+                                className="sw-input w-full px-2.5 py-1 text-[11px] font-mono"
                               />
                               <div className="flex items-center gap-2">
-                                <label className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[10px] cursor-pointer flex items-center gap-1 transition-colors border border-slate-700">
-                                  <Upload className="w-3 h-3 text-emerald-400" />
+                                <label className="sw-btn px-2 py-0.5 text-[10px] cursor-pointer flex items-center gap-1">
+                                  <Upload className="w-3 h-3 text-[var(--theme-text-primary)]" />
                                   <span>Upload Photo</span>
                                   <input
                                     type="file"
@@ -3093,7 +3093,7 @@ function StudioContent() {
                                   <button
                                     type="button"
                                     onClick={() => setUserAvatar("")}
-                                    className="text-[10px] text-slate-400 hover:text-rose-400 cursor-pointer"
+                                    className="text-[10px] text-[var(--theme-text-secondary)] hover:text-[var(--swiss-red)] cursor-pointer"
                                   >
                                     Reset Default
                                   </button>
@@ -3103,18 +3103,18 @@ function StudioContent() {
                           </div>
 
                           {/* Quick Presets */}
-                          <div className="pt-1.5 border-t border-slate-800/80">
-                            <span className="text-[10px] text-slate-400 block mb-1">Or choose a preset:</span>
+                          <div className="pt-1.5 border-t border-[var(--theme-card-border)]">
+                            <span className="text-[10px] text-[var(--theme-text-secondary)] block mb-1">Or choose a preset:</span>
                             <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
                               {AVATAR_PRESETS.map((p) => (
                                 <button
                                   key={p.id}
                                   type="button"
                                   onClick={() => setUserAvatar(p.url)}
-                                  className={`w-6 h-6 rounded-full overflow-hidden border transition-all cursor-pointer flex-shrink-0 ${
+                                  className={`w-6 h-6 overflow-hidden border transition-all cursor-pointer flex-shrink-0 ${
                                     userAvatar === p.url
-                                      ? "border-emerald-400 ring-2 ring-emerald-400/40"
-                                      : "border-slate-700 hover:border-slate-500"
+                                      ? "border-[var(--theme-text-primary)] ring-2 ring-[var(--theme-text-primary)]"
+                                      : "border-[var(--theme-card-border)] hover:border-[var(--theme-text-primary)]"
                                   }`}
                                   title={p.label}
                                 >
@@ -3153,25 +3153,25 @@ function StudioContent() {
                             id="userActive"
                             checked={userActive}
                             onChange={(e) => setUserActive(e.target.checked)}
-                            className="rounded text-emerald-500 focus:ring-emerald-400"
+                            className="text-[var(--swiss-emerald)] focus:ring-[var(--swiss-emerald)]"
                           />
-                          <label htmlFor="userActive" className="text-slate-300 cursor-pointer">
+                          <label htmlFor="userActive" className="text-[var(--theme-text-primary)] cursor-pointer">
                             Active Account (Able to login, fulfill, and be assigned records)
                           </label>
                         </div>
 
-                        <div className="border-t border-slate-800 pt-3 flex justify-end space-x-2">
+                        <div className="border-t border-[var(--theme-card-border)] pt-3 flex justify-end space-x-2">
                           <button
                             type="button"
                             onClick={() => setUserModalOpen(false)}
-                            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 cursor-pointer"
+                            className="sw-btn px-3 py-1.5 cursor-pointer"
                           >
                             Cancel
                           </button>
                           <button
                             type="submit"
                             disabled={userSaving}
-                            className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-xs disabled:opacity-50 cursor-pointer"
+                            className="sw-btn-primary px-4 py-1.5 disabled:opacity-50 cursor-pointer"
                           >
                             {userSaving ? "Saving..." : editingUserId ? "Update User" : "Create User"}
                           </button>
@@ -3186,7 +3186,7 @@ function StudioContent() {
             {/* SUB-TAB 2: GROUPS (sys_user_group) */}
             {userSubTab === "groups" && (
               <>
-                <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center space-x-3">
                     <div className="relative w-72">
                       <input
@@ -3194,10 +3194,10 @@ function StudioContent() {
                         value={groupSearch}
                         onChange={(e) => setGroupSearch(e.target.value)}
                         placeholder="Search groups by name, role, manager..."
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-purple-500"
+                        className="sw-input w-full px-3 py-1.5 text-xs"
                       />
                     </div>
-                    <span className="text-xs text-slate-400 font-mono">
+                    <span className="text-xs text-[var(--theme-text-secondary)] font-mono">
                       {groupsList.length} Assignment Groups
                     </span>
                   </div>
@@ -3205,17 +3205,17 @@ function StudioContent() {
                   <button
                     type="button"
                     onClick={openAddGroup}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded text-xs transition-colors shadow-md cursor-pointer"
+                    className="sw-btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>+ Add Group</span>
                   </button>
                 </div>
 
-                <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-xl">
-                  <table className="w-full text-left text-xs border-collapse">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] overflow-hidden">
+                  <table className="sw-table w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-900 border-b border-slate-800 text-[10px] uppercase font-mono text-slate-400">
+                      <tr className="bg-[var(--theme-card-bg)] border-b border-[var(--theme-card-border)] text-[10px] uppercase font-mono text-[var(--theme-text-secondary)]">
                         <th className="py-3 px-4">Group Name</th>
                         <th className="py-3 px-3">Roles to Group (sys_group_has_role)</th>
                         <th className="py-3 px-3">Manager</th>
@@ -3224,10 +3224,10 @@ function StudioContent() {
                         <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-[var(--theme-card-border)]">
                       {groupsList.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="py-8 text-center text-slate-500 italic">
+                          <td colSpan={6} className="py-8 text-center text-[var(--theme-text-secondary)] italic">
                             No assignment groups configured in sys_user_group.
                           </td>
                         </tr>
@@ -3243,15 +3243,15 @@ function StudioContent() {
                             );
                           })
                           .map((g) => (
-                            <tr key={g.id} className="hover:bg-slate-900/60 transition-colors">
+                            <tr key={g.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
                               <td className="py-2.5 px-4">
                                 <div className="flex items-center gap-2.5">
-                                  <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-300 shrink-0 font-bold">
+                                  <div className="w-7 h-7 bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] flex items-center justify-center text-[var(--theme-text-primary)] shrink-0 font-bold">
                                     <Shield className="w-3.5 h-3.5" />
                                   </div>
                                   <div>
-                                    <span className="font-semibold text-slate-100 block">{g.name}</span>
-                                    <span className="text-[10px] text-slate-500 font-mono">ID: {g.id.slice(0, 8)}...</span>
+                                    <span className="font-semibold text-[var(--theme-text-primary)] block">{g.name}</span>
+                                    <span className="text-[10px] text-[var(--theme-text-secondary)] font-mono">ID: {g.id.slice(0, 8)}...</span>
                                   </div>
                                 </div>
                               </td>
@@ -3261,21 +3261,21 @@ function StudioContent() {
                                     g.roles.map((r: string) => (
                                       <span
                                         key={r}
-                                        className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
+                                        className={`text-[10px] font-bold uppercase px-2 py-0.5 border ${
                                           r === "admin"
-                                            ? "bg-purple-500/20 text-purple-300 border-purple-500/40"
+                                            ? "bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border-[var(--theme-card-border)]"
                                             : r === "itil"
-                                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                                            ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border-[var(--swiss-emerald)]"
                                             : r === "cab_approver"
-                                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                                            : "bg-slate-800 text-slate-300 border-slate-700"
+                                            ? "bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] border-[var(--swiss-amber)]"
+                                            : "bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border-[var(--theme-card-border)]"
                                         }`}
                                       >
                                         {r}
                                       </span>
                                     ))
                                   ) : (
-                                    <span className="text-slate-600 text-[11px] italic">No roles assigned</span>
+                                    <span className="text-[var(--theme-text-secondary)] text-[11px] italic">No roles assigned</span>
                                   )}
                                 </div>
                               </td>
@@ -3285,41 +3285,41 @@ function StudioContent() {
                                     <img
                                       src={g.manager.avatar || "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=64"}
                                       alt={g.manager.name}
-                                      className="w-5 h-5 rounded-full object-cover ring-1 ring-slate-700"
+                                      className="w-5 h-5 object-cover ring-1 ring-[var(--theme-card-border)]"
                                     />
-                                    <span className="text-slate-200">{g.manager.name}</span>
+                                    <span className="text-[var(--theme-text-primary)]">{g.manager.name}</span>
                                   </div>
                                 ) : (
-                                  <span className="text-slate-600 italic">Unassigned</span>
+                                  <span className="text-[var(--theme-text-secondary)] italic">Unassigned</span>
                                 )}
                               </td>
                               <td className="py-2.5 px-3">
                                 <div className="flex items-center gap-1.5">
-                                  <span className="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-200 font-mono text-[10px]">
+                                  <span className="px-2 py-0.5 bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] text-[var(--theme-text-primary)] font-mono text-[10px]">
                                     {g.memberCount || 0} members
                                   </span>
                                   {g.members && g.members.length > 0 && (
-                                    <span className="text-slate-400 text-[11px] truncate max-w-xs">
+                                    <span className="text-[var(--theme-text-secondary)] text-[11px] truncate max-w-xs">
                                       ({g.members.map((m: any) => m.name.split(" ")[0]).join(", ")})
                                     </span>
                                   )}
                                 </div>
                               </td>
-                              <td className="py-2.5 px-3 text-slate-400 max-w-xs truncate">
-                                {g.description || <span className="text-slate-600 italic">No description</span>}
+                              <td className="py-2.5 px-3 text-[var(--theme-text-secondary)] max-w-xs truncate">
+                                {g.description || <span className="text-[var(--theme-text-secondary)] italic">No description</span>}
                               </td>
                               <td className="py-2.5 px-4 text-right">
                                 <div className="flex items-center justify-end space-x-1.5">
                                   <button
                                     onClick={() => openEditGroup(g)}
-                                    className="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+                                    className="p-1.5 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-card-border)] text-[var(--theme-text-primary)] transition-colors cursor-pointer"
                                     title="Edit Group & Roles"
                                   >
                                     <Edit3 className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteGroup(g.id, g.name)}
-                                    className="p-1.5 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 transition-colors cursor-pointer"
+                                    className="p-1.5 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-red)] transition-colors cursor-pointer"
                                     title="Delete Group"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -3334,16 +3334,16 @@ function StudioContent() {
 
                 {/* Group Edit/Add Modal */}
                 {groupModalOpen && (
-                  <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                          <Shield className="w-4 h-4 text-purple-400" />
+                  <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                    <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] max-w-lg w-full p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                      <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+                        <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                          <Shield className="w-4 h-4 text-[var(--theme-text-primary)]" />
                           <span>{editingGroupId ? `Edit Group: ${groupName}` : "Create New Assignment Group"}</span>
                         </h3>
                         <button
                           onClick={() => setGroupModalOpen(false)}
-                          className="text-slate-400 hover:text-white text-xs font-bold cursor-pointer"
+                          className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs font-bold cursor-pointer"
                         >
                           ✕
                         </button>
@@ -3351,7 +3351,7 @@ function StudioContent() {
 
                       <form onSubmit={handleSaveGroup} className="space-y-4 text-xs">
                         <div>
-                          <label className="block text-slate-300 font-medium mb-1">
+                          <label className="block text-[var(--theme-text-primary)] font-medium mb-1">
                             Group Name (sys_user_group.name) *
                           </label>
                           <input
@@ -3360,27 +3360,27 @@ function StudioContent() {
                             value={groupName}
                             onChange={(e) => setGroupName(e.target.value)}
                             placeholder="e.g. Cloud Infrastructure & SRE Escalations"
-                            className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-purple-500 font-medium"
+                            className="sw-input w-full px-2.5 py-1.5 font-medium"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-slate-300 font-medium mb-1">Description</label>
+                          <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Description</label>
                           <textarea
                             rows={2}
                             value={groupDescription}
                             onChange={(e) => setGroupDescription(e.target.value)}
                             placeholder="Purpose, responsibilities, and fulfillment scope of this group..."
-                            className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-purple-500 resize-none"
+                            className="sw-input w-full px-2.5 py-1.5 resize-none"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-slate-300 font-medium mb-1">Group Manager</label>
+                          <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Group Manager</label>
                           <select
                             value={groupManagerId}
                             onChange={(e) => setGroupManagerId(e.target.value)}
-                            className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-purple-500"
+                            className="sw-input w-full px-2.5 py-1.5"
                           >
                             <option value="">-- No Manager Assigned --</option>
                             {usersList.map((u) => (
@@ -3401,7 +3401,7 @@ function StudioContent() {
                             placeholder="Select roles inherited by all group members..."
                             searchPlaceholder="Filter roles by name, label..."
                           />
-                          <span className="block text-[10px] text-slate-500 mt-1">
+                          <span className="block text-[10px] text-[var(--theme-text-secondary)] mt-1">
                             Members of this group automatically inherit all selected roles in access control evaluations.
                           </span>
                         </div>
@@ -3418,18 +3418,18 @@ function StudioContent() {
                           />
                         </div>
 
-                        <div className="border-t border-slate-800 pt-3 flex justify-end space-x-2">
+                        <div className="border-t border-[var(--theme-card-border)] pt-3 flex justify-end space-x-2">
                           <button
                             type="button"
                             onClick={() => setGroupModalOpen(false)}
-                            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 cursor-pointer"
+                            className="sw-btn px-3 py-1.5 cursor-pointer"
                           >
                             Cancel
                           </button>
                           <button
                             type="submit"
                             disabled={groupSaving}
-                            className="px-4 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded shadow-xs disabled:opacity-50 cursor-pointer"
+                            className="sw-btn-primary px-4 py-1.5 disabled:opacity-50 cursor-pointer"
                           >
                             {groupSaving ? "Saving..." : editingGroupId ? "Update Group & Roles" : "Create Group"}
                           </button>
@@ -3444,7 +3444,7 @@ function StudioContent() {
             {/* SUB-TAB 3: ROLES (sys_user_role) */}
             {userSubTab === "roles" && (
               <>
-                <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center space-x-3">
                     <div className="relative w-72">
                       <input
@@ -3452,10 +3452,10 @@ function StudioContent() {
                         value={roleSearch}
                         onChange={(e) => setRoleSearch(e.target.value)}
                         placeholder="Search roles by name, label, description..."
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-amber-500"
+                        className="sw-input w-full px-3 py-1.5 text-xs"
                       />
                     </div>
-                    <span className="text-xs text-slate-400 font-mono">
+                    <span className="text-xs text-[var(--theme-text-secondary)] font-mono">
                       {rolesList.length} System Roles
                     </span>
                   </div>
@@ -3463,17 +3463,17 @@ function StudioContent() {
                   <button
                     type="button"
                     onClick={openAddRole}
-                    className="flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded text-xs transition-colors shadow-md cursor-pointer"
+                    className="sw-btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>+ Create Role</span>
                   </button>
                 </div>
 
-                <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-xl">
-                  <table className="w-full text-left text-xs border-collapse">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] overflow-hidden">
+                  <table className="sw-table w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-slate-900 border-b border-slate-800 text-[10px] uppercase font-mono text-slate-400">
+                      <tr className="bg-[var(--theme-card-bg)] border-b border-[var(--theme-card-border)] text-[10px] uppercase font-mono text-[var(--theme-text-secondary)]">
                         <th className="py-3 px-4">Role Identifier</th>
                         <th className="py-3 px-3">Display Label</th>
                         <th className="py-3 px-3">Description</th>
@@ -3485,16 +3485,16 @@ function StudioContent() {
                         <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+                    <tbody className="divide-y divide-[var(--theme-card-border)] font-mono text-[11px]">
                       {rolesLoading ? (
                         <tr>
-                          <td colSpan={9} className="py-8 text-center text-slate-500 italic">
+                          <td colSpan={9} className="py-8 text-center text-[var(--theme-text-secondary)] italic">
                             Loading roles from sys_user_role...
                           </td>
                         </tr>
                       ) : rolesList.length === 0 ? (
                         <tr>
-                          <td colSpan={9} className="py-8 text-center text-slate-500 italic">
+                          <td colSpan={9} className="py-8 text-center text-[var(--theme-text-secondary)] italic">
                             No roles found in sys_user_role.
                           </td>
                         </tr>
@@ -3509,55 +3509,55 @@ function StudioContent() {
                             );
                           })
                           .map((role) => (
-                            <tr key={role.id} className="hover:bg-slate-900/60 transition-colors">
-                              <td className="py-3 px-4 font-bold text-amber-300">
+                            <tr key={role.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
+                              <td className="py-3 px-4 font-bold text-[var(--swiss-amber)]">
                                 <div className="flex items-center gap-1.5">
-                                  <Key className="w-3.5 h-3.5 text-amber-400" />
+                                  <Key className="w-3.5 h-3.5 text-[var(--swiss-amber)]" />
                                   <span>{role.name}</span>
                                 </div>
                               </td>
-                              <td className="py-3 px-3 font-sans text-slate-200 font-medium">
+                              <td className="py-3 px-3 font-sans text-[var(--theme-text-primary)] font-medium">
                                 {role.label || role.name}
                               </td>
-                              <td className="py-3 px-3 font-sans text-slate-400 max-w-xs truncate">
-                                {role.description || <span className="text-slate-600 italic">None</span>}
+                              <td className="py-3 px-3 font-sans text-[var(--theme-text-secondary)] max-w-xs truncate">
+                                {role.description || <span className="text-[var(--theme-text-secondary)] italic">None</span>}
                               </td>
                               <td className="py-3 px-3">
-                                <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 text-[10px]">
+                                <span className="px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)] text-[10px]">
                                   {role.directUserCount ?? 0} users
                                 </span>
                               </td>
                               <td className="py-3 px-3">
-                                <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/30 text-[10px]">
+                                <span className="px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)] text-[10px]">
                                   {role.groupCount ?? 0} groups
                                 </span>
                               </td>
                               <td className="py-3 px-3">
-                                <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 text-[10px]">
+                                <span className="px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)] text-[10px]">
                                   {role.aclCount ?? 0} rules
                                 </span>
                               </td>
                               <td className="py-3 px-3">
                                 {role.elevatedPrivilege ? (
-                                  <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold">
+                                  <span className="sw-badge-red px-2 py-0.5 text-[10px]">
                                     ELEVATED
                                   </span>
                                 ) : (
-                                  <span className="text-slate-500 text-[10px]">Standard</span>
+                                  <span className="text-[var(--theme-text-secondary)] text-[10px]">Standard</span>
                                 )}
                               </td>
                               <td className="py-3 px-3">
                                 {role.active !== false ? (
-                                  <span className="text-emerald-400 font-semibold text-[11px]">● Active</span>
+                                  <span className="text-[var(--swiss-emerald)] font-semibold text-[11px]">● Active</span>
                                 ) : (
-                                  <span className="text-slate-500 text-[11px]">○ Inactive</span>
+                                  <span className="text-[var(--theme-text-secondary)] text-[11px]">○ Inactive</span>
                                 )}
                               </td>
                               <td className="py-3 px-4 text-right">
                                 <div className="flex items-center justify-end space-x-1.5">
                                   <button
                                     onClick={() => openEditRole(role)}
-                                    className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors cursor-pointer"
+                                    className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-card-border)] text-[var(--theme-text-primary)] transition-colors cursor-pointer"
                                     title="Edit Role"
                                   >
                                     <Edit3 className="w-3.5 h-3.5" />
@@ -3565,7 +3565,7 @@ function StudioContent() {
                                   {!["admin", "itil", "employee", "cab_approver"].includes(role.name.toLowerCase()) && (
                                     <button
                                       onClick={() => handleDeleteRole(role.id, role.name)}
-                                      className="p-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 transition-colors cursor-pointer"
+                                      className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-red)] transition-colors cursor-pointer"
                                       title="Delete Custom Role"
                                     >
                                       <Trash2 className="w-3.5 h-3.5" />
@@ -3581,16 +3581,16 @@ function StudioContent() {
 
                 {/* Role Edit/Add Modal */}
                 {roleModalOpen && (
-                  <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-                      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                          <Key className="w-4 h-4 text-amber-400" />
+                  <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                    <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] max-w-lg w-full p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                      <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+                        <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                          <Key className="w-4 h-4 text-[var(--swiss-amber)]" />
                           <span>{editingRoleId ? `Edit Role: ${roleName}` : "Create System Role (sys_user_role)"}</span>
                         </h3>
                         <button
                           onClick={() => setRoleModalOpen(false)}
-                          className="text-slate-400 hover:text-white text-xs font-bold cursor-pointer"
+                          className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs font-bold cursor-pointer"
                         >
                           ✕
                         </button>
@@ -3598,7 +3598,7 @@ function StudioContent() {
 
                       <form onSubmit={handleSaveRole} className="space-y-4 text-xs">
                         <div>
-                          <label className="block text-slate-300 font-medium mb-1">
+                          <label className="block text-[var(--theme-text-primary)] font-medium mb-1">
                             Role Identifier (name) *
                           </label>
                           <input
@@ -3608,70 +3608,70 @@ function StudioContent() {
                             value={roleName}
                             onChange={(e) => setRoleName(e.target.value)}
                             placeholder="e.g. problem_manager, cmdb_editor"
-                            className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-amber-500 font-mono disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="sw-input w-full px-2.5 py-1.5 font-mono disabled:opacity-60 disabled:cursor-not-allowed"
                           />
-                          <span className="block text-[10px] text-slate-500 mt-1">
+                          <span className="block text-[10px] text-[var(--theme-text-secondary)] mt-1">
                             Lowercase letters, numbers, and underscores only. Cannot be altered after creation.
                           </span>
                         </div>
 
                         <div>
-                          <label className="block text-slate-300 font-medium mb-1">Display Label *</label>
+                          <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Display Label *</label>
                           <input
                             type="text"
                             required
                             value={roleLabel}
                             onChange={(e) => setRoleLabel(e.target.value)}
                             placeholder="e.g. Problem Management Director"
-                            className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-amber-500 font-medium"
+                            className="sw-input w-full px-2.5 py-1.5 font-medium"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-slate-300 font-medium mb-1">Description / Permissions Summary</label>
+                          <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Description / Permissions Summary</label>
                           <textarea
                             rows={2}
                             value={roleDescription}
                             onChange={(e) => setRoleDescription(e.target.value)}
                             placeholder="Defines which ACLs, tables, and workflows this role unlocks..."
-                            className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-amber-500 resize-none"
+                            className="sw-input w-full px-2.5 py-1.5 resize-none"
                           />
                         </div>
 
                         <div className="space-y-2 pt-1">
-                          <label className="flex items-center space-x-2 text-slate-300 cursor-pointer">
+                          <label className="flex items-center space-x-2 text-[var(--theme-text-primary)] cursor-pointer">
                             <input
                               type="checkbox"
                               checked={roleElevated}
                               onChange={(e) => setRoleElevated(e.target.checked)}
-                              className="rounded text-amber-500 focus:ring-amber-400"
+                              className="text-[var(--swiss-amber)] focus:ring-[var(--swiss-amber)]"
                             />
                             <span>Elevated Privilege Role (Requires explicit elevation session)</span>
                           </label>
 
-                          <label className="flex items-center space-x-2 text-slate-300 cursor-pointer">
+                          <label className="flex items-center space-x-2 text-[var(--theme-text-primary)] cursor-pointer">
                             <input
                               type="checkbox"
                               checked={roleActive}
                               onChange={(e) => setRoleActive(e.target.checked)}
-                              className="rounded text-amber-500 focus:ring-amber-400"
+                              className="text-[var(--swiss-amber)] focus:ring-[var(--swiss-amber)]"
                             />
                             <span>Active (Available for ACL security checks and assignment)</span>
                           </label>
                         </div>
 
-                        <div className="border-t border-slate-800 pt-3 flex justify-end space-x-2">
+                        <div className="border-t border-[var(--theme-card-border)] pt-3 flex justify-end space-x-2">
                           <button
                             type="button"
                             onClick={() => setRoleModalOpen(false)}
-                            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 cursor-pointer"
+                            className="sw-btn px-3 py-1.5 cursor-pointer"
                           >
                             Cancel
                           </button>
                           <button
                             type="submit"
                             disabled={roleSaving}
-                            className="px-4 py-1.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded shadow-xs disabled:opacity-50 cursor-pointer"
+                            className="sw-btn-primary px-4 py-1.5 disabled:opacity-50"
                           >
                             {roleSaving ? "Saving..." : editingRoleId ? "Update Role" : "Create Role"}
                           </button>
@@ -3691,19 +3691,19 @@ function StudioContent() {
         {activeTab === "business_rules" && (
           <div className="space-y-4">
             {ruleMsg && (
-              <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300 text-xs flex items-center gap-2">
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] text-xs flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>{ruleMsg}</span>
               </div>
             )}
 
-            <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center space-x-3">
-                <label className="text-xs text-slate-400 font-semibold">Filter Table:</label>
+                <label className="text-xs text-[var(--theme-text-secondary)] font-semibold">Filter Table:</label>
                 <select
                   value={ruleTableFilter}
                   onChange={(e) => setRuleTableFilter(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"
+                  className="sw-panel px-2.5 py-1 text-xs text-[var(--theme-text-primary)]"
                 >
                   <option value="">All Tables</option>
                   <option value="incident">incident</option>
@@ -3711,7 +3711,7 @@ function StudioContent() {
                   <option value="problem">problem</option>
                   <option value="task">task</option>
                 </select>
-                <span className="text-xs text-slate-400 font-mono">
+                <span className="text-xs text-[var(--theme-text-secondary)] font-mono">
                   {rulesList.filter((r) => !ruleTableFilter || r.tableName === ruleTableFilter).length} Rules
                 </span>
               </div>
@@ -3719,17 +3719,17 @@ function StudioContent() {
               <button
                 type="button"
                 onClick={openAddRule}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-xs transition-colors shadow-md"
+                className="sw-btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>+ New Business Rule</span>
               </button>
             </div>
 
-            <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-xl">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] overflow-hidden">
+              <table className="sw-table w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-900 border-b border-slate-800 text-[10px] uppercase font-mono text-slate-400">
+                  <tr className="bg-[var(--theme-card-bg)] border-b border-[var(--theme-card-border)] text-[10px] uppercase font-mono text-[var(--theme-text-secondary)]">
                     <th className="py-3 px-4">Rule Name</th>
                     <th className="py-3 px-3">Table</th>
                     <th className="py-3 px-3">When</th>
@@ -3739,44 +3739,44 @@ function StudioContent() {
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+                <tbody className="divide-y divide-[var(--theme-card-border)] font-mono text-[11px]">
                   {rulesLoading ? (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-slate-500 italic">
+                      <td colSpan={7} className="py-8 text-center text-[var(--theme-text-secondary)] italic">
                         Loading business rules from sys_script...
                       </td>
                     </tr>
                   ) : rulesList
                       .filter((r) => !ruleTableFilter || r.tableName === ruleTableFilter)
                       .map((r) => (
-                        <tr key={r.id} className="hover:bg-slate-900/60 transition-colors">
-                          <td className="py-3 px-4 font-sans font-semibold text-slate-100">
+                        <tr key={r.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
+                          <td className="py-3 px-4 font-sans font-semibold text-[var(--theme-text-primary)]">
                             {r.name}
                             {r.description && (
-                              <span className="block text-[10px] font-sans text-slate-400 font-normal">
+                              <span className="block text-[10px] font-sans text-[var(--theme-text-secondary)] font-normal">
                                 {r.description}
                               </span>
                             )}
                           </td>
-                          <td className="py-3 px-3 text-emerald-400 font-bold">{r.tableName}</td>
+                          <td className="py-3 px-3 text-[var(--swiss-emerald)] font-bold">{r.tableName}</td>
                           <td className="py-3 px-3">
                             <span
-                              className={`px-1.5 py-0.2 rounded text-[10px] uppercase ${
+                              className={`px-1.5 py-0.2 text-[10px] uppercase ${
                                 r.when.includes("before")
-                                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                                  : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-amber)] border border-[var(--swiss-amber)]"
+                                  : "bg-[var(--theme-accent-light)] text-[var(--swiss-blue)] border border-[var(--swiss-blue)]"
                               }`}
                             >
                               {r.when.replace("_", " ")}
                             </span>
                           </td>
-                          <td className="py-3 px-3 text-slate-400">{r.order}</td>
+                          <td className="py-3 px-3 text-[var(--theme-text-secondary)]">{r.order}</td>
                           <td className="py-3 px-3 max-w-xs font-sans text-[11px]">
                             <div className="space-y-1">
-                              <span className="text-[10px] bg-slate-900 border border-slate-700 px-1.5 py-0.2 rounded font-mono text-purple-300 block truncate">
+                              <span className="text-[10px] sw-panel px-1.5 py-0.2 font-mono text-[var(--theme-text-primary)] block truncate">
                                 if {r.filterConditions}
                               </span>
-                              <span className="text-[10px] text-slate-400 block truncate font-mono">
+                              <span className="text-[10px] text-[var(--theme-text-secondary)] block truncate font-mono">
                                 then {r.actionsJson}
                               </span>
                             </div>
@@ -3784,10 +3784,10 @@ function StudioContent() {
                           <td className="py-3 px-3">
                             <button
                               onClick={() => handleToggleRule(r)}
-                              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              className={`px-2 py-0.5 text-[10px] font-bold ${
                                 r.active
-                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                                  : "bg-slate-800 text-slate-500 border border-slate-700"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]"
+                                  : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] border border-[var(--theme-card-border)]"
                               }`}
                             >
                               {r.active ? "ENABLED" : "DISABLED"}
@@ -3797,14 +3797,14 @@ function StudioContent() {
                             <div className="flex items-center justify-end space-x-1.5">
                               <button
                                 onClick={() => openEditRule(r)}
-                                className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                                className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-card-border)] text-[var(--theme-text-primary)] transition-colors"
                                 title="Edit Business Rule"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteRule(r.id)}
-                                className="p-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 transition-colors"
+                                className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-red)] transition-colors"
                                 title="Delete Rule"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -3819,16 +3819,16 @@ function StudioContent() {
 
             {/* Business Rule Modal (Add / Edit) */}
             {ruleModalOpen && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                      <FileCode className="w-4 h-4 text-emerald-400" />
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] max-w-lg w-full p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+                    <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                      <FileCode className="w-4 h-4 text-[var(--theme-text-primary)]" />
                       <span>{editingRuleId ? "Edit Business Rule (sys_script)" : "Define New Business Rule (sys_script)"}</span>
                     </h3>
                     <button
                       onClick={() => setRuleModalOpen(false)}
-                      className="text-slate-400 hover:text-white text-xs font-bold"
+                      className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs font-bold"
                     >
                       ✕
                     </button>
@@ -3836,24 +3836,24 @@ function StudioContent() {
 
                   <form onSubmit={handleSaveRule} className="space-y-3 text-xs">
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Rule Name *</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Rule Name *</label>
                       <input
                         type="text"
                         required
                         value={ruleName}
                         onChange={(e) => setRuleName(e.target.value)}
                         placeholder="e.g. Auto-assign Network Incidents to SRE"
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                        className="sw-input w-full px-2.5 py-1.5"
                       />
                     </div>
 
                     <div className="grid grid-cols-3 gap-2">
                       <div>
-                        <label className="block text-slate-300 font-medium mb-1">Table *</label>
+                        <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Table *</label>
                         <select
                           value={ruleTable}
                           onChange={(e) => setRuleTable(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                          className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)]"
                         >
                           <option value="incident">incident</option>
                           <option value="change_request">change_request</option>
@@ -3863,11 +3863,11 @@ function StudioContent() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-300 font-medium mb-1">When *</label>
+                        <label className="block text-[var(--theme-text-primary)] font-medium mb-1">When *</label>
                         <select
                           value={ruleWhen}
                           onChange={(e) => setRuleWhen(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                          className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)]"
                         >
                           <option value="before_insert">before_insert</option>
                           <option value="after_insert">after_insert</option>
@@ -3877,31 +3877,31 @@ function StudioContent() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-300 font-medium mb-1">Execution Order</label>
+                        <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Execution Order</label>
                         <input
                           type="number"
                           value={ruleOrder}
                           onChange={(e) => setRuleOrder(parseInt(e.target.value, 10))}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                          className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)]"
                         />
                       </div>
                     </div>
 
                     {/* Filter Condition Builder */}
-                    <div className="p-3 bg-slate-900 rounded border border-slate-800 space-y-2">
-                      <span className="font-semibold text-slate-300 block">Trigger Condition (when record matches):</span>
+                    <div className="p-3 sw-panel space-y-2">
+                      <span className="font-semibold text-[var(--theme-text-primary)] block">Trigger Condition (when record matches):</span>
                       <div className="grid grid-cols-3 gap-2">
                         <input
                           type="text"
                           value={ruleCondField}
                           onChange={(e) => setRuleCondField(e.target.value)}
                           placeholder="field (e.g. category)"
-                          className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                          className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                         />
                         <select
                           value={ruleCondOp}
                           onChange={(e) => setRuleCondOp(e.target.value)}
-                          className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                          className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                         >
                           <option value="=">=</option>
                           <option value="!=">!=</option>
@@ -3913,44 +3913,44 @@ function StudioContent() {
                           value={ruleCondVal}
                           onChange={(e) => setRuleCondVal(e.target.value)}
                           placeholder="value (e.g. network)"
-                          className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                          className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                         />
                       </div>
                     </div>
 
                     {/* Action Execution Builder */}
-                    <div className="p-3 bg-slate-900 rounded border border-slate-800 space-y-2">
-                      <span className="font-semibold text-slate-300 block">Actions to Execute:</span>
+                    <div className="p-3 sw-panel space-y-2">
+                      <span className="font-semibold text-[var(--theme-text-primary)] block">Actions to Execute:</span>
 
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <label className="block text-slate-400 mb-0.5">Set Field Name</label>
+                          <label className="block text-[var(--theme-text-secondary)] mb-0.5">Set Field Name</label>
                           <input
                             type="text"
                             value={ruleActionSetField}
                             onChange={(e) => setRuleActionSetField(e.target.value)}
                             placeholder="e.g. priority or state"
-                            className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white font-mono"
+                            className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)] font-mono"
                           />
                         </div>
                         <div>
-                          <label className="block text-slate-400 mb-0.5">Set Field Value</label>
+                          <label className="block text-[var(--theme-text-secondary)] mb-0.5">Set Field Value</label>
                           <input
                             type="text"
                             value={ruleActionSetVal}
                             onChange={(e) => setRuleActionSetVal(e.target.value)}
                             placeholder="e.g. 1"
-                            className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white font-mono"
+                            className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)] font-mono"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-slate-400 mb-0.5">Auto-Assign to Group</label>
+                        <label className="block text-[var(--theme-text-secondary)] mb-0.5">Auto-Assign to Group</label>
                         <select
                           value={ruleActionAssignGroup}
                           onChange={(e) => setRuleActionAssignGroup(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                          className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                         >
                           <option value="">-- No Auto Assignment --</option>
                           {groupsList.map((g) => (
@@ -3962,29 +3962,29 @@ function StudioContent() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-400 mb-0.5">Stamp Activity Work Note</label>
+                        <label className="block text-[var(--theme-text-secondary)] mb-0.5">Stamp Activity Work Note</label>
                         <input
                           type="text"
                           value={ruleActionWorkNote}
                           onChange={(e) => setRuleActionWorkNote(e.target.value)}
                           placeholder="e.g. Auto-escalated to tier 2 network response roster"
-                          className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                          className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                         />
                       </div>
                     </div>
 
-                    <div className="border-t border-slate-800 pt-3 flex justify-end space-x-2">
+                    <div className="border-t border-[var(--theme-card-border)] pt-3 flex justify-end space-x-2">
                       <button
                         type="button"
                         onClick={() => setRuleModalOpen(false)}
-                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300"
+                        className="sw-btn px-3 py-1.5"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={ruleSaving}
-                        className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-xs disabled:opacity-50"
+                        className="sw-btn-primary px-4 py-1.5 disabled:opacity-50"
                       >
                         {ruleSaving ? "Saving..." : editingRuleId ? "Update Business Rule" : "Create Business Rule"}
                       </button>
@@ -4002,26 +4002,26 @@ function StudioContent() {
         {activeTab === "ui_policies" && (
           <div className="space-y-4">
             {policyMsg && (
-              <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300 text-xs flex items-center gap-2">
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] text-xs flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>{policyMsg}</span>
               </div>
             )}
 
-            <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center space-x-3">
-                <label className="text-xs text-slate-400 font-semibold">Filter Table:</label>
+                <label className="text-xs text-[var(--theme-text-secondary)] font-semibold">Filter Table:</label>
                 <select
                   value={policyTableFilter}
                   onChange={(e) => setPolicyTableFilter(e.target.value)}
-                  className="bg-slate-900 border border-slate-700 rounded px-2.5 py-1 text-xs text-white"
+                  className="sw-panel px-2.5 py-1 text-xs text-[var(--theme-text-primary)]"
                 >
                   <option value="">All Tables</option>
                   <option value="incident">incident</option>
                   <option value="change_request">change_request</option>
                   <option value="problem">problem</option>
                 </select>
-                <span className="text-xs text-slate-400 font-mono">
+                <span className="text-xs text-[var(--theme-text-secondary)] font-mono">
                   {uiPoliciesList.filter((p) => !policyTableFilter || p.tableName === policyTableFilter).length} UI Policies
                 </span>
               </div>
@@ -4029,17 +4029,17 @@ function StudioContent() {
               <button
                 type="button"
                 onClick={openAddPolicy}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-xs transition-colors shadow-md"
+                className="sw-btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>+ New UI Policy</span>
               </button>
             </div>
 
-            <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-xl">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] overflow-hidden">
+              <table className="sw-table w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="bg-slate-900 border-b border-slate-800 text-[10px] uppercase font-mono text-slate-400">
+                  <tr className="bg-[var(--theme-card-bg)] border-b border-[var(--theme-card-border)] text-[10px] uppercase font-mono text-[var(--theme-text-secondary)]">
                     <th className="py-3 px-4">Policy Name</th>
                     <th className="py-3 px-3">Table</th>
                     <th className="py-3 px-3">Condition (Client-Side)</th>
@@ -4049,28 +4049,28 @@ function StudioContent() {
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
+                <tbody className="divide-y divide-[var(--theme-card-border)] font-mono text-[11px]">
                   {uiPoliciesLoading ? (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-slate-500 italic">
+                      <td colSpan={7} className="py-8 text-center text-[var(--theme-text-secondary)] italic">
                         Loading UI policies from sys_ui_policy...
                       </td>
                     </tr>
                   ) : uiPoliciesList
                       .filter((p) => !policyTableFilter || p.tableName === policyTableFilter)
                       .map((p) => (
-                        <tr key={p.id} className="hover:bg-slate-900/60 transition-colors">
-                          <td className="py-3 px-4 font-sans font-semibold text-slate-100">
+                        <tr key={p.id} className="hover:bg-[var(--theme-accent-light)] transition-colors">
+                          <td className="py-3 px-4 font-sans font-semibold text-[var(--theme-text-primary)]">
                             {p.name}
                             {p.shortDescription && (
-                              <span className="block text-[10px] font-sans text-slate-400 font-normal">
+                              <span className="block text-[10px] font-sans text-[var(--theme-text-secondary)] font-normal">
                                 {p.shortDescription}
                               </span>
                             )}
                           </td>
-                          <td className="py-3 px-3 text-emerald-400 font-bold">{p.tableName}</td>
+                          <td className="py-3 px-3 text-[var(--swiss-emerald)] font-bold">{p.tableName}</td>
                           <td className="py-3 px-3">
-                            <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px]">
+                            <span className="px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)] text-[10px]">
                               {p.conditionField} {p.conditionOperator} &apos;{p.conditionValue}&apos;
                             </span>
                           </td>
@@ -4079,7 +4079,7 @@ function StudioContent() {
                               {p.actions?.map((act: any) => (
                                 <span
                                   key={act.id}
-                                  className="bg-slate-900 border border-slate-700 px-1.5 py-0.2 rounded text-[10px] font-mono text-slate-300"
+                                  className="sw-panel px-1.5 py-0.2 text-[10px] font-mono text-[var(--theme-text-primary)]"
                                 >
                                   {act.fieldName}: {act.mandatory === "true" ? "mandatory" : act.visible === "false" ? "hidden" : "visible"}
                                 </span>
@@ -4088,18 +4088,18 @@ function StudioContent() {
                           </td>
                           <td className="py-3 px-3">
                             {p.reverseIfFalse ? (
-                              <span className="text-emerald-400 font-bold">Yes</span>
+                              <span className="text-[var(--swiss-emerald)] font-bold">Yes</span>
                             ) : (
-                              <span className="text-slate-600">No</span>
+                              <span className="text-[var(--theme-text-secondary)]">No</span>
                             )}
                           </td>
                           <td className="py-3 px-3">
                             <button
                               onClick={() => handleTogglePolicy(p)}
-                              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              className={`px-2 py-0.5 text-[10px] font-bold ${
                                 p.active
-                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                                  : "bg-slate-800 text-slate-500 border border-slate-700"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]"
+                                  : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)] border border-[var(--theme-card-border)]"
                               }`}
                             >
                               {p.active ? "ENABLED" : "DISABLED"}
@@ -4109,14 +4109,14 @@ function StudioContent() {
                             <div className="flex items-center justify-end space-x-1.5">
                               <button
                                 onClick={() => openEditPolicy(p)}
-                                className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                                className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-card-border)] text-[var(--theme-text-primary)] transition-colors"
                                 title="Edit UI Policy"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeletePolicy(p.id)}
-                                className="p-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 transition-colors"
+                                className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-red)] transition-colors"
                                 title="Delete Policy"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -4131,16 +4131,16 @@ function StudioContent() {
 
             {/* UI Policy Modal (Add / Edit) */}
             {policyModalOpen && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-purple-400" />
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] max-w-lg w-full p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+                    <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-[var(--theme-text-primary)]" />
                       <span>{editingPolicyId ? "Edit Form UI Policy (sys_ui_policy)" : "Configure Form UI Policy (sys_ui_policy)"}</span>
                     </h3>
                     <button
                       onClick={() => setPolicyModalOpen(false)}
-                      className="text-slate-400 hover:text-white text-xs font-bold"
+                      className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs font-bold"
                     >
                       ✕
                     </button>
@@ -4148,24 +4148,24 @@ function StudioContent() {
 
                   <form onSubmit={handleSavePolicy} className="space-y-3 text-xs">
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Policy Name *</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Policy Name *</label>
                       <input
                         type="text"
                         required
                         value={policyName}
                         onChange={(e) => setPolicyName(e.target.value)}
                         placeholder="e.g. Require Close Notes when Incident is Resolved"
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                        className="sw-input w-full px-2.5 py-1.5"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-slate-300 font-medium mb-1">Target Table *</label>
+                        <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Target Table *</label>
                         <select
                           value={policyTable}
                           onChange={(e) => setPolicyTable(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                          className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)]"
                         >
                           <option value="incident">incident</option>
                           <option value="change_request">change_request</option>
@@ -4174,25 +4174,25 @@ function StudioContent() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-300 font-medium mb-1">Description</label>
+                        <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Description</label>
                         <input
                           type="text"
                           value={policyDesc}
                           onChange={(e) => setPolicyDesc(e.target.value)}
                           placeholder="Client form dynamic behavior"
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                          className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)]"
                         />
                       </div>
                     </div>
 
                     {/* Condition Section */}
-                    <div className="p-3 bg-slate-900 rounded border border-slate-800 space-y-2">
-                      <span className="font-semibold text-slate-300 block">When Condition Evaluates to True:</span>
+                    <div className="p-3 sw-panel space-y-2">
+                      <span className="font-semibold text-[var(--theme-text-primary)] block">When Condition Evaluates to True:</span>
                       <div className="grid grid-cols-3 gap-2">
                         <select
                           value={policyCondField}
                           onChange={(e) => setPolicyCondField(e.target.value)}
-                          className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                          className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                         >
                           <option value="state">state</option>
                           <option value="category">category</option>
@@ -4202,7 +4202,7 @@ function StudioContent() {
                         <select
                           value={policyCondOp}
                           onChange={(e) => setPolicyCondOp(e.target.value)}
-                          className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                          className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                         >
                           <option value="=">=</option>
                           <option value="!=">!=</option>
@@ -4213,33 +4213,33 @@ function StudioContent() {
                           value={policyCondVal}
                           onChange={(e) => setPolicyCondVal(e.target.value)}
                           placeholder="e.g. 6 or software"
-                          className="bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                          className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                         />
                       </div>
                     </div>
 
                     {/* Policy Action Section */}
-                    <div className="p-3 bg-slate-900 rounded border border-slate-800 space-y-2">
-                      <span className="font-semibold text-slate-300 block">Form Field Behavior Action:</span>
+                    <div className="p-3 sw-panel space-y-2">
+                      <span className="font-semibold text-[var(--theme-text-primary)] block">Form Field Behavior Action:</span>
                       <div>
-                        <label className="block text-slate-400 mb-1">Target Field Name *</label>
+                        <label className="block text-[var(--theme-text-secondary)] mb-1">Target Field Name *</label>
                         <input
                           type="text"
                           required
                           value={policyTargetField}
                           onChange={(e) => setPolicyTargetField(e.target.value)}
                           placeholder="e.g. close_notes, subcategory, close_code"
-                          className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white font-mono"
+                          className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)] font-mono"
                         />
                       </div>
 
                       <div className="grid grid-cols-3 gap-2">
                         <div>
-                          <label className="block text-slate-400 mb-1">Mandatory</label>
+                          <label className="block text-[var(--theme-text-secondary)] mb-1">Mandatory</label>
                           <select
                             value={policyMandatory}
                             onChange={(e) => setPolicyMandatory(e.target.value)}
-                            className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                            className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                           >
                             <option value="true">True (Required)</option>
                             <option value="false">False</option>
@@ -4247,11 +4247,11 @@ function StudioContent() {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-slate-400 mb-1">Visible</label>
+                          <label className="block text-[var(--theme-text-secondary)] mb-1">Visible</label>
                           <select
                             value={policyVisible}
                             onChange={(e) => setPolicyVisible(e.target.value)}
-                            className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                            className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                           >
                             <option value="true">True (Show)</option>
                             <option value="false">False (Hide)</option>
@@ -4259,11 +4259,11 @@ function StudioContent() {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-slate-400 mb-1">Read Only</label>
+                          <label className="block text-[var(--theme-text-secondary)] mb-1">Read Only</label>
                           <select
                             value={policyReadOnly}
                             onChange={(e) => setPolicyReadOnly(e.target.value)}
-                            className="w-full bg-slate-950 border border-slate-700 rounded px-2 py-1 text-white"
+                            className="w-full bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] px-2 py-1 text-[var(--theme-text-primary)]"
                           >
                             <option value="true">True (Lock)</option>
                             <option value="false">False</option>
@@ -4273,18 +4273,18 @@ function StudioContent() {
                       </div>
                     </div>
 
-                    <div className="border-t border-slate-800 pt-3 flex justify-end space-x-2">
+                    <div className="border-t border-[var(--theme-card-border)] pt-3 flex justify-end space-x-2">
                       <button
                         type="button"
                         onClick={() => setPolicyModalOpen(false)}
-                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300"
+                        className="sw-btn px-3 py-1.5"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={policySaving}
-                        className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-xs disabled:opacity-50"
+                        className="sw-btn-primary px-4 py-1.5 disabled:opacity-50"
                       >
                         {policySaving ? "Saving..." : editingPolicyId ? "Update UI Policy" : "Save UI Policy"}
                       </button>
@@ -4302,19 +4302,19 @@ function StudioContent() {
         {activeTab === "flows" && (
           <div className="space-y-4">
             {flowMsg && (
-              <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300 text-xs flex items-center gap-2">
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] text-xs flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>{flowMsg}</span>
               </div>
             )}
 
-            <div className="bg-slate-950 rounded-xl border border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Workflow className="w-4 h-4 text-emerald-400" />
+                <h2 className="text-sm font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
+                  <Workflow className="w-4 h-4 text-[var(--theme-text-primary)]" />
                   <span>ServiceMeow Flow Designer Engine</span>
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[var(--theme-text-secondary)]">
                   Define automated multi-step trigger workflows and event-driven orchestration pipelines.
                 </p>
               </div>
@@ -4322,7 +4322,7 @@ function StudioContent() {
               <button
                 type="button"
                 onClick={openAddFlow}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded text-xs transition-colors shadow-md"
+                className="sw-btn-primary flex items-center gap-1.5 px-3.5 py-1.5 text-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>+ Create Flow</span>
@@ -4331,23 +4331,23 @@ function StudioContent() {
 
             {/* Test Execution Simulation Results Banner */}
             {flowTestResults && (
-              <div className="p-4 bg-purple-950/40 border border-purple-500/50 rounded-xl space-y-2 animate-in fade-in duration-200">
+              <div className="p-4 bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] space-y-2 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-purple-300 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-purple-400" />
+                  <span className="font-bold text-xs text-[var(--theme-text-primary)] flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-[var(--theme-text-primary)]" />
                     <span>Flow Simulation Execution Run: {flowTestResults.flowName}</span>
                   </span>
                   <button
                     onClick={() => setFlowTestResults(null)}
-                    className="text-slate-400 hover:text-white text-xs"
+                    className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs"
                   >
                     Dismiss
                   </button>
                 </div>
-                <div className="bg-slate-950/80 p-3 rounded border border-purple-900/50 font-mono text-[11px] space-y-1">
+                <div className="bg-[var(--theme-page-bg)] p-3 border border-[var(--theme-card-border)] font-mono text-[11px] space-y-1">
                   {flowTestResults.logs?.map((lg: string, i: number) => (
-                    <div key={i} className="text-purple-200 flex items-center gap-2">
-                      <span className="text-emerald-400 font-bold">✔</span>
+                    <div key={i} className="text-[var(--theme-text-primary)] flex items-center gap-2">
+                      <span className="text-[var(--swiss-emerald)] font-bold">✔</span>
                       <span>{lg}</span>
                     </div>
                   ))}
@@ -4357,7 +4357,7 @@ function StudioContent() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {flowsLoading ? (
-                <div className="col-span-2 py-12 text-center text-slate-500 italic">
+                <div className="col-span-2 py-12 text-center text-[var(--theme-text-secondary)] italic">
                   Loading flows from sys_hub_flow...
                 </div>
               ) : (
@@ -4370,39 +4370,39 @@ function StudioContent() {
                   return (
                     <div
                       key={flow.id}
-                      className="bg-slate-950 rounded-xl border border-slate-800 p-5 space-y-4 hover:border-slate-700 transition-colors shadow-xl"
+                      className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-5 space-y-4 hover:border-[var(--theme-text-primary)] transition-colors"
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <h3 className="font-bold text-sm text-slate-100 flex items-center gap-2">
+                          <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
                             <span>{flow.name}</span>
                             <span
-                              className={`text-[9px] uppercase px-1.5 py-0.2 rounded font-mono font-bold ${
+                              className={`text-[9px] uppercase px-1.5 py-0.2 font-mono font-bold ${
                                 flow.active
-                                  ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                                  : "bg-slate-800 text-slate-500"
+                                  ? "bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]"
+                                  : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]"
                               }`}
                             >
                               {flow.active ? "ACTIVE" : "INACTIVE"}
                             </span>
                           </h3>
                           {flow.description && (
-                            <p className="text-xs text-slate-400 mt-0.5">{flow.description}</p>
+                            <p className="text-xs text-[var(--theme-text-secondary)] mt-0.5">{flow.description}</p>
                           )}
                         </div>
                       </div>
 
                       {/* Trigger Badge */}
-                      <div className="p-2.5 bg-slate-900 rounded border border-slate-800 flex items-center justify-between text-xs font-mono">
-                        <span className="text-slate-400">Trigger Event:</span>
-                        <span className="text-emerald-400 font-semibold">
+                      <div className="p-2.5 sw-panel flex items-center justify-between text-xs font-mono">
+                        <span className="text-[var(--theme-text-secondary)]">Trigger Event:</span>
+                        <span className="text-[var(--swiss-emerald)] font-semibold">
                           {flow.triggerTable} [ {flow.triggerCondition} ]
                         </span>
                       </div>
 
                       {/* Sequential Pipeline Visualizer */}
                       <div className="space-y-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--theme-text-secondary)] block">
                           Execution Pipeline ({steps.length} Steps)
                         </span>
 
@@ -4410,21 +4410,21 @@ function StudioContent() {
                           {steps.map((st: any, i: number) => (
                             <div
                               key={i}
-                              className="bg-slate-900/80 p-2 rounded border border-slate-800/80 flex items-center space-x-2 text-xs"
+                              className="bg-[var(--theme-card-bg)] p-2 border border-[var(--theme-card-border)] flex items-center space-x-2 text-xs"
                             >
-                              <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">
+                              <span className="w-4 h-4 bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] flex items-center justify-center text-[10px] font-bold">
                                 {st.step || i + 1}
                               </span>
-                              <span className="font-semibold text-slate-200">{st.title}:</span>
-                              <span className="text-slate-400 truncate text-[11px]">{st.detail}</span>
+                              <span className="font-semibold text-[var(--theme-text-primary)]">{st.title}:</span>
+                              <span className="text-[var(--theme-text-secondary)] truncate text-[11px]">{st.detail}</span>
                             </div>
                           ))}
                         </div>
                       </div>
 
                       {/* Footer Actions & Stats */}
-                      <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-                        <div className="text-[11px] text-slate-500 font-mono">
+                      <div className="pt-3 border-t border-[var(--theme-card-border)] flex items-center justify-between text-xs">
+                        <div className="text-[11px] text-[var(--theme-text-secondary)] font-mono">
                           {flow.runCount || 0} Total Runs
                         </div>
 
@@ -4432,7 +4432,7 @@ function StudioContent() {
                           <button
                             type="button"
                             onClick={() => openEditFlow(flow)}
-                            className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                            className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-card-border)] text-[var(--theme-text-primary)] transition-colors"
                             title="Edit Flow"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -4442,7 +4442,7 @@ function StudioContent() {
                             type="button"
                             disabled={flowTestingId === flow.id}
                             onClick={() => handleTestFlow(flow.id)}
-                            className="flex items-center gap-1 px-2.5 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded font-semibold text-xs shadow-xs disabled:opacity-50"
+                            className="sw-btn-primary flex items-center gap-1 px-2.5 py-1 text-xs disabled:opacity-50"
                           >
                             <Play className="w-3 h-3" />
                             <span>{flowTestingId === flow.id ? "Simulating..." : "Test Flow"}</span>
@@ -4451,7 +4451,7 @@ function StudioContent() {
                           <button
                             type="button"
                             onClick={() => handleDeleteFlow(flow.id)}
-                            className="p-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300"
+                            className="p-1 bg-[var(--theme-accent-light)] hover:bg-[var(--theme-accent-light)] text-[var(--swiss-red)]"
                             title="Delete Flow"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -4466,16 +4466,16 @@ function StudioContent() {
 
             {/* Create / Edit Flow Modal */}
             {flowModalOpen && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in zoom-in-95 duration-150">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                      <Workflow className="w-4 h-4 text-emerald-400" />
+              <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] max-w-lg w-full p-6 space-y-4 animate-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between border-b border-[var(--theme-card-border)] pb-3">
+                    <h3 className="font-bold text-sm text-[var(--theme-text-primary)] flex items-center gap-2">
+                      <Workflow className="w-4 h-4 text-[var(--theme-text-primary)]" />
                       <span>{editingFlowId ? "Edit Flow (sys_hub_flow)" : "Author New Flow (sys_hub_flow)"}</span>
                     </h3>
                     <button
                       onClick={() => setFlowModalOpen(false)}
-                      className="text-slate-400 hover:text-white text-xs font-bold"
+                      className="text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] text-xs font-bold"
                     >
                       ✕
                     </button>
@@ -4483,24 +4483,24 @@ function StudioContent() {
 
                   <form onSubmit={handleSaveFlow} className="space-y-3 text-xs">
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Flow Name *</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Flow Name *</label>
                       <input
                         type="text"
                         required
                         value={flowName}
                         onChange={(e) => setFlowName(e.target.value)}
                         placeholder="e.g. P1 Critical Cat-Swarm Emergency Workflow"
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-emerald-500"
+                        className="sw-input w-full px-2.5 py-1.5"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-slate-300 font-medium mb-1">Trigger Table *</label>
+                        <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Trigger Table *</label>
                         <select
                           value={flowTable}
                           onChange={(e) => setFlowTable(e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                          className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)]"
                         >
                           <option value="incident">incident</option>
                           <option value="change_request">change_request</option>
@@ -4509,32 +4509,32 @@ function StudioContent() {
                       </div>
 
                       <div>
-                        <label className="block text-slate-300 font-medium mb-1">Trigger Condition</label>
+                        <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Trigger Condition</label>
                         <input
                           type="text"
                           value={flowCond}
                           onChange={(e) => setFlowCond(e.target.value)}
                           placeholder="e.g. priority=1 or risk=high"
-                          className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white font-mono"
+                          className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)] font-mono"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-slate-300 font-medium mb-1">Description</label>
+                      <label className="block text-[var(--theme-text-primary)] font-medium mb-1">Description</label>
                       <input
                         type="text"
                         value={flowDesc}
                         onChange={(e) => setFlowDesc(e.target.value)}
                         placeholder="Automated notification & CAB escalation workflow"
-                        className="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white"
+                        className="w-full sw-panel px-2.5 py-1.5 text-[var(--theme-text-primary)]"
                       />
                     </div>
 
                     {/* Flow Steps Editor */}
-                    <div className="p-3 bg-slate-900 rounded border border-slate-800 space-y-2">
+                    <div className="p-3 sw-panel space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-slate-300">Sequential Flow Steps</span>
+                        <span className="font-semibold text-[var(--theme-text-primary)]">Sequential Flow Steps</span>
                         <button
                           type="button"
                           onClick={() =>
@@ -4548,7 +4548,7 @@ function StudioContent() {
                               },
                             ])
                           }
-                          className="text-[10px] text-emerald-400 font-bold hover:underline"
+                          className="text-[10px] text-[var(--swiss-emerald)] font-bold hover:text-[var(--theme-text-primary)]"
                         >
                           + Add Step
                         </button>
@@ -4556,16 +4556,16 @@ function StudioContent() {
 
                       <div className="space-y-2 max-h-48 overflow-y-auto">
                         {flowSteps.map((st, idx) => (
-                          <div key={idx} className="bg-slate-950 p-2 rounded border border-slate-800 space-y-1">
+                          <div key={idx} className="bg-[var(--theme-page-bg)] p-2 border border-[var(--theme-card-border)] space-y-1">
                             <div className="flex items-center justify-between">
-                              <span className="font-bold text-emerald-400 font-mono text-[10px]">
+                              <span className="font-bold text-[var(--swiss-emerald)] font-mono text-[10px]">
                                 Step {idx + 1}
                               </span>
                               {flowSteps.length > 1 && (
                                 <button
                                   type="button"
                                   onClick={() => setFlowSteps(flowSteps.filter((_, i) => i !== idx))}
-                                  className="text-rose-400 text-[10px]"
+                                  className="text-[var(--swiss-red)] text-[10px]"
                                 >
                                   Remove
                                 </button>
@@ -4581,7 +4581,7 @@ function StudioContent() {
                                   setFlowSteps(updated);
                                 }}
                                 placeholder="Step Title"
-                                className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white font-medium"
+                                className="sw-panel px-2 py-1 text-[var(--theme-text-primary)] font-medium"
                               />
                               <select
                                 value={st.action}
@@ -4590,7 +4590,7 @@ function StudioContent() {
                                   updated[idx].action = e.target.value;
                                   setFlowSteps(updated);
                                 }}
-                                className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white"
+                                className="sw-panel px-2 py-1 text-[var(--theme-text-primary)]"
                               >
                                 <option value="notification">Broadcast Notification</option>
                                 <option value="work_note">Add Audit Work Note</option>
@@ -4606,25 +4606,25 @@ function StudioContent() {
                                 setFlowSteps(updated);
                               }}
                               placeholder="Step execution details..."
-                              className="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white text-[11px]"
+                              className="w-full sw-panel px-2 py-1 text-[var(--theme-text-primary)] text-[11px]"
                             />
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div className="border-t border-slate-800 pt-3 flex justify-end space-x-2">
+                    <div className="border-t border-[var(--theme-card-border)] pt-3 flex justify-end space-x-2">
                       <button
                         type="button"
                         onClick={() => setFlowModalOpen(false)}
-                        className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300"
+                        className="sw-btn px-3 py-1.5"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={flowSaving}
-                        className="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-xs disabled:opacity-50"
+                        className="sw-btn-primary px-4 py-1.5 disabled:opacity-50"
                       >
                         {flowSaving ? "Saving..." : editingFlowId ? "Update Flow" : "Save & Activate Flow"}
                       </button>
@@ -4642,26 +4642,26 @@ function StudioContent() {
         {activeTab === "agent" && (
           <div className="space-y-6">
             {agentMsg && (
-              <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300 text-xs flex items-center gap-2">
+              <div className="p-3 bg-[var(--theme-accent-light)] border border-[var(--swiss-emerald)] text-[var(--swiss-emerald)] text-xs flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 <span>{agentMsg}</span>
               </div>
             )}
 
-            <div className="bg-slate-950 rounded-xl border border-slate-800 p-6 space-y-4 shadow-xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div className="bg-[var(--theme-page-bg)] border border-[var(--theme-card-border)] p-6 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--theme-card-border)] pb-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40">
-                    <Bot className="w-6 h-6 text-emerald-400" />
+                  <div className="w-10 h-10 bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] flex items-center justify-center border border-[var(--swiss-emerald)]">
+                    <Bot className="w-6 h-6 text-[var(--theme-text-primary)]" />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-white flex items-center gap-2">
+                    <h2 className="text-base font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
                       <span>ServiceMeow Autonomous Workflow Agent</span>
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase">
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)] uppercase">
                         Active Daemon
                       </span>
                     </h2>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--theme-text-secondary)]">
                       Automated background watchdog: auto-assigns unassigned P1 criticals, monitors SLA timers for breaches, and triggers Flow Designer orchestrations.
                     </p>
                   </div>
@@ -4670,7 +4670,7 @@ function StudioContent() {
                 <button
                   onClick={handleRunAgentNow}
                   disabled={agentExecuting}
-                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition-colors shadow-lg disabled:opacity-50"
+                  className="sw-btn-primary flex items-center gap-2 px-4 py-2 text-xs disabled:opacity-50"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${agentExecuting ? "animate-spin" : ""}`} />
                   <span>{agentExecuting ? "Executing Cycle..." : "Run Agent Now (Manual Cycle)"}</span>
@@ -4679,73 +4679,73 @@ function StudioContent() {
 
               {/* Status & Real-time Metrics Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-1">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                <div className="bg-[var(--theme-card-bg)] p-4 border border-[var(--theme-card-border)] space-y-1">
+                  <span className="text-[11px] font-semibold text-[var(--theme-text-secondary)] uppercase tracking-wider block">
                     Agent Daemon State
                   </span>
                   <div className="flex items-center space-x-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-sm font-bold text-emerald-400 capitalize">
+                    <div className="w-2.5 h-2.5 bg-[var(--swiss-emerald)] animate-pulse" />
+                    <span className="text-sm font-bold text-[var(--swiss-emerald)] capitalize">
                       {agentStatus?.status || "Standing By"}
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-slate-500">
+                  <span className="text-[10px] font-mono text-[var(--theme-text-secondary)]">
                     Interval: {agentStatus?.daemonMode || "polling_30s"}
                   </span>
                 </div>
 
-                <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-1">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                <div className="bg-[var(--theme-card-bg)] p-4 border border-[var(--theme-card-border)] space-y-1">
+                  <span className="text-[11px] font-semibold text-[var(--theme-text-secondary)] uppercase tracking-wider block">
                     Monitored Open Tasks
                   </span>
-                  <span className="text-2xl font-bold font-mono text-white">
+                  <span className="text-2xl font-bold font-mono text-[var(--theme-text-primary)]">
                     {agentStatus?.pendingTasks ?? 0}
                   </span>
-                  <span className="text-[10px] text-slate-500 block">State: New & In Progress</span>
+                  <span className="text-[10px] text-[var(--theme-text-secondary)] block">State: New & In Progress</span>
                 </div>
 
-                <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-1">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                <div className="bg-[var(--theme-card-bg)] p-4 border border-[var(--theme-card-border)] space-y-1">
+                  <span className="text-[11px] font-semibold text-[var(--theme-text-secondary)] uppercase tracking-wider block">
                     Unassigned P1 Triage
                   </span>
-                  <span className="text-2xl font-bold font-mono text-amber-400">
+                  <span className="text-2xl font-bold font-mono text-[var(--swiss-amber)]">
                     {agentStatus?.unassignedP1s ?? 0}
                   </span>
-                  <span className="text-[10px] text-slate-500 block">Auto-assigns to Lead ITIL</span>
+                  <span className="text-[10px] text-[var(--theme-text-secondary)] block">Auto-assigns to Lead ITIL</span>
                 </div>
 
-                <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 space-y-1">
-                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+                <div className="bg-[var(--theme-card-bg)] p-4 border border-[var(--theme-card-border)] space-y-1">
+                  <span className="text-[11px] font-semibold text-[var(--theme-text-secondary)] uppercase tracking-wider block">
                     SLA Watchdog Breaches
                   </span>
-                  <span className="text-2xl font-bold font-mono text-rose-400">
+                  <span className="text-2xl font-bold font-mono text-[var(--swiss-red)]">
                     {agentStatus?.breachedSlas ?? 0}
                   </span>
-                  <span className="text-[10px] text-slate-500 block">Logged to Activity Notes</span>
+                  <span className="text-[10px] text-[var(--theme-text-secondary)] block">Logged to Activity Notes</span>
                 </div>
               </div>
 
               {/* Execution Activity Stream Console */}
               <div className="space-y-2 pt-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-300 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="font-bold text-[var(--theme-text-primary)] uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[var(--theme-text-primary)]" />
                     <span>Agent Execution Telemetry Log</span>
                   </span>
-                  <span className="text-[10px] font-mono text-slate-500">
+                  <span className="text-[10px] font-mono text-[var(--theme-text-secondary)]">
                     Last cycle: {agentStatus?.lastRun?.timestamp ? new Date(agentStatus.lastRun.timestamp).toLocaleTimeString() : "Never"}
                   </span>
                 </div>
 
-                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-xs space-y-1.5 max-h-72 overflow-y-auto">
+                <div className="bg-[var(--theme-page-bg)] p-4 border border-[var(--theme-card-border)] font-mono text-xs space-y-1.5 max-h-72 overflow-y-auto">
                   {agentStatus?.lastRun?.logs?.length ? (
                     agentStatus.lastRun.logs.map((lg: string, idx: number) => (
-                      <div key={idx} className="text-slate-300 leading-relaxed">
+                      <div key={idx} className="text-[var(--theme-text-primary)] leading-relaxed">
                         {lg}
                       </div>
                     ))
                   ) : (
-                    <div className="text-slate-500 italic py-4 text-center">
+                    <div className="text-[var(--theme-text-secondary)] italic py-4 text-center">
                       Agent cycle standing by. Click &quot;Run Agent Now&quot; to execute triage cycle.
                     </div>
                   )}
@@ -4833,13 +4833,13 @@ function StudioContent() {
           <div className="space-y-4">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <h2 className="text-lg font-bold text-[var(--theme-text-primary)] flex items-center gap-2">
                   <span>Enterprise Configuration Launcher</span>
-                  <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <span className="text-xs font-mono font-bold px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--swiss-emerald)] border border-[var(--swiss-emerald)]">
                     {STUDIO_MODULES.length} Modules
                   </span>
                 </h2>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-[var(--theme-text-secondary)] mt-1">
                   Browse all enterprise configuration, automation, security and workplace management modules. Click any module to launch its workbench.
                 </p>
               </div>
@@ -4860,19 +4860,19 @@ function StudioContent() {
                     key={cat.id}
                     type="button"
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-3.5 py-1.5 rounded-full flex items-center gap-2 transition-all font-semibold text-xs whitespace-nowrap cursor-pointer border ${
+                    className={`px-3.5 py-1.5 flex items-center gap-2 transition-all font-semibold text-xs whitespace-nowrap cursor-pointer border ${
                       isCatActive
-                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50 shadow-xs ring-1 ring-emerald-500/30"
-                        : "bg-slate-900/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-slate-800"
+                        ? "bg-[var(--theme-text-primary)] text-[var(--theme-page-bg)] border-[var(--theme-text-primary)] ring-1 ring-[var(--theme-text-primary)]"
+                        : "bg-[var(--theme-card-bg)] text-[var(--theme-text-secondary)] hover:text-[var(--theme-text-primary)] hover:bg-[var(--theme-accent-light)] border-[var(--theme-card-border)]"
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
                     <span>{cat.label}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                      className={`text-[10px] px-1.5 py-0.2 font-mono ${
                         isCatActive
-                          ? "bg-emerald-500/30 text-emerald-200"
-                          : "bg-slate-800 text-slate-400"
+                          ? "bg-transparent text-[var(--theme-page-bg)]"
+                          : "bg-[var(--theme-accent-light)] text-[var(--theme-text-secondary)]"
                       }`}
                     >
                       {count}
@@ -4904,12 +4904,12 @@ function StudioContent() {
 
               return (
                 <div key={cat.id} className="space-y-3">
-                  <div className="flex items-center gap-2 border-b border-slate-800/80 pb-2">
-                    <CatIcon className="w-4 h-4 text-emerald-400" />
-                    <h3 className="text-sm font-bold text-white tracking-wide">
+                  <div className="flex items-center gap-2 border-b border-[var(--theme-card-border)] pb-2">
+                    <CatIcon className="w-4 h-4 text-[var(--theme-text-primary)]" />
+                    <h3 className="text-sm font-bold text-[var(--theme-text-primary)] tracking-wide">
                       {cat.label}
                     </h3>
-                    <span className="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-mono text-[var(--theme-text-secondary)] bg-[var(--theme-accent-light)] px-2 py-0.5">
                       {matchingModules.length} {matchingModules.length === 1 ? "module" : "modules"}
                     </span>
                   </div>
@@ -4923,33 +4923,33 @@ function StudioContent() {
                         <div
                           key={mod.id}
                           onClick={() => selectModule(mod.id)}
-                          className="bg-slate-900/90 hover:bg-slate-850 border border-slate-800/80 hover:border-emerald-500/50 rounded-xl p-4 transition-all duration-200 hover:shadow-lg hover:shadow-emerald-950/20 group cursor-pointer flex flex-col justify-between"
+                          className="bg-[var(--theme-card-bg)] hover:bg-[var(--theme-accent-light)] border border-[var(--theme-card-border)] hover:border-[var(--theme-text-primary)] p-4 transition-all duration-200 group cursor-pointer flex flex-col justify-between"
                         >
                           <div>
                             <div className="flex items-start justify-between gap-2">
-                              <div className="w-9 h-9 rounded-xl bg-slate-800 text-slate-300 group-hover:bg-emerald-500/20 group-hover:text-emerald-400 border border-slate-700/60 group-hover:border-emerald-500/40 flex items-center justify-center transition-colors">
+                              <div className="w-9 h-9 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] group-hover:bg-[var(--theme-accent-light)] group-hover:text-[var(--theme-text-primary)] border border-[var(--theme-card-border)] group-hover:border-[var(--theme-text-primary)] flex items-center justify-center transition-colors">
                                 <Icon className="w-4 h-4" />
                               </div>
                               {typeof badgeCount === "number" && badgeCount > 0 && (
-                                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                                <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-[var(--theme-accent-light)] text-[var(--theme-text-primary)] border border-[var(--theme-card-border)]">
                                   {badgeCount} records
                                 </span>
                               )}
                             </div>
                             <div className="mt-3">
-                              <h4 className="text-sm font-bold text-slate-100 group-hover:text-emerald-300 transition-colors flex items-center gap-1.5">
+                              <h4 className="text-sm font-bold text-[var(--theme-text-primary)] group-hover:text-[var(--theme-text-primary)] transition-colors flex items-center gap-1.5">
                                 <span>{mod.title}</span>
                               </h4>
-                              <code className="text-[10px] font-mono text-slate-400 block mt-0.5">
+                              <code className="text-[10px] font-mono text-[var(--theme-text-secondary)] block mt-0.5">
                                 {mod.tableCode}
                               </code>
-                              <p className="text-xs text-slate-400 mt-2 line-clamp-2 leading-relaxed">
+                              <p className="text-xs text-[var(--theme-text-secondary)] mt-2 line-clamp-2 leading-relaxed">
                                 {mod.description}
                               </p>
                             </div>
                           </div>
 
-                          <div className="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400 group-hover:text-emerald-400 font-medium">
+                          <div className="mt-4 pt-3 border-t border-[var(--theme-card-border)] flex items-center justify-between text-xs text-[var(--theme-text-secondary)] group-hover:text-[var(--theme-text-primary)] font-medium">
                             <span>Open Workbench</span>
                             <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                           </div>
@@ -4969,7 +4969,7 @@ function StudioContent() {
 
 export default function StudioPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-slate-400 text-xs">Loading ServiceMeow Studio...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-[var(--theme-text-secondary)] text-xs">Loading ServiceMeow Studio...</div>}>
       <StudioContent />
     </Suspense>
   );
